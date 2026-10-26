@@ -115,8 +115,10 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
     ? { duration: 0 }
     : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const };
 
+  // ioiti-ui: glass under the glass material (glass-float): the pill and the open island are siblings, neither
+  // holding a fixed child.
   const surface = cn(
-    'border backdrop-blur-md transition-colors',
+    'border backdrop-blur-md transition-colors glass-float',
     'bg-white/95 dark:bg-[#141416]/95',
     'border-black/[0.08] dark:border-white/[0.12]',
     'text-[#0A0A0A] dark:text-[#F4F4F5]',

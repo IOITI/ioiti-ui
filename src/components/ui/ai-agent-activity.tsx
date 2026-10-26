@@ -454,7 +454,8 @@ export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
           ...(accentColor ? ({ '--accent-custom': accentColor } as React.CSSProperties) : {}),
         }}
         className={cn(
-          'w-full font-sans rounded-2xl border border-border/70 bg-surface/50 dark:bg-surface/25 text-foreground overflow-hidden transition-colors',
+          // ioiti-ui: glass under the glass material, as a panel.
+          'w-full font-sans rounded-2xl border border-border/70 bg-surface/50 dark:bg-surface/25 text-foreground overflow-hidden transition-colors glass-card',
           className
         )}
       >

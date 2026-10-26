@@ -194,7 +194,9 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
         layout
         transition={motionTransitions.springMorph}
         className={cn(
-          'relative max-w-full rounded-full border border-neutral-200 bg-white/95 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-1 flex items-center gap-1 dark:border-[#1F1F1F] dark:bg-[#0E0E0E]/95 dark:shadow-[0_10px_30px_rgba(0,0,0,0.6)]',
+          // ioiti-ui: glass under the glass material (glass-float). Not the phone's menu inside it: its blur would see
+          // nothing but this pill.
+          'relative max-w-full rounded-full border border-neutral-200 bg-white/95 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-1 flex items-center gap-1 dark:border-[#1F1F1F] dark:bg-[#0E0E0E]/95 dark:shadow-[0_10px_30px_rgba(0,0,0,0.6)] glass-float',
           isFloating ? 'ring-1 ring-black/5 dark:ring-white/5' : ''
         )}
         role="navigation"

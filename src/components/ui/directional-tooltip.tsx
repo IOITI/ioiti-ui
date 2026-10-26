@@ -229,9 +229,9 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, x: offsetT.x * 0.5, y: offsetT.y * 0.5 }}
                 transition={motionTransitions.springSnappy}
-                // ioiti-ui: long hints wrap, within the screen.
+                // ioiti-ui: long hints wrap, within the screen; glass under the glass material (glass-float).
                 className={cn(
-                  'fixed z-[60] w-max max-w-[min(20rem,calc(100vw-1rem))] whitespace-normal rounded-md border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] px-2.5 py-1.5 text-xs leading-relaxed pointer-events-none',
+                  'fixed z-[60] w-max max-w-[min(20rem,calc(100vw-1rem))] whitespace-normal rounded-md border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] px-2.5 py-1.5 text-xs leading-relaxed pointer-events-none glass-float',
                   className
                 )}
                 style={place ? { left: place.left, top: place.top } : { left: -9999, top: -9999 }}

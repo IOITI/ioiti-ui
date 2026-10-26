@@ -323,7 +323,8 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
       {/* Floating Status Bar. ioiti-ui: what the traced node is and links to, in words. */}
       <div
         aria-live="polite"
-        className="m-3 mt-0 flex items-center justify-between gap-3 text-[11px] text-neutral-600 bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-neutral-200 pointer-events-none dark:text-[#A1A1A1] dark:bg-[#0E0E0E]/90 dark:border-[#1F1F1F]"
+        // ioiti-ui: glass under the glass material (glass-float).
+        className="m-3 mt-0 flex items-center justify-between gap-3 text-[11px] text-neutral-600 bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-neutral-200 pointer-events-none dark:text-[#A1A1A1] dark:bg-[#0E0E0E]/90 dark:border-[#1F1F1F] glass-float"
       >
         <span className="min-w-0">
           {activeNode ? (

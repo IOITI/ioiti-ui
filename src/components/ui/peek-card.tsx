@@ -213,8 +213,9 @@ export const PeekCard: React.FC<PeekCardProps> = ({
                   onPointerLeave={(event) => {
                     if (event.pointerType !== 'touch') closeSoon();
                   }}
-                  // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`.
-                  className="w-full rounded-xl border border-neutral-200 bg-white p-4 text-left text-xs text-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,0.14)] cursor-default dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-[#A1A1A1] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)]"
+                  // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`; glass under
+                  // the glass material (glass-float).
+                  className="w-full rounded-xl border border-neutral-200 bg-white p-4 text-left text-xs text-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,0.14)] cursor-default dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-[#A1A1A1] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] glass-float"
                 >
                   {renderContent()}
                   {href && (

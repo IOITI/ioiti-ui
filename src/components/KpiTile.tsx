@@ -17,7 +17,7 @@ export function KpiTile({ label, value, hint, children, className }: KpiTileProp
   return (
     <div
       className={cn(
-        'flex min-h-[7.5rem] min-w-0 flex-col rounded-2xl border border-border/70 bg-surface/50 p-4 sm:p-5 dark:bg-surface/25',
+        'flex min-h-[7.5rem] min-w-0 flex-col rounded-2xl border border-border/70 bg-surface/50 p-4 sm:p-5 dark:bg-surface/25 glass-card',
         className,
       )}
     >

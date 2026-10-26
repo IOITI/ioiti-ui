@@ -180,9 +180,10 @@ export const UndoToast: React.FC<UndoToastProps> = ({
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsPaused(false);
             }}
-            // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`.
+            // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`; glass under the
+            // glass material (glass-float).
             className={cn(
-              'pointer-events-auto relative overflow-hidden rounded-xl border border-neutral-200 bg-white text-neutral-900 shadow-[0_12px_32px_rgba(0,0,0,0.14)] p-3.5 sm:p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-[#FAFAFA] dark:shadow-[0_12px_32px_rgba(0,0,0,0.6)]',
+              'pointer-events-auto relative overflow-hidden rounded-xl border border-neutral-200 bg-white text-neutral-900 shadow-[0_12px_32px_rgba(0,0,0,0.14)] p-3.5 sm:p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-[#FAFAFA] dark:shadow-[0_12px_32px_rgba(0,0,0,0.6)] glass-float',
               className
             )}
             role="status"

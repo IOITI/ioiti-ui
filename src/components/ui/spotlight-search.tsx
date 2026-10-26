@@ -201,14 +201,14 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 font-sans select-none">
-          {/* Calm backdrop */}
+          {/* Calm backdrop. ioiti-ui: lighter under the glass material, and the dialog glass (glass-float). */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm glass:bg-[var(--glass-scrim)]"
           />
 
           {/* Ultra-minimal Spotlight Container */}
@@ -221,7 +221,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
             exit={{ opacity: 0, scale: 0.98, y: -6 }}
             transition={motionTransitions.springSnappy}
             className={cn(
-              'relative w-full max-w-lg rounded-2xl border border-border bg-surface-raised shadow-elevated overflow-hidden z-10',
+              'relative w-full max-w-lg rounded-2xl border border-border bg-surface-raised shadow-elevated overflow-hidden z-10 glass-float',
               className
             )}
           >

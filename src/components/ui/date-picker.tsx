@@ -179,7 +179,8 @@ function PickerShell({
             aria-label="Choose date"
             {...popoverMotion(side, align)}
             className={cn(
-              "absolute z-50 w-max max-w-[calc(100vw-2rem)] rounded-xl border border-neutral-200 bg-white shadow-lg shadow-neutral-900/5 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-black/40",
+              // ioiti-ui: glass under the glass material (glass-float).
+              "absolute z-50 w-max max-w-[calc(100vw-2rem)] rounded-xl border border-neutral-200 bg-white shadow-lg shadow-neutral-900/5 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-black/40 glass-float",
               side === "top" ? "bottom-full mb-2" : "top-full mt-2",
               align === "end" ? "right-0" : "left-0"
             )}

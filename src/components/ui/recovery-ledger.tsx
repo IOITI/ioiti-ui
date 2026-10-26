@@ -93,7 +93,8 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
   return (
     <div
       className={cn(
-        'w-full rounded-2xl bg-white border border-neutral-200 overflow-hidden dark:bg-[#0E0E0E] dark:border-[#1F1F1F]',
+        // ioiti-ui: glass under the glass material, as a card (glass-card).
+        'w-full rounded-2xl bg-white border border-neutral-200 overflow-hidden dark:bg-[#0E0E0E] dark:border-[#1F1F1F] glass-card',
         className
       )}
     >

@@ -235,8 +235,8 @@ export const GLASS_SURFACES = ['--glass-float', '--glass-bar', '--glass-card']
 /**
  * What text and marks are read on in a look, each surface as the colours it can show. An opaque
  * surface is one colour. Glass shows the backdrop through it: the page's base, and the strongest point
- * of each wash over it (the accent's in place of the first, as glass.css paints it). Text set straight
- * on the page is read on the backdrop itself.
+ * of each wash over it (the accent's in place of the first, as glass.css paints it), a dialog its scrim
+ * too. Text set straight on the page is read on the backdrop itself.
  */
 export function lookSurfaces(tokens: Record<string, string>, look: Look): Record<string, Rgba[]> {
   const surfaces: Record<string, Rgba[]> = {}
@@ -253,10 +253,23 @@ export function lookSurfaces(tokens: Record<string, string>, look: Look): Record
     return colour ? [over(colour, base)] : []
   })]
   surfaces.backdrop = backdrop
+  // Each surface as it is, and where its light and its reflection are strongest.
+  const lights = ['--glass-shine', '--glass-reflection'].flatMap((name) => {
+    const colour = colourOf(tokens, name)
+    return colour ? [colour] : []
+  })
   for (const name of GLASS_SURFACES) {
     const colour = colourOf(tokens, name)
-    if (colour) surfaces[name] = backdrop.map((under) => over(colour, under))
+    if (colour)
+      surfaces[name] = backdrop.flatMap((under) => {
+        const surface = over(colour, under)
+        return [surface, ...lights.map((light) => over(light, surface))]
+      })
   }
+  // A dialog: what floats, over its scrim, over the page.
+  const float = colourOf(tokens, '--glass-float')
+  const scrim = colourOf(tokens, '--glass-scrim')
+  if (float && scrim) surfaces['--glass-float on --glass-scrim'] = backdrop.map((under) => over(float, over(scrim, under)))
   return surfaces
 }
 

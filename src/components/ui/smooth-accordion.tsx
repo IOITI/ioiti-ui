@@ -39,7 +39,8 @@ export const SmoothAccordion: React.FC<SmoothAccordionProps> = ({
   };
 
   return (
-    <div className={cn('flex flex-col divide-y divide-neutral-200 dark:divide-[#1F1F1F] rounded-xl border border-neutral-200 dark:border-[#1F1F1F] bg-white dark:bg-[#0E0E0E] overflow-hidden', className)}>
+    // ioiti-ui: glass under the glass material, as a card (glass-card).
+    <div className={cn('flex flex-col divide-y divide-neutral-200 dark:divide-[#1F1F1F] rounded-xl border border-neutral-200 dark:border-[#1F1F1F] bg-white dark:bg-[#0E0E0E] overflow-hidden glass-card', className)}>
       {items.map((item) => {
         const isOpen = openIds.includes(item.id);
         return (

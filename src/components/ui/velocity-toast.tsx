@@ -164,7 +164,8 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
             className={cn(
-              'pointer-events-auto relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] p-3.5 sm:p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none',
+              // ioiti-ui: glass under the glass material (glass-float).
+              'pointer-events-auto relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] p-3.5 sm:p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none glass-float',
               className
             )}
             role="status"

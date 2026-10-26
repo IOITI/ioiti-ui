@@ -52,6 +52,17 @@ otherwise).
   health ring keeps its colour), the progress and nodes of `interactive-timeline` (EasyUI's blue), the
   heatmap's active cell. The tones (success, warning, danger, info) keep their colours: gain and loss are said
   by them. One-series charts and funnels take the accent through their tokens.
+- **Glass.** Under the glass material (`data-material="glass"` on `<html>`, src/styles/glass.css), a surface
+  turns to glass through a utility that does nothing otherwise, after EasyUI's classes, which stay: `glass-bar`
+  for the sidebar; `glass-card` for `stat-card`, the frames of `advanced-data-table` and `ai-agent-activity`,
+  `smooth-accordion`, `request-status`, `airport-matrix-clock` and `recovery-ledger`; `glass-float`, the only
+  one blurred, for what floats: the sidebar's drawer, `settle-modal`, `spotlight-search`, `directional-tooltip`,
+  `peek-card`, the popovers of `date-picker`, `combobox` and `spring-select`, `notification-bell` (its header
+  clear on it), the `split-button` menu, the column list of `advanced-data-table`, the chart tooltip of
+  `chart-primitives`, both toasts, `selection-basket`, `scroll-progress-nav`'s pill (not the phone's menu
+  inside it, whose blur would see nothing but the pill), `dynamic-island` and `dependency-trace`'s status bar.
+  None of these holds a fixed child of its own, which a blur would hold. The dialogs' scrims are lighter
+  (`--glass-scrim`), and a filled button has the glass's glow. With the flat material, nothing changes.
 
 ## Component by component
 

@@ -122,9 +122,9 @@ export const SettleModal: React.FC<SettleModalProps> = ({
           role="dialog"
           aria-modal="true"
         >
-          {/* Backdrop fades in softly */}
+          {/* Backdrop fades in softly. ioiti-ui: lighter under the glass material, and the panel glass (glass-float). */}
           <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-md"
+            className="absolute inset-0 bg-black/50 backdrop-blur-md glass:bg-[var(--glass-scrim)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -147,7 +147,7 @@ export const SettleModal: React.FC<SettleModalProps> = ({
             }}
             className={cn(
               // ioiti-ui: no taller than the screen; what does not fit scrolls inside it (a phone, a long form).
-              'relative w-full max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] p-6 sm:p-8 focus:outline-none',
+              'relative w-full max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] p-6 sm:p-8 focus:outline-none glass-float',
               sizeMap[size],
               className
             )}

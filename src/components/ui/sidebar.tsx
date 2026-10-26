@@ -121,7 +121,8 @@ export function Sidebar({
         animate={{ width: collapsed ? COLLAPSED : EXPANDED }}
         transition={spring}
         className={cn(
-          "hidden h-full shrink-0 overflow-hidden border-r border-neutral-200 bg-white md:block dark:border-neutral-800 dark:bg-neutral-950",
+          // ioiti-ui: glass under the glass material (glass-bar), as the drawer below (glass-float), its scrim lighter.
+          "hidden h-full shrink-0 overflow-hidden border-r border-neutral-200 bg-white md:block dark:border-neutral-800 dark:bg-neutral-950 glass-bar",
           className
         )}
       >
@@ -133,7 +134,7 @@ export function Sidebar({
           <div key="drawer" className="fixed inset-0 z-50 md:hidden">
             <motion.div
               aria-hidden
-              className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px] glass:bg-[var(--glass-scrim)]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -143,7 +144,7 @@ export function Sidebar({
               role="dialog"
               aria-modal="true"
               aria-label="Navigation"
-              className="absolute inset-y-0 left-0 w-[17rem] max-w-[85vw] overflow-hidden border-r border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+              className="absolute inset-y-0 left-0 w-[17rem] max-w-[85vw] overflow-hidden border-r border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950 glass-float"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}

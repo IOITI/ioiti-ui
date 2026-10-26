@@ -226,7 +226,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
             </motion.button>
 
             {isColumnPickerOpen && (
-              <div className="absolute right-0 top-full mt-2 w-48 max-h-60 overflow-y-auto rounded-xl border border-border/70 bg-surface p-2 shadow-elevated z-30 font-sans">
+              <div className="absolute right-0 top-full mt-2 w-48 max-h-60 overflow-y-auto rounded-xl border border-border/70 bg-surface p-2 shadow-elevated z-30 font-sans glass-float">
                 <div className="text-xs font-medium text-muted-foreground px-2 py-1">
                   Columns
                 </div>
@@ -1175,7 +1175,8 @@ export function DataTable<T = any>({
           ...(accentColor ? ({ '--accent-custom': accentColor } as React.CSSProperties) : {}),
         }}
         className={cn(
-          'w-full font-sans rounded-2xl border border-border/70 bg-surface/50 dark:bg-surface/25 text-foreground overflow-hidden transition-colors',
+          // ioiti-ui: glass under the glass material, as a panel; its column list floats (glass-float).
+          'w-full font-sans rounded-2xl border border-border/70 bg-surface/50 dark:bg-surface/25 text-foreground overflow-hidden transition-colors glass-card',
           className
         )}
       >

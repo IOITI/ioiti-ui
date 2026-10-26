@@ -190,10 +190,11 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             role="dialog"
             aria-label="Notifications"
             // ioiti-ui: on a phone the panel spans the screen under the top bar (centred on the bell, it went past the edge).
-            className="fixed left-4 right-4 top-14 sm:absolute sm:left-auto sm:right-0 sm:top-auto mt-2 sm:w-96 rounded-2xl bg-white/95 backdrop-blur-xl border border-neutral-200 shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden dark:bg-[#0E0E0E]/95 dark:border-[#1F1F1F] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)]"
+            // Glass under the glass material (glass-float), its header clear on it.
+            className="fixed left-4 right-4 top-14 sm:absolute sm:left-auto sm:right-0 sm:top-auto mt-2 sm:w-96 rounded-2xl bg-white/95 backdrop-blur-xl border border-neutral-200 shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden dark:bg-[#0E0E0E]/95 dark:border-[#1F1F1F] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] glass-float"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 bg-neutral-50 dark:border-[#1F1F1F] dark:bg-[#141414]">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 bg-neutral-50 dark:border-[#1F1F1F] dark:bg-[#141414] glass:bg-transparent">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-neutral-900 dark:text-[#FAFAFA]">Notifications</span>
                 {unreadCount > 0 && (

@@ -14,6 +14,7 @@
    - --brand-text       the accent as text on every surface, 4.5:1, on the tint too
    - --brand-glow       a coloured shadow
    - --brand-wash       the accent's colour in the glass backdrop (glass.css)
+   - --brand-reflection the accent's colour in the glass itself, a corner of it
 
    Each preset writes its light values under :root[data-accent="…"]:not(.dark)
    and its dark ones under :root[data-accent="…"].dark: (0,3,0), more specific
@@ -43,7 +44,8 @@
   --brand-soft: rgb(124 58 237 / 0.12);
   --brand-text: #6d28d9;
   --brand-glow: rgb(124 58 237 / 0.35);
-  --brand-wash: rgb(124 58 237 / 0.1);
+  --brand-wash: rgb(124 58 237 / 0.12);
+  --brand-reflection: rgb(124 58 237 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
   --focus-ring: var(--brand);
@@ -61,7 +63,8 @@
   --brand-soft: rgb(167 139 250 / 0.16);
   --brand-text: #c4b5fd;
   --brand-glow: rgb(167 139 250 / 0.3);
-  --brand-wash: rgb(167 139 250 / 0.16);
+  --brand-wash: rgb(167 139 250 / 0.18);
+  --brand-reflection: rgb(167 139 250 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
   --focus-ring: var(--brand);
@@ -79,7 +82,8 @@
   --brand-soft: rgb(79 70 229 / 0.12);
   --brand-text: #4338ca;
   --brand-glow: rgb(79 70 229 / 0.35);
-  --brand-wash: rgb(79 70 229 / 0.1);
+  --brand-wash: rgb(79 70 229 / 0.12);
+  --brand-reflection: rgb(79 70 229 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
   --focus-ring: var(--brand);
@@ -97,7 +101,8 @@
   --brand-soft: rgb(129 140 248 / 0.16);
   --brand-text: #a5b4fc;
   --brand-glow: rgb(129 140 248 / 0.3);
-  --brand-wash: rgb(129 140 248 / 0.16);
+  --brand-wash: rgb(129 140 248 / 0.18);
+  --brand-reflection: rgb(129 140 248 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
   --focus-ring: var(--brand);
@@ -115,7 +120,8 @@
   --brand-soft: rgb(37 99 235 / 0.12);
   --brand-text: #1d4ed8;
   --brand-glow: rgb(37 99 235 / 0.35);
-  --brand-wash: rgb(37 99 235 / 0.1);
+  --brand-wash: rgb(37 99 235 / 0.12);
+  --brand-reflection: rgb(37 99 235 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
   --focus-ring: var(--brand);
@@ -127,7 +133,8 @@
   --brand-soft: rgb(96 165 250 / 0.16);
   --brand-text: #93c5fd;
   --brand-glow: rgb(96 165 250 / 0.3);
-  --brand-wash: rgb(96 165 250 / 0.16);
+  --brand-wash: rgb(96 165 250 / 0.18);
+  --brand-reflection: rgb(96 165 250 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
   --focus-ring: var(--brand);

@@ -18,8 +18,12 @@
                   child of its own, never on an inverted surface (white text
                   on ink).
 
-   Fields, rows and buttons stay solid. With an accent, the backdrop's first
-   wash and the floats' glow take its colour (accents.css).
+   Each glass surface has a light across it from its top corner (--glass-shine)
+   and, in the far corner, the colour of what is around it (--glass-reflection).
+   Fields, rows and buttons stay solid. A dialog's scrim is lighter than the
+   design's (--glass-scrim): the dialog's glass shows what is under it. With an
+   accent, the backdrop's first wash, the reflection and the floats' glow take
+   its colour (accents.css).
 
    Light values under :root[data-material="glass"]:not(.dark), dark ones under
    :root[data-material="glass"].dark, what both share under
@@ -28,9 +32,9 @@
    base layer is held to the original, block by block (scripts/check-package.mjs).
 
    Text keeps 4.5:1 on every glass surface laid over the strongest point of
-   every wash (gallery/src/tokens.test.ts). Text set straight on the backdrop
-   (a page's title and description) is why three text colours of the light
-   theme, and one of the dark, are a step stronger here.
+   every wash, its light and its reflection at their strongest too
+   (gallery/src/tokens.test.ts): three text colours of the light theme, and one
+   of the dark, are a step stronger here for it.
    --------------------------------------------------------------------------- */
 
 :root[data-material="glass"] {
@@ -41,44 +45,51 @@
     0 12px 30px -18px var(--brand-glow, transparent);
   /* Under a primary button: the accent's glow, a plain shadow without one. */
   --glass-glow: 0 10px 26px -10px var(--brand-glow, var(--glass-shadow));
+  --glass-sheen:
+    radial-gradient(130% 110% at 100% 100%, var(--glass-reflection), transparent 60%),
+    linear-gradient(135deg, var(--glass-shine), transparent 42%);
 }
 
 :root[data-material="glass"]:not(.dark) {
   --glass-base: #f5f6fa;
-  --glass-tint-1: rgb(165 180 252 / 0.2);
-  --glass-tint-2: rgb(125 211 252 / 0.2);
-  --glass-tint-3: rgb(249 168 212 / 0.18);
+  --glass-tint-1: rgb(165 180 252 / 0.24);
+  --glass-tint-2: rgb(125 211 252 / 0.24);
+  --glass-tint-3: rgb(249 168 212 / 0.22);
   --glass-float: rgb(255 255 255 / 0.8);
   --glass-bar: rgb(255 255 255 / 0.7);
   --glass-card: rgb(255 255 255 / 0.66);
   --glass-edge: rgb(255 255 255 / 0.75);
   --glass-hairline: rgb(20 22 50 / 0.07);
   --glass-highlight: rgb(255 255 255 / 0.9);
-  --glass-sheen: linear-gradient(135deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0) 42%);
+  --glass-shine: rgb(255 255 255 / 0.5);
+  --glass-reflection: var(--brand-reflection, rgb(125 211 252 / 0.12));
   --glass-shadow: rgb(20 22 50 / 0.16);
+  --glass-scrim: rgb(20 22 50 / 0.2);
   --shadow-subtle: 0 1px 2px 0 rgb(20 22 50 / 0.06), 0 0 0 1px rgb(20 22 50 / 0.05);
   --shadow-elevated: 0 1px 2px rgb(20 22 50 / 0.05), 0 18px 40px -14px rgb(20 22 50 / 0.22), 0 0 0 1px rgb(20 22 50 / 0.05);
-  --muted-foreground: #656570;
-  --text-subtle: #65656d;
-  --positive: #047454;
+  --muted-foreground: #63636e;
+  --text-subtle: #63636c;
+  --positive: #047253;
 }
 
 :root[data-material="glass"].dark {
   --glass-base: #0c0c11;
-  --glass-tint-1: rgb(79 70 229 / 0.28);
-  --glass-tint-2: rgb(14 116 144 / 0.28);
-  --glass-tint-3: rgb(157 23 77 / 0.22);
+  --glass-tint-1: rgb(79 70 229 / 0.32);
+  --glass-tint-2: rgb(14 116 144 / 0.32);
+  --glass-tint-3: rgb(157 23 77 / 0.26);
   --glass-float: rgb(22 22 26 / 0.78);
   --glass-bar: rgb(22 22 26 / 0.62);
   --glass-card: rgb(26 26 30 / 0.58);
   --glass-edge: rgb(255 255 255 / 0.1);
   --glass-hairline: rgb(0 0 0 / 0.35);
   --glass-highlight: rgb(255 255 255 / 0.08);
-  --glass-sheen: linear-gradient(135deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 42%);
+  --glass-shine: rgb(255 255 255 / 0.05);
+  --glass-reflection: var(--brand-reflection, rgb(34 211 238 / 0.06));
   --glass-shadow: rgb(0 0 0 / 0.55);
+  --glass-scrim: rgb(0 0 0 / 0.45);
   --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 0 0 1px rgb(255 255 255 / 0.04);
   --shadow-elevated: 0 1px 2px rgb(0 0 0 / 0.3), 0 20px 44px -14px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
-  --text-subtle: #8d8d96;
+  --text-subtle: #92929a;
 }
 
 /* The backdrop: the page itself, which never scrolls under the shell (its main column does). With an
@@ -142,20 +153,19 @@
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root[data-material="glass"] {
     --glass-blur: none;
+    --glass-sheen: none;
   }
 
   :root[data-material="glass"]:not(.dark) {
     --glass-float: #ffffff;
     --glass-bar: #ffffff;
     --glass-card: #ffffff;
-    --glass-sheen: none;
   }
 
   :root[data-material="glass"].dark {
     --glass-float: #1c1c1f;
     --glass-bar: #161619;
     --glass-card: #18181b;
-    --glass-sheen: none;
   }
 
   :root[data-material="glass"] body {

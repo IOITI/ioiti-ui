@@ -573,8 +573,10 @@ export function SplitButton({
               'border border-border',
               'bg-surface-raised',
               'p-1',
-              // ioiti-ui: a lighter shadow in the light theme, EasyUI's kept for the dark one.
+              // ioiti-ui: a lighter shadow in the light theme, EasyUI's kept for the dark one; glass under the
+              // glass material (glass-float).
               'shadow-[0_12px_30px_-10px_rgba(0,0,0,0.25)] dark:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)]',
+              'glass-float',
               'origin-top-right',
               placement === 'bottom'
                 ? 'top-[calc(100%+8px)]'

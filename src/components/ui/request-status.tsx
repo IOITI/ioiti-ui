@@ -76,7 +76,8 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
   return (
     <div
       className={cn(
-        'w-full rounded-2xl border border-neutral-200 bg-white p-5 text-left font-sans shadow-[0_12px_30px_-10px_rgba(0,0,0,0.18)] transition-all dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.6)]',
+        // ioiti-ui: glass under the glass material, as a card (glass-card).
+        'w-full rounded-2xl border border-neutral-200 bg-white p-5 text-left font-sans shadow-[0_12px_30px_-10px_rgba(0,0,0,0.18)] transition-all dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.6)] glass-card',
         className
       )}
     >

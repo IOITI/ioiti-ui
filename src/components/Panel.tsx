@@ -23,7 +23,7 @@ export function Panel({ id, title, description, action, className, bodyClassName
     <section
       id={id}
       className={cn(
-        'rounded-2xl border border-border/70 bg-surface/50 text-foreground dark:bg-surface/25',
+        'rounded-2xl border border-border/70 bg-surface/50 text-foreground dark:bg-surface/25 glass-card',
         className,
       )}
     >

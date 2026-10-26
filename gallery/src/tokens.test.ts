@@ -136,11 +136,10 @@ describe('every look: a theme, an accent, a material', () => {
 
   it('has opaque surfaces, and no blur, where less transparency or more contrast is asked for', () => {
     const asked = inside(read('glass.css'), '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)')
-    expect(tokensOf(asked, ':root[data-material="glass"]')['--glass-blur']).toBe('none')
+    expect(tokensOf(asked, ':root[data-material="glass"]')).toMatchObject({ '--glass-blur': 'none', '--glass-sheen': 'none' })
     for (const theme of ['light', 'dark'] as const) {
       const tokens = tokensOf(asked, lookSelectors('material', 'glass', theme)[1])
       for (const surface of ['--glass-float', '--glass-bar', '--glass-card']) expect(parseColor(tokens[surface] ?? '')?.a, `${surface}, ${theme}`).toBe(1)
-      expect(tokens['--glass-sheen']).toBe('none')
     }
   })
 })

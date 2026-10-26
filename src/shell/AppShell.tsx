@@ -97,7 +97,7 @@ function Shell<S extends string>({
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6">
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6 glass-bar">
           <SidebarTrigger onClick={() => setMobileOpen(true)} />
           {/* Where the page is, on every page: it takes the room left, and gives it up first. */}
           <div className="flex min-w-0 flex-1 items-center">

@@ -98,7 +98,8 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
             exit={{ opacity: 0, y: 16, scale: 0.95, transition: { duration: 0.15 } }}
             transition={motionTransitions.springResponsive}
             className={cn(
-              'pointer-events-auto flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-2xl border border-neutral-200 bg-white/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-x-auto max-w-full dark:border-[#1F1F1F] dark:bg-[#0E0E0E]/95 dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)]',
+              // ioiti-ui: glass under the glass material (glass-float).
+              'pointer-events-auto flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-2xl border border-neutral-200 bg-white/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-x-auto max-w-full dark:border-[#1F1F1F] dark:bg-[#0E0E0E]/95 dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] glass-float',
               className
             )}
             role="toolbar"

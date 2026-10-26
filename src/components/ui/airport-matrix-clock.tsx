@@ -189,7 +189,7 @@ export function AirportMatrixClock({
   return (
     <section
       aria-label={`World times: ${rows.map((row) => `${row.time.accessible} ${row.name}`).join(', ')}`}
-      className={`relative ${size === 'sm' ? 'w-fit' : 'w-full max-w-3xl'} overflow-hidden rounded-xl border border-border bg-[#F5F5F5] text-text-primary shadow-sm [--amc-grid:rgba(0,0,0,0.008)] dark:border-[#363636] dark:bg-[#202020] dark:text-[#F5F5F5] dark:[--amc-grid:rgba(255,255,255,0.01)] ${className}`}
+      className={`relative ${size === 'sm' ? 'w-fit' : 'w-full max-w-3xl'} overflow-hidden rounded-xl border border-border bg-[#F5F5F5] text-text-primary shadow-sm [--amc-grid:rgba(0,0,0,0.008)] dark:border-[#363636] dark:bg-[#202020] dark:text-[#F5F5F5] dark:[--amc-grid:rgba(255,255,255,0.01)] glass-card ${className}`}
       style={{ backgroundImage: 'linear-gradient(var(--amc-grid) 1px, transparent 1px), linear-gradient(90deg, var(--amc-grid) 1px, transparent 1px)', backgroundSize: '22px 22px' }}
     >
       <div>

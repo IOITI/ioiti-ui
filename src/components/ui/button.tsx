@@ -40,14 +40,15 @@ export interface ButtonProps
 }
 
 // ioiti-ui: under a theme with an accent (accent:), a filled button is the accent's, a soft glow of it under
-// it; a link is in its colour.
-const ACCENT_FILL = 'accent:bg-brand accent:text-brand-foreground accent:shadow-[0_4px_14px_-6px_var(--brand-glow)]';
+// it; a link is in its colour. Under the glass material, the glass's glow (the accent's where there is one).
+const FILLED_THEMED =
+  'accent:bg-brand accent:text-brand-foreground accent:shadow-[0_4px_14px_-6px_var(--brand-glow)] glass:shadow-[var(--glass-glow)]';
 
 const variantStyles: Record<ButtonVariant, string> = {
   default:
-    `bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer ${ACCENT_FILL}`,
+    `bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer ${FILLED_THEMED}`,
   primary:
-    `bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer ${ACCENT_FILL}`,
+    `bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer ${FILLED_THEMED}`,
   secondary:
     'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] cursor-pointer',
   outline:

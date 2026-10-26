@@ -174,8 +174,9 @@ export function StatCard({
       onKeyDown={onKey}
       onBlur={() => setActive(null)}
       // ioiti-ui: the look of the other tiles (KpiTile), which it sits among: their border, surface, padding
-      // and type sizes, and the global focus ring (EasyUI's card was white, ringed and shadowed).
-      className={`group relative flex min-h-[7.5rem] min-w-0 select-none flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface/50 pt-4 text-neutral-700 sm:pt-5 dark:bg-surface/25 dark:text-neutral-300 ${className}`}
+      // and type sizes, and the global focus ring (EasyUI's card was white, ringed and shadowed); glass under
+      // the glass material, as they are.
+      className={`group relative flex min-h-[7.5rem] min-w-0 select-none flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface/50 pt-4 text-neutral-700 sm:pt-5 dark:bg-surface/25 dark:text-neutral-300 glass-card ${className}`}
     >
       <div className="flex items-start justify-between gap-3 px-4 sm:px-5">
         <p className={`truncate text-xs ${MUTED}`}>{label}</p>

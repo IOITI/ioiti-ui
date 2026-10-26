@@ -115,7 +115,8 @@ export function Tooltip({
     <motion.div
       ref={ref}
       aria-hidden
-      className={`pointer-events-none absolute left-0 top-0 z-20 min-w-[112px] rounded-xl bg-white/95 px-3 py-2 text-[12px] shadow-lg backdrop-blur dark:bg-neutral-900/95 ${ring}`}
+      // ioiti-ui: glass under the glass material (glass-float).
+      className={`pointer-events-none absolute left-0 top-0 z-20 min-w-[112px] rounded-xl bg-white/95 px-3 py-2 text-[12px] shadow-lg backdrop-blur dark:bg-neutral-900/95 glass-float ${ring}`}
       style={{ x, y }}
       initial={false}
       animate={{ opacity: pos ? 1 : 0 }}

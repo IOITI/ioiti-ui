@@ -173,7 +173,8 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
             // The container itself rides the spring: a tiny upward slide that
             // "settles" with the snappy spring, plus a slight overshoot via the
             // scale: 0.98 -> 1 motion.
-            className="absolute z-50 left-0 right-0 mt-1.5 max-h-60 overflow-auto py-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-elevated)] focus:outline-none"
+            // ioiti-ui: glass under the glass material (glass-float).
+            className="absolute z-50 left-0 right-0 mt-1.5 max-h-60 overflow-auto py-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-elevated)] focus:outline-none glass-float"
           >
             {options.map((opt, idx) => {
               const selected = opt.value === current;

@@ -24,6 +24,9 @@ the design as it was: an application that gives neither looks as it did.
   switch on, the day picked, the step done, the tab, option, row or page shown, a progress, a link) in the
   accent, through `accent:` classes after the components' own (`docs/easyui-changes.md`). The tones keep their
   colours.
+- **Glass on the components**: the sidebar and the top bar (`glass-bar`), panels, tiles and cards
+  (`glass-card`), and what floats over the page, the only glass blurred (`glass-float`): popovers, menus,
+  dialogs over a lighter scrim, toasts, tooltips, the drawer. Fields, rows and buttons stay solid.
 
 ## [0.1.0] - 2026-10-26
 

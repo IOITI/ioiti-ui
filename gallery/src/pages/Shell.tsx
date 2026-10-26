@@ -60,7 +60,7 @@ export function Shell() {
         description="The application's name and its mark at the top (the mark alone once folded); an action at the foot, its icon alone once folded."
         names={['AppBrand', 'SidebarFooterButton']}
       >
-        <div className="w-62 space-y-3 rounded-xl border border-border bg-white p-3 dark:bg-neutral-950">
+        <div className="w-62 space-y-3 rounded-xl border border-border bg-white p-3 dark:bg-neutral-950 glass-bar">
           <AppBrand name="My App" detail="v1.2.0" />
           <div className="border-t border-neutral-200 pt-2 dark:border-neutral-800">
             <SidebarFooterButton icon={<LogOut />} label="Sign out" />
