@@ -2,7 +2,15 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node", "vite/client", "@testing-library/jest-dom"]
+    "types": [
+      "node",
+      "vite/client",
+      "@testing-library/jest-dom"
+    ],
+    "allowImportingTsExtensions": true
   },
-  "include": ["src", "vitest.config.ts"]
+  "include": [
+    "src",
+    "vitest.config.ts"
+  ]
 }

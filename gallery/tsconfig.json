@@ -1,0 +1,26 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "types": [
+      "node",
+      "vite/client",
+      "@testing-library/jest-dom"
+    ],
+    "paths": {
+      "ioiti-ui": [
+        "../src/index.ts"
+      ],
+      "ioiti-ui/react-router": [
+        "../src/react-router/index.ts"
+      ]
+    },
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src",
+    "vite.config.ts",
+    "aliases.ts"
+  ]
+}

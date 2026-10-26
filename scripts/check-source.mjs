@@ -4,11 +4,12 @@
 //   may run the package with, does not guess extensions (scripts/fix-imports.mjs adds them);
 // - nothing in src/ imports react-router but its adapter (src/react-router/) and the tests: the
 //   core works without a router, or with another one;
+// - nothing of the gallery imports the package's source: it imports `ioiti-ui`, as an application;
 // - no name of the application ioiti-ui was made from (WATA, its broker) in the code an
 //   application ships or starts from (src/, the gallery, the template): the docs say where it
 //   comes from, the code does not.
 import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { dirname, join, relative } from 'node:path'
+import { dirname, join, relative, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -46,6 +47,15 @@ for (const file of filesUnder('src')) {
   const isTest = /\.test\.(ts|tsx)$/.test(file) || file.startsWith(join('src', 'test'))
   if (ROUTER.test(text) && !file.startsWith(join('src', 'react-router')) && !isTest) {
     problems.push(`${file}: imports react-router, which only src/react-router/ may`)
+  }
+}
+
+// The gallery is an application made with the package: it imports `ioiti-ui`, never the package's source.
+for (const file of filesUnder(join('gallery', 'src'))) {
+  const text = readFileSync(join(root, file), 'utf8')
+  for (const [, , specifier] of text.matchAll(IMPORT)) {
+    const target = relative(root, join(root, dirname(file), specifier))
+    if (target.startsWith(`src${sep}`) || target === 'src') problems.push(`${file}: imports the package's source ("${specifier}"): import 'ioiti-ui'`)
   }
 }
 

@@ -26,6 +26,8 @@
     },
     "./styles.css": "./dist/styles/styles.css",
     "./design.css": "./dist/styles/design.css",
+    "./tokens.css": "./dist/styles/tokens.css",
+    "./theme.css": "./dist/styles/theme.css",
     "./theme.js": "./dist/theme.js",
     "./package.json": "./package.json"
   },
@@ -44,7 +46,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "node scripts/build.mjs --watch",
-    "typecheck": "tsc -p tsconfig.lib.json --noEmit && tsc -p tsconfig.vite.json --noEmit && tsc -p tsconfig.test.json",
+    "typecheck": "tsc -p tsconfig.lib.json --noEmit && tsc -p tsconfig.vite.json --noEmit && tsc -p tsconfig.test.json && tsc -p gallery/tsconfig.json",
     "lint": "oxlint && oxlint -c .oxlintrc.copies.json src/components/ui src/lib/chart-primitives.tsx src/lib/dashboard-chart-utils.ts && node scripts/check-source.mjs",
     "test": "vitest run",
     "gallery": "vite --config gallery/vite.config.ts",

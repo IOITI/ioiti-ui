@@ -7,6 +7,7 @@ import { IconButton } from './IconButton.js'
 import { KpiGrid } from './KpiTile.js'
 import { EmptyText, ErrorText } from './messages.js'
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './Table.js'
+import { TextLink } from './TextLink.js'
 
 // These components are the classes the original pages wrote by hand, again and again
 // (docs/provenance.md): a change of one of them here is a change of the design, made on purpose.
@@ -126,5 +127,26 @@ describe('the short texts and the grid of tiles', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Could not send the invoice.')
     expect(screen.getByRole('alert')).toHaveClass('text-sm', 'text-negative')
     expect(screen.getByText('tiles')).toHaveClass('grid', 'grid-cols-2', 'gap-3', 'sm:gap-4', 'xl:grid-cols-4')
+  })
+})
+
+describe('a link made of words', () => {
+  it('is underlined in text, underlined under the pointer in a list, quiet as a panel\'s way further', () => {
+    render(
+      <>
+        <TextLink to="/terms">the terms</TextLink>
+        <TextLink to="/orders/42" variant="hover">
+          Order 42
+        </TextLink>
+        <TextLink to="/orders" variant="quiet">
+          View all
+        </TextLink>
+      </>,
+    )
+
+    expect(screen.getByRole('link', { name: 'the terms' })).toHaveClass('underline', 'underline-offset-2')
+    expect(screen.getByRole('link', { name: 'the terms' })).toHaveAttribute('href', '/terms')
+    expect(screen.getByRole('link', { name: 'Order 42' })).toHaveClass('underline-offset-2', 'hover:underline')
+    expect(screen.getByRole('link', { name: 'View all' })).toHaveClass('text-xs', 'text-muted-foreground', 'hover:text-foreground')
   })
 })

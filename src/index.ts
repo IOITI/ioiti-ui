@@ -87,6 +87,7 @@ export { PageHeader, Panel } from './components/Panel.js'
 export { PeekLink } from './components/PeekLink.js'
 export { QueryState, SignedValue, StatusBadge } from './components/status.js'
 export { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './components/Table.js'
+export { TextLink } from './components/TextLink.js'
 export type { TableDensity } from './components/Table.js'
 
 // The components, from EasyUI (src/components/ui/: docs/easyui-changes.md says what was changed).
