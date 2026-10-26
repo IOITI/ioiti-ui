@@ -1,0 +1,92 @@
+// The public interface of ioiti-ui. Named one by one, never `export *`: what a file keeps for
+// itself stays out, and every change here is a change of the package's interface
+// (src/index.test.ts holds the list).
+// Helpers.
+export { cn, copyToClipboard, scrollToTop } from './lib/utils.js';
+export { isPlainClick } from './lib/links.js';
+export { motionTransitions } from './lib/motion-tokens.js';
+export { DEFAULT_THEME_STORAGE_KEY, THEME_KEY_ATTRIBUTE, applyTheme, nextPreference, readPreference, resolveTheme, systemIsDark, themeLabel, themeStorageKey, watchSystem, writePreference, } from './lib/theme.js';
+export { formatBytes, formatClock, formatDateTime, formatDay, formatDuration, formatMoney, formatMoneyCompact, formatNumber, formatPercent, formatRelative, formatSpan, formatTime, formatWait, toIsoDay, toneOf, } from './lib/format.js';
+export { downloadCsv, toCsv } from './lib/csv.js';
+export { ALL_TIME, lastDays, rangeParams } from './lib/dateRange.js';
+export { HEALTH_STATUS_LABEL } from './lib/health.js';
+// What an application puts around its pages.
+export { IoitiProvider } from './components/IoitiProvider.js';
+export { useAppName } from './components/app-context.js';
+export { LinkProvider } from './components/LinkProvider.js';
+export { useLinkComponent, useNavigateTo } from './components/link-context.js';
+export { ThemeProvider } from './components/ThemeProvider.js';
+export { ThemeToggle } from './components/ThemeToggle.js';
+export { useTheme } from './components/theme-context.js';
+export { ToastProvider } from './components/ToastProvider.js';
+export { useToast } from './components/toast-context.js';
+// The shell: the frame of every page, its menu, the trail of the top bar, the page's name.
+export { AppBrand, AppShell, SidebarFooterButton } from './shell/AppShell.js';
+export { AuthLayout } from './shell/AuthLayout.js';
+export { NotFoundPage, NotFoundState } from './shell/NotFoundState.js';
+export { PageTrailProvider, TopBarTrail } from './shell/PageTrail.js';
+export { StateChip } from './shell/StateChip.js';
+export { DEFAULT_HOME, PAGE_NOT_FOUND, UNNAMED, menuEntry, sidebarSections, trailFor } from './shell/navigation.js';
+export { usePageName, usePageTrail, useTabTitle, useTrail } from './shell/page-trail-context.js';
+export { useMainScroll } from './components/main-scroll-context.js';
+// The blocks pages are made of.
+export { ButtonLink } from './components/ButtonLink.js';
+export { CheckIcon, CheckList } from './components/CheckList.js';
+export { ConfirmAction } from './components/ConfirmAction.js';
+export { DateRangeFilter } from './components/DateRangeFilter.js';
+export { ExportButton } from './components/ExportButton.js';
+export { EmptyText, ErrorText } from './components/messages.js';
+export { Field } from './components/Field.js';
+export { Hint } from './components/Hint.js';
+export { IconButton } from './components/IconButton.js';
+export { KpiGrid, KpiTile, Meter } from './components/KpiTile.js';
+export { PageHeader, Panel } from './components/Panel.js';
+export { PeekLink } from './components/PeekLink.js';
+export { QueryState, SignedValue, StatusBadge } from './components/status.js';
+export { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './components/Table.js';
+export { TextLink } from './components/TextLink.js';
+// The components, from EasyUI (src/components/ui/: docs/easyui-changes.md says what was changed).
+export { ActivityHeatmap } from './components/ui/activity-heatmap.js';
+export { AdvancedDataTable, DataTable, DataTableContent, DataTableFilters, DataTablePagination, DataTableToolbar, useDataTable, } from './components/ui/advanced-data-table.js';
+export { AgentActivityHeader, AgentActivityItem, AgentActivityTimeline, AIAgentActivity, useAgentActivity, } from './components/ui/ai-agent-activity.js';
+export { AirportMatrixClock } from './components/ui/airport-matrix-clock.js';
+export { Alert, AlertDescription, AlertTitle } from './components/ui/alert.js';
+export { AnimatedFileUpload } from './components/ui/animated-file-upload.js';
+export { AnimatedNumber } from './components/ui/animated-number.js';
+export { AnimatedTabs } from './components/ui/animated-tabs.js';
+export { Badge } from './components/ui/badge.js';
+export { Breadcrumb } from './components/ui/breadcrumb.js';
+export { Button, buttonClassName } from './components/ui/button.js';
+export { Calendar } from './components/ui/calendar.js';
+export { Combobox } from './components/ui/combobox.js';
+export { DatePicker, DateRangePicker } from './components/ui/date-picker.js';
+export { DependencyTrace } from './components/ui/dependency-trace.js';
+export { DirectionalTooltip } from './components/ui/directional-tooltip.js';
+export { DragToConfirm } from './components/ui/drag-to-confirm.js';
+export { DynamicIsland } from './components/ui/dynamic-island.js';
+export { Checkbox, Form, FormControl, FormDescription, FormItem, FormLabel, FormMessage, Input, RadioGroup, RadioGroupItem, Select, Switch, Textarea, } from './components/ui/form.js';
+export { FunnelChart } from './components/ui/funnel-chart.js';
+export { InteractiveTimeline } from './components/ui/interactive-timeline.js';
+export { LiveLineChart } from './components/ui/live-line-chart.js';
+export { Loader } from './components/ui/loader.js';
+export { NotFound } from './components/ui/not-found.js';
+export { NotificationBell } from './components/ui/notification-bell.js';
+export { OTPInput } from './components/ui/otp-input.js';
+export { PeekCard } from './components/ui/peek-card.js';
+export { RecoveryLedger } from './components/ui/recovery-ledger.js';
+export { RequestStatus } from './components/ui/request-status.js';
+export { ScrollProgressNav } from './components/ui/scroll-progress-nav.js';
+export { SelectionBasket } from './components/ui/selection-basket.js';
+export { SettleModal } from './components/ui/settle-modal.js';
+export { Sidebar, SidebarTrigger, useSidebar } from './components/ui/sidebar.js';
+export { Skeleton, SkeletonAvatar, SkeletonReveal, SkeletonText } from './components/ui/skeleton.js';
+export { SmartComparison } from './components/ui/smart-comparison.js';
+export { SmoothAccordion } from './components/ui/smooth-accordion.js';
+export { SplitButton } from './components/ui/split-button.js';
+export { SpotlightSearch } from './components/ui/spotlight-search.js';
+export { SpringSelect } from './components/ui/spring-select.js';
+export { StatCard, StatGrid } from './components/ui/stat-card.js';
+export { StepPanels, Stepper } from './components/ui/stepper.js';
+export { StretchSwitch } from './components/ui/stretch-switch.js';
+export { UndoToast } from './components/ui/undo-toast.js';
+export { VelocityToast } from './components/ui/velocity-toast.js';
