@@ -36,7 +36,10 @@ function textUnder(folder) {
 
 // Classes written in the package's own files alone: the template never writes them, so finding
 // them in its CSS proves that Tailwind read the package in node_modules (design.css's @source).
-const PACKAGE_ONLY = [{ name: 'w-[17rem]', css: '.w-\\[17rem\\]', file: 'src/components/ui/sidebar.tsx' }]
+const PACKAGE_ONLY = [
+  { name: 'w-[17rem]', css: '.w-\\[17rem\\]', file: 'src/components/ui/sidebar.tsx' },
+  { name: 'text-[12.5px]', css: '.text-\\[12\\.5px\\]', file: 'src/components/ui/not-found.tsx' },
+]
 
 // The design itself, as the built CSS writes it: the light page and secondary text, the dark
 // palette, the contrast fixes, a chart ramp, the global focus ring.
