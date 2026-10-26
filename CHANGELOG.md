@@ -32,6 +32,10 @@ the design as it was: an application that gives neither looks as it did.
   Surfaces page.
 - **The template**: the picker beside the theme's button, and how to give the application's own look.
 
+An application changes nothing to look as it did. To give it a look of its own, add `accent` and `material`
+to `ioiti()` in `vite.config.ts`; to let each person choose, put `<LookPicker />` before `<ThemeToggle />` in
+the shell's `topBarEnd`. A canvas chart keyed on the theme to redraw should be keyed on the accent too.
+
 ## [0.1.0] - 2026-10-26
 
 The first version: the design and the components of WATA's admin interface (WATA v0.50.1), as a package any

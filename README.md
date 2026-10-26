@@ -3,15 +3,17 @@
 IOITI's design system: the design tokens, the React components and the application shell of WATA's admin
 interface, as a package any application can install. React 19, Tailwind CSS 4, framer-motion, lucide-react.
 
-- **Two themes**, light and dark, each a full set of tokens; the page follows the system until a theme is
-  chosen, and is painted in its theme from the first frame.
+- **Themes**: light and dark, each a full set of tokens; with them an accent (neutral, the design as it was,
+  or violet, indigo, blue) and a material (flat, or glass). The page follows the system until a theme is
+  chosen, shows the application's accent and material until a person picks others, and is painted in its look
+  from the first frame.
 - **117 components** (counting their parts): 44 of EasyUI's, reworked for the keyboard, screen readers,
   phones and a light theme; the blocks pages are made of (panels, tiles, tables, fields); and the shell
   (sidebar, top bar, the trail of where a page is).
-- **Checked**: every text colour is 4.5:1 on every surface of its theme, one focus ring everywhere, links that
-  open in another tab, nothing loaded from another origin (a strict Content-Security-Policy holds).
+- **Checked**: every text colour is 4.5:1 on every surface of every look (16), one focus ring everywhere, links
+  that open in another tab, nothing loaded from another origin (a strict Content-Security-Policy holds).
 
-The gallery shows all of it, in both themes: `npm run gallery` (http://localhost:5180).
+The gallery shows all of it, in every look: `npm run gallery` (http://localhost:5180).
 
 ## Start a new application
 
@@ -41,8 +43,8 @@ npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3 vite @vitejs/plugin-rea
 An application that imports Tailwind with options of its own imports `ioiti-ui/design.css` after it instead.
 
 **The Vite plugin** writes the pre-paint theme script beside the pages and its tag first in `<head>`, under the
-application's own key; keeps the fonts out of `data:` URIs; makes one React and one framer-motion of a
-`file:` link.
+application's own key, with its accent and material if it gives them (below); keeps the fonts out of `data:`
+URIs; makes one React and one framer-motion of a `file:` link.
 
 ```ts
 // vite.config.ts
@@ -118,12 +120,46 @@ export function OrdersPage() {
 Without React Router, give `AppShell` the address (`pathname`) and `LinkProvider` your router's link
 (`component`, a link that takes `href`) and navigation (`navigate`).
 
+## Themes
+
+Three choices, each with the others: light or dark, an accent, a material. Neutral and flat are the design as
+it was, and the default.
+
+- **An accent** colours what is chosen, current or primary (a filled button, a checked box, a switch on, the
+  day picked, the page in the menu, a progress), links, the focus ring and one-series charts: `violet`,
+  `indigo` or `blue`. The tones of gain, loss and warning keep their colours.
+- **The glass material** turns the sidebar and the top bar, the panels and cards, and what floats over the page
+  (popovers, menus, dialogs, toasts, tooltips) to glass, over a still backdrop of colour washes. Only what
+  floats is blurred; fields, rows and buttons stay solid.
+
+The application gives its own to the Vite plugin, shown from the first paint:
+
+```ts
+ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })
+```
+
+`LookPicker`, beside the theme's button, lets each person pick another, kept in their browser under the
+application's key; without it, every person sees the application's.
+
+```tsx
+<RouterAppShell menu={MENU} topBarEnd={<><LookPicker /><ThemeToggle /></>} />
+```
+
+An application's own classes follow them the way the components do: `accent:` and `glass:` variants (on
+`data-accent` and `data-material` of `<html>`), the accent's tokens (`bg-brand`, `text-brand-foreground`,
+`bg-brand-soft`, `text-brand-text`) and the glass's utilities (`glass-bar`, `glass-card`, `glass-float`).
+`useTheme()` says what is shown (`theme`, `accent`, `material`).
+
 ## The rules of the design
 
 - **Two values for every colour.** A class that names a colour has its dark value beside it
   (`text-neutral-600 dark:text-neutral-400`), or goes through a token that has both (`text-muted-foreground`).
-- **Text is 4.5:1** on every surface of its theme, checked by the tests (the gallery's Colours page has the
-  table). One pair of the original palette is under: dark `--text-subtle` on a hovered surface (4.44:1).
+- **Text is 4.5:1** on every surface of every look, glass over its backdrop's strongest colours included,
+  checked by the tests (the gallery's Colours page has the tables). One pair of the original palette is under:
+  dark `--text-subtle` on a hovered surface (4.44:1).
+- **The accent after the neutral classes, glass by role**: what is chosen or primary keeps its classes and adds
+  `accent:` ones; a surface adds `glass-bar`, `glass-card` or `glass-float`. With neutral and flat, nothing
+  changes.
 - **One focus ring**, the stylesheet's, on everything that takes the keyboard's focus.
 - **What leads somewhere is a link** (`ButtonLink`, `TextLink`, `href` on menu entries, tabs and actions);
   only actions are buttons.

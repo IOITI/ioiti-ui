@@ -48,6 +48,25 @@ Compared on 2026-10-26:
 WATA's dashboard and the gallery's dashboard pattern (`/patterns/dashboard`), which is made of the same
 blocks the same way, were looked at side by side in both themes, at 1440 px and at 375 px.
 
+## The accents and the glass material
+
+They are ioiti-ui's own, not the original's: only neutral and flat, the default, are held to it. They are made
+so that the default cannot move:
+
+- their tokens are in files of their own (`src/styles/accents.css`, `glass.css`), in blocks more specific than
+  the design's and set only while `data-accent` or `data-material` is on `<html>`; nothing in a layer. The
+  check above passes on the same reference, which was not taken again;
+- a component keeps its classes, and the accent's and the glass's are added after them, gated on those
+  attributes (`accent:`, `glass-*`);
+- `src/styles/styles.test.ts` compiles the stylesheets with and without the two files: every block of the
+  design is in both, in the same order, the base layer whole, and what the two files add is only their own
+  blocks.
+
+In a browser, on 2026-10-26: the computed colours, borders, shadows and blurs of every element of the
+gallery's 19 pages (the set of their distinct values, per page, in the light theme and in the dark one) were
+recorded before the change and compared after each step of it: identical, but for the picker added to the
+gallery's top bar.
+
 ## What the package changed, and why
 
 Nothing of the design's values. The differences an application can see are listed in

@@ -7,14 +7,16 @@ ioiti-ui is the design of the admin interface of WATA (IOITI's trading assistant
 |---|---|
 | `src/styles/tokens.css` | `styles/tokens.css` (EasyUI's tokens), byte for byte |
 | `src/styles/theme.css` | `styles/theme.css`: the values unchanged, the comments made general |
-| `src/styles/design.css` | `styles/index.css` from its `@custom-variant` to its end, unchanged but two comments, and the package's `@source` |
+| `src/styles/design.css` | `styles/index.css` from its `@custom-variant` to its end, unchanged but two comments, the package's `@source`, and ioiti-ui's imports of `accents.css` and `glass.css` and its `accent` and `glass` variants |
+| `src/styles/accents.css`, `src/styles/glass.css` | nothing: ioiti-ui's own, the accents and the glass material (`docs/fidelity.md`) |
 | `src/styles/styles.css` | the first line of `styles/index.css` (`@import "tailwindcss"`) and `design.css` |
-| `src/theme.js` | `public/theme.js`, its key taken from its tag (`data-storage-key`) |
+| `src/theme.js` | `public/theme.js`, its key taken from its tag (`data-storage-key`); the accent and the material are ioiti-ui's own |
 | `src/components/ui/*` | `components/ui/*` (EasyUI's components with WATA's changes, `docs/easyui-changes.md`) |
 | `src/components/*` | `components/{Hint,KpiTile,Panel,CheckList,ExportButton,DateRangeFilter,ButtonLink,PeekLink,ThemeProvider,ThemeToggle,ToastProvider,status}` and their contexts |
 | `src/shell/*` | `components/{AppShell,PageTrail,page-trail-context,navigation,NotFoundState}`, `features/NotFoundPage.tsx`, the frame of `features/auth/LoginPage.tsx` |
 | `src/lib/*` | `lib/{utils,links,motion-tokens,theme,format,csv,dateRange,checks,chart-primitives,dashboard-chart-utils}` |
 | `Field`, `IconButton`, `Table`…, `EmptyText`, `ErrorText`, `KpiGrid`, `TextLink` | class recipes WATA's pages wrote by hand, with the same classes |
+| `LookPicker` | nothing: ioiti-ui's own |
 
 The name of the application and of its broker appear nowhere in the package's code, its gallery or its template
 (`scripts/check-source.mjs`): only in these documents, which say where it comes from.
