@@ -1,0 +1,2 @@
+/* Tailwind CSS and ioiti-ui in one: never import "tailwindcss" as well. */
+@import "ioiti-ui/styles.css";

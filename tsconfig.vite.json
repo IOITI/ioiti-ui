@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src/vite",
+    "outDir": "dist/vite",
+    "declaration": true,
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
+  },
+  "include": ["src/vite"],
+  "exclude": ["src/vite/**/*.test.ts"]
+}

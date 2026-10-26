@@ -1,0 +1,9 @@
+node_modules/
+dist/
+gallery/dist/
+templates/app/node_modules/
+templates/app/dist/
+*.tgz
+*.tsbuildinfo
+.DS_Store
+.vite/

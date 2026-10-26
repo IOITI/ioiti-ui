@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react",
+    "typescript",
+    "oxc"
+  ],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": [
+      "warn",
+      {
+        "allowConstantExport": true
+      }
+    ]
+  },
+  "ignorePatterns": [
+    "dist/**",
+    "gallery/dist/**",
+    "templates/app/dist/**",
+    "src/components/ui/**",
+    "src/lib/chart-primitives.tsx",
+    "src/lib/dashboard-chart-utils.ts"
+  ]
+}
