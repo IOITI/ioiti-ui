@@ -16,8 +16,8 @@ export function GettingStarted() {
   return (
     <>
       <PageHeader
-        title="ioiti-ui"
-        description="IOITI's design system: the tokens, the components and the frame of its applications, for React 19 and Tailwind CSS 4."
+        title="Getting started"
+        description="ioiti-ui is IOITI's design system: the tokens, the components and the frame of its applications, for React 19 and Tailwind CSS 4."
         actions={
           <ButtonLink to="/patterns/dashboard" variant="outline" size="sm" rightIcon={<ArrowRight className="size-3.5" />}>
             A page made with it
@@ -61,7 +61,7 @@ export default defineConfig({
         title="Around the pages"
         description="IoitiProvider holds the theme, the animations (reduced when the system asks) and the application's name, which ends every tab's title. LinkProvider gives every component the application's link; ToastProvider shows the toasts. With React Router, RouterRoot does both."
         names={['IoitiProvider', 'ThemeProvider', 'ThemeToggle', 'LinkProvider', 'ToastProvider']}
-        className="flex-col items-start"
+        className="flex flex-col items-start gap-3"
       >
         <Code>{`createRoot(document.getElementById('root')!).render(
   <IoitiProvider appName="My App">
@@ -82,7 +82,7 @@ export default defineConfig({
         description="The core imports no router. This entry gives the router's links to every component (a link opens in another tab with ⌘ or Ctrl, as any link), and the shell its address and outlet."
         names={['RouterRoot', 'RouterAppShell', 'RouterLink']}
         from="ioiti-ui/react-router"
-        className="flex-col items-start"
+        className="flex flex-col items-start gap-3"
       >
         <Code>{`const router = createBrowserRouter([
   {

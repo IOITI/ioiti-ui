@@ -17,7 +17,6 @@ import {
   useTransform,
 } from "framer-motion";
 import {
-  CHART_COLORS,
   EASE_OUT,
   clamp,
   cx,
@@ -72,7 +71,8 @@ export function StatCard({
   period = "vs previous period",
   format = defaultFormat,
   toneOf,
-  color = CHART_COLORS[0],
+  // ioiti-ui: the design's series colour, which the pages always gave it (EasyUI's was an indigo).
+  color = "var(--chart-series)",
   animated = true,
   className = "",
 }: StatCardProps) {

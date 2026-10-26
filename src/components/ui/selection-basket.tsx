@@ -84,7 +84,8 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
       ? 'absolute bottom-3 left-1/2 -translate-x-1/2 z-30 max-w-[95%]'
       : mode === 'sticky'
       ? 'sticky bottom-4 mx-auto w-fit max-w-full z-30'
-      : 'relative mt-4 mx-auto w-fit z-20';
+      : // ioiti-ui: no wider than its container either, its bar scrolling inside (a phone).
+        'relative mt-4 mx-auto w-fit max-w-full z-20';
 
   // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`.
   return (

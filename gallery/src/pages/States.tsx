@@ -71,7 +71,7 @@ export function States() {
         title="ErrorText"
         description="What went wrong with an action, under its button: read out at once, in the negative colour."
         names={['ErrorText']}
-        className="flex-col items-start gap-2"
+        className="flex flex-col items-start gap-2"
       >
         <Button size="sm">Send the invoice</Button>
         <ErrorText>Could not send the invoice: the mail server does not answer.</ErrorText>

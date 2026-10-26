@@ -9,6 +9,8 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { topLevelBlocks } from './golden-from.mjs'
+
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const keep = process.argv.includes('--keep')
 const failures = []
@@ -128,6 +130,20 @@ try {
     'the theme script written beside the pages is the package\'s',
   )
   check([...html.matchAll(/<script\b[^>]*>/g)].every(([tag]) => /\bsrc=/.test(tag)), 'no inline script (script-src stays at self)')
+
+  // The design as the interface it was taken from built it, block by block: the tokens of both
+  // themes, the base layer, the focus ring, the fonts (test/golden, from scripts/golden-from.mjs).
+  const golden = JSON.parse(readFileSync(join(root, 'test/golden/reference-blocks.json'), 'utf8'))
+  const built = topLevelBlocks(css).map((block) => block.text)
+  const differing = golden.blocks.filter((block) => !built.includes(block))
+  for (const block of differing.slice(0, 3)) {
+    const selector = block.slice(0, block.indexOf('{'))
+    const near = built.find((text) => text.startsWith(`${selector}{`)) ?? ''
+    let at = 0
+    while (at < block.length && block[at] === near[at]) at += 1
+    console.log(`     ${selector}: the reference has "${block.slice(at, at + 60)}", the build "${near.slice(at, at + 60)}"`)
+  }
+  check(differing.length === 0, `the CSS has the ${golden.blocks.length} blocks of the reference design, as they are (${golden.source})`)
 
   run('node', ['--input-type=module', '-e', "await import('ioiti-ui'); await import('ioiti-ui/react-router'); await import('ioiti-ui/vite')"], app)
   check(true, 'Node imports ioiti-ui, ioiti-ui/react-router and ioiti-ui/vite')

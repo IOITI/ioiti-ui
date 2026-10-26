@@ -18,6 +18,16 @@ describe('the header of a page', () => {
     expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument()
   })
 
+  it('names the application once in the tab of a page named as the application', () => {
+    render(
+      <IoitiProvider appName="My App">
+        <PageHeader title="My App" />
+      </IoitiProvider>,
+    )
+
+    expect(document.title).toBe('My App')
+  })
+
   it('names the tab after the page alone when the application gave no name', () => {
     render(<PageHeader title="Settings" />)
 

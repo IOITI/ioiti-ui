@@ -106,7 +106,7 @@ export function DataDisplay() {
         title="Table"
         description="The plain table of the pages, in two densities. Compact for records in a panel (12 px, rows apart by a line); dense for figures side by side (14 px, narrow cells). Figures go right, in digits of one width."
         names={['Table', 'TableHead', 'TableBody', 'TableRow', 'TableHeaderCell', 'TableCell']}
-        className="flex-col items-stretch gap-6"
+        className="flex flex-col items-stretch gap-6"
       >
         <Table className="min-w-[36rem]" aria-label="Latest orders">
           <TableHead>

@@ -145,7 +145,7 @@ export function Feedback() {
     <>
       <PageHeader title="Feedback" description="What a page tells of itself: a state, a result, a wait. Always a word with a colour." />
 
-      <Demo id="alert" title="Alert" description="A message in the page, by tone. Danger and warning are read out at once." names={['Alert', 'AlertTitle', 'AlertDescription']} className="flex-col items-stretch">
+      <Demo id="alert" title="Alert" description="A message in the page, by tone. Danger and warning are read out at once." names={['Alert', 'AlertTitle', 'AlertDescription']} className="flex flex-col items-stretch gap-3">
         <Alert tone="info">
           <AlertDescription>Prices are updated every night at 02:00.</AlertDescription>
         </Alert>
@@ -205,7 +205,7 @@ export function Feedback() {
         <Loader variant="rings" label="Loading" />
       </Demo>
 
-      <Demo id="skeleton" title="Skeleton" description="The shape of what is coming, as high as it will be: nothing jumps when it arrives." names={['Skeleton', 'SkeletonText', 'SkeletonAvatar', 'SkeletonReveal']} className="flex-col items-stretch gap-4">
+      <Demo id="skeleton" title="Skeleton" description="The shape of what is coming, as high as it will be: nothing jumps when it arrives." names={['Skeleton', 'SkeletonText', 'SkeletonAvatar', 'SkeletonReveal']} className="flex flex-col items-stretch gap-4">
         <Skeleton className="h-[7.5rem] w-full max-w-xs rounded-2xl" />
         <Reveal />
       </Demo>

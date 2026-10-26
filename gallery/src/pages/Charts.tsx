@@ -64,6 +64,9 @@ export function Charts() {
       >
         <ActivityHeatmap
           data={calendar}
+          startDate={calendar[0]?.date}
+          weeks={21}
+          summary={`${formatMoney(calendar.reduce((sum, day) => sum + day.value, 0), 'EUR', true)} over ${calendar.length} days`}
           diverging={GAIN_LOSS}
           weekStart={1}
           format={(value) => formatMoney(value, 'EUR', true)}

@@ -96,7 +96,7 @@ export function Navigation() {
         title="AnimatedTabs"
         description="Views of one thing. A tab whose view has an address (?tab=) is a link; its background slides to the tab chosen."
         names={['AnimatedTabs']}
-        className="flex-col items-start gap-4"
+        className="flex flex-col items-start gap-4"
       >
         <AnimatedTabs
           tabs={[
@@ -109,7 +109,7 @@ export function Navigation() {
         <AnimatedTabs variant="pill" tabs={[{ id: 'day', label: 'Day' }, { id: 'week', label: 'Week' }, { id: 'month', label: 'Month' }]} />
       </Demo>
 
-      <Demo id="breadcrumb" title="Breadcrumb" description="Where a page is, from Home: the top bar has one on every page. Too many steps fold into '…'." names={['Breadcrumb']} className="flex-col items-start">
+      <Demo id="breadcrumb" title="Breadcrumb" description="Where a page is, from Home: the top bar has one on every page. Too many steps fold into '…'." names={['Breadcrumb']} className="flex flex-col items-start gap-3">
         <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Components', href: '/components/actions' }, { label: 'Navigation' }]} />
         <Breadcrumb
           separator="slash"

@@ -44,7 +44,7 @@ export function Motion() {
         title="The transitions"
         description="Press one: the square moves with it. The components use these and nothing else."
         names={['motionTransitions']}
-        className="flex-col items-stretch"
+        className="flex flex-col items-stretch gap-3"
       >
         {(Object.keys(motionTransitions) as (keyof typeof motionTransitions)[]).map((name) => (
           <Mover key={name} name={name} />

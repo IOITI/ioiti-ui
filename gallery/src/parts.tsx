@@ -1,4 +1,4 @@
-import { cn, Panel } from 'ioiti-ui'
+import { Panel } from 'ioiti-ui'
 import type { ReactNode } from 'react'
 
 interface DemoProps {
@@ -11,7 +11,7 @@ interface DemoProps {
   names: string[]
   /** The entry it is imported from. */
   from?: 'ioiti-ui' | 'ioiti-ui/react-router'
-  /** The classes of the demo's own frame (a column, a grid). */
+  /** The demo's own layout (a column, a grid), in place of a row that wraps. */
   className?: string
   children: ReactNode
 }
@@ -20,7 +20,7 @@ interface DemoProps {
 export function Demo({ id, title, description, names, from = 'ioiti-ui', className, children }: DemoProps) {
   return (
     <Panel id={id} title={title} description={description}>
-      <div data-names={names.join(' ')} className={cn('flex flex-wrap items-center gap-3', className)}>
+      <div data-names={names.join(' ')} className={className ?? 'flex flex-wrap items-center gap-3'}>
         {children}
       </div>
       <pre className="mt-5 overflow-x-auto rounded-lg border border-border/60 bg-surface-raised/30 px-3 py-2 font-mono text-[11px] text-muted-foreground">

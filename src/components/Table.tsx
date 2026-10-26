@@ -24,7 +24,7 @@ interface TableProps extends ComponentProps<'table'> {
  */
 export function Table({ density = 'compact', wrapperClassName, className, children, ...props }: TableProps) {
   return (
-    <div className={cn('overflow-x-auto', wrapperClassName)}>
+    <div className={cn('min-w-0 overflow-x-auto', wrapperClassName)}>
       <table
         className={cn(density === 'compact' ? 'w-full text-left text-xs' : 'w-full whitespace-nowrap text-sm', className)}
         {...props}

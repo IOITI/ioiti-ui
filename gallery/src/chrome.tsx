@@ -34,13 +34,6 @@ export function GallerySearch() {
 
 /** The sidebar's own action: back to the theme of the system. */
 export function ThemeFooterButton() {
-  const { preference, setPreference } = useTheme()
-  return (
-    <SidebarFooterButton
-      icon={<RotateCcw />}
-      label="Follow the system's theme"
-      disabled={preference === 'system'}
-      onClick={() => setPreference('system')}
-    />
-  )
+  const { setPreference } = useTheme()
+  return <SidebarFooterButton icon={<RotateCcw />} label="Follow the system's theme" onClick={() => setPreference('system')} />
 }

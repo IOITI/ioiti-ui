@@ -42,13 +42,14 @@ export function usePageName(title: string, parents?: Crumb[]) {
 
 /**
  * The tab says which page it is: several are often open side by side. Its title is the page's,
- * then the application's name when IoitiProvider was given one ("Orders · My App").
+ * then the application's name when IoitiProvider was given one ("Orders · My App"); a page named
+ * as the application (its sign-in page) says the name once.
  */
 export function useTabTitle(title: string) {
   const appName = useAppName()
   useEffect(() => {
     const before = document.title
-    document.title = appName ? `${title} · ${appName}` : title
+    document.title = appName && appName !== title ? `${title} · ${appName}` : title
     return () => {
       document.title = appName ?? before
     }

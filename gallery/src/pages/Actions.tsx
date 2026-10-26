@@ -65,7 +65,7 @@ export function Actions() {
         title="Button"
         description="Primary for the one action a page or a dialog is for; outline and ghost for the others; destructive for what removes. Pressed, it gives a little; busy, it says what it does."
         names={['Button']}
-        className="flex-col items-start gap-4"
+        className="flex flex-col items-start gap-4"
       >
         <div className="flex flex-wrap items-center gap-3">
           <Button>Primary</Button>

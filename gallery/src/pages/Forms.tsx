@@ -156,7 +156,7 @@ export function Forms() {
         title="Dates"
         description="A day, or a range, from a field or a calendar: weeks start on Monday, days are written as en-GB writes them. DateRangeFilter puts the ranges people ask for first."
         names={['DatePicker', 'DateRangePicker', 'Calendar', 'DateRangeFilter']}
-        className="flex-col items-start gap-4"
+        className="flex flex-col items-start gap-4"
       >
         <div className="flex flex-wrap gap-3">
           <DatePicker value={day} onChange={setDay} locale="en-GB" weekStartsOn={1} />

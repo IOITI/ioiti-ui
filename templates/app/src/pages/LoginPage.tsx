@@ -14,7 +14,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout title="My App" description="Sign in with your password.">
+    <AuthLayout title="My App" description="Sign in with your password." tabTitle="Sign in">
       <Form onSubmit={signIn}>
         <FormItem>
           <FormLabel htmlFor="password">Password</FormLabel>

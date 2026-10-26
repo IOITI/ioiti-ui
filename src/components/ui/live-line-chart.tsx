@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  CHART_COLORS,
   clamp,
   cx,
   defaultFormat,
@@ -82,7 +81,8 @@ export function LiveLineChart({
   intervalMs = 1000,
   windowSeconds = 60,
   height = 220,
-  color = CHART_COLORS[0],
+  // ioiti-ui: the design's series colour, which the pages always gave it (EasyUI's was an indigo).
+  color = "var(--chart-series)",
   unit = "",
   formatValue = defaultFormat,
   formatTick = defaultTick,

@@ -112,7 +112,8 @@ export function ActivityHeatmap({
   endDate,
   startDate,
   weekStart = 0,
-  color = "#34d399",
+  // ioiti-ui: the design's series colour (EasyUI's was an emerald, too close to the gain scale).
+  color = "var(--chart-series)",
   diverging,
   unit = "contributions",
   format,

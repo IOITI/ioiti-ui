@@ -16,7 +16,7 @@ export function Shell() {
         title="AppShell"
         description="Given the menu and the address of the page, it draws the sidebar (beside the page from 768 px up, a drawer below it; ⌘B folds it), the top bar with the trail, and the page in a column of 80rem at most. Its ends are the application's: the brand, a sidebar footer, chips and buttons in the top bar."
         names={['AppShell', 'Sidebar', 'SidebarTrigger', 'PageTrailProvider', 'TopBarTrail', 'useMainScroll']}
-        className="flex-col items-stretch"
+        className="flex flex-col items-stretch gap-3"
       >
         <Code>{`const MENU: Menu = {
   sections: ['Work', 'Settings'],
@@ -44,7 +44,7 @@ export function Shell() {
         title="PageHeader"
         description="The title of a page and what it does, with its actions on the right. It names the tab and ends the trail of the top bar. One a page: this page's own heading is one."
         names={['PageHeader', 'usePageName', 'useTabTitle']}
-        className="flex-col items-stretch"
+        className="flex flex-col items-stretch gap-3"
       >
         <Code>{`<PageHeader
   title="Invoice 2026-0042"
