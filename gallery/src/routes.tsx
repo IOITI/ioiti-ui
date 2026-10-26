@@ -16,6 +16,7 @@ import {
   Shapes,
   Sheet,
   SearchX,
+  SwatchBook,
   TextCursorInput,
   Type,
   Wind,
@@ -39,6 +40,7 @@ import { Shape } from './pages/Shape'
 import { Shell } from './pages/Shell'
 import { SignInPattern } from './pages/SignInPattern'
 import { States } from './pages/States'
+import { Themes } from './pages/Themes'
 import { Typography } from './pages/Typography'
 import { UsableByAll } from './pages/UsableByAll'
 
@@ -53,6 +55,7 @@ export interface GalleryPage extends MenuEntry<Section> {
 export const PAGES: GalleryPage[] = [
   { id: 'start', path: '/', label: 'Getting started', section: 'Overview', icon: <BookOpen />, element: <GettingStarted /> },
   { id: 'colours', path: '/foundations/colours', label: 'Colours', section: 'Foundations', icon: <Palette />, element: <Colours /> },
+  { id: 'themes', path: '/foundations/themes', label: 'Themes', section: 'Foundations', icon: <SwatchBook />, element: <Themes /> },
   { id: 'type', path: '/foundations/type', label: 'Type', section: 'Foundations', icon: <Type />, element: <Typography /> },
   { id: 'shape', path: '/foundations/shape', label: 'Surfaces and shape', section: 'Foundations', icon: <Shapes />, element: <Shape /> },
   { id: 'motion', path: '/foundations/motion', label: 'Motion', section: 'Foundations', icon: <Wind />, element: <Motion /> },

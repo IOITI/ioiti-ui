@@ -1,6 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { readPreference, resolveTheme, THEME_KEY_ATTRIBUTE } from './lib/theme.js'
+import {
+  ACCENT_ATTRIBUTE,
+  ACCENTS,
+  MATERIAL_ATTRIBUTE,
+  MATERIALS,
+  readPreference,
+  resolveAccent,
+  resolveMaterial,
+  resolveTheme,
+  THEME_KEY_ATTRIBUTE,
+} from './lib/theme.js'
 import { stubSystemTheme } from './test/systemTheme.js'
 // The pre-paint script as the page runs it: a classic script, from its own <script src> tag.
 import SOURCE from './theme.js?raw'
@@ -19,6 +29,8 @@ beforeEach(() => {
   window.localStorage.clear()
   root.classList.remove('dark')
   root.removeAttribute(THEME_KEY_ATTRIBUTE)
+  root.removeAttribute(ACCENT_ATTRIBUTE)
+  root.removeAttribute(MATERIAL_ATTRIBUTE)
 })
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -82,6 +94,62 @@ describe('the pre-paint theme script', () => {
         runFromTag({ 'data-storage-key': 'my-app.theme' })
         const expected = resolveTheme(readPreference('my-app.theme'), systemDark) === 'dark'
         expect(isDark(), `stored ${stored}, system ${systemDark ? 'dark' : 'light'}`).toBe(expected)
+      }
+    }
+  })
+})
+
+describe('the accent and the material, before the first paint', () => {
+  it('are the application\'s, from its tag, while nothing was chosen', () => {
+    runFromTag({ 'data-storage-key': 'my-app.theme', 'data-accent': 'violet', 'data-material': 'glass' })
+
+    expect(root.getAttribute(ACCENT_ATTRIBUTE)).toBe('violet')
+    expect(root.getAttribute(MATERIAL_ATTRIBUTE)).toBe('glass')
+  })
+
+  it('are the ones chosen in this browser, neutral and flat included', () => {
+    window.localStorage.setItem('my-app.theme.accent', 'neutral')
+    window.localStorage.setItem('my-app.theme.material', 'flat')
+
+    runFromTag({ 'data-storage-key': 'my-app.theme', 'data-accent': 'violet', 'data-material': 'glass' })
+
+    expect(root.hasAttribute(ACCENT_ATTRIBUTE)).toBe(false)
+    expect(root.hasAttribute(MATERIAL_ATTRIBUTE)).toBe(false)
+  })
+
+  it('write nothing where neither the application nor a person chose: the design as it was', () => {
+    runFromTag()
+
+    expect(root.hasAttribute(ACCENT_ATTRIBUTE)).toBe(false)
+    expect(root.hasAttribute(MATERIAL_ATTRIBUTE)).toBe(false)
+  })
+
+  it('are the application\'s where the browser keeps nothing', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('storage is blocked')
+    })
+
+    expect(() => runFromTag({ 'data-accent': 'indigo' })).not.toThrow()
+    expect(root.getAttribute(ACCENT_ATTRIBUTE)).toBe('indigo')
+  })
+
+  it('are decided as the application will, for every choice and every default of the application', () => {
+    const cases = [
+      { name: 'accent', attribute: ACCENT_ATTRIBUTE, values: ACCENTS, resolve: resolveAccent },
+      { name: 'material', attribute: MATERIAL_ATTRIBUTE, values: MATERIALS, resolve: resolveMaterial },
+    ]
+    for (const { name, attribute, values, resolve } of cases) {
+      const tried = [null, ...values, 'sepia']
+      for (const stored of tried) {
+        for (const given of tried) {
+          window.localStorage.clear()
+          root.removeAttribute(attribute)
+          if (stored) window.localStorage.setItem(`my-app.theme.${name}`, stored)
+          runFromTag({ 'data-storage-key': 'my-app.theme', ...(given ? { [`data-${name}`]: given } : {}) })
+          const expected = resolve(stored, given)
+          const shown = root.getAttribute(attribute) ?? values[0]
+          expect(shown, `${name}: stored ${stored}, the application's ${given}`).toBe(expected)
+        }
       }
     }
   })

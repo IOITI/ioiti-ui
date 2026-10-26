@@ -5,7 +5,16 @@ import { fileURLToPath } from 'node:url'
 import type { IndexHtmlTransformResult, Plugin, ResolvedConfig, UserConfig } from 'vite'
 import { describe, expect, it, vi } from 'vitest'
 
+import { ACCENTS, MATERIALS } from '../lib/theme.js'
+import type { Accent, Material } from '../lib/theme.js'
+
 import { DEFAULT_THEME_SCRIPT, ioiti } from './index.js'
+import type { IoitiPluginOptions } from './index.js'
+
+// The plugin's options name the accents and materials of the application's side, no more, no fewer.
+type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false
+const accentsAgree: Same<NonNullable<IoitiPluginOptions['accent']>, Accent> = true
+const materialsAgree: Same<NonNullable<IoitiPluginOptions['material']>, Material> = true
 
 const SCRIPT = readFileSync(new URL('../theme.js', import.meta.url), 'utf8')
 const PACKAGE = realpathSync(fileURLToPath(new URL('../..', import.meta.url)))
@@ -34,6 +43,29 @@ describe('the plugin of an application built with Vite', () => {
     expect(tags(plugin)).toEqual([
       { tag: 'script', attrs: { src: `/${DEFAULT_THEME_SCRIPT}`, 'data-storage-key': 'my-app.theme' }, injectTo: 'head-prepend' },
     ])
+  })
+
+  it('gives the script the application\'s accent and material, when it has them', () => {
+    const plugin = ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })
+    resolved(plugin)
+
+    expect(tags(plugin)[0].attrs).toEqual({
+      src: `/${DEFAULT_THEME_SCRIPT}`,
+      'data-storage-key': 'my-app.theme',
+      'data-accent': 'violet',
+      'data-material': 'glass',
+    })
+  })
+
+  it('takes every accent and material of the package, and refuses anything else by name', () => {
+    expect(accentsAgree && materialsAgree).toBe(true)
+    for (const accent of ACCENTS) expect(() => ioiti({ accent })).not.toThrow()
+    for (const material of MATERIALS) expect(() => ioiti({ material })).not.toThrow()
+    // As a configuration written in JavaScript could give them.
+    expect(() => ioiti({ accent: 'sepia' } as unknown as IoitiPluginOptions)).toThrow(
+      'ioiti(): the accent is one of neutral, violet, indigo, blue, not "sepia"',
+    )
+    expect(() => ioiti({ material: 'paper' } as unknown as IoitiPluginOptions)).toThrow('the material is one of flat, glass')
   })
 
   it('serves it under the site\'s base and the name it is given, with the default key otherwise', () => {

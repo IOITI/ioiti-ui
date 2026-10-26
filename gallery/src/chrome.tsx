@@ -1,10 +1,10 @@
-import { IconButton, SidebarFooterButton, SpotlightSearch, ThemeToggle, useTheme } from 'ioiti-ui'
+import { IconButton, LookPicker, SidebarFooterButton, SpotlightSearch, ThemeToggle, useTheme } from 'ioiti-ui'
 import { RotateCcw, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { PAGES } from './routes'
 
-/** ⌘K, and a button for it: every page of the gallery. */
+/** ⌘K, and a button for it: every page of the gallery. Then the accent and material, and the theme. */
 export function GallerySearch() {
   const [open, setOpen] = useState(false)
   useEffect(() => {
@@ -20,6 +20,7 @@ export function GallerySearch() {
   return (
     <>
       <IconButton label="Go to a page (⌘K)" hint="Go to a page (⌘K)" icon={<Search />} onClick={() => setOpen(true)} />
+      <LookPicker />
       <ThemeToggle />
       <SpotlightSearch
         open={open}

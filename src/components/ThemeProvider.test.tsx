@@ -2,7 +2,7 @@ import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { DEFAULT_THEME_STORAGE_KEY, THEME_KEY_ATTRIBUTE } from '../lib/theme.js'
+import { ACCENT_ATTRIBUTE, DEFAULT_THEME_STORAGE_KEY, MATERIAL_ATTRIBUTE, THEME_KEY_ATTRIBUTE } from '../lib/theme.js'
 import { stubSystemTheme } from '../test/systemTheme.js'
 
 import { IoitiProvider } from './IoitiProvider.js'
@@ -10,12 +10,25 @@ import { useTheme } from './theme-context.js'
 import { ThemeProvider } from './ThemeProvider.js'
 import { ThemeToggle } from './ThemeToggle.js'
 
-const isDark = () => document.documentElement.classList.contains('dark')
+const html = document.documentElement
+const isDark = () => html.classList.contains('dark')
 const button = () => screen.getByRole('button', { name: /^Theme:/ })
 
 function Shown() {
   const { theme } = useTheme()
   return <output aria-label="theme">{theme}</output>
+}
+
+function Look() {
+  const { accent, material, setAccent, setMaterial } = useTheme()
+  return (
+    <>
+      <output aria-label="look">{`${accent} ${material}`}</output>
+      <button type="button" onClick={() => setAccent('indigo')}>Indigo</button>
+      <button type="button" onClick={() => setAccent('neutral')}>Neutral</button>
+      <button type="button" onClick={() => setMaterial('glass')}>Glass</button>
+    </>
+  )
 }
 
 function renderPage() {
@@ -29,8 +42,10 @@ function renderPage() {
 
 beforeEach(() => {
   window.localStorage.clear()
-  document.documentElement.classList.remove('dark')
-  document.documentElement.removeAttribute(THEME_KEY_ATTRIBUTE)
+  html.classList.remove('dark')
+  html.removeAttribute(THEME_KEY_ATTRIBUTE)
+  html.removeAttribute(ACCENT_ATTRIBUTE)
+  html.removeAttribute(MATERIAL_ATTRIBUTE)
 })
 
 afterEach(() => {
@@ -169,10 +184,82 @@ describe('the key the choice is kept under', () => {
   })
 })
 
+describe('the accent and the material', () => {
+  it('are the design as it was on a first visit, and write nothing on the page', () => {
+    stubSystemTheme(false)
+    render(
+      <ThemeProvider>
+        <Look />
+      </ThemeProvider>,
+    )
+
+    expect(screen.getByLabelText('look')).toHaveTextContent('neutral flat')
+    expect(html.hasAttribute(ACCENT_ATTRIBUTE)).toBe(false)
+    expect(html.hasAttribute(MATERIAL_ATTRIBUTE)).toBe(false)
+  })
+
+  it('are the application\'s, as the pre-paint script showed them, and nothing is kept for it', () => {
+    html.setAttribute(ACCENT_ATTRIBUTE, 'violet')
+    html.setAttribute(MATERIAL_ATTRIBUTE, 'glass')
+    stubSystemTheme(false)
+    render(
+      <ThemeProvider>
+        <Look />
+      </ThemeProvider>,
+    )
+
+    expect(screen.getByLabelText('look')).toHaveTextContent('violet glass')
+    expect(html.getAttribute(ACCENT_ATTRIBUTE)).toBe('violet')
+    expect(window.localStorage.getItem(`${DEFAULT_THEME_STORAGE_KEY}.accent`)).toBeNull()
+  })
+
+  it('are the ones kept in this browser, over the application\'s', () => {
+    html.setAttribute(ACCENT_ATTRIBUTE, 'violet')
+    window.localStorage.setItem('my-app.theme.accent', 'blue')
+    stubSystemTheme(false)
+    render(
+      <ThemeProvider storageKey="my-app.theme">
+        <Look />
+      </ThemeProvider>,
+    )
+
+    expect(screen.getByLabelText('look')).toHaveTextContent('blue flat')
+    expect(html.getAttribute(ACCENT_ATTRIBUTE)).toBe('blue')
+  })
+
+  it('are shown at once when chosen, and kept under the application\'s key', async () => {
+    stubSystemTheme(false)
+    const user = userEvent.setup()
+    render(
+      <ThemeProvider storageKey="my-app.theme">
+        <Look />
+      </ThemeProvider>,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Indigo' }))
+    await user.click(screen.getByRole('button', { name: 'Glass' }))
+    expect(html.getAttribute(ACCENT_ATTRIBUTE)).toBe('indigo')
+    expect(html.getAttribute(MATERIAL_ATTRIBUTE)).toBe('glass')
+    expect(window.localStorage.getItem('my-app.theme.accent')).toBe('indigo')
+    expect(window.localStorage.getItem('my-app.theme.material')).toBe('glass')
+
+    // Neutral is a choice too: kept, so that it wins over the application's at the next visit.
+    await user.click(screen.getByRole('button', { name: 'Neutral' }))
+    expect(html.hasAttribute(ACCENT_ATTRIBUTE)).toBe(false)
+    expect(window.localStorage.getItem('my-app.theme.accent')).toBe('neutral')
+  })
+})
+
 describe('outside a provider', () => {
   it('a component is shown dark, as the interface always was', () => {
     render(<Shown />)
 
     expect(screen.getByLabelText('theme')).toHaveTextContent('dark')
+  })
+
+  it('a component is shown neutral and flat', () => {
+    render(<Look />)
+
+    expect(screen.getByLabelText('look')).toHaveTextContent('neutral flat')
   })
 })

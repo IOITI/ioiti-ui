@@ -7,7 +7,9 @@ export { cn, copyToClipboard, scrollToTop } from './lib/utils.js'
 export { isPlainClick } from './lib/links.js'
 export { motionTransitions } from './lib/motion-tokens.js'
 export {
+  ACCENTS,
   DEFAULT_THEME_STORAGE_KEY,
+  MATERIALS,
   THEME_KEY_ATTRIBUTE,
   applyTheme,
   nextPreference,
@@ -19,7 +21,7 @@ export {
   watchSystem,
   writePreference,
 } from './lib/theme.js'
-export type { Theme, ThemePreference } from './lib/theme.js'
+export type { Accent, Material, Theme, ThemePreference } from './lib/theme.js'
 export {
   formatBytes,
   formatClock,
@@ -51,6 +53,7 @@ export { useAppName } from './components/app-context.js'
 export { LinkProvider } from './components/LinkProvider.js'
 export { useLinkComponent, useNavigateTo } from './components/link-context.js'
 export type { NavigateTo } from './components/link-context.js'
+export { LookPicker } from './components/LookPicker.js'
 export { ThemeProvider } from './components/ThemeProvider.js'
 export { ThemeToggle } from './components/ThemeToggle.js'
 export { useTheme } from './components/theme-context.js'
