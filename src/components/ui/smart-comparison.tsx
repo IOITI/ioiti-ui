@@ -53,7 +53,7 @@ export interface SmartComparisonProps extends React.HTMLAttributes<HTMLDivElemen
   searchPlaceholder?: string;
   diffLabel?: string;
   emptyText?: string;
-  /** ioiti-ui: what draws a plan's link (React Router's). */
+  /** ioiti-ui: what draws a plan's link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
 }
 

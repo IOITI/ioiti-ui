@@ -37,7 +37,7 @@ export interface NotificationBellProps {
   onOpenChange?: (isOpen: boolean) => void;
   /** Show numeric counter inside red badge. Default is true. */
   showCount?: boolean;
-  /** ioiti-ui: what draws an entry's link (React Router's). */
+  /** ioiti-ui: what draws an entry's link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
   /** ioiti-ui: under the list (a setting of the notifications). */
   footer?: React.ReactNode;

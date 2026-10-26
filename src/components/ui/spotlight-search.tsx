@@ -44,7 +44,7 @@ export interface SpotlightSearchProps {
    * application's (LinkProvider) by default.
    */
   onNavigate?: (href: string) => void;
-  /** ioiti-ui: what draws an entry with an `href` (React Router's link). */
+  /** ioiti-ui: what draws an entry with an `href`; the application's link (LinkProvider) by default. */
   linkComponent?: React.ElementType;
   /** ioiti-ui: told of what is typed, for entries made from it. */
   onQueryChange?: (query: string) => void;

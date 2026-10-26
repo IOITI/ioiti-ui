@@ -73,7 +73,7 @@ export interface AnimatedFileUploadProps {
   /** ioiti-ui: the words of a file's states (EasyUI's "Uploading N%" and "Ready"). */
   workingLabel?: string;
   doneLabel?: string;
-  /** ioiti-ui: what draws a done file's link (React Router's). */
+  /** ioiti-ui: what draws a done file's link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
   /** Custom class name */
   className?: string;

@@ -59,10 +59,17 @@ export { ToastProvider } from './components/ToastProvider.js'
 export { useToast } from './components/toast-context.js'
 export type { ShowToast, ToastMessage } from './components/toast-context.js'
 
-// The shell: the menu, the trail of the top bar, the page's name.
-export { PAGE_NOT_FOUND, UNNAMED, menuEntry, sidebarSections, trailFor } from './shell/navigation.js'
+// The shell: the frame of every page, its menu, the trail of the top bar, the page's name.
+export { AppBrand, AppShell, SidebarFooterButton } from './shell/AppShell.js'
+export type { AppShellProps } from './shell/AppShell.js'
+export { AuthLayout } from './shell/AuthLayout.js'
+export { NotFoundPage, NotFoundState } from './shell/NotFoundState.js'
+export type { NotFoundStateProps } from './shell/NotFoundState.js'
+export { PageTrailProvider, TopBarTrail } from './shell/PageTrail.js'
+export { StateChip } from './shell/StateChip.js'
+export { DEFAULT_HOME, PAGE_NOT_FOUND, UNNAMED, menuEntry, sidebarSections, trailFor } from './shell/navigation.js'
 export type { Crumb, Menu, MenuEntry, PageName } from './shell/navigation.js'
-export { usePageName, usePageTrail, useTabTitle } from './shell/page-trail-context.js'
+export { usePageName, usePageTrail, useTabTitle, useTrail } from './shell/page-trail-context.js'
 export { useMainScroll } from './components/main-scroll-context.js'
 
 // The blocks pages are made of.

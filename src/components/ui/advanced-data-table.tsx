@@ -859,7 +859,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
 export interface DataTableSelectionBasket {
   noun: [string, string];
   actions: SelectionActionItem[];
-  /** What draws an action that leads to another page (React Router's link). */
+  /** What draws an action that leads to another page; the application's link (LinkProvider) by default. */
   linkComponent?: React.ElementType;
 }
 

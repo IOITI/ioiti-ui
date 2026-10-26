@@ -39,6 +39,9 @@ export interface PageName {
   parents?: Crumb[]
 }
 
+/** The first step of every trail. */
+export const DEFAULT_HOME = { label: 'Home', href: '/' }
+
 export const PAGE_NOT_FOUND = 'Page not found'
 /** The end of a deeper page's trail until the page has said its name. */
 export const UNNAMED = '…'

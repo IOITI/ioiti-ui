@@ -30,7 +30,7 @@ export interface AnimatedTabsProps {
   renderContent?: boolean;
   layoutId?: string;
   variant?: 'default' | 'glass' | 'pill';
-  /** ioiti-ui: what draws a tab that has an `href` (the router's link, given `href`); `a` by default. */
+  /** ioiti-ui: what draws a tab that has an `href`; the application's link (LinkProvider) by default, else `a`. */
   linkComponent?: React.ElementType;
 }
 

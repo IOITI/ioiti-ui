@@ -33,7 +33,7 @@ export interface RequestStatusProps {
   reference?: { label: string; value: string };
   /** ioiti-ui: where it is read further. */
   link?: { href: string; label: string };
-  /** ioiti-ui: what draws the link (React Router's). */
+  /** ioiti-ui: what draws the link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
   /** ioiti-ui: the card is put away. It watched, and acted on nothing. */
   onDismiss?: () => void;

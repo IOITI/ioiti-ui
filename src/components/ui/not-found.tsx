@@ -52,7 +52,7 @@ export interface NotFoundProps {
   path?: string | null;
   /** Up to 3 helpful destinations */
   suggestions?: NotFoundSuggestion[];
-  /** Pass next/link (or your router's Link) so navigation stays client-side */
+  /** Pass next/link (or your router's Link) so navigation stays client-side. ioiti-ui: the application's link (LinkProvider) by default. */
   LinkComponent?: ElementType;
   /** Pointer parallax on the illustration (desktop, default true) */
   parallax?: boolean;

@@ -55,7 +55,7 @@ export interface SplitButtonProps
   /** ioiti-ui: where the primary action leads: it is then a link. */
   href?: string;
 
-  /** ioiti-ui: what draws the links (React Router's). */
+  /** ioiti-ui: what draws the links; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
 
   /** ioiti-ui: an icon before the primary label. */

@@ -47,7 +47,7 @@ export interface SelectionBasketProps {
   allSelected?: boolean;
   /** ioiti-ui: what an item is, one and several ("file", "files"). */
   noun?: [string, string];
-  /** ioiti-ui: what draws an action that has an `href` (React Router's link). */
+  /** ioiti-ui: what draws an action that has an `href`; the application's link (LinkProvider) by default. */
   linkComponent?: React.ElementType;
   /** Custom class name */
   className?: string;

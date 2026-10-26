@@ -55,6 +55,11 @@ export function useTabTitle(title: string) {
   }, [title, appName])
 }
 
+/** The menu and the address of the page shown; null outside the shell. */
+export function useTrail(): { menu: Menu; pathname: string } | null {
+  return useContext(TrailContext)
+}
+
 /** The trail of the page shown, after Home; nothing outside the shell. */
 export function usePageTrail(): Crumb[] {
   const trail = useContext(TrailContext)
