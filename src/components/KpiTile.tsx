@@ -32,7 +32,8 @@ export function KpiTile({ label, value, hint, children, className }: KpiTileProp
 type MeterTone = 'neutral' | 'positive' | 'warning' | 'negative'
 
 const METER_FILL: Record<MeterTone, string> = {
-  neutral: 'bg-foreground/70',
+  // In the accent, where the theme has one.
+  neutral: 'bg-foreground/70 accent:bg-brand',
   positive: 'bg-positive',
   warning: 'bg-warning',
   negative: 'bg-negative',

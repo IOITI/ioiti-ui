@@ -91,13 +91,14 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
     setTimeout(() => setCopiedHash(null), 2000);
   };
 
-  // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`.
+  // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`. What is done and
+  // under way is in the accent's colour, where the theme has one (accent:), in place of EasyUI's blue.
   const getStatusIcon = (status: TimelineStatus) => {
     switch (status) {
       case 'completed':
-        return <Check className="w-3.5 h-3.5 text-blue-600 dark:text-white" />;
+        return <Check className="w-3.5 h-3.5 text-blue-600 dark:text-white accent:text-brand-text" />;
       case 'in-progress':
-        return <Loader2 className="w-3.5 h-3.5 text-blue-600 dark:text-white animate-spin" />;
+        return <Loader2 className="w-3.5 h-3.5 text-blue-600 dark:text-white accent:text-brand-text animate-spin" />;
       case 'failed':
         return <AlertCircle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />;
       case 'warning':
@@ -113,7 +114,7 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
       case 'completed':
         return 'bg-neutral-100 text-neutral-700 border-neutral-200 dark:bg-white/10 dark:text-white dark:border-white/20';
       case 'in-progress':
-        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-white/15 dark:text-white dark:border-white/30 dark:shadow-[0_0_12px_rgba(255,255,255,0.15)]';
+        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-white/15 dark:text-white dark:border-white/30 dark:shadow-[0_0_12px_rgba(255,255,255,0.15)] accent:bg-brand-soft accent:text-brand-text accent:border-brand/30';
       case 'failed':
         return 'bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-300';
       case 'warning':
@@ -127,9 +128,9 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
   const getStatusNodeStyle = (status: TimelineStatus, isSelected: boolean) => {
     switch (status) {
       case 'completed':
-        return 'bg-white border-blue-500 text-blue-600 ring-1 ring-blue-500/20 dark:bg-[#141414] dark:border-[#3B82F6] dark:text-[#3B82F6] dark:ring-[#3B82F6]/20';
+        return 'bg-white border-blue-500 text-blue-600 ring-1 ring-blue-500/20 dark:bg-[#141414] dark:border-[#3B82F6] dark:text-[#3B82F6] dark:ring-[#3B82F6]/20 accent:border-brand accent:text-brand-text accent:ring-brand/20';
       case 'in-progress':
-        return 'bg-white border-blue-500 text-blue-600 shadow-xs ring-2 ring-blue-500/30 dark:bg-[#141414] dark:border-[#3B82F6] dark:text-[#3B82F6] dark:ring-[#3B82F6]/30';
+        return 'bg-white border-blue-500 text-blue-600 shadow-xs ring-2 ring-blue-500/30 dark:bg-[#141414] dark:border-[#3B82F6] dark:text-[#3B82F6] dark:ring-[#3B82F6]/30 accent:border-brand accent:text-brand-text accent:ring-brand/30';
       case 'failed':
         return 'bg-rose-500/10 border-rose-500 text-rose-600 ring-1 ring-rose-500/30 dark:text-rose-400';
       case 'warning':
@@ -167,7 +168,8 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
 
         {/* Animated Progress Filled Line */}
         <motion.div
-          className="absolute left-[17px] top-6 w-[2px] bg-gradient-to-b from-[#3B82F6] via-[#3B82F6]/80 to-transparent origin-top"
+          // ioiti-ui: in the accent, where the theme has one (accent:).
+          className="absolute left-[17px] top-6 w-[2px] bg-gradient-to-b from-[#3B82F6] via-[#3B82F6]/80 to-transparent accent:from-brand accent:via-brand/80 origin-top"
           initial={{ height: 0 }}
           animate={{ height: `${progressPercent}%` }}
           transition={motionTransitions.springGentle}
@@ -201,7 +203,7 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                 >
                   {getStatusIcon(item.status)}
                   {item.status === 'in-progress' && (
-                    <span className="absolute inset-0 rounded-full animate-ping bg-[#3B82F6]/20 -z-10" />
+                    <span className="absolute inset-0 rounded-full animate-ping bg-[#3B82F6]/20 accent:bg-brand/20 -z-10" />
                   )}
                 </button>
 

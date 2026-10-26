@@ -18,7 +18,8 @@ const styles: Record<BadgeVariant, Record<BadgeTone, string>> = {
     danger: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400",
   },
   solid: {
-    neutral: "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900",
+    // ioiti-ui: the emphasis, in the accent where the theme has one (accent:); the tones keep their colours.
+    neutral: "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 accent:bg-brand accent:text-brand-foreground",
     success: "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950",
     warning: "bg-amber-500 text-amber-950",
     danger: "bg-red-600 text-white dark:bg-red-500 dark:text-red-950",

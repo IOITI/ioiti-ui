@@ -39,11 +39,15 @@ export interface ButtonProps
   children?: React.ReactNode;
 }
 
+// ioiti-ui: under a theme with an accent (accent:), a filled button is the accent's, a soft glow of it under
+// it; a link is in its colour.
+const ACCENT_FILL = 'accent:bg-brand accent:text-brand-foreground accent:shadow-[0_4px_14px_-6px_var(--brand-glow)]';
+
 const variantStyles: Record<ButtonVariant, string> = {
   default:
-    'bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer',
+    `bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer ${ACCENT_FILL}`,
   primary:
-    'bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer',
+    `bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer ${ACCENT_FILL}`,
   secondary:
     'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] cursor-pointer',
   outline:
@@ -55,7 +59,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   success:
     'bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white cursor-pointer',
   link:
-    'bg-transparent text-[var(--text-primary)] underline-offset-4 hover:underline p-0 h-auto border-0 focus-ring shadow-none inline-flex cursor-pointer',
+    'bg-transparent text-[var(--text-primary)] underline-offset-4 hover:underline p-0 h-auto border-0 focus-ring shadow-none inline-flex cursor-pointer accent:text-brand-text',
   gradient:
     'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] relative overflow-hidden cursor-pointer',
 };

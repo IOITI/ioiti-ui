@@ -257,7 +257,8 @@ export function Calendar(props: CalendarProps) {
                         aria-selected={picked || inBand}
                         className={cn(
                           "relative h-9 w-9",
-                          inBand && "bg-neutral-100 dark:bg-neutral-800/70",
+                          // ioiti-ui: the range, the day picked and today in the accent, where the theme has one (accent:).
+                          inBand && "bg-neutral-100 dark:bg-neutral-800/70 accent:bg-brand-soft",
                           inBand && (isSameDay(d, from) || col === 0 || d.getDate() === 1) && "rounded-l-lg",
                           inBand && (isSameDay(d, rangeEnd) || col === 6 || d.getDate() === dim) && "rounded-r-lg"
                         )}
@@ -273,7 +274,7 @@ export function Calendar(props: CalendarProps) {
                           onMouseEnter={() => setHover(d)}
                           className={cn(
                             "group relative grid size-9 place-items-center rounded-lg text-sm tabular-nums outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/60 dark:focus-visible:ring-neutral-600",
-                            picked ? "text-white dark:text-neutral-900" : "text-neutral-900 dark:text-neutral-100",
+                            picked ? "text-white dark:text-neutral-900 accent:text-brand-foreground" : "text-neutral-900 dark:text-neutral-100",
                             !picked &&
                               !off &&
                               (inBand
@@ -286,14 +287,14 @@ export function Calendar(props: CalendarProps) {
                             <motion.span
                               layoutId={isRange ? `${uid}-${isStart ? "start" : "end"}` : `${uid}-sel`}
                               transition={spring}
-                              className="absolute inset-0 rounded-lg bg-neutral-900 dark:bg-white"
+                              className="absolute inset-0 rounded-lg bg-neutral-900 dark:bg-white accent:bg-brand"
                             />
                           )}
                           <span className="relative transition-transform duration-150 group-active:scale-90">
                             {d.getDate()}
                           </span>
                           {isToday && !picked && (
-                            <span className="absolute bottom-1 size-1 rounded-full bg-neutral-400 dark:bg-neutral-500" />
+                            <span className="absolute bottom-1 size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 accent:bg-brand" />
                           )}
                         </button>
                       </div>

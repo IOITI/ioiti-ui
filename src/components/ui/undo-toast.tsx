@@ -243,8 +243,9 @@ export const UndoToast: React.FC<UndoToastProps> = ({
             {/* Live Progress Bar countdown indicator */}
             {showProgress && !isRestored && (
               <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-neutral-100 dark:bg-[#050505]">
+                {/* ioiti-ui: the time left in the accent, where the theme has one (accent:). */}
                 <div
-                  className="h-full bg-neutral-900 transition-all dark:bg-[#FAFAFA]"
+                  className="h-full bg-neutral-900 transition-all dark:bg-[#FAFAFA] accent:bg-brand"
                   style={{ width: `${progress}%`, transition: isPaused ? 'none' : 'width 50ms linear' }}
                 />
               </div>

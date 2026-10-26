@@ -150,13 +150,14 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="xMidYMid meet"
       >
-        {/* ioiti-ui: an arrow at the called end, grey at rest and blue while traced. */}
+        {/* ioiti-ui: an arrow at the called end, grey at rest and blue while traced. What is traced is in the accent,
+            where the theme has one (accent:): a class's colour wins over an attribute's. */}
         <defs>
           <marker id={`${markerId}-idle`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0 0L8 4L0 8Z" fill="var(--chart-muted)" />
           </marker>
           <marker id={`${markerId}-on`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0L8 4L0 8Z" fill="#3B82F6" />
+            <path d="M0 0L8 4L0 8Z" fill="#3B82F6" className="accent:fill-brand" />
           </marker>
         </defs>
 
@@ -192,6 +193,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
                   d={pathD}
                   fill="none"
                   stroke="rgba(59, 130, 246, 0.3)"
+                  className="accent:stroke-[var(--brand-glow)]"
                   strokeWidth="6"
                   strokeLinecap="round"
                   initial={{ opacity: 0 }}
@@ -204,7 +206,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
               <motion.path
                 d={pathD}
                 fill="none"
-                className={isConnected ? 'stroke-[#3B82F6]' : 'stroke-neutral-300 dark:stroke-[#2A2A2A]'}
+                className={isConnected ? 'stroke-[#3B82F6] accent:stroke-brand' : 'stroke-neutral-300 dark:stroke-[#2A2A2A]'}
                 strokeWidth={isConnected ? '2.5' : '1.5'}
                 strokeDasharray={isConnected ? 'none' : '4 4'}
                 strokeLinecap="round"
@@ -269,6 +271,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
                   r={radius + 6}
                   fill="none"
                   stroke="rgba(59, 130, 246, 0.4)"
+                  className="accent:stroke-[var(--brand-glow)]"
                   strokeWidth="2"
                   animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.2, 0.6] }}
                   transition={{ repeat: Infinity, duration: 2 }}
@@ -278,7 +281,11 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
               {/* Node Circle Background. ioiti-ui: its ring says its health. */}
               <motion.circle
                 r={radius}
-                className={isCurrentActive ? 'fill-neutral-100 dark:fill-[#141414]' : 'fill-white dark:fill-[#0E0E0E]'}
+                className={cn(
+                  isCurrentActive ? 'fill-neutral-100 dark:fill-[#141414]' : 'fill-white dark:fill-[#0E0E0E]',
+                  // ioiti-ui: a ring that says a health keeps its colour.
+                  isCurrentActive && !node.status && 'accent:stroke-brand'
+                )}
                 stroke={node.status ? STATUS_STROKE[node.status] : isCurrentActive ? '#3B82F6' : 'var(--chart-axis)'}
                 strokeWidth={node.status ? 2.5 : 1.5}
                 animate={{

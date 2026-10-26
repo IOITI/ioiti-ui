@@ -171,7 +171,8 @@ export function Combobox({
         }}
         className={cn(
           "flex h-10 w-full items-center gap-2.5 rounded-lg border border-neutral-200 bg-white px-3 text-sm outline-none transition-colors hover:border-neutral-300 disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700",
-          open && "border-neutral-400 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-600"
+          // ioiti-ui: open, the option under the pointer and the one chosen in the accent, where the theme has one (accent:).
+          open && "border-neutral-400 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-600 accent:border-brand accent:hover:border-brand"
         )}
       >
         {current?.icon && (
@@ -336,7 +337,7 @@ function Panel({
               initial={false}
               animate={{ y: box.y, height: box.h }}
               transition={spring}
-              className="pointer-events-none absolute inset-x-1 top-0 rounded-lg bg-neutral-100 dark:bg-neutral-800/80"
+              className="pointer-events-none absolute inset-x-1 top-0 rounded-lg bg-neutral-100 dark:bg-neutral-800/80 accent:bg-brand-soft"
             />
           )}
 
@@ -376,7 +377,7 @@ function Panel({
                   initial={{ scale: 0.4, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={spring}
-                  className="relative"
+                  className="relative accent:text-brand-text"
                 >
                   <Check className="size-4" />
                 </motion.span>

@@ -162,7 +162,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={cn(
             'w-full h-10 px-3.5 text-xs text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150',
             'border-neutral-300 dark:border-[#1F1F1F] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
-            'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] focus:outline-none focus-ring',
+            // ioiti-ui: a field in focus has a border in the accent, under a theme that has one (accent:).
+            'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand focus:outline-none focus-ring',
             leftIcon && 'pl-9',
             (rightIcon || (isPassword && showPasswordToggle)) && 'pr-9',
             error && 'border-rose-500/50 focus:border-rose-500',
@@ -216,7 +217,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         className={cn(
           'w-full min-h-[90px] p-3 text-xs text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150 resize-y',
           'border-neutral-300 dark:border-[#1F1F1F] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
-          'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] focus:outline-none focus-ring leading-relaxed',
+          // ioiti-ui: a field in focus has a border in the accent, under a theme that has one (accent:).
+          'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand focus:outline-none focus-ring leading-relaxed',
           error && 'border-rose-500/50 focus:border-rose-500',
           disabled && 'opacity-30 cursor-not-allowed bg-neutral-100 dark:bg-[#0E0E0E]',
           className
@@ -253,7 +255,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           className={cn(
             'w-full h-10 pl-3.5 pr-8 text-xs text-neutral-900 dark:text-[#FAFAFA] bg-white dark:bg-[#141414] rounded-lg border appearance-none transition-all duration-150 cursor-pointer',
             'border-neutral-300 dark:border-[#1F1F1F] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
-            'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] focus:outline-none focus-ring',
+            // ioiti-ui: a field in focus has a border in the accent, under a theme that has one (accent:).
+            'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand focus:outline-none focus-ring',
             error && 'border-rose-500/50 focus:border-rose-500',
             disabled && 'opacity-30 cursor-not-allowed bg-neutral-100 dark:bg-[#0E0E0E]',
             className
@@ -334,7 +337,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             className={cn(
               'w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-150 cursor-pointer focus-ring',
               currentChecked
-                ? 'bg-neutral-900 dark:bg-[#FAFAFA] border-neutral-900 dark:border-[#FAFAFA] text-white dark:text-[#050505]'
+                ? // ioiti-ui: checked, in the accent under a theme that has one (accent:); so are the radio and the switch.
+                  'bg-neutral-900 dark:bg-[#FAFAFA] border-neutral-900 dark:border-[#FAFAFA] text-white dark:text-[#050505] accent:bg-brand accent:border-brand accent:text-brand-foreground'
                 : 'bg-white dark:bg-[#141414] border-neutral-300 dark:border-[#1F1F1F] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
               disabled && 'cursor-not-allowed'
             )}
@@ -478,7 +482,7 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
           className={cn(
             'w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-150 cursor-pointer focus-ring',
             checked
-              ? 'border-neutral-900 dark:border-[#FAFAFA] bg-white dark:bg-[#141414]'
+              ? 'border-neutral-900 dark:border-[#FAFAFA] bg-white dark:bg-[#141414] accent:border-brand'
               : 'border-neutral-300 dark:border-[#1F1F1F] bg-white dark:bg-[#141414] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
             disabled && 'cursor-not-allowed'
           )}
@@ -486,7 +490,7 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
           {checked && (
             <motion.div
               layoutId={`radio-dot-${name}`}
-              className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-[#FAFAFA]"
+              className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-[#FAFAFA] accent:bg-brand"
               transition={motionTransitions.springSnappy}
             />
           )}
@@ -575,7 +579,7 @@ export const Switch: React.FC<SwitchProps> = ({
         className={cn(
           'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border transition-colors duration-200 focus-ring',
           current
-            ? 'bg-neutral-900 dark:bg-[#FAFAFA] border-neutral-900 dark:border-[#FAFAFA]'
+            ? 'bg-neutral-900 dark:bg-[#FAFAFA] border-neutral-900 dark:border-[#FAFAFA] accent:bg-brand accent:border-brand'
             : 'bg-white dark:bg-[#141414] border-neutral-300 dark:border-[#1F1F1F]',
           disabled && 'cursor-not-allowed'
         )}
@@ -585,7 +589,7 @@ export const Switch: React.FC<SwitchProps> = ({
           transition={motionTransitions.springSnappy}
           className={cn(
             'pointer-events-none block h-3.5 w-3.5 my-auto top-0 bottom-0 rounded-full shadow-xs',
-            current ? 'bg-white dark:bg-[#050505]' : 'bg-neutral-500 dark:bg-[#6B6B6B]'
+            current ? 'bg-white dark:bg-[#050505] accent:bg-brand-foreground' : 'bg-neutral-500 dark:bg-[#6B6B6B]'
           )}
         />
       </button>

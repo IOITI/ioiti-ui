@@ -31,7 +31,8 @@ export const Loader: React.FC<LoaderProps> = ({
       role="status"
       aria-busy="true"
       aria-label={label}
-      className={cn('inline-flex flex-col items-center justify-center gap-2 text-neutral-900 dark:text-[#FAFAFA]', className)}
+      // ioiti-ui: in the accent where the theme has one (accent:); `color` still gives it another.
+      className={cn('inline-flex flex-col items-center justify-center gap-2 text-neutral-900 dark:text-[#FAFAFA] accent:text-brand', className)}
       {...props}
     >
       {/* 1. Rotating Arc Variant */}

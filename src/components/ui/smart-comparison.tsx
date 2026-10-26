@@ -192,7 +192,8 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
               className={cn(
                 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer shrink-0',
                 diffOnly
-                  ? 'bg-neutral-900 text-white border-neutral-900 dark:bg-[#FAFAFA] dark:text-[#050505] dark:border-[#FAFAFA]'
+                  ? // ioiti-ui: on, and the featured plan below, in the accent (accent:).
+                    'bg-neutral-900 text-white border-neutral-900 dark:bg-[#FAFAFA] dark:text-[#050505] dark:border-[#FAFAFA] accent:bg-brand accent:text-brand-foreground accent:border-brand'
                   : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:text-neutral-900 hover:border-neutral-400 dark:bg-[#141414] dark:text-[#A1A1A1] dark:border-[#1F1F1F] dark:hover:text-[#FAFAFA] dark:hover:border-[#4A4A4A]'
               )}
             >
@@ -255,12 +256,12 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                 'relative p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between min-w-0',
                 isMobileActive ? 'block' : 'hidden sm:flex',
                 plan.featured
-                  ? 'bg-gradient-to-b from-neutral-50 to-white border-neutral-400 shadow-md dark:from-[#141414] dark:to-[#0E0E0E] dark:border-white/30'
+                  ? 'bg-gradient-to-b from-neutral-50 to-white border-neutral-400 shadow-md dark:from-[#141414] dark:to-[#0E0E0E] dark:border-white/30 accent:border-brand'
                   : 'bg-white border-neutral-200 hover:border-neutral-400 dark:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A]'
               )}
             >
               {plan.badge && (
-                <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-neutral-900 text-white font-semibold shadow-sm dark:bg-[#FAFAFA] dark:text-[#050505]">
+                <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-neutral-900 text-white font-semibold shadow-sm dark:bg-[#FAFAFA] dark:text-[#050505] accent:bg-brand accent:text-brand-foreground">
                   {plan.badge}
                 </span>
               )}
@@ -307,7 +308,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                     className={cn(
                       'w-full py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer focus-visible:outline-none',
                       plan.featured
-                        ? 'bg-neutral-900 text-white hover:bg-neutral-800 font-semibold dark:bg-[#FAFAFA] dark:text-[#050505] dark:hover:bg-white'
+                        ? 'bg-neutral-900 text-white hover:bg-neutral-800 font-semibold dark:bg-[#FAFAFA] dark:text-[#050505] dark:hover:bg-white accent:bg-brand accent:hover:bg-brand/90 accent:text-brand-foreground'
                         : 'bg-neutral-50 hover:bg-white text-neutral-600 hover:text-neutral-900 border border-neutral-200 dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA] dark:border-[#1F1F1F]'
                     )}
                   >

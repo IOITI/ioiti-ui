@@ -103,7 +103,8 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
         className={cn(
           'relative inline-flex h-5 w-9 shrink-0 rounded-full border transition-colors duration-200 focus-ring',
           current
-            ? 'bg-[var(--text-primary)] border-[var(--text-primary)]'
+            ? // ioiti-ui: on, in the accent under a theme that has one (accent:), its thumb on it.
+              'bg-[var(--text-primary)] border-[var(--text-primary)] accent:bg-brand accent:border-brand'
             : 'bg-[var(--surface-raised)] border-[var(--border)]',
           disabled && 'cursor-not-allowed'
         )}
@@ -113,7 +114,7 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
           style={{ x, scaleX, scaleY, width: THUMB_SIZE, height: THUMB_SIZE }}
           className={cn(
             'pointer-events-none block my-auto rounded-full shadow-xs origin-center',
-            current ? 'bg-[var(--bg)]' : 'bg-[var(--text-secondary)]'
+            current ? 'bg-[var(--bg)] accent:bg-brand-foreground' : 'bg-[var(--text-secondary)]'
           )}
         />
       </button>

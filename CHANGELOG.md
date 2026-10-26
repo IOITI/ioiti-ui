@@ -20,6 +20,10 @@ the design as it was: an application that gives neither looks as it did.
   `glass-bar`, `glass-card` and `glass-float` utilities), both imported by `design.css`, with the variants
   `accent:` and `glass:` for an application's own classes. Text holds 4.5:1 on every surface of the 16
   looks, glass laid over its backdrop's strongest colours; the design's own blocks are unchanged.
+- **The accent on the components**: what is chosen, current or primary (a filled button, a box checked, a
+  switch on, the day picked, the step done, the tab, option, row or page shown, a progress, a link) in the
+  accent, through `accent:` classes after the components' own (`docs/easyui-changes.md`). The tones keep their
+  colours.
 
 ## [0.1.0] - 2026-10-26
 

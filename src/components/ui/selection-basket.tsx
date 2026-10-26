@@ -106,7 +106,8 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
           >
             {/* Selected Count Indicator */}
             <div className="flex items-center gap-2 pl-3 pr-2 py-1 border-r border-neutral-200 dark:border-[#1F1F1F] shrink-0">
-              <span className="min-w-5 h-5 px-1 rounded-full bg-neutral-900 text-white dark:bg-[#FAFAFA] dark:text-[#050505] text-[11px] font-bold font-mono flex items-center justify-center">
+              {/* ioiti-ui: the count, and the primary action below, in the accent (accent:). */}
+              <span className="min-w-5 h-5 px-1 rounded-full bg-neutral-900 text-white dark:bg-[#FAFAFA] dark:text-[#050505] accent:bg-brand accent:text-brand-foreground text-[11px] font-bold font-mono flex items-center justify-center">
                 {selectedCount}
               </span>
               <span className="text-xs font-medium text-neutral-900 dark:text-[#FAFAFA] whitespace-nowrap">
@@ -135,7 +136,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
                   isDanger
                     ? 'bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/30 text-rose-700 dark:text-rose-400 disabled:hover:bg-rose-500/10 disabled:hover:text-rose-700 dark:disabled:hover:text-rose-400'
                     : isPrimary
-                    ? 'bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-[#FAFAFA] dark:hover:bg-white dark:text-[#050505]'
+                    ? 'bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-[#FAFAFA] dark:hover:bg-white dark:text-[#050505] accent:bg-brand accent:hover:bg-brand/90 accent:text-brand-foreground'
                     : 'bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-400 text-neutral-700 hover:text-neutral-900 dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA]'
                 );
                 const content = (

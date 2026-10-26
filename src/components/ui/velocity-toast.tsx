@@ -194,8 +194,9 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
 
             {showProgress && (
               <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--border)] overflow-hidden">
+                {/* ioiti-ui: the time left in the accent, where the theme has one (accent:). */}
                 <motion.div
-                  className="h-full bg-[var(--text-primary)]"
+                  className="h-full bg-[var(--text-primary)] accent:bg-brand"
                   style={{ width: progressWidth }}
                 />
               </div>

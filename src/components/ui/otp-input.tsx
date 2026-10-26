@@ -176,7 +176,8 @@ export const OTPInput: React.FC<OTPInputProps> = ({
           className={cn(
             'h-12 w-10 rounded-md border border-white bg-gray-200 text-black dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-white',
             'text-center text-lg font-medium',
-            'outline-none focus:border-[#7C3AED] placeholder:text-gray-400',
+            // ioiti-ui: the box in focus in the accent, where the theme has one (accent:).
+            'outline-none focus:border-[#7C3AED] accent:focus:border-brand placeholder:text-gray-400',
             'disabled:cursor-not-allowed disabled:opacity-50',
             boxClassName
           )}

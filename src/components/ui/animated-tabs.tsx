@@ -100,7 +100,8 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
                   ? 'px-4 py-1.5 rounded-full'
                   : 'px-3.5 py-1.5 rounded-md',
                 isActive
-                  ? 'text-text-primary font-medium dark:text-[#FAFAFA]'
+                  ? // ioiti-ui: the tab shown, and its pill, in the accent where the theme has one (accent:).
+                    'text-text-primary font-medium dark:text-[#FAFAFA] accent:text-brand-text'
                   : 'text-text-muted hover:text-text-secondary dark:text-muted-foreground dark:hover:text-[#A1A1A1]'
               )}
             >
@@ -111,7 +112,8 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
                     'absolute inset-0 shadow-xs',
                     isGlass
                       ? 'rounded-full bg-surface border border-border-hover dark:bg-[#141414] dark:border-[#1F1F1F]'
-                      : 'rounded-md bg-surface border border-border-hover dark:bg-[#141414] dark:border-[#1F1F1F]'
+                      : 'rounded-md bg-surface border border-border-hover dark:bg-[#141414] dark:border-[#1F1F1F]',
+                    'accent:bg-brand-soft accent:border-brand/30'
                   )}
                   transition={motionTransitions.springMorph}
                 />

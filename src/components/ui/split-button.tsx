@@ -125,6 +125,9 @@ const VARIANT_STYLES: Record<'primary' | 'secondary' | 'danger' | 'info', string
     'dark:bg-[#F5F5F5] dark:text-[#050505] dark:hover:bg-white ' +
     'shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.25)] ' +
     'dark:shadow-[0_0_20px_-3px_rgba(255,255,255,0.15)] dark:hover:shadow-[0_0_28px_-4px_rgba(255,255,255,0.28)] ' +
+    // ioiti-ui: the accent's fill and glow, under a theme that has one (accent:).
+    'accent:bg-brand accent:text-brand-foreground accent:hover:bg-brand/90 ' +
+    'accent:shadow-[0_4px_14px_-6px_var(--brand-glow)] accent:hover:shadow-[0_8px_20px_-6px_var(--brand-glow)] ' +
     TRANSITION,
 
   secondary:

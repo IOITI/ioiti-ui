@@ -123,7 +123,7 @@ function Shell<S extends string>({
 export function AppBrand({ name, detail, mark }: { name: string; detail?: ReactNode; mark?: ReactNode }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="grid size-7 shrink-0 place-items-center rounded-lg bg-foreground text-xs font-bold text-background">
+      <div className="grid size-7 shrink-0 place-items-center rounded-lg bg-foreground text-xs font-bold text-background accent:bg-brand accent:text-brand-foreground">
         {mark ?? name.slice(0, 1).toUpperCase()}
       </div>
       <div className="min-w-0 leading-tight">

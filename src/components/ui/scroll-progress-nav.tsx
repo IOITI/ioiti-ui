@@ -203,7 +203,8 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
         {/* Ambient progress line */}
         <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
           <div
-            className="h-[1.5px] bg-neutral-900 dark:bg-[#FAFAFA] absolute top-0 left-0 transition-all duration-150"
+            // ioiti-ui: the progress, the part shown and its pill in the accent, where the theme has one (accent:).
+            className="h-[1.5px] bg-neutral-900 dark:bg-[#FAFAFA] accent:bg-brand absolute top-0 left-0 transition-all duration-150"
             style={{ width: `${scrollProgress}%` }}
           />
         </div>
@@ -247,18 +248,18 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
                 aria-current={isActive ? 'location' : undefined}
                 className={cn(
                   'relative shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors focus-ring inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer',
-                  isActive ? 'text-neutral-900 dark:text-[#FAFAFA]' : 'text-muted-foreground hover:text-neutral-900 dark:hover:text-[#A1A1A1]'
+                  isActive ? 'text-neutral-900 dark:text-[#FAFAFA] accent:text-brand-text' : 'text-muted-foreground hover:text-neutral-900 dark:hover:text-[#A1A1A1]'
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId={`active-scroll-pill-${uniqueId}`}
                     transition={motionTransitions.springMorph}
-                    className="absolute inset-0 rounded-full bg-neutral-100 border border-neutral-200 z-0 shadow-xs dark:bg-[#141414] dark:border-[#1F1F1F]"
+                    className="absolute inset-0 rounded-full bg-neutral-100 border border-neutral-200 z-0 shadow-xs dark:bg-[#141414] dark:border-[#1F1F1F] accent:bg-brand-soft accent:border-brand/30"
                   />
                 )}
                 {/* ioiti-ui: the number orders the parts for the eye; a screen reader says the part's name alone. */}
-                <span aria-hidden="true" className={cn('text-[10px] font-mono relative z-10', isActive ? 'text-neutral-900/80 dark:text-[#FAFAFA]/80' : 'text-muted-foreground')}>
+                <span aria-hidden="true" className={cn('text-[10px] font-mono relative z-10', isActive ? 'text-neutral-900/80 dark:text-[#FAFAFA]/80 accent:text-brand-text' : 'text-muted-foreground')}>
                   {indexStr}
                 </span>
                 <span className="relative z-10">{section.label}</span>

@@ -265,7 +265,8 @@ function Panel({
           className={cn(
             "relative flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:focus-visible:ring-neutral-600/60",
             isActive || childActive
-              ? "text-neutral-900 dark:text-white"
+              ? // ioiti-ui: the page shown, in the accent when the theme has one (accent:), as its pill below.
+                "text-neutral-900 dark:text-white accent:text-brand-text"
               : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
           )}
         >
@@ -273,7 +274,7 @@ function Panel({
             <motion.span
               layoutId={`${uid}-active`}
               transition={spring}
-              className="absolute inset-0 rounded-lg bg-neutral-200/70 dark:bg-neutral-800"
+              className="absolute inset-0 rounded-lg bg-neutral-200/70 dark:bg-neutral-800 accent:bg-brand-soft"
             />
           )}
           <span className="relative grid size-5 shrink-0 place-items-center [&>svg]:size-[18px]">{item.icon}</span>
@@ -334,7 +335,8 @@ function Panel({
                       className={cn(
                         "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-[13px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:focus-visible:ring-neutral-600/60",
                         active
-                          ? "text-neutral-900 dark:text-white"
+                          ? // ioiti-ui: the page shown, and its dot, in the accent (accent:).
+                            "text-neutral-900 dark:text-white accent:text-brand-text"
                           : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                       )}
                     >
@@ -342,7 +344,7 @@ function Panel({
                         <motion.span
                           layoutId={`${uid}-dot`}
                           transition={spring}
-                          className="absolute -left-[15.5px] top-[13px] size-1.5 rounded-full bg-neutral-900 dark:bg-white"
+                          className="absolute -left-[15.5px] top-[13px] size-1.5 rounded-full bg-neutral-900 dark:bg-white accent:bg-brand"
                         />
                       )}
                       <span className="flex-1 truncate text-left">{c.label}</span>

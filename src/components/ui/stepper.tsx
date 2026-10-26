@@ -43,9 +43,10 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
           <span
             className={cn(
               "relative grid size-7 shrink-0 place-items-center rounded-full border text-xs font-medium tabular-nums transition-colors duration-300",
+              // ioiti-ui: steps done, the current one and the line between them in the accent, where the theme has one (accent:).
               state === "complete" &&
-                "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900",
-              state === "current" && "border-neutral-900 text-neutral-900 dark:border-white dark:text-white",
+                "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900 accent:border-brand accent:bg-brand accent:text-brand-foreground",
+              state === "current" && "border-neutral-900 text-neutral-900 dark:border-white dark:text-white accent:border-brand accent:text-brand-text",
               state === "upcoming" && "border-neutral-200 text-neutral-400 dark:border-neutral-800 dark:text-neutral-500"
             )}
           >
@@ -53,7 +54,7 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
               <motion.span
                 layoutId={`${uid}-ring`}
                 transition={spring}
-                className="absolute -inset-[5px] rounded-full border border-neutral-300 dark:border-neutral-700"
+                className="absolute -inset-[5px] rounded-full border border-neutral-300 dark:border-neutral-700 accent:border-brand/40"
               />
             )}
             {state === "complete" ? (
@@ -145,7 +146,7 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
                   animate={vertical ? { scaleY: i < current ? 1 : 0 } : { scaleX: i < current ? 1 : 0 }}
                   transition={fill}
                   className={cn(
-                    "absolute inset-0 bg-neutral-900 dark:bg-white",
+                    "absolute inset-0 bg-neutral-900 dark:bg-white accent:bg-brand",
                     vertical ? "origin-top" : "origin-left"
                   )}
                 />

@@ -38,6 +38,21 @@ otherwise).
 - **Imports end in `.js`**, so that Node's ESM loader, which an application's tests may run the package
   with, finds them.
 
+- **Accents.** Under a theme with an accent (`data-accent` on `<html>`, src/styles/accents.css), what is
+  chosen, current or primary is drawn in the accent's tokens through `accent:` classes, each after EasyUI's
+  own, which stay as they were: with the neutral accent, nothing changes. A filled button and the split
+  button's primary (the accent's fill and a soft glow of it), a link button; a checked box, a radio, a switch
+  on, a field and an OTP box in focus, a picker open; the day picked, its range and today's dot; the option
+  under the pointer and the one chosen (`combobox`, `spring-select`, `spotlight-search`); a step done, the
+  current one and the line between them; the tab shown, the part shown and the scroll's progress; a filter on,
+  the rows selected, the sorted column and the boxes of `advanced-data-table`; the solid neutral badge; the
+  count and primary action of `selection-basket`; `smart-comparison`'s toggle and featured plan; the time
+  left of both toasts, an upload's progress, the sending spinner of `request-status`; `loader`, unless its
+  `color` is given; the page shown in the sidebar and its dot; the traced links of `dependency-trace` (a node's
+  health ring keeps its colour), the progress and nodes of `interactive-timeline` (EasyUI's blue), the
+  heatmap's active cell. The tones (success, warning, danger, info) keep their colours: gain and loss are said
+  by them. One-series charts and funnels take the accent through their tokens.
+
 ## Component by component
 
 - `advanced-data-table`: `selectable` (default `true`), to hide the row boxes of a table with no bulk

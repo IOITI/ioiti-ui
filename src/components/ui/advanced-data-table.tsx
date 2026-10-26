@@ -169,7 +169,8 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
           )}
           {selectedCount > 0 && (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-muted/40 border border-border/40 text-xs text-foreground font-normal">
-              <span className="w-1.5 h-1.5 rounded-full bg-foreground" />
+              {/* ioiti-ui: the dot, the filters on, the boxes, the sorted column and the rows selected in the accent, where the theme has one (accent:). */}
+              <span className="w-1.5 h-1.5 rounded-full bg-foreground accent:bg-brand" />
               {selectedCount} selected
             </span>
           )}
@@ -241,7 +242,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                           type="checkbox"
                           checked={isVisible}
                           onChange={() => toggleColumnVisibility(col.id)}
-                          className="rounded border-border accent-foreground cursor-pointer"
+                          className="rounded border-border accent-foreground accent:accent-brand cursor-pointer"
                         />
                         <span className="truncate">{col.header}</span>
                       </label>
@@ -331,7 +332,7 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className })
                   className={cn(
                     'px-2 py-0.5 rounded-md text-xs font-normal transition-colors cursor-pointer',
                     isSelected
-                      ? 'bg-foreground text-background font-medium'
+                      ? 'bg-foreground text-background font-medium accent:bg-brand accent:text-brand-foreground'
                       : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover/50'
                   )}
                 >
@@ -511,7 +512,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                       checked={isSelected}
                       onChange={() => toggleRowSelection(rowId)}
                       aria-label={selectLabel(row, rowId)}
-                      className="rounded border-border accent-foreground cursor-pointer w-4 h-4 shrink-0"
+                      className="rounded border-border accent-foreground accent:accent-brand cursor-pointer w-4 h-4 shrink-0"
                     />
                   )}
                   <span className="font-medium text-xs text-foreground truncate">
@@ -594,7 +595,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                   onChange={toggleSelectAll}
                   disabled={!canSelectPage}
                   aria-label="Select all rows"
-                  className="rounded border-border accent-foreground cursor-pointer w-4 h-4 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="rounded border-border accent-foreground accent:accent-brand cursor-pointer w-4 h-4 disabled:cursor-not-allowed disabled:opacity-40"
                 />
               </th>
             )}
@@ -624,9 +625,9 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                       <span>{col.header}</span>
                       {isSorted ? (
                         sortDirection === 'asc' ? (
-                          <ChevronUp className="w-3.5 h-3.5 text-foreground" />
+                          <ChevronUp className="w-3.5 h-3.5 text-foreground accent:text-brand-text" />
                         ) : (
-                          <ChevronDown className="w-3.5 h-3.5 text-foreground" />
+                          <ChevronDown className="w-3.5 h-3.5 text-foreground accent:text-brand-text" />
                         )
                       ) : (
                         <ChevronsUpDown className="w-3 h-3 opacity-30 hover:opacity-100" />
@@ -653,7 +654,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                   onClick={expandOnClick(rowId)}
                   className={cn(
                     'transition-colors hover:bg-surface-hover/40 group',
-                    isSelected && 'bg-surface-raised/35',
+                    isSelected && 'bg-surface-raised/35 accent:bg-brand-soft',
                     expandOnClick(rowId) && 'cursor-pointer',
                     isExpanded && expandOnRowClick && 'bg-surface-raised/25'
                   )}
@@ -667,7 +668,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                           checked={isSelected}
                           onChange={() => toggleRowSelection(rowId)}
                           aria-label={selectLabel(row, rowId)}
-                          className="rounded border-border accent-foreground cursor-pointer w-4 h-4"
+                          className="rounded border-border accent-foreground accent:accent-brand cursor-pointer w-4 h-4"
                         />
                       )}
                     </td>

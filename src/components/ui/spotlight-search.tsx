@@ -258,12 +258,12 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                   const isSelected = index === selectedIndex;
                   const content = (
                     <>
-                      {/* Smooth Active Highlight Pill */}
+                      {/* Smooth Active Highlight Pill. ioiti-ui: in the accent's tint, where the theme has one (accent:). */}
                       {isSelected && (
                         <motion.div
                           layoutId={`spotlight-active-${uniqueId}`}
                           transition={motionTransitions.springGentle}
-                          className="absolute inset-0 rounded-xl bg-surface-hover border border-border-hover z-0"
+                          className="absolute inset-0 rounded-xl bg-surface-hover border border-border-hover accent:bg-brand-soft accent:border-brand/30 z-0"
                         />
                       )}
 

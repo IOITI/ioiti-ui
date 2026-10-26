@@ -381,7 +381,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
         className={cn(
           'relative flex flex-col items-center justify-center text-center cursor-pointer border border-dashed rounded-xl transition-colors focus-ring',
           isDragOver
-            ? 'border-neutral-500 bg-neutral-100 dark:border-[#4A4A4A] dark:bg-[#141414]'
+            ? // ioiti-ui: a file over it, and the progress below, in the accent where the theme has one (accent:).
+              'border-neutral-500 bg-neutral-100 dark:border-[#4A4A4A] dark:bg-[#141414] accent:border-brand accent:bg-brand-soft'
             : 'border-neutral-300 bg-white hover:border-neutral-500 dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:hover:border-[#4A4A4A]',
           isCompact ? 'p-5 sm:p-6 min-h-[120px]' : 'p-8 sm:p-10 min-h-[180px]',
           disabled && 'opacity-40 cursor-not-allowed border-solid'
@@ -545,7 +546,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                     {(isUploading || isProcessing) && (
                       <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-neutral-100 dark:bg-[#141414]">
                         <motion.div
-                          className="h-full bg-neutral-900 dark:bg-[#FAFAFA]"
+                          className="h-full bg-neutral-900 dark:bg-[#FAFAFA] accent:bg-brand"
                           initial={{ width: '0%' }}
                           animate={{ width: `${file.progress}%` }}
                           transition={{ duration: 0.15, ease: 'easeOut' }}

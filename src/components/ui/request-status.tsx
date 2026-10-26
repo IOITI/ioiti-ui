@@ -85,8 +85,9 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
         <div className="relative" aria-hidden="true">
           {status === 'processing' && (
             <div className={cn(BADGE, 'bg-neutral-100 border-neutral-200 dark:bg-[#141414] dark:border-[#1F1F1F]')}>
+              {/* ioiti-ui: sending, in the accent where the theme has one (accent:). */}
               <motion.div
-                className="absolute inset-0 rounded-full border border-neutral-900/25 border-t-neutral-900 dark:border-white/30 dark:border-t-white"
+                className="absolute inset-0 rounded-full border border-neutral-900/25 border-t-neutral-900 dark:border-white/30 dark:border-t-white accent:border-brand/25 accent:border-t-brand"
                 animate={spin}
                 transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
               />

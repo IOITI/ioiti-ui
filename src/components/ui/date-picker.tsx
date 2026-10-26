@@ -157,7 +157,8 @@ function PickerShell({
         onClick={() => setOpen((o) => !o)}
         className={cn(
           "flex h-10 w-full items-center gap-2.5 rounded-lg border border-neutral-200 bg-white px-3 text-sm outline-none transition-colors hover:border-neutral-300 focus-visible:ring-2 focus-visible:ring-neutral-400/40 disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700 dark:focus-visible:ring-neutral-600/50",
-          open && "border-neutral-400 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-600"
+          // ioiti-ui: open, in the accent where the theme has one (accent:).
+          open && "border-neutral-400 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-600 accent:border-brand accent:hover:border-brand"
         )}
       >
         <CalendarDays className="size-4 shrink-0 text-neutral-500 dark:text-neutral-400" />

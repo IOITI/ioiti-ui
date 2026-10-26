@@ -410,7 +410,8 @@ export function ActivityHeatmap({
             rx={Math.min(4, cwEff / 3)}
             fill="none"
             strokeWidth={1.5}
-            className="stroke-neutral-900 dark:stroke-white"
+            // ioiti-ui: in the accent, where the theme has one (accent:).
+            className="stroke-neutral-900 dark:stroke-white accent:stroke-brand"
             initial={false}
             animate={{ x: gx(active?.c ?? 0) - 1, y: gy(active?.r ?? 0) - 1, opacity: active ? 1 : 0 }}
             transition={reduce ? { duration: 0 } : { x: { duration: 0.12 }, y: { duration: 0.12 }, opacity: { duration: 0.12 } }}

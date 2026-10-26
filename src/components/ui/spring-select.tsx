@@ -138,7 +138,8 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
           'relative w-full h-10 px-3.5 pr-9 text-xs rounded-lg border outline-none text-left flex items-center justify-between transition-colors duration-150 focus-ring',
           'bg-[var(--surface-raised)]',
           open
-            ? 'border-[var(--border-hover)]'
+            ? // ioiti-ui: open, the option under the pointer and the one chosen in the accent, where the theme has one (accent:).
+              'border-[var(--border-hover)] accent:border-brand'
             : error
               ? 'border-rose-500/50 hover:border-rose-500/70'
               : 'border-[var(--border)] hover:border-[var(--border-hover)]',
@@ -186,9 +187,9 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
                   onClick={() => handleSelect(opt, idx)}
                   className={cn(
                     'relative px-3 py-2 mx-1 rounded-md text-xs cursor-pointer flex items-center justify-between gap-2',
-                    selected ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
+                    selected ? 'text-[var(--text-primary)] accent:text-brand-text' : 'text-[var(--text-secondary)]',
                     opt.disabled && 'opacity-30 cursor-not-allowed',
-                    activeIndex === idx && !opt.disabled && 'bg-[var(--surface-raised)]'
+                    activeIndex === idx && !opt.disabled && 'bg-[var(--surface-raised)] accent:bg-brand-soft'
                   )}
                 >
                   <span className="flex flex-col">
@@ -199,7 +200,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
                       </span>
                     )}
                   </span>
-                  {selected && <Check className="w-3.5 h-3.5 text-[var(--text-primary)] shrink-0" />}
+                  {selected && <Check className="w-3.5 h-3.5 text-[var(--text-primary)] accent:text-brand-text shrink-0" />}
                 </li>
               );
             })}
