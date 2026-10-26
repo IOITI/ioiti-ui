@@ -1,18 +1,24 @@
-import { CheckIcon, PageHeader, Panel, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
+import { ACCENTS, CheckIcon, MATERIALS, PageHeader, Panel, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, useTheme } from 'ioiti-ui'
+import accentsCss from 'ioiti-ui/accents.css?raw'
 import designCss from 'ioiti-ui/design.css?raw'
+import glassCss from 'ioiti-ui/glass.css?raw'
 import themeCss from 'ioiti-ui/theme.css?raw'
 import tokensCss from 'ioiti-ui/tokens.css?raw'
 
 import { Rule } from '../parts'
-import { contrastPairs, SURFACES, TEXTS, themeTokens } from '../tokens'
-import type { ThemeName } from '../tokens'
+import { contrastPairs, lookPairs, lookTokens, SURFACES, TEXTS, themeTokens, valueOf } from '../tokens'
+import type { Look, ThemeName } from '../tokens'
 
 // The stylesheets as the package ships them, in the order a page imports them.
-const SHEETS = [tokensCss, themeCss, designCss]
+const SHEETS = [tokensCss, themeCss, accentsCss, glassCss, designCss]
 const THEMES: Record<ThemeName, Record<string, string>> = {
   light: themeTokens(SHEETS, 'light'),
   dark: themeTokens(SHEETS, 'dark'),
 }
+const PRESETS = ACCENTS.filter((accent) => accent !== 'neutral')
+const LOOKS: Look[] = (['light', 'dark'] as const).flatMap((theme) =>
+  ACCENTS.flatMap((accent) => MATERIALS.map((material) => ({ theme, accent, material }))),
+)
 
 interface Token {
   name: string
@@ -70,19 +76,49 @@ const GROUPS: { title: string; description: string; text?: boolean; tokens: Toke
   },
 ]
 
-function Sample({ theme, name, text }: { theme: ThemeName; name: string; text?: boolean }) {
-  const tokens = THEMES[theme]
-  const value = tokens[name] ?? ''
+const BRAND: Token[] = [
+  { name: '--brand', utility: 'accent:bg-brand', use: 'A filled control, a box checked, a switch on, a progress, the day picked.' },
+  { name: '--brand-foreground', utility: 'accent:text-brand-foreground', use: 'Text and icons on the fill.' },
+  { name: '--brand-soft', utility: 'accent:bg-brand-soft', use: 'The tint of what is chosen: the page in the menu, a row, an option, a range.' },
+  { name: '--brand-text', utility: 'accent:text-brand-text', use: 'The accent as text: a link, the tab and the step shown.' },
+]
+
+const GLASS: Token[] = [
+  { name: '--glass-base', utility: 'body', use: 'The page under the washes.' },
+  { name: '--glass-tint-1', utility: 'body', use: 'The washes of the backdrop, at their strongest (an accent\'s in place of the first).' },
+  { name: '--glass-tint-2', utility: 'body', use: '' },
+  { name: '--glass-tint-3', utility: 'body', use: '' },
+  { name: '--glass-bar', utility: 'glass-bar', use: 'The sidebar and the top bar.' },
+  { name: '--glass-card', utility: 'glass-card', use: 'Panels, tiles, cards.' },
+  { name: '--glass-float', utility: 'glass-float', use: 'What floats, blurred: popovers, menus, dialogs, toasts, tooltips.' },
+  { name: '--glass-shine', utility: 'glass-*', use: 'The light across a glass surface, from its top corner.' },
+  { name: '--glass-reflection', utility: 'glass-*', use: 'The colour around it, in its far corner (the accent\'s).' },
+  { name: '--glass-scrim', utility: 'glass:', use: 'Under a dialog: lighter than the design\'s.' },
+]
+
+function Sample({ tokens, name, text }: { tokens: Record<string, string>; name: string; text?: boolean }) {
+  // Its references followed here: on the page, a var() would take the look shown, not this one.
+  const value = valueOf(tokens, name) ?? ''
   return (
     <div className="flex min-w-0 items-center gap-2">
       <span
         className="grid size-8 shrink-0 place-items-center rounded-lg border border-border text-sm font-semibold"
-        style={{ background: tokens['--background'], color: text ? value : undefined }}
+        style={{ background: valueOf(tokens, '--glass-base') ?? valueOf(tokens, '--background'), color: text ? value : undefined }}
       >
         {text ? 'Aa' : <span className="size-5 rounded-md border border-black/5" style={{ background: value }} />}
       </span>
       <code className="truncate font-mono text-[11px] text-muted-foreground">{value}</code>
     </div>
+  )
+}
+
+function Ratio({ value, minimum = 4.5 }: { value?: number; minimum?: number }) {
+  if (value === undefined) return <>—</>
+  return (
+    <span className="inline-flex items-center gap-1">
+      {value.toFixed(2)}
+      <CheckIcon state={value >= minimum ? 'pass' : 'fail'} />
+    </span>
   )
 }
 
@@ -105,18 +141,44 @@ function ContrastTable({ theme }: { theme: ThemeName }) {
         {TEXTS.map((text) => (
           <TableRow key={text}>
             <TableHeaderCell className="font-mono text-xs">{text}</TableHeaderCell>
-            {SURFACES.map((surface) => {
-              const value = ratio(text, surface)
+            {SURFACES.map((surface) => (
+              <TableCell key={surface} numeric>
+                <Ratio value={ratio(text, surface)} />
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+
+/** The look shown: every text and mark on every surface it has, glass at its worst over the backdrop. */
+function LookContrast({ look }: { look: Look }) {
+  const pairs = lookPairs(lookTokens(SHEETS, look), look)
+  const surfaces = [...new Set(pairs.map((pair) => pair.surface))].filter((surface) => !surface.startsWith('--brand-soft on') && surface !== '--brand')
+  const texts = [...new Set(pairs.filter((pair) => surfaces.includes(pair.surface)).map((pair) => pair.text))]
+  return (
+    <Table density="dense" aria-label={`Contrast of text and marks, ${look.theme}, ${look.accent}, ${look.material}`} className="min-w-[56rem]">
+      <TableHead>
+        <TableRow>
+          <TableHeaderCell>On</TableHeaderCell>
+          {surfaces.map((surface) => (
+            <TableHeaderCell key={surface} numeric>
+              {surface.replace(' on --glass-scrim', ' on scrim')}
+            </TableHeaderCell>
+          ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {texts.map((text) => (
+          <TableRow key={text}>
+            <TableHeaderCell className="font-mono text-xs">{text}</TableHeaderCell>
+            {surfaces.map((surface) => {
+              const pair = pairs.find((found) => found.text === text && found.surface === surface)
               return (
                 <TableCell key={surface} numeric>
-                  {value === undefined ? (
-                    '—'
-                  ) : (
-                    <span className="inline-flex items-center gap-1">
-                      {value.toFixed(2)}
-                      <CheckIcon state={value >= 4.5 ? 'pass' : 'fail'} />
-                    </span>
-                  )}
+                  <Ratio value={pair?.ratio} minimum={pair?.minimum} />
                 </TableCell>
               )
             })}
@@ -127,12 +189,53 @@ function ContrastTable({ theme }: { theme: ThemeName }) {
   )
 }
 
+/** Every look, at its weakest: the lowest text and mark of each. */
+function EveryLook() {
+  return (
+    <Table density="dense" aria-label="The weakest pair of every look">
+      <TableHead>
+        <TableRow>
+          <TableHeaderCell>Look</TableHeaderCell>
+          <TableHeaderCell>Weakest text</TableHeaderCell>
+          <TableHeaderCell numeric>Ratio</TableHeaderCell>
+          <TableHeaderCell>Weakest mark</TableHeaderCell>
+          <TableHeaderCell numeric>Ratio</TableHeaderCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {LOOKS.map((look) => {
+          const pairs = lookPairs(lookTokens(SHEETS, look), look)
+          // None where the stylesheets are not read (the gallery's tests import them empty).
+          const weakest = (minimum: number) =>
+            pairs.filter((pair) => pair.minimum === minimum).reduce<(typeof pairs)[number] | undefined>((low, pair) => (!low || pair.ratio < low.ratio ? pair : low), undefined)
+          const text = weakest(4.5)
+          const mark = weakest(3)
+          return (
+            <TableRow key={`${look.theme}-${look.accent}-${look.material}`}>
+              <TableCell>{`${look.theme}, ${look.accent}, ${look.material}`}</TableCell>
+              <TableCell className="font-mono text-xs">{text ? `${text.text} on ${text.surface}` : '—'}</TableCell>
+              <TableCell numeric>
+                <Ratio value={text?.ratio} />
+              </TableCell>
+              <TableCell className="font-mono text-xs">{mark ? `${mark.text} on ${mark.surface}` : '—'}</TableCell>
+              <TableCell numeric>
+                <Ratio value={mark?.ratio} minimum={3} />
+              </TableCell>
+            </TableRow>
+          )
+        })}
+      </TableBody>
+    </Table>
+  )
+}
+
 export function Colours() {
+  const { theme, accent, material } = useTheme()
   return (
     <>
       <PageHeader
         title="Colours"
-        description="Two themes, each a full set of tokens. A component names a token, never a colour: it is right in both themes."
+        description="Two themes, each a full set of tokens; an accent and a material set some of them again (Themes). A component names a token, never a colour: it is right in every look."
       />
 
       <Panel title="Rules">
@@ -142,15 +245,17 @@ export function Colours() {
             through a token that has both. A literal with one value shows in one theme only.
           </Rule>
           <Rule title="Checked, not judged by eye">
-            Text is 4.5:1 at least on every surface of its theme, a hovered row included: the table below is computed from
-            the stylesheets, and the package's tests hold it.
+            Text is 4.5:1 at least, and a mark 3:1, on every surface of every look, a hovered row and glass over its
+            backdrop's strongest colours included: the tables below are computed from the stylesheets, and the package's
+            tests hold them.
           </Rule>
           <Rule title="The page follows the system">
-            Until a theme is chosen with the button, which is kept in the browser under the application's own key.
+            Until a theme is chosen with the button, which is kept in the browser under the application's own key; the
+            accent and the material beside it, the application's own until a person picks another.
           </Rule>
           <Rule title="Charts read their colours once">
-            A canvas takes the colours it read when it was made: give it the theme as its key, so that another theme makes
-            another chart.
+            A canvas takes the colours it read when it was made: give it the theme and the accent as its key, so that
+            another theme or accent makes another chart.
           </Rule>
         </ul>
       </Panel>
@@ -174,10 +279,10 @@ export function Colours() {
                     <p className="mt-0.5 text-muted-foreground">{token.use}</p>
                   </TableCell>
                   <TableCell>
-                    <Sample theme="light" name={token.name} text={group.text} />
+                    <Sample tokens={THEMES.light} name={token.name} text={group.text} />
                   </TableCell>
                   <TableCell>
-                    <Sample theme="dark" name={token.name} text={group.text} />
+                    <Sample tokens={THEMES.dark} name={token.name} text={group.text} />
                   </TableCell>
                   <TableCell>
                     <code className="font-mono text-xs">{token.utility}</code>
@@ -188,6 +293,72 @@ export function Colours() {
           </Table>
         </Panel>
       ))}
+
+      <Panel
+        title="Accents"
+        description="What is chosen, current or primary, in a preset's colour: a fill and the text on it, a tint, the accent as text. Each preset sets the focus ring and the one-series charts too (accents.css)."
+        dense
+      >
+        <Table aria-label="Accents" className="min-w-[60rem]">
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Token</TableHeaderCell>
+              {PRESETS.flatMap((preset) =>
+                (['light', 'dark'] as const).map((mode) => <TableHeaderCell key={`${preset}-${mode}`}>{`${preset}, ${mode}`}</TableHeaderCell>),
+              )}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {BRAND.map((token) => (
+              <TableRow key={token.name}>
+                <TableCell>
+                  <code className="font-mono text-xs text-foreground">{token.name}</code>
+                  <p className="mt-0.5 text-muted-foreground">{token.use}</p>
+                  <code className="font-mono text-[11px] text-muted-foreground">{token.utility}</code>
+                </TableCell>
+                {PRESETS.flatMap((preset) =>
+                  (['light', 'dark'] as const).map((mode) => (
+                    <TableCell key={`${preset}-${mode}`}>
+                      <Sample tokens={lookTokens(SHEETS, { theme: mode, accent: preset, material: 'flat' })} name={token.name} text={token.name === '--brand-text'} />
+                    </TableCell>
+                  )),
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Panel>
+
+      <Panel title="Glass" description="The glass material's backdrop and surfaces, and the light on them (glass.css)." dense>
+        <Table aria-label="Glass" className="min-w-[44rem]">
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Token</TableHeaderCell>
+              <TableHeaderCell>Light</TableHeaderCell>
+              <TableHeaderCell>Dark</TableHeaderCell>
+              <TableHeaderCell>Used by</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {GLASS.map((token) => (
+              <TableRow key={token.name}>
+                <TableCell>
+                  <code className="font-mono text-xs text-foreground">{token.name}</code>
+                  {token.use && <p className="mt-0.5 text-muted-foreground">{token.use}</p>}
+                </TableCell>
+                {(['light', 'dark'] as const).map((mode) => (
+                  <TableCell key={mode}>
+                    <Sample tokens={lookTokens(SHEETS, { theme: mode, accent: 'neutral', material: 'glass' })} name={token.name} />
+                  </TableCell>
+                ))}
+                <TableCell>
+                  <code className="font-mono text-xs">{token.utility}</code>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Panel>
 
       {(['light', 'dark'] as const).map((theme) => (
         <Panel
@@ -202,6 +373,22 @@ export function Colours() {
           <ContrastTable theme={theme} />
         </Panel>
       ))}
+
+      <Panel
+        title={`The look shown: ${theme}, ${accent}, ${material}`}
+        description="Text at 4.5:1 and marks (the accent's fill, the focus ring) at 3:1, each at its worst over what a surface can show: glass over the base and each wash at its strongest, with its light and reflection, a dialog over its scrim. Choose another with the palette button."
+        dense
+      >
+        <LookContrast look={{ theme, accent, material }} />
+      </Panel>
+
+      <Panel
+        title="Every look"
+        description="The weakest text and the weakest mark of each of the 16 looks. The design's one exception shows in the dark flat ones: --text-subtle on a hovered surface (4.44)."
+        dense
+      >
+        <EveryLook />
+      </Panel>
     </>
   )
 }

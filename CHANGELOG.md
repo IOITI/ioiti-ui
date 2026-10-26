@@ -27,6 +27,10 @@ the design as it was: an application that gives neither looks as it did.
 - **Glass on the components**: the sidebar and the top bar (`glass-bar`), panels, tiles and cards
   (`glass-card`), and what floats over the page, the only glass blurred (`glass-float`): popovers, menus,
   dialogs over a lighter scrim, toasts, tooltips, the drawer. Fields, rows and buttons stay solid.
+- **The gallery**: the picker in its top bar; a Themes page; the accents' and the glass's tokens on the Colours
+  page, with the contrast of the look shown and of every look; each accent's chart colours; glass on the
+  Surfaces page.
+- **The template**: the picker beside the theme's button, and how to give the application's own look.
 
 ## [0.1.0] - 2026-10-26
 

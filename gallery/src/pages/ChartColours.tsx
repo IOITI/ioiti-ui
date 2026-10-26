@@ -1,14 +1,17 @@
-import { PageHeader, Panel } from 'ioiti-ui'
+import { ACCENTS, PageHeader, Panel } from 'ioiti-ui'
+import accentsCss from 'ioiti-ui/accents.css?raw'
 import designCss from 'ioiti-ui/design.css?raw'
+import glassCss from 'ioiti-ui/glass.css?raw'
 import themeCss from 'ioiti-ui/theme.css?raw'
 import tokensCss from 'ioiti-ui/tokens.css?raw'
 
 import { Code, Rule } from '../parts'
-import { themeTokens } from '../tokens'
+import { lookTokens, themeTokens, valueOf } from '../tokens'
 import type { ThemeName } from '../tokens'
 
-const SHEETS = [tokensCss, themeCss, designCss]
+const SHEETS = [tokensCss, themeCss, accentsCss, glassCss, designCss]
 const THEMES: Record<ThemeName, Record<string, string>> = { light: themeTokens(SHEETS, 'light'), dark: themeTokens(SHEETS, 'dark') }
+const PRESETS = ACCENTS.filter((accent) => accent !== 'neutral')
 
 const RAMPS: { title: string; description: string; tokens: string[] }[] = [
   {
@@ -35,17 +38,16 @@ const RAMPS: { title: string; description: string; tokens: string[] }[] = [
 
 const CODE = ['--code-keyword', '--code-string', '--code-number', '--code-comment', '--code-function', '--code-namespace', '--code-type', '--code-builtin', '--code-operator']
 
-function Ramp({ theme, tokens }: { theme: ThemeName; tokens: string[] }) {
-  const values = THEMES[theme]
+function Ramp({ theme, tokens, values = THEMES[theme], label = theme }: { theme: ThemeName; tokens: string[]; values?: Record<string, string>; label?: string }) {
   return (
     <div className="rounded-xl border border-border p-3" style={{ background: values['--surface'] }}>
       <p className="mb-2 text-[11px] font-medium" style={{ color: values['--muted-foreground'] }}>
-        {theme}
+        {label}
       </p>
       <div className="flex flex-wrap gap-2">
         {tokens.map((token) => (
           <div key={token} className="flex flex-col items-center gap-1">
-            <span className="h-8 w-12 rounded-md" style={{ background: values[token] }} />
+            <span className="h-8 w-12 rounded-md" style={{ background: valueOf(values, token) }} />
             <code className="font-mono text-[10px]" style={{ color: values['--muted-foreground'] }}>
               {token.replace('--chart-', '')}
             </code>
@@ -69,6 +71,25 @@ export function ChartColours() {
           </div>
         </Panel>
       ))}
+
+      <Panel
+        title="In each accent"
+        description="An accent sets the one series and the funnel's sequence in its own hue, the other sets stay: things compared and gains and losses keep their colours in every look. Blue keeps the design's own."
+      >
+        <div className="grid gap-3 md:grid-cols-2">
+          {PRESETS.flatMap((accent) =>
+            (['light', 'dark'] as const).map((theme) => (
+              <Ramp
+                key={`${accent}-${theme}`}
+                theme={theme}
+                label={`${accent}, ${theme}`}
+                values={lookTokens(SHEETS, { theme, accent, material: 'flat' })}
+                tokens={['--chart-series', '--chart-funnel-1', '--chart-funnel-2', '--chart-funnel-3', '--chart-funnel-4', '--chart-funnel-5']}
+              />
+            )),
+          )}
+        </div>
+      </Panel>
 
       <Panel title="Code" description="A code editor's highlighting: text colours, each 4.5:1 at least on its surface.">
         <pre className="overflow-x-auto rounded-lg border border-border/60 bg-surface p-3 font-mono text-xs leading-relaxed">

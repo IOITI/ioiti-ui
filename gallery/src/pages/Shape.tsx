@@ -46,6 +46,21 @@ export function Shape() {
         </div>
       </Panel>
 
+      <Panel
+        title="Glass"
+        description="Under the glass material (the palette button of the top bar), a surface is glass by its role; with the flat one, these are the design's surfaces."
+      >
+        <div className="flex flex-wrap gap-6">
+          <div className="grid h-28 w-40 place-items-center rounded-xl border border-border bg-surface text-xs text-muted-foreground glass-bar">glass-bar</div>
+          <div className="grid h-28 w-40 place-items-center rounded-2xl border border-border/70 bg-surface/50 text-xs text-muted-foreground dark:bg-surface/25 glass-card">
+            glass-card
+          </div>
+          <div className="grid h-28 w-40 place-items-center rounded-xl border border-border bg-surface text-xs text-muted-foreground shadow-elevated glass-float">
+            glass-float
+          </div>
+        </div>
+      </Panel>
+
       <Panel title="Rules">
         <ul className="grid gap-4 sm:grid-cols-2">
           <Rule title="A frame by role">

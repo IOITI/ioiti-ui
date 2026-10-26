@@ -1,4 +1,4 @@
-import { NotFoundPage, SidebarFooterButton } from 'ioiti-ui'
+import { LookPicker, NotFoundPage, SidebarFooterButton, ThemeToggle } from 'ioiti-ui'
 import { RouterAppShell, RouterRoot } from 'ioiti-ui/react-router'
 import { LogOut } from 'lucide-react'
 import { createBrowserRouter, useNavigate } from 'react-router'
@@ -20,7 +20,20 @@ export const router = createBrowserRouter([
     children: [
       { path: '/login', element: <LoginPage /> },
       {
-        element: <RouterAppShell menu={MENU} appDetail="v0.1.0" sidebarFooter={<SignOut />} />,
+        // The top bar ends with the accent and material (each person's own), then the theme.
+        element: (
+          <RouterAppShell
+            menu={MENU}
+            appDetail="v0.1.0"
+            sidebarFooter={<SignOut />}
+            topBarEnd={
+              <>
+                <LookPicker />
+                <ThemeToggle />
+              </>
+            }
+          />
+        ),
         children: [
           { index: true, element: <HomePage /> },
           { path: 'items', element: <ItemsPage /> },
