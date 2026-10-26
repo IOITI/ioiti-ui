@@ -1,0 +1,29 @@
+name: Verify a release
+
+# A tag is what applications install: check that it installs as it is, from GitHub, and builds.
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  install-the-tag:
+    name: The template installs the tag from GitHub and builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: The release commit carries dist/, and nothing for npm to build
+        run: |
+          test -f dist/index.js
+          test -f dist/styles/styles.css
+          node -e "const m = require('./package.json'); if (m.scripts) { console.error('A release commit has no scripts: npm would build it on install.'); process.exit(1) }"
+      - name: The template, on this tag from GitHub
+        run: |
+          cp -r templates/app "$RUNNER_TEMP/app"
+          cd "$RUNNER_TEMP/app"
+          node -e "const f = 'package.json', p = require('./' + f); p.dependencies['ioiti-ui'] = 'github:${{ github.repository }}#${{ github.ref_name }}'; require('fs').writeFileSync(f, JSON.stringify(p, null, 2))"
+          npm install --no-audit --no-fund
+          npm run build
+          test -f dist/ioiti-theme.js

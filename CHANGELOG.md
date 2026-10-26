@@ -1,9 +1,27 @@
 # Changelog
 
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
-application installs as `github:IOITI/ioiti-ui#v0.1.0`.
+application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
 ## [0.1.0] - 2026-10-26
 
-The first version: the design and the components of WATA's admin interface (WATA v0.50.1), as a
-package any application can install.
+The first version: the design and the components of WATA's admin interface (WATA v0.50.1), as a package any
+application can install. Held to the original's built CSS block by block, and compared in a browser: the same
+tokens and the same shell, in both themes (`docs/fidelity.md`).
+
+- **The design**: `ioiti-ui/styles.css` (Tailwind CSS 4 and the design in one import) or `ioiti-ui/design.css`
+  (the design alone); the tokens of both themes, Geist and JetBrains Mono, the global focus ring; the
+  pre-paint theme script (`ioiti-ui/theme.js`), under the application's own key.
+- **The components**: EasyUI's 44, as WATA's admin had them (`docs/easyui-changes.md`); the blocks of WATA's
+  pages (`Panel`, `PageHeader`, `KpiTile`, `Meter`, `Hint`, `ButtonLink`, `PeekLink`, `CheckList`,
+  `ExportButton`, `DateRangeFilter`, `ConfirmAction`, `StatusBadge`, `SignedValue`, `QueryState`); and the
+  recipes its pages wrote by hand (`Field`, `IconButton`, `Table` and its parts, `TextLink`, `EmptyText`,
+  `ErrorText`, `KpiGrid`).
+- **The shell**: `AppShell` (sidebar, top bar, the trail of where a page is), `AppBrand`,
+  `SidebarFooterButton`, `StateChip`, `NotFoundState`, `NotFoundPage`, `AuthLayout`; the menu as data
+  (`Menu`), the page's name (`PageHeader`, `usePageName`, `useTabTitle`).
+- **The providers**: `IoitiProvider` (theme, animations, the application's name), `LinkProvider` (the
+  application's links for every component), `ThemeProvider`, `ToastProvider`.
+- **`ioiti-ui/react-router`**: `RouterRoot`, `RouterAppShell`, `RouterLink`.
+- **`ioiti-ui/vite`**: `ioiti()`, the pre-paint script in the pages, no font as a `data:` URI, one React.
+- **The gallery** (`npm run gallery`) and **the starter template** (`templates/app`).
