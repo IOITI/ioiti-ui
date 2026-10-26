@@ -1,7 +1,8 @@
 /**
  * The design's colour tokens, read from its stylesheets as the browser reads them, and what they
- * make together: a colour over another (a translucent border over its surface), the contrast of a
- * text on a surface (WCAG 2). Pure functions: the Colours page and the contrast test share them.
+ * make together: a colour over another (a translucent border over its surface, glass over the
+ * backdrop), the contrast of a text on a surface (WCAG 2), for every look: a theme, an accent and a
+ * material. Pure functions: the Colours page and the contrast test share them.
  */
 
 /** A colour: sRGB channels from 0 to 1, and its opacity. */
@@ -81,13 +82,52 @@ export function toHex({ r, g, b }: Rgba): string {
   return `#${[r, g, b].map((value) => Math.round(value * 255).toString(16).padStart(2, '0')).join('')}`
 }
 
-/** The custom properties a stylesheet sets in its blocks of exactly this selector, in order. */
+interface Rule {
+  /** What precedes its block, after the last statement (`@import …;`). */
+  selector: string
+  body: string
+}
+
+/**
+ * The blocks of a stylesheet at its top level, in order. What sits inside an at-rule (`@media`,
+ * `@supports`, `@theme`, `@utility`, `@layer`) applies under a condition, or is no token: left out.
+ */
+function rulesOf(css: string): Rule[] {
+  const text = css.replace(/\/\*[\s\S]*?\*\//g, '')
+  const rules: Rule[] = []
+  let depth = 0
+  let start = 0
+  let open = 0
+  for (let at = 0; at < text.length; at++) {
+    if (text[at] === '{') {
+      if (depth === 0) open = at
+      depth++
+    } else if (text[at] === '}') {
+      depth--
+      if (depth === 0) {
+        const head = text.slice(start, open)
+        rules.push({ selector: head.slice(head.lastIndexOf(';') + 1).trim(), body: text.slice(open + 1, at) })
+        start = at + 1
+      }
+    }
+  }
+  return rules
+}
+
+/** What a stylesheet sets inside its at-rules that start so (`@media (prefers-reduced-transparency`), as a stylesheet. */
+export function inside(css: string, prelude: string): string {
+  return rulesOf(css)
+    .filter((rule) => rule.selector.startsWith(prelude))
+    .map((rule) => rule.body)
+    .join('\n')
+}
+
+/** The custom properties a stylesheet sets in its top-level blocks of exactly this selector, in order. */
 export function tokensOf(css: string, selector: string): Record<string, string> {
   const tokens: Record<string, string> = {}
-  const text = css.replace(/\/\*[\s\S]*?\*\//g, '')
-  for (const block of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    if (block[1].trim() !== selector) continue
-    for (const declaration of block[2].matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) tokens[declaration[1]] = declaration[2].trim()
+  for (const rule of rulesOf(css)) {
+    if (rule.selector !== selector) continue
+    for (const declaration of rule.body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) tokens[declaration[1]] = declaration[2].trim()
   }
   return tokens
 }
@@ -105,6 +145,48 @@ export function themeTokens(sheets: string[], theme: ThemeName): Record<string, 
   if (theme === 'light') for (const sheet of sheets) Object.assign(merged, tokensOf(sheet, ':root:not(.dark)'))
   else for (const sheet of sheets) Object.assign(merged, tokensOf(sheet, '.dark'))
   return merged
+}
+
+/** A theme, an accent and a material: what a page shows. */
+export interface Look {
+  theme: ThemeName
+  accent: string
+  material: string
+}
+
+/** The selectors of an accent's or a material's blocks: what both themes share, then the theme's own. */
+export function lookSelectors(name: 'accent' | 'material', value: string, theme: ThemeName): string[] {
+  const root = `:root[data-${name}="${value}"]`
+  return [root, theme === 'dark' ? `${root}.dark` : `${root}:not(.dark)`]
+}
+
+/**
+ * The tokens of a look: its theme's, then its accent's and its material's blocks, which are more
+ * specific than the design's (accents.css, glass.css). Neutral and flat have none.
+ */
+export function lookTokens(sheets: string[], { theme, accent, material }: Look): Record<string, string> {
+  const merged = themeTokens(sheets, theme)
+  const chosen = [accent === 'neutral' ? [] : lookSelectors('accent', accent, theme), material === 'flat' ? [] : lookSelectors('material', material, theme)]
+  for (const selector of chosen.flat()) for (const sheet of sheets) Object.assign(merged, tokensOf(sheet, selector))
+  return merged
+}
+
+function evaluate(tokens: Record<string, string>, text: string, seen: string[]): string | undefined {
+  const reference = /^var\(\s*(--[\w-]+)\s*(?:,\s*([\s\S]+))?\)$/.exec(text.trim())
+  if (!reference) return text.trim()
+  const [, other, fallback] = reference
+  if (tokens[other] !== undefined && !seen.includes(other)) return evaluate(tokens, tokens[other], [...seen, other])
+  return fallback === undefined ? undefined : evaluate(tokens, fallback, seen)
+}
+
+/** A token's value with a `var(--other)` followed, as the browser does: its fallback where the other is unset. */
+export function valueOf(tokens: Record<string, string>, name: string): string | undefined {
+  return tokens[name] === undefined ? undefined : evaluate(tokens, tokens[name], [name])
+}
+
+/** A token's colour, its references followed; null when it is no colour. */
+export function colourOf(tokens: Record<string, string>, name: string): Rgba | null {
+  return parseColor(valueOf(tokens, name) ?? '')
 }
 
 /** The surfaces text is read on, and the text colours the design promises 4.5:1 on all of them. */
@@ -132,12 +214,72 @@ export interface Pair {
 export function contrastPairs(tokens: Record<string, string>): Pair[] {
   const pairs: Pair[] = []
   for (const text of TEXTS) {
-    const textColour = parseColor(tokens[text] ?? '')
+    const textColour = colourOf(tokens, text)
     if (!textColour) continue
     for (const surface of SURFACES) {
-      const surfaceColour = parseColor(tokens[surface] ?? '')
+      const surfaceColour = colourOf(tokens, surface)
       if (surfaceColour) pairs.push({ text, surface, ratio: contrast(textColour, surfaceColour) })
     }
   }
+  return pairs
+}
+
+/** A pair of a look, and what it must reach: 4.5:1 for text, 3:1 for a mark (a fill that says a state, the focus ring). */
+export interface LookPair extends Pair {
+  minimum: number
+}
+
+/** The glass surfaces, from the most opaque. */
+export const GLASS_SURFACES = ['--glass-float', '--glass-bar', '--glass-card']
+
+/**
+ * What text and marks are read on in a look, each surface as the colours it can show. An opaque
+ * surface is one colour. Glass shows the backdrop through it: the page's base, and the strongest point
+ * of each wash over it (the accent's in place of the first, as glass.css paints it). Text set straight
+ * on the page is read on the backdrop itself.
+ */
+export function lookSurfaces(tokens: Record<string, string>, look: Look): Record<string, Rgba[]> {
+  const surfaces: Record<string, Rgba[]> = {}
+  for (const name of SURFACES) {
+    const colour = colourOf(tokens, name)
+    if (colour) surfaces[name] = [colour]
+  }
+  if (look.material !== 'glass') return surfaces
+  const base = colourOf(tokens, '--glass-base')
+  if (!base) return surfaces
+  const washes = [look.accent === 'neutral' ? '--glass-tint-1' : '--brand-wash', '--glass-tint-2', '--glass-tint-3']
+  const backdrop = [base, ...washes.flatMap((wash) => {
+    const colour = colourOf(tokens, wash)
+    return colour ? [over(colour, base)] : []
+  })]
+  surfaces.backdrop = backdrop
+  for (const name of GLASS_SURFACES) {
+    const colour = colourOf(tokens, name)
+    if (colour) surfaces[name] = backdrop.map((under) => over(colour, under))
+  }
+  return surfaces
+}
+
+/**
+ * Every pair a look must hold, at its worst over the colours a surface can show: each text colour (the
+ * accent's too) on each surface; with an accent, its text on the tint of a chosen item over each
+ * surface, the text on its fill, and its fill against each surface; the focus ring against each.
+ */
+export function lookPairs(tokens: Record<string, string>, look: Look): LookPair[] {
+  const surfaces = Object.entries(lookSurfaces(tokens, look))
+  const pairs: LookPair[] = []
+  const worst = (colour: Rgba, under: Rgba[]) => Math.min(...under.map((surface) => contrast(colour, surface)))
+  const add = (text: string, minimum: number, on: [string, Rgba[]][] = surfaces) => {
+    const colour = colourOf(tokens, text)
+    if (colour) for (const [surface, under] of on) pairs.push({ text, surface, ratio: worst(colour, under), minimum })
+  }
+  for (const text of look.accent === 'neutral' ? TEXTS : [...TEXTS, '--brand-text']) add(text, 4.5)
+  add('--focus-ring', 3)
+  if (look.accent === 'neutral') return pairs
+  add('--brand', 3)
+  const soft = colourOf(tokens, '--brand-soft')
+  if (soft) add('--brand-text', 4.5, surfaces.map(([surface, under]) => [`--brand-soft on ${surface}`, under.map((colour) => over(soft, colour))]))
+  const fill = colourOf(tokens, '--brand')
+  if (fill) add('--brand-foreground', 4.5, [['--brand', [fill]]])
   return pairs
 }

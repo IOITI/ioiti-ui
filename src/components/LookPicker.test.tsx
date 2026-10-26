@@ -1,8 +1,10 @@
+import { readFileSync } from 'node:fs'
+
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ACCENT_ATTRIBUTE, MATERIAL_ATTRIBUTE, THEME_KEY_ATTRIBUTE } from '../lib/theme.js'
+import { ACCENT_ATTRIBUTE, ACCENTS, MATERIAL_ATTRIBUTE, THEME_KEY_ATTRIBUTE } from '../lib/theme.js'
 import { stubSystemTheme } from '../test/systemTheme.js'
 
 import { LookPicker } from './LookPicker.js'
@@ -97,6 +99,22 @@ describe('the accent and material picker', () => {
     fireEvent.pointerDown(screen.getByRole('button', { name: 'Elsewhere' }))
 
     await waitFor(() => expect(choices()).not.toBeInTheDocument(), { timeout: 3000 })
+  })
+
+  it('shows each accent in the fill the stylesheet gives it, in both themes', async () => {
+    // From disk: a stylesheet imported in a test is empty.
+    const css = readFileSync('src/styles/accents.css', 'utf8')
+    const fill = (accent: string, theme: string) =>
+      new RegExp(`:root\\[data-accent="${accent}"\\]${theme === 'dark' ? '\\.dark' : ':not\\(\\.dark\\)'}\\s*\\{[^}]*?--brand:\\s*(#[0-9a-f]{6});`).exec(css)?.[1]
+    const user = userEvent.setup()
+    renderPicker()
+
+    await user.click(trigger())
+    for (const accent of ACCENTS.filter((accent) => accent !== 'neutral')) {
+      const swatch = document.querySelector(`[data-swatch="${accent}"]`)?.className ?? ''
+      expect(swatch, accent).toContain(`bg-[${fill(accent, 'light')}]`)
+      expect(swatch, accent).toContain(`dark:bg-[${fill(accent, 'dark')}]`)
+    }
   })
 
   it('goes when the focus leaves it, and stays while it moves inside it', async () => {

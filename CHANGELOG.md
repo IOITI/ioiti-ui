@@ -15,6 +15,11 @@ the design as it was: an application that gives neither looks as it did.
 - **`LookPicker`**: the button that chooses them, for beside the theme's (`topBarEnd`).
 - **`ioiti({ accent, material })`**: the application's own, shown from the first paint until a person picks
   another.
+- **The stylesheets**: `ioiti-ui/accents.css` (the `brand` tokens of violet, indigo and blue, and the focus
+  ring and one-series charts in their colour) and `ioiti-ui/glass.css` (the backdrop, deeper shadows, and the
+  `glass-bar`, `glass-card` and `glass-float` utilities), both imported by `design.css`, with the variants
+  `accent:` and `glass:` for an application's own classes. Text holds 4.5:1 on every surface of the 16
+  looks, glass laid over its backdrop's strongest colours; the design's own blocks are unchanged.
 
 ## [0.1.0] - 2026-10-26
 

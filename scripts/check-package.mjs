@@ -44,13 +44,15 @@ const PACKAGE_ONLY = [
 ]
 
 // The design itself, as the built CSS writes it: the light page and secondary text, the dark
-// palette, the contrast fixes, a chart ramp, the global focus ring.
+// palette, the contrast fixes, a chart ramp, the global focus ring; an accent and the glass material.
 const DESIGN = [
   ':root:not(.dark){--background:#fafafa;--muted-foreground:#676772}',
   '.dark{--bg:#111113;',
   '--text-muted:#63636b',
   '--chart-funnel-1:#1e40af',
   ':focus-visible:not([tabindex="-1"]){outline:2px solid var(--focus-ring);outline-offset:2px}',
+  ':root[data-accent=violet]:not(.dark){--brand:#7c3aed;',
+  '.glass-float:is(:root[data-material=glass] *){background-color:var(--glass-float);',
 ]
 
 const FILES = [
@@ -65,6 +67,8 @@ const FILES = [
   'dist/styles/design.css',
   'dist/styles/tokens.css',
   'dist/styles/theme.css',
+  'dist/styles/accents.css',
+  'dist/styles/glass.css',
   'dist/theme.js',
   'dist/vite/index.js',
   'dist/vite/index.d.ts',

@@ -28,6 +28,8 @@
     "./design.css": "./dist/styles/design.css",
     "./tokens.css": "./dist/styles/tokens.css",
     "./theme.css": "./dist/styles/theme.css",
+    "./accents.css": "./dist/styles/accents.css",
+    "./glass.css": "./dist/styles/glass.css",
     "./theme.js": "./dist/theme.js",
     "./package.json": "./package.json"
   },

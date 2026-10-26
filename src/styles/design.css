@@ -13,8 +13,15 @@
 @import "./tokens.css";
 /* What ioiti-ui adds to them. */
 @import "./theme.css";
+/* ioiti-ui's own: the accents and the glass material, written on <html> when chosen (src/lib/theme.ts).
+   Their blocks are more specific than the design's, which follow: neutral and flat leave it as it is. */
+@import "./accents.css";
+@import "./glass.css";
 
 @custom-variant dark (&:is(.dark *));
+/* ioiti-ui's own, after `dark`, so that their classes come after its own too (and outrank them). */
+@custom-variant accent (&:is(:root[data-accent] *));
+@custom-variant glass (&:is(:root[data-material="glass"] *));
 
 /* The mapping of EasyUI's tokens to Tailwind utilities (its index.css and tailwind.config.js). */
 @theme inline {

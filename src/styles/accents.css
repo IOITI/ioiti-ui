@@ -1,0 +1,134 @@
+/* -----------------------------------------------------------------------------
+   The accents: a colour for what is chosen, current or primary (a filled
+   button, the page in the menu, a checked box, a selected day, a progress), for
+   links, the focus ring and one-series charts. ioiti-ui's own, not the design
+   it was taken from.
+
+   `neutral` writes nothing on <html>: the page is the design as it was, ink on
+   paper. A preset writes `data-accent` there, and the components' `accent:`
+   classes then draw with these tokens (src/lib/theme.ts, LookPicker).
+
+   - --brand            the fill
+   - --brand-foreground text and icons on the fill, 4.5:1 on it
+   - --brand-soft       the tint of a chosen item, a row, a range
+   - --brand-text       the accent as text on every surface, 4.5:1, on the tint too
+   - --brand-glow       a coloured shadow
+   - --brand-wash       the accent's colour in the glass backdrop (glass.css)
+
+   Each preset writes its light values under :root[data-accent="…"]:not(.dark)
+   and its dark ones under :root[data-accent="…"].dark: (0,3,0), more specific
+   than every :root and .dark block of the design, which design.css writes
+   after this file. One selector per block: the gallery reads them by name and
+   holds every one to its contrast (gallery/src/tokens.test.ts). No preset is
+   green, red, amber, orange or teal: those say gain, loss and warning here.
+
+   Light fills are a 600 step with white on them; dark ones a lighter step with
+   the dark page's ink on them, as the design's own inverted fills are. Funnel
+   ramps (components/ui/funnel-chart.tsx): one hue, OKLCH lightness 0.06 to 0.08
+   apart a step, the first stage the strongest on its card and the last one
+   2.4:1 at least on it (dataviz validator, --ordinal). Blue keeps the design's
+   own chart colours.
+   --------------------------------------------------------------------------- */
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-text: var(--brand-text);
+}
+
+:root[data-accent="violet"]:not(.dark) {
+  --brand: #7c3aed;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(124 58 237 / 0.12);
+  --brand-text: #6d28d9;
+  --brand-glow: rgb(124 58 237 / 0.35);
+  --brand-wash: rgb(124 58 237 / 0.1);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #5400b0;
+  --chart-funnel-2: #681ed1;
+  --chart-funnel-3: #7c3aed;
+  --chart-funnel-4: #8e58ff;
+  --chart-funnel-5: #a281ff;
+}
+
+:root[data-accent="violet"].dark {
+  --brand: #a78bfa;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(167 139 250 / 0.16);
+  --brand-text: #c4b5fd;
+  --brand-glow: rgb(167 139 250 / 0.3);
+  --brand-wash: rgb(167 139 250 / 0.16);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #9569fe;
+  --chart-funnel-1: #c0b0fe;
+  --chart-funnel-2: #aa8fff;
+  --chart-funnel-3: #9569fe;
+  --chart-funnel-4: #8348f4;
+  --chart-funnel-5: #702cdb;
+}
+
+:root[data-accent="indigo"]:not(.dark) {
+  --brand: #4f46e5;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(79 70 229 / 0.12);
+  --brand-text: #4338ca;
+  --brand-glow: rgb(79 70 229 / 0.35);
+  --brand-wash: rgb(79 70 229 / 0.1);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #320caf;
+  --chart-funnel-2: #3f30c7;
+  --chart-funnel-3: #4f46e5;
+  --chart-funnel-4: #6061f8;
+  --chart-funnel-5: #7982ff;
+}
+
+:root[data-accent="indigo"].dark {
+  --brand: #818cf8;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(129 140 248 / 0.16);
+  --brand-text: #a5b4fc;
+  --brand-glow: rgb(129 140 248 / 0.3);
+  --brand-wash: rgb(129 140 248 / 0.16);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #727aff;
+  --chart-funnel-1: #adb8fe;
+  --chart-funnel-2: #8e9aff;
+  --chart-funnel-3: #727aff;
+  --chart-funnel-4: #5e5df4;
+  --chart-funnel-5: #4d46dc;
+}
+
+:root[data-accent="blue"]:not(.dark) {
+  --brand: #2563eb;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(37 99 235 / 0.12);
+  --brand-text: #1d4ed8;
+  --brand-glow: rgb(37 99 235 / 0.35);
+  --brand-wash: rgb(37 99 235 / 0.1);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+}
+
+:root[data-accent="blue"].dark {
+  --brand: #60a5fa;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(96 165 250 / 0.16);
+  --brand-text: #93c5fd;
+  --brand-glow: rgb(96 165 250 / 0.3);
+  --brand-wash: rgb(96 165 250 / 0.16);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+}
