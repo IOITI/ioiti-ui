@@ -2,6 +2,7 @@
 // itself stays out, and every change here is a change of the package's interface
 // (src/index.test.ts holds the list).
 
+// Helpers.
 export { cn, copyToClipboard, scrollToTop } from './lib/utils.js'
 export { isPlainClick } from './lib/links.js'
 export { motionTransitions } from './lib/motion-tokens.js'
@@ -19,10 +20,62 @@ export {
   writePreference,
 } from './lib/theme.js'
 export type { Theme, ThemePreference } from './lib/theme.js'
+export {
+  formatBytes,
+  formatClock,
+  formatDateTime,
+  formatDay,
+  formatDuration,
+  formatMoney,
+  formatMoneyCompact,
+  formatNumber,
+  formatPercent,
+  formatRelative,
+  formatSpan,
+  formatTime,
+  formatWait,
+  toIsoDay,
+  toneOf,
+} from './lib/format.js'
+export type { Tone } from './lib/format.js'
+export { downloadCsv, toCsv } from './lib/csv.js'
+export type { CsvColumn } from './lib/csv.js'
+export { ALL_TIME, lastDays, rangeParams } from './lib/dateRange.js'
+export type { Check, CheckState } from './lib/checks.js'
+export { HEALTH_STATUS_LABEL } from './lib/health.js'
+export type { HealthStatus } from './lib/health.js'
 
+// What an application puts around its pages.
+export { IoitiProvider } from './components/IoitiProvider.js'
+export { useAppName } from './components/app-context.js'
 export { LinkProvider } from './components/LinkProvider.js'
 export { useLinkComponent, useNavigateTo } from './components/link-context.js'
 export type { NavigateTo } from './components/link-context.js'
+export { ThemeProvider } from './components/ThemeProvider.js'
+export { ThemeToggle } from './components/ThemeToggle.js'
+export { useTheme } from './components/theme-context.js'
+export type { ThemeState } from './components/theme-context.js'
+export { ToastProvider } from './components/ToastProvider.js'
+export { useToast } from './components/toast-context.js'
+export type { ShowToast, ToastMessage } from './components/toast-context.js'
+
+// The shell: the menu, the trail of the top bar, the page's name.
+export { PAGE_NOT_FOUND, UNNAMED, menuEntry, sidebarSections, trailFor } from './shell/navigation.js'
+export type { Crumb, Menu, MenuEntry, PageName } from './shell/navigation.js'
+export { usePageName, usePageTrail, useTabTitle } from './shell/page-trail-context.js'
+export { useMainScroll } from './components/main-scroll-context.js'
+
+// The blocks pages are made of.
+export { ButtonLink } from './components/ButtonLink.js'
+export { CheckIcon, CheckList } from './components/CheckList.js'
+export { ConfirmAction } from './components/ConfirmAction.js'
+export { DateRangeFilter } from './components/DateRangeFilter.js'
+export { ExportButton } from './components/ExportButton.js'
+export { Hint } from './components/Hint.js'
+export { KpiTile, Meter } from './components/KpiTile.js'
+export { PageHeader, Panel } from './components/Panel.js'
+export { PeekLink } from './components/PeekLink.js'
+export { QueryState, SignedValue, StatusBadge } from './components/status.js'
 
 // The components, from EasyUI (src/components/ui/: docs/easyui-changes.md says what was changed).
 export { ActivityHeatmap } from './components/ui/activity-heatmap.js'

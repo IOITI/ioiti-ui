@@ -1,0 +1,85 @@
+import type { ReactNode } from 'react'
+
+import { formatMoney, formatPercent, toneOf } from '../lib/format.js'
+import { HEALTH_STATUS_LABEL } from '../lib/health.js'
+import type { HealthStatus } from '../lib/health.js'
+import type { Tone } from '../lib/format.js'
+import { cn } from '../lib/utils.js'
+import { Alert, AlertDescription, AlertTitle } from './ui/alert.js'
+import { AnimatedNumber } from './ui/animated-number.js'
+import { Badge } from './ui/badge.js'
+import type { BadgeTone } from './ui/badge.js'
+import { Skeleton } from './ui/skeleton.js'
+
+const HEALTH_TONE: Record<HealthStatus, BadgeTone> = {
+  ok: 'success',
+  warning: 'warning',
+  down: 'danger',
+  unknown: 'neutral',
+  disabled: 'neutral',
+}
+
+/** A state: always a word next to the colour, never the colour alone. */
+export function StatusBadge({ status, label }: { status: HealthStatus; label?: string }) {
+  return (
+    <Badge tone={HEALTH_TONE[status]} dot={status !== 'disabled'}>
+      {label ?? HEALTH_STATUS_LABEL[status]}
+    </Badge>
+  )
+}
+
+const TONE_TEXT: Record<Tone, string> = {
+  positive: 'text-positive',
+  negative: 'text-negative',
+  neutral: 'text-foreground/80',
+}
+
+/** A gain or a loss, a change: signed, so the sign carries the meaning and the colour repeats it. */
+export function SignedValue({
+  value,
+  kind,
+  currency,
+  className,
+  animate = false,
+}: {
+  value: number | null | undefined
+  kind: 'money' | 'percent'
+  /** For money: the currency's code (EUR by default). */
+  currency?: string | null
+  className?: string
+  /** Its digits roll to each new value: for a figure that changes in front of the user. */
+  animate?: boolean
+}) {
+  const text = kind === 'money' ? formatMoney(value, currency ?? 'EUR', true) : formatPercent(value, true)
+  if (animate && typeof value === 'number' && Number.isFinite(value)) {
+    return <AnimatedNumber value={value} text={text} className={cn(TONE_TEXT[toneOf(value)], className)} />
+  }
+  return <span className={cn('tabular-nums', TONE_TEXT[toneOf(value)], className)}>{text}</span>
+}
+
+interface QueryStateProps {
+  isPending: boolean
+  error: Error | null
+  /** There is data from an earlier fetch: keep showing it and report the failure above it. */
+  hasData: boolean
+  skeleton?: ReactNode
+  children: ReactNode
+}
+
+/** Loading and failure states shared by the pages. A failed refresh never blanks what is on screen. */
+export function QueryState({ isPending, error, hasData, skeleton, children }: QueryStateProps) {
+  if (isPending && !hasData) {
+    return skeleton ?? <Skeleton className="h-40 w-full rounded-2xl" />
+  }
+  return (
+    <>
+      {error && (
+        <Alert tone="danger" role="alert">
+          <AlertTitle>{hasData ? 'Could not refresh: showing the last data received' : 'Could not load'}</AlertTitle>
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      )}
+      {hasData && children}
+    </>
+  )
+}
