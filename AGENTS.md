@@ -50,7 +50,9 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 - **One focus ring**, the global rule of `design.css`; no component draws its own.
 - **What leads somewhere is a link**, drawn by `useLinkComponent()` (the application's, from `LinkProvider`),
   or by the component's own `linkComponent` prop when given; a plain click is left to the router, a click with
-  a modifier to the browser (`isPlainClick`). Never import a router outside `src/react-router/`.
+  a modifier to the browser (`isPlainClick`). Never import a router outside `src/react-router/`. A part of the
+  page shown (`#part`) is a plain `<a>`, never a route: the browser scrolls what holds it and keeps the query
+  (`RouterLink` draws it so).
 - **A `Hint`, never a `title`**, for what a control means (the theme button's `title` is the original's).
 - **One dialog at a time**, in `document.body`, keeping the focus.
 - **Nothing from another origin**, no inline script, no font as a `data:` URI.

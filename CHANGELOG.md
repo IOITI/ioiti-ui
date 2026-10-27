@@ -3,6 +3,19 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.2.1] - 2026-10-27
+
+Found while moving WATA's admin interface onto the package, the one place where it did not do what the
+interface it came from did.
+
+- **A link to a part of the page shown is the browser's again** (`RouterLink` of `ioiti-ui/react-router`): an
+  address that is only a fragment (`#trust`, a check of `CheckList` leading to what says more of it) is drawn as a
+  plain `<a>`. Through React Router's `Link` it became `/page#trust`, dropped the address's query and scrolled
+  nothing: the router does not scroll to a fragment, and the shell's page, not the window, is what scrolls. Any
+  other address still goes through the router.
+
+An application changes nothing.
+
 ## [0.2.0] - 2026-10-27
 
 Two more choices beside light and dark, each person's own: an accent and a material. Neutral and flat are
