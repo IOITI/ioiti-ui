@@ -28,6 +28,7 @@ import {
   Meter,
   PageHeader,
   RecoveryLedger,
+  RelativeTime,
   SignedValue,
   SmartComparison,
   StatCard,
@@ -122,6 +123,9 @@ function Rolling() {
     </div>
   )
 }
+
+// The moments of the demo of times, said from when the page was opened.
+const OPENED = Date.now()
 
 /** A price that changes every second and a queue that waits: each change shows in its tone a moment. */
 function Watched() {
@@ -414,6 +418,27 @@ export function DataDisplay() {
         className="block w-full"
       >
         <Watched />
+      </Demo>
+
+      <Demo
+        id="relative-time"
+        title="RelativeTime"
+        description="A moment said from now, kept true as time goes by (each second under a minute, each minute after), its full date in a hint and for a screen reader. Every time on a page shares one clock for each precision."
+        names={['RelativeTime']}
+        className="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm"
+      >
+        <span>
+          Seen <RelativeTime value={OPENED - 20_000} timeZone="Europe/Paris" />
+        </span>
+        <span>
+          Imported <RelativeTime value={OPENED - 3 * 3_600_000} timeZone="Europe/Paris" />
+        </span>
+        <span>
+          Created <RelativeTime value={OPENED - 9 * 86_400_000} timeZone="Europe/Paris" />
+        </span>
+        <span>
+          Due <RelativeTime value={OPENED + 2 * 3_600_000} timeZone="Europe/Paris" />
+        </span>
       </Demo>
 
       <Demo

@@ -206,6 +206,10 @@ the data tables' filters as Elastic UI's filter group.
 - **`LiveValue`**: a figure that changes as it is watched (a price, a queue): each change shows in its tone a moment
   and fades back, a fade that stays where motion is reduced; muted, and said stale to a screen reader, once what
   sends it stops; the tones swapped where down is good.
+- **`RelativeTime`**: a moment said from now ("3 min ago", "in 2 h"), kept true as time goes by at the precision it
+  is said in (each second under a minute, each minute up to two days, then each hour), its full date in a hint
+  and for a screen reader; every time on a page shares one clock for each precision (`useNow`). The gallery's
+  dashboard says its events' times so.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

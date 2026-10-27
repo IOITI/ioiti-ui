@@ -8,6 +8,7 @@ import {
   Meter,
   PageHeader,
   Panel,
+  RelativeTime,
   SignedValue,
   StatCard,
   StatusBadge,
@@ -30,10 +31,14 @@ const OPEN = [
   { id: '2026-0035', customer: 'Initech', items: 12, amount: 4320, change: 0, placed: '08:05' },
 ]
 
+// The events happened minutes before the page was opened, and their times are said from now.
+const OPENED = Date.now()
+const MINUTE = 60_000
+
 const EVENTS = [
-  { what: 'Order 2026-0042 paid', when: '09:13', tone: 'success' as const },
-  { what: 'Import of the price list', when: '09:00', tone: 'neutral' as const },
-  { what: 'Payment refused (2026-0039)', when: '08:51', tone: 'danger' as const },
+  { what: 'Order 2026-0042 paid', when: new Date(OPENED - 4 * MINUTE), tone: 'success' as const },
+  { what: 'Import of the price list', when: new Date(OPENED - 17 * MINUTE), tone: 'neutral' as const },
+  { what: 'Payment refused (2026-0039)', when: new Date(OPENED - 26 * MINUTE), tone: 'danger' as const },
 ]
 
 const SERVICES: { name: string; status: HealthStatus; detail: string }[] = [
@@ -148,7 +153,7 @@ export function DashboardPattern() {
                   </Badge>
                   <span className="truncate">{event.what}</span>
                 </span>
-                <span className="shrink-0 tabular-nums text-muted-foreground">{event.when}</span>
+                <RelativeTime value={event.when} timeZone="Europe/Paris" className="shrink-0 tabular-nums text-muted-foreground" />
               </li>
             ))}
           </ul>

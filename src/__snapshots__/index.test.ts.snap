@@ -118,6 +118,7 @@ exports[`the package's interface > is the list of names it was 1`] = `
   "RadioGroupItem",
   "RangeSlider",
   "RecoveryLedger",
+  "RelativeTime",
   "RequestStatus",
   "ResizableHandle",
   "ResizablePanel",
