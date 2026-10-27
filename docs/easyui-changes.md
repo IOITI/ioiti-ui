@@ -362,6 +362,8 @@ otherwise).
   arrows, Home and End moving and choosing; the panel a `tabpanel` named by its tab, leaving with `easeExit`.
   Tabs that lead to pages stay links (`aria-current`). A badge of 0 is drawn as a badge (`0 && …` drew a bare
   "0"), with a space before it for the tab's name.
+- `otp-input` (0.3.0): its boxes take the look of the form's `Input`, its border, its surface and its text in both
+  themes, its border darker in focus (the accent's under an accent), where EasyUI's were grey with a violet focus.
 
 ## ioiti-ui's own changes
 

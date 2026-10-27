@@ -174,10 +174,13 @@ export const OTPInput: React.FC<OTPInputProps> = ({
           // keyframes only (the third stopped the pop at 1.25, or threw in development).
           transition={{ duration: 0.25, ease: 'easeOut' }}
           className={cn(
-            'h-12 w-10 rounded-md border border-white bg-gray-200 text-black dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-white',
-            'text-center text-lg font-medium',
+            // ioiti-ui: the look of the form's Input (its border, its surface, its text, in both themes), where
+            // EasyUI's boxes were grey with a violet focus: a code's boxes under a password field look like it.
+            'h-12 w-10 rounded-lg border bg-white text-neutral-900 dark:bg-[#141414] dark:text-[#FAFAFA]',
+            'border-neutral-300 hover:border-neutral-500 dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A]',
+            'text-center text-lg font-medium transition-colors duration-150',
             // ioiti-ui: the box in focus in the accent, where the theme has one (accent:).
-            'outline-none focus:border-[#7C3AED] accent:focus:border-brand placeholder:text-gray-400',
+            'outline-none focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand placeholder:text-muted-foreground',
             'disabled:cursor-not-allowed disabled:opacity-50',
             boxClassName
           )}

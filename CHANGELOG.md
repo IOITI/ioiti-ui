@@ -234,6 +234,9 @@ resize, a tour of a page).
 - **`AnimatedTabs`** is a tablist where its tabs switch panels: tabs, the panel named by the tab shown, one stop of
   the keyboard whose arrows, Home and End move and choose (`label` names it). Tabs that lead to pages stay links.
   A badge of 0 is a badge, where a bare "0" was drawn.
+- **`OTPInput`**'s boxes look like `Input` (its border, its surface and its text in both themes, its focus in the
+  accent), where EasyUI's were grey with a violet focus: a code's boxes under a password field look like it.
+  `boxClassName` still restyles them.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
