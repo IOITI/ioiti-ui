@@ -48,6 +48,26 @@ Compared on 2026-10-26:
 WATA's dashboard and the gallery's dashboard pattern (`/patterns/dashboard`), which is made of the same
 blocks the same way, were looked at side by side in both themes, at 1440 px and at 375 px.
 
+## 4. An application moved onto the package
+
+WATA's admin interface, on 2026-10-27 (0.2.1), was compared with its build of before, on its fake server:
+
+- **its built CSS, rule by rule**, parsed with PostCSS: every rule of the build before is in the new one, in
+  the same order; the new one adds the accents' and the glass's rules (inert without `data-accent` or
+  `data-material` on `<html>`), the utilities of the package's components the interface does not show, and six
+  palette colours of the glass's backdrop. The few rules gone were utilities Tailwind had read in comments and
+  in a test (`collapse`, `sepia`) and in EasyUI's 404 demo, which the package removed;
+- **the computed styles of every element of 26 pages**, light and dark, at 1440 × 900 and at 375 × 812: the
+  multiset of their colours, borders, radii, shadows, fonts, spacing, display and position (no geometry, no
+  text), the build before against the new one, and the build before against itself for the noise of the fake's
+  live data. The same, but for that noise.
+
+How such a comparison goes wrong: switching the theme by the `dark` class catches an element in its
+`transition-colors`, whose colour is then the one before (in `oklab`), so transitions are switched off while
+the styles are read; toasts and what floats come and go with live data, so what is inside a `position: fixed`
+element is left out; and a browser that gives the page no animation frame (a hidden pane) leaves framer-motion's
+entrances at their start (`opacity: 0`), which the build before may not have been caught in.
+
 ## The accents and the glass material
 
 They are ioiti-ui's own, not the original's: only neutral and flat, the default, are held to it. They are made

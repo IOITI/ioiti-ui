@@ -41,27 +41,33 @@ What only means something for trading or for WATA's server: the command palette'
 on WATA's types (`components/charts/*`), the price chart (Lightweight Charts), `ActionBadge`, `ClaudeBadge`,
 `PeekRouterLink`, `labels`, `types`, `api`, `formatWallTime`, and every page.
 
-## When WATA moves onto the package
+## WATA on the package
 
-Not done yet (a later WATA release). What it takes:
+WATA's admin interface moved onto the package on 2026-10-27, with 0.2.1 (0.2.0 sent a check's link to a part
+of the page through the router: the one regression found, fixed here). What it took, and what another
+application moving onto the package can expect:
 
-1. `npm install github:IOITI/ioiti-ui#v<version>` in `admin_ui`; CI and `package.sh` then fetch it from
-   GitHub (a public repository needs no token).
-2. `src/styles/index.css` becomes `@import "ioiti-ui/styles.css";`; `tokens.css` and `theme.css` go.
-3. Imports of `@/components/ui/*` and of the generic components and helpers above become `'ioiti-ui'`;
-   WATA's copies and their tests go (the package holds them).
-4. The renames above. `ConfirmLiveAction` can stay in WATA as a few lines around `ConfirmAction` with its
-   warning; `PnlValue` as `SignedValue`.
-5. `App.tsx` puts `IoitiProvider appName="WATA Admin" themeStorageKey="wata.theme"` around the router (the
-   choices kept in browsers stay), and `RouterRoot` at its root route, in place of `ThemeProvider`,
-   `MotionConfig` and `ToastProvider` (`toastWrapperClassName="bottom-20"`, above the configuration page's
-   bar).
-6. `AppShell.tsx` keeps WATA's own content and gives it to `RouterAppShell`: the menu (`navigation.ts`, with
-   its icons), `topBarChips` (Saxo's authorisation, the restart), `topBarEnd` (the live pill, the live dot,
-   the palette, the bell, the theme button, the services' badge), `sidebarFooter` (sign out), `appDetail`
-   (the version), `isWide` (the editor, the charts). `tests/test_config_catalog.py` reads
-   `MENU_SECTIONS` in `navigation.ts`: keep that line.
-7. `public/theme.js` stays (it is served as it is, CSP and all), its key `wata.theme`, or becomes the
-   package's through the Vite plugin (`ioiti({ themeStorageKey: 'wata.theme' })`), which also sets
-   `assetsInlineLimit: 0`, as WATA does.
-8. Check as `docs/fidelity.md` says: the same tokens and the same shell in both themes.
+1. `npm install github:IOITI/ioiti-ui#v<version>` in `admin_ui`. The lock records the commit as
+   `git+ssh://git@github.com/IOITI/ioiti-ui.git#<sha>`, which npm fetches from GitHub as an HTTPS tarball, no SSH
+   key needed (CI, `package.sh`).
+2. `src/styles/index.css` became `@import "ioiti-ui/styles.css";`; `tokens.css` and `theme.css` went.
+3. Imports of `@/components/ui/*` and of the generic components and helpers above became `'ioiti-ui'`, by a
+   codemod over every import; WATA's copies and their tests went (the package holds them).
+4. The renames above: `PnlValue` became `SignedValue`, `ServiceStatusBadge` `StatusBadge`, `PaymentStatus`
+   `RequestStatus`; `ConfirmLiveAction` stayed in WATA as a few lines around `ConfirmAction` with its warning,
+   and `NotFoundState` as a few lines giving the package's its way back ("Back to the dashboard") and the router's
+   address.
+5. `App.tsx` puts `IoitiProvider appName="WATA Admin"` around the router, and `RouterRoot` at its root route
+   (`toastWrapperClassName="bottom-20"`), in place of `ThemeProvider`, `MotionConfig` and `ToastProvider`.
+6. `AppShell.tsx` keeps WATA's own content and gives it to `RouterAppShell` (the menu with its icons, the chips,
+   the top bar's end, signing out, the version, the wide pages).
+7. `public/theme.js` went: the Vite plugin writes the package's (`ioiti({ themeStorageKey: 'wata.theme' })`),
+   so the choices kept in browsers stay.
+8. The tests: a page rendered alone whose test follows a link the package draws is mounted under `RouterRoot`,
+   as the application mounts it (without a `LinkProvider` the link is a plain `<a>`, which jsdom does not
+   follow); a test that reads the tab's title gives `IoitiProvider` the application's name; the contexts are not
+   exported, so a theme is switched through `ThemeProvider` (the system's setting stubbed) and a toast is read on
+   the screen.
+9. Checked as `docs/fidelity.md` says, and more: the built CSS rule by rule against the build before (every
+   rule kept, in the same order; the package adds its accents' and glass's) and the computed styles of every
+   element of 26 pages, in both themes and at a phone's width too.
