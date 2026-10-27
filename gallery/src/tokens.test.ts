@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs'
+import { inflateSync } from 'node:zlib'
 
 import { ACCENTS, MATERIALS } from 'ioiti-ui'
 import { describe, expect, it } from 'vitest'
@@ -98,16 +99,41 @@ describe('the colours, read as the browser reads them', () => {
 })
 
 describe('the grains', () => {
-  // A grain's speck, as its file draws it: the colour its matrix gives every pixel, at its rect's opacity.
-  const drawn = (svg: string) => {
-    const matrix = /<feColorMatrix values="([^"]+)"/.exec(svg)![1].trim().split(/\s+/).map(Number)
-    return { r: matrix[4], g: matrix[9], b: matrix[14], a: Number(/<rect [^>]*opacity="([\d.]+)"/.exec(svg)![1]) }
+  // A grain's speck, as its file draws it: a PNG of grey and alpha, 8 bits each, its rows unfiltered
+  // (scripts/grains.mjs); its one grey, at its strongest alpha.
+  const drawn = (file: Buffer) => {
+    let at = 8
+    const data: Buffer[] = []
+    let header: Buffer = Buffer.alloc(0)
+    while (at < file.length) {
+      const length = file.readUInt32BE(at)
+      const type = file.toString('latin1', at + 4, at + 8)
+      if (type === 'IHDR') header = file.subarray(at + 8, at + 8 + length)
+      if (type === 'IDAT') data.push(file.subarray(at + 8, at + 8 + length))
+      at += 12 + length
+    }
+    const [width, height] = [header.readUInt32BE(0), header.readUInt32BE(4)]
+    expect([header[8], header[9]], 'grey and alpha, 8 bits each').toEqual([8, 4])
+    const rows = inflateSync(Buffer.concat(data))
+    const greys = new Set<number>()
+    let strongest = 0
+    for (let y = 0; y < height; y++) {
+      const row = y * (1 + 2 * width)
+      expect(rows[row], 'an unfiltered row').toBe(0)
+      for (let x = 0; x < width; x++) {
+        greys.add(rows[row + 1 + 2 * x])
+        strongest = Math.max(strongest, rows[row + 2 + 2 * x])
+      }
+    }
+    expect(greys.size, 'one grey').toBe(1)
+    const grey = [...greys][0] / 255
+    return { r: grey, g: grey, b: grey, a: strongest / 255 }
   }
 
   it('are read as their files draw them', () => {
-    const files = readdirSync('src/styles').filter((name) => /^grain-.*\.svg$/.test(name))
+    const files = readdirSync('src/styles').filter((name) => name.startsWith('grain-'))
     expect(files.sort()).toEqual(Object.keys(GRAINS).sort())
-    for (const file of files) expect(drawn(readFileSync(`src/styles/${file}`, 'utf8')), file).toEqual(GRAINS[file])
+    for (const file of files) expect(drawn(readFileSync(`src/styles/${file}`)), file).toEqual(GRAINS[file])
   })
 
   it('are the ones the stylesheets name, read by their name', () => {
@@ -116,7 +142,7 @@ describe('the grains', () => {
     expect(named.length).toBeGreaterThan(0)
     for (const value of named) expect(Object.values(GRAINS), value).toContain(grainOf({ '--brand-grain': value }))
     expect(grainOf({})).toBeUndefined()
-    expect(() => grainOf({ '--brand-grain': 'url("./sand.svg")' })).toThrow('sand.svg')
+    expect(() => grainOf({ '--brand-grain': 'url("./sand.png")' })).toThrow('sand.png')
   })
 })
 

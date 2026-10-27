@@ -74,7 +74,7 @@ const FILES = [
   'dist/styles/theme.css',
   'dist/styles/accents.css',
   'dist/styles/glass.css',
-  ...GRAINS.map((grain) => `dist/styles/${grain}.svg`),
+  ...GRAINS.map((grain) => `dist/styles/${grain}.png`),
   'dist/theme.js',
   'dist/vite/index.js',
   'dist/vite/index.d.ts',
@@ -129,9 +129,9 @@ try {
   const fonts = assets.filter((name) => name.endsWith('.woff2'))
   check(fonts.length === 11, `the 11 font files are written as files (${fonts.length})`)
   for (const grain of GRAINS) {
-    const file = assets.find((name) => name.startsWith(`${grain}-`) && name.endsWith('.svg'))
+    const file = assets.find((name) => name.startsWith(`${grain}-`) && name.endsWith('.png'))
     const named = Boolean(file) && new RegExp(`url\\(["']?/assets/${file}["']?\\)`).test(css)
-    check(named, `${grain}.svg is written as a file, and the CSS names it there${file ? ` (${file})` : ''}`)
+    check(named, `${grain}.png is written as a file, and the CSS names it there${file ? ` (${file})` : ''}`)
   }
   check(!/url\(\s*["']?data:/.test(css) && !`${css}${js}`.includes('data:font'), 'nothing is inlined as a data: URI (font-src and img-src stay at self)')
 

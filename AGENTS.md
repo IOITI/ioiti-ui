@@ -8,7 +8,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 
 | Path | Content |
 |---|---|
-| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `grain-*.svg` (bloom's grains) |
+| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `grain-*.png` (bloom's grains) |
 | `src/theme.js` | the pre-paint theme script, a file of its own (no inline script under a strict CSP) |
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
@@ -18,7 +18,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
 | `gallery/` | an application made with the package: every component, in both themes |
 | `templates/app/` | the starter template an application is copied from |
-| `scripts/` | build, release, the package and source checks, the import codemod, the golden reference |
+| `scripts/` | build, release, the package and source checks, the import codemod, the golden reference, the grains |
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
 
 ## Commands
@@ -48,7 +48,8 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   after them (the `brand` tokens), or `glass-bar`, `glass-card`, `glass-float`. A filled, primary control adds
   `accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground`, the accent's gradient where it has one
   (bloom): an image as `bg-(image:…)`, since tailwind-merge takes any other `bg-brand-…` for a colour and drops
-  `bg-brand`. A grain is an SVG beside `accents.css`, never a `data:` URI, and `GRAINS` in
+  `bg-brand`. A grain is a PNG beside `accents.css`, made by `scripts/grains.mjs` (an SVG filter's noise
+  vanishes or turns to moiré at some screens and zooms), never a `data:` URI; `GRAINS` in
   `gallery/src/tokens.ts` reads it. `glass-float` is the only blur: never on an element with a fixed child of
   its own (a blur becomes its containing block), never on white text on ink. The tones (gain, loss, warning)
   keep their colours.

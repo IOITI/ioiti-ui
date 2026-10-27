@@ -228,13 +228,13 @@ export function gradientColours(value: string | undefined): Rgba[] {
 }
 
 /**
- * The grains (src/styles/grain-*.svg): fine noise of one colour, from clear to opaque, the whole laid
- * at its rect's opacity. Each is read as its speck at its strongest: that colour at that opacity
- * (the tests hold each to its file).
+ * The grains (src/styles/grain-*.png, from scripts/grains.mjs): a tile of noise, each pixel clear or a
+ * speck of one colour at the grain's strength. Each is read as its speck: that colour at that alpha, of
+ * 255 (the tests hold each to its file).
  */
 export const GRAINS: Record<string, Rgba> = {
-  'grain-white.svg': { r: 1, g: 1, b: 1, a: 0.14 },
-  'grain-black.svg': { r: 0, g: 0, b: 0, a: 0.14 },
+  'grain-white.png': { r: 1, g: 1, b: 1, a: 13 / 255 },
+  'grain-black.png': { r: 0, g: 0, b: 0, a: 10 / 255 },
 }
 
 /** The grain a look lays over its fill and its backdrop (--brand-grain), as its speck; none where it has none. */

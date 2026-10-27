@@ -18,8 +18,9 @@ A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a 
   for `accent:bg-(image:--brand-fill)`; `--brand-fill-foreground`, the text on it, for
   `accent:text-brand-fill-foreground` (the fill's own text where the accent has no gradient); `--brand-grain`;
   and the backdrop's other washes, `--brand-wash-2` and `--brand-wash-3`.
-- **Two images**, `grain-white.svg` and `grain-black.svg`, beside `accents.css`, which names them: an
-  application's build writes them beside its own files, never inlined (`img-src 'self'` holds).
+- **Two images**, `grain-white.png` and `grain-black.png`, beside `accents.css`, which names them: tiles of fine
+  noise, a speck to a pixel of a retina screen, made by `scripts/grains.mjs`. An application's build writes
+  them beside its own files, never inlined (`img-src 'self'` holds).
 - **`Button`'s filled variants (and `ButtonLink`) and `AppBrand`'s mark** draw the gradient where the accent has
   one; with any other accent, nothing changes. `SplitButton`'s primary and the primary actions of
   `SelectionBasket` and `SmartComparison` keep the accent's fill.

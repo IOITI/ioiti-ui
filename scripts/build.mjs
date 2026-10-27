@@ -14,7 +14,7 @@ const watching = process.argv.includes('--watch')
 function copyAssets() {
   mkdirSync(join(root, 'dist/styles'), { recursive: true })
   for (const name of readdirSync(join(root, 'src/styles'))) {
-    if (/\.(css|svg)$/.test(name)) copyFileSync(join(root, 'src/styles', name), join(root, 'dist/styles', name))
+    if (/\.(css|png)$/.test(name)) copyFileSync(join(root, 'src/styles', name), join(root, 'dist/styles', name))
   }
   copyFileSync(join(root, 'src/theme.js'), join(root, 'dist/theme.js'))
 }
@@ -28,7 +28,7 @@ if (watching) {
   }
   for (const folder of ['src/styles', 'src']) {
     watch(join(root, folder), (_event, name) => {
-      if (name && (/\.(css|svg)$/.test(name) || name === 'theme.js')) copyAssets()
+      if (name && (/\.(css|png)$/.test(name) || name === 'theme.js')) copyAssets()
     })
   }
 } else {

@@ -47,10 +47,12 @@
    and its mustard (--brand-wash, -2, -3). Tangerine and mustard are the
    gradient's and the backdrop's alone, never a mark's or a text's.
 
-   Both lie under a grain (--brand-grain: grain-white.svg and grain-black.svg,
-   beside this file), its specks of the page's own colour: white in light, black
-   in dark. They pull the backdrop toward the page, away from every text on it,
-   which keeps the washes as strong as the tests allow without one.
+   Both lie under a grain (--brand-grain: grain-white.png and grain-black.png,
+   beside this file, made by scripts/grains.mjs), its specks of the page's own
+   colour: white in light, black in dark. They pull the backdrop toward the page,
+   away from every text on it, which keeps the washes as strong as the tests
+   allow without one. A speck to a pixel of a retina screen (the tile at 2x),
+   faint: a tooth, not a texture.
    --------------------------------------------------------------------------- */
 
 @theme inline {
@@ -164,7 +166,8 @@
 }
 
 /* Bloom. Its grains' urls, in the blocks of each theme, are this file's: an application's Tailwind and Vite
-   rewrite them for the page, and write the files beside the application's own. */
+   rewrite them for the page, and write the files beside the application's own. -webkit-image-set, which
+   every engine reads, where image-set is newer in some. */
 :root[data-accent="bloom"] {
   --brand-fill: var(--brand-grain), var(--brand-gradient);
 }
@@ -179,7 +182,7 @@
   --brand-wash-2: rgb(250 135 73 / 0.18);
   --brand-wash-3: rgb(228 178 97 / 0.26);
   --brand-reflection: rgb(194 57 139 / 0.08);
-  --brand-grain: url("./grain-white.svg");
+  --brand-grain: -webkit-image-set(url("./grain-white.png") 2x);
   --brand-gradient: linear-gradient(110deg, #d58ecf, #e77ab5 50%, #fa8749);
   --brand-fill-foreground: #111113;
   --primary: var(--brand);
@@ -203,7 +206,7 @@
   --brand-wash-2: rgb(250 135 73 / 0.18);
   --brand-wash-3: rgb(161 146 84 / 0.2);
   --brand-reflection: rgb(243 154 200 / 0.08);
-  --brand-grain: url("./grain-black.svg");
+  --brand-grain: -webkit-image-set(url("./grain-black.png") 2x);
   --brand-gradient: linear-gradient(110deg, #f0b5e2, #f39ac8 50%, #fca676);
   --brand-fill-foreground: #111113;
   --primary: var(--brand);
