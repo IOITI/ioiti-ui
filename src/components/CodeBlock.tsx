@@ -86,7 +86,13 @@ export function CodeBlock({
           {copy}
         </figcaption>
       )}
-      {!label && copy && <div className="absolute right-1.5 top-1.5 z-10">{copy}</div>}
+      {/* Over the code's first line: on the block's own surface, the code scrolled under it fading out
+          before it, never showing through. */}
+      {!label && copy && (
+        <div className="absolute right-0 top-0 z-10 flex bg-surface pb-1 pl-1 pr-1.5 pt-1.5 before:pointer-events-none before:absolute before:inset-y-0 before:right-full before:w-6 before:bg-linear-to-l before:from-surface before:to-transparent">
+          {copy}
+        </div>
+      )}
       <pre
         ref={pre}
         tabIndex={scrolls ? 0 : undefined}
