@@ -228,6 +228,9 @@ resize, a tour of a page).
   clear of it; a screen reader hears it as the field's description, not in its name.
 - **`KpiGrid`** lays its tiles in the columns asked (`columns`: 2 to 6 from a wide screen), two on a phone; four by
   default, as it was.
+- **`SpotlightSearch`** draws what it was given and did not show: an entry's `icon`, its `shortcut` (its keys, with
+  `Kbd`), and the `recentSearches`, offered while nothing is typed and typed again when chosen. `grouped` lists the
+  entries under their categories. Without them, it is as it was.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

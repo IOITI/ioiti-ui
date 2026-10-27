@@ -353,6 +353,10 @@ otherwise).
 - `form` (0.3.0): `Input`'s `prefix` and `suffix`, a unit inside the field before or after the value, measured so
   that the text keeps clear of it, describing the field (`aria-describedby`) and hidden from a label's name around
   it; `prefix` is no longer the RDFa attribute of that name in `InputProps`.
+- `spotlight-search` (0.3.0): it draws what its props declared and it never showed: an entry's `icon`, its `shortcut`
+  (each key a `Kbd`), and the `recentSearches`, rows of the list while nothing is typed, typed again when chosen
+  (the arrows reach them as they reach the entries); `grouped`, the entries under a heading for each category, in
+  the order the categories first come, the category no longer repeated on each row.
 
 ## ioiti-ui's own changes
 

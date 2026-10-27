@@ -32,7 +32,7 @@ import {
   useToast,
 } from 'ioiti-ui'
 import type { Notification } from 'ioiti-ui'
-import { Archive, Columns3, Copy, Ellipsis, Pencil, Trash2 } from 'lucide-react'
+import { Archive, Building2, Columns3, Copy, Ellipsis, Pencil, Receipt, TextCursorInput, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -335,11 +335,13 @@ function Palette() {
         onOpenChange={setOpen}
         label="Go to"
         placeholder="An order, a customer…"
+        grouped
+        recentSearches={['acme', 'refund']}
         items={[
-          { id: 'o42', title: 'Order 2026-0042', category: 'Orders', description: 'Acme · 1,840.00 €', href: '/components/data', keywords: ['acme'] },
-          { id: 'o41', title: 'Order 2026-0041', category: 'Orders', description: 'Globex · 960.50 €', href: '/components/data' },
-          { id: 'c1', title: 'Acme', category: 'Customers', href: '/components/data' },
-          { id: 'p1', title: 'Forms', category: 'Pages', href: '/components/forms' },
+          { id: 'o42', title: 'Order 2026-0042', category: 'Orders', description: 'Acme · 1,840.00 €', href: '/components/data', keywords: ['acme'], icon: <Receipt /> },
+          { id: 'o41', title: 'Order 2026-0041', category: 'Orders', description: 'Globex · 960.50 €', href: '/components/data', icon: <Receipt /> },
+          { id: 'c1', title: 'Acme', category: 'Customers', href: '/components/data', icon: <Building2 /> },
+          { id: 'p1', title: 'Forms', category: 'Pages', href: '/components/forms', icon: <TextCursorInput />, shortcut: ['G', 'F'] },
         ]}
       />
     </>
@@ -426,7 +428,12 @@ export function Overlays() {
         <Bell />
       </Demo>
 
-      <Demo id="spotlight" title="SpotlightSearch" description="A palette that goes somewhere: every word typed must be in an entry, Enter follows it. The gallery's own is in its top bar (⌘K)." names={['SpotlightSearch']}>
+      <Demo
+        id="spotlight"
+        title="SpotlightSearch"
+        description="A palette that goes somewhere: every word typed must be in an entry, Enter follows it. Its entries under their categories, each with its icon and its keys; the searches made before, while nothing is typed. The gallery's own is in its top bar (⌘K)."
+        names={['SpotlightSearch']}
+      >
         <Palette />
       </Demo>
 

@@ -27,7 +27,8 @@ export function GallerySearch() {
         onOpenChange={setOpen}
         label="Go to"
         placeholder="A page, a component…"
-        items={PAGES.map((page) => ({ id: page.id, title: page.label, category: page.section, href: page.path }))}
+        grouped
+        items={PAGES.map((page) => ({ id: page.id, title: page.label, category: page.section, href: page.path, icon: page.icon }))}
       />
     </>
   )

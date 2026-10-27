@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search } from 'lucide-react';
+import { History, Search } from 'lucide-react';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
+import { Kbd } from '../Kbd.js';
 
 export interface SpotlightSearchItem {
   id: string;
@@ -52,9 +53,21 @@ export interface SpotlightSearchProps {
   limit?: number;
   /** ioiti-ui: what the dialog is called. */
   label?: string;
+  /** ioiti-ui: the entries under a heading for each category, in the order the categories first come. */
+  grouped?: boolean;
   /** Custom class name */
   className?: string;
 }
+
+/** ioiti-ui: the entries by category, each category where its first entry was, the entries in their order within it. */
+function byCategory(items: SpotlightSearchItem[]): SpotlightSearchItem[] {
+  const order: string[] = [];
+  for (const item of items) if (!order.includes(item.category)) order.push(item.category);
+  return order.flatMap((category) => items.filter((item) => item.category === category));
+}
+
+/** ioiti-ui: a row of the list: a search made before (typed again when chosen), or an entry. */
+type Row = { kind: 'recent'; text: string } | { kind: 'item'; item: SpotlightSearchItem };
 
 /** ioiti-ui: every word typed is somewhere in the entry: "ema us100" finds "EMA cross on US100". */
 function matches(item: SpotlightSearchItem, words: string[]): boolean {
@@ -68,6 +81,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   onClose,
   items: customItems,
   placeholder = 'Search…',
+  recentSearches = [],
   onSelect,
   enableGlobalShortcut = false,
   onNavigate,
@@ -75,6 +89,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   onQueryChange,
   limit = 50,
   label = 'Spotlight Search',
+  grouped = false,
   className,
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
@@ -160,6 +175,12 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
     return words.length === 0 ? items : items.filter((item) => matches(item, words));
   }, [items, query]);
   const filteredItems = matching.slice(0, limit);
+  // ioiti-ui: the searches made before, while nothing is typed; then the entries, by category when grouped.
+  const shownItems = grouped ? byCategory(filteredItems) : filteredItems;
+  const rows: Row[] = [
+    ...(query === '' ? recentSearches.map((text): Row => ({ kind: 'recent', text })) : []),
+    ...shownItems.map((item): Row => ({ kind: 'item', item })),
+  ];
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -179,18 +200,20 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
       return;
     }
 
-    if (filteredItems.length === 0) return;
+    if (rows.length === 0) return;
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % filteredItems.length);
+      setSelectedIndex((prev) => (prev + 1) % rows.length);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
+      setSelectedIndex((prev) => (prev - 1 + rows.length) % rows.length);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      const current = filteredItems[selectedIndex];
-      if (current) choose(current);
+      const current = rows[selectedIndex];
+      // ioiti-ui: a search made before is typed again; an entry is chosen.
+      if (current?.kind === 'recent') setQuery(current.text);
+      else if (current) choose(current.item);
     }
   };
 
@@ -244,7 +267,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                 aria-expanded="true"
                 aria-controls={listId}
                 aria-autocomplete="list"
-                aria-activedescendant={filteredItems[selectedIndex] ? optionId(selectedIndex) : undefined}
+                aria-activedescendant={rows[selectedIndex] ? optionId(selectedIndex) : undefined}
               />
               <kbd
                 onClick={handleClose}
@@ -256,64 +279,119 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
 
             {/* Search Results List (ioiti-ui: with what each is, and its category) */}
             <div id={listId} role="listbox" aria-label={label} className="max-h-[340px] overflow-y-auto p-1.5 space-y-0.5">
-              {filteredItems.length > 0 ? (
-                filteredItems.map((item, index) => {
+              {rows.length > 0 ? (
+                rows.map((row, index) => {
                   const isSelected = index === selectedIndex;
-                  const content = (
-                    <>
-                      {/* Smooth Active Highlight Pill. ioiti-ui: in the accent's tint, where the theme has one (accent:). */}
-                      {isSelected && (
-                        <motion.div
-                          layoutId={`spotlight-active-${uniqueId}`}
-                          transition={motionTransitions.springGentle}
-                          className="absolute inset-0 rounded-xl bg-surface-hover border border-border-hover accent:bg-brand-soft accent:border-brand/30 z-0"
-                        />
-                      )}
-
-                      <span className="relative z-10 min-w-0">
-                        <span className="block font-medium truncate">{item.title}</span>
-                        {item.description && <span className="block truncate text-xs text-text-muted">{item.description}</span>}
-                      </span>
-                      <span className="relative z-10 shrink-0 text-[11px] text-text-muted">{item.category}</span>
-                    </>
+                  // ioiti-ui: the moving highlight, in the accent's tint where the theme has one (accent:).
+                  const highlight = isSelected && (
+                    <motion.div
+                      layoutId={`spotlight-active-${uniqueId}`}
+                      transition={motionTransitions.springGentle}
+                      className="absolute inset-0 rounded-xl bg-surface-hover border border-border-hover accent:bg-brand-soft accent:border-brand/30 z-0"
+                    />
                   );
                   const rowClass = cn(
                     'relative flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer transition-colors text-sm',
                     isSelected ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
                   );
-
-                  return item.href !== undefined ? (
-                    <LinkComponent
-                      key={item.id}
-                      id={optionId(index)}
-                      role="option"
-                      aria-selected={isSelected}
-                      href={item.href}
-                      tabIndex={-1}
-                      onClick={(e: React.MouseEvent) => {
-                        // A click with ⌘ or Ctrl opens it elsewhere and leaves the palette open.
-                        if (!isPlainClick(e)) return;
-                        item.action?.();
-                        onSelect?.(item);
-                        handleClose();
-                      }}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                      className={rowClass}
-                    >
-                      {content}
-                    </LinkComponent>
-                  ) : (
-                    <div
-                      key={item.id}
-                      id={optionId(index)}
-                      role="option"
-                      aria-selected={isSelected}
-                      onClick={() => choose(item)}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                      className={rowClass}
-                    >
-                      {content}
+                  // ioiti-ui: a heading before the first search made before, and before each category when grouped.
+                  const previous = rows[index - 1];
+                  const heading =
+                    row.kind === 'recent'
+                      ? index === 0 && 'Recent searches'
+                      : grouped && (previous?.kind !== 'item' || previous.item.category !== row.item.category) && row.item.category;
+                  const title = heading && (
+                    <div role="presentation" className="px-3.5 pb-1 pt-2.5 text-[11px] font-medium text-text-muted">
+                      {heading}
                     </div>
+                  );
+
+                  if (row.kind === 'recent') {
+                    return (
+                      <React.Fragment key={`recent-${row.text}`}>
+                        {title}
+                        <div
+                          id={optionId(index)}
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => setQuery(row.text)}
+                          onMouseEnter={() => setSelectedIndex(index)}
+                          className={rowClass}
+                        >
+                          {highlight}
+                          <span className="relative z-10 flex min-w-0 items-center gap-3">
+                            <History aria-hidden className="size-4 shrink-0 text-text-muted" />
+                            <span className="truncate">{row.text}</span>
+                          </span>
+                        </div>
+                      </React.Fragment>
+                    );
+                  }
+
+                  const item = row.item;
+                  const content = (
+                    <>
+                      {highlight}
+                      {/* ioiti-ui: its icon, its words, and its category where the entries are not grouped. */}
+                      <span className="relative z-10 flex min-w-0 items-center gap-3">
+                        {item.icon && (
+                          <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-lg border border-border bg-surface text-text-secondary [&>svg]:size-4">
+                            {item.icon}
+                          </span>
+                        )}
+                        <span className="min-w-0">
+                          <span className="block font-medium truncate">{item.title}</span>
+                          {item.description && <span className="block truncate text-xs text-text-muted">{item.description}</span>}
+                        </span>
+                      </span>
+                      <span className="relative z-10 flex shrink-0 items-center gap-2">
+                        {item.shortcut && item.shortcut.length > 0 && (
+                          <span className="inline-flex items-center gap-0.5">
+                            {item.shortcut.map((key) => (
+                              <Kbd key={key}>{key}</Kbd>
+                            ))}
+                          </span>
+                        )}
+                        {!grouped && <span className="text-[11px] text-text-muted">{item.category}</span>}
+                      </span>
+                    </>
+                  );
+
+                  return (
+                    <React.Fragment key={item.id}>
+                      {title}
+                      {item.href !== undefined ? (
+                        <LinkComponent
+                          id={optionId(index)}
+                          role="option"
+                          aria-selected={isSelected}
+                          href={item.href}
+                          tabIndex={-1}
+                          onClick={(e: React.MouseEvent) => {
+                            // A click with ⌘ or Ctrl opens it elsewhere and leaves the palette open.
+                            if (!isPlainClick(e)) return;
+                            item.action?.();
+                            onSelect?.(item);
+                            handleClose();
+                          }}
+                          onMouseEnter={() => setSelectedIndex(index)}
+                          className={rowClass}
+                        >
+                          {content}
+                        </LinkComponent>
+                      ) : (
+                        <div
+                          id={optionId(index)}
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => choose(item)}
+                          onMouseEnter={() => setSelectedIndex(index)}
+                          className={rowClass}
+                        >
+                          {content}
+                        </div>
+                      )}
+                    </React.Fragment>
                   );
                 })
               ) : (
