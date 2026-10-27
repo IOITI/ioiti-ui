@@ -146,6 +146,11 @@ the data tables' filters as Elastic UI's filter group.
   back, on a phone as on a computer (Elastic UI's context menu panels). The arrows move, a letter jumps to the
   next item that starts with it, Escape closes, Tab leaves; the focus is back on the button before an action
   runs, so that a dialog it opens gives it back there.
+- **`NumberInput`**: a number to type, or to change with the arrow keys (ten at a time with Shift, Page Up and
+  Down, Home and End to its bounds) and the − and + buttons; what is typed stays as it is until it leaves the
+  field ("1." on the way to "1.5"), a comma or a point marking the decimals; it keeps to its minimum, its maximum
+  and its step, whole numbers when asked, with a unit before or after it. A spin button to a screen reader, its
+  value said with its unit.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

@@ -16,6 +16,7 @@ import {
   FormMessage,
   Input,
   lastDays,
+  NumberInput,
   OTPInput,
   PageHeader,
   RadioGroup,
@@ -191,6 +192,24 @@ export function Forms() {
           ]}
         />
         <StretchSwitch checked={notify} onChange={setNotify} label="Notify the customer" description="An email when the order leaves" />
+      </Demo>
+
+      <Demo
+        id="number"
+        title="NumberInput"
+        description="A number to type, or to change with the arrow keys (ten at a time with Shift) and the − and + buttons: a limit, a quantity, a delay with its unit. What is typed stays until it leaves the field; a comma or a point marks the decimals; it keeps to its bounds."
+        names={['NumberInput']}
+        className="grid w-full gap-4 sm:grid-cols-3"
+      >
+        <Field label="Daily limit" htmlFor="daily-limit">
+          <NumberInput id="daily-limit" defaultValue={500} min={0} max={5000} step={50} suffix="€" />
+        </Field>
+        <Field label="Copies" htmlFor="copies">
+          <NumberInput id="copies" defaultValue={2} min={1} max={20} integer />
+        </Field>
+        <Field label="Delay before retrying" htmlFor="retry-delay">
+          <NumberInput id="retry-delay" defaultValue={1.5} min={0} step={0.5} precision={1} suffix="s" />
+        </Field>
       </Demo>
 
       <Demo
