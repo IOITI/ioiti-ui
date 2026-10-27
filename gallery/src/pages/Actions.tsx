@@ -1,4 +1,4 @@
-import { Button, ButtonLink, ConfirmAction, DragToConfirm, ExportButton, IconButton, PageHeader, SplitButton, useToast } from 'ioiti-ui'
+import { Button, ButtonLink, ConfirmAction, CopyButton, DragToConfirm, ExportButton, IconButton, Kbd, PageHeader, SplitButton, useToast } from 'ioiti-ui'
 import { Archive, Copy, Download, Pencil, Play, Plus, RefreshCw, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -146,6 +146,38 @@ export function Actions() {
 
       <Demo id="drag" title="DragToConfirm" description="The slide on its own: dragged to the end, or Enter once it has the focus. Arrow keys do not confirm." names={['DragToConfirm']} className="max-w-md">
         <DragToConfirm label="Slide to send" confirmedLabel="Sent" variant="info" autoResetDelay={2500} />
+      </Demo>
+
+      <Demo
+        id="copy"
+        title="CopyButton"
+        description="Copies a value and says it did: a check for two seconds, its hint saying what came of it, and the words for a screen reader. The focus stays on it."
+        names={['CopyButton']}
+      >
+        <CopyButton value="sk_test_4f9a2c7e1b" label="Copy the key" />
+        <CopyButton value="https://example.com/orders/IT-1042" label="Copy the link" size="sm" />
+        <CopyButton value="IT-1042" label="Copy the reference" showLabel size="sm" />
+      </Demo>
+
+      <Demo
+        id="kbd"
+        title="Kbd"
+        description="The keys of a shortcut, as this computer writes them: ⌘ on an Apple computer, Ctrl elsewhere. A sequence is one key, then the next."
+        names={['Kbd']}
+        className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground"
+      >
+        <span className="inline-flex items-center gap-2">
+          Search <Kbd keys="mod+k" />
+        </span>
+        <span className="inline-flex items-center gap-2">
+          Command palette <Kbd keys="mod+shift+p" />
+        </span>
+        <span className="inline-flex items-center gap-2">
+          Go to the orders <Kbd keys="g o" />
+        </span>
+        <span className="inline-flex items-center gap-2">
+          Close <Kbd>Esc</Kbd>
+        </span>
       </Demo>
 
       <Demo id="export" title="ExportButton" description="The rows a page shows, saved as a CSV file named with the day (spreadsheet formulas neutralised)." names={['ExportButton']}>

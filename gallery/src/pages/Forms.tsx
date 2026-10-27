@@ -20,6 +20,7 @@ import {
   PageHeader,
   RadioGroup,
   RadioGroupItem,
+  SegmentedControl,
   Select,
   SpringSelect,
   StretchSwitch,
@@ -27,7 +28,7 @@ import {
   Textarea,
 } from 'ioiti-ui'
 import type { DateRange } from 'ioiti-ui'
-import { Search } from 'lucide-react'
+import { ChartLine, LayoutGrid, Rows3, Search } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -190,6 +191,46 @@ export function Forms() {
           ]}
         />
         <StretchSwitch checked={notify} onChange={setNotify} label="Notify the customer" description="An email when the order leaves" />
+      </Demo>
+
+      <Demo
+        id="segmented"
+        title="SegmentedControl"
+        description="Two to five choices shown at once, the chosen one filled as a primary button is, the fill sliding to the next. The arrow keys move and choose; Tab leaves. As tabs, it switches panels."
+        names={['SegmentedControl']}
+        className="flex flex-col items-start gap-4"
+      >
+        <SegmentedControl
+          label="Period"
+          defaultValue="week"
+          options={[
+            { value: 'day', label: 'Day' },
+            { value: 'week', label: 'Week' },
+            { value: 'month', label: 'Month' },
+            { value: 'year', label: 'Year' },
+          ]}
+        />
+        <SegmentedControl
+          label="View"
+          size="sm"
+          defaultValue="table"
+          options={[
+            { value: 'table', label: 'Table', icon: <Rows3 /> },
+            { value: 'cards', label: 'Cards', icon: <LayoutGrid /> },
+            { value: 'chart', label: 'Chart', icon: <ChartLine />, disabled: true },
+          ]}
+        />
+        <SegmentedControl
+          label="Channel"
+          fullWidth
+          defaultValue="all"
+          className="max-w-sm"
+          options={[
+            { value: 'all', label: 'All' },
+            { value: 'shop', label: 'Shop' },
+            { value: 'phone', label: 'Phone' },
+          ]}
+        />
       </Demo>
 
       <Demo id="otp" title="OTPInput" description="A one-time code: a password manager's or a phone's autofill fills every box, as a paste does." names={['OTPInput']}>

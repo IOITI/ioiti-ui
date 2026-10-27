@@ -81,6 +81,15 @@ the data tables' filters as Elastic UI's filter group.
   clears them all. A list follows its button as the page scrolls; on a phone, a tap opens it without the
   keyboard, which comes when its search is tapped. `useDataTable()` gives `setFilter` and `countOptions`. Shown on the gallery's Data display
   page, the orders filtered by customer, status and channel.
+- **`Kbd`**: the keys of a shortcut as this computer writes them: `mod+k` is ⌘K on an Apple computer, Ctrl K
+  elsewhere; `g o` is G, then O. A screen reader hears them in words ("Command K").
+- **`CopyButton`**: copies a value and says it did, a check for two seconds and its hint saying what came of it
+  ("Copied", "Couldn't copy"), the words said to a screen reader; the focus stays on it.
+- **`SegmentedControl`**: two to five choices in one bar, the chosen one filled as a primary button is (with the
+  accent's fill), the fill sliding to the next. A radio group to the keyboard, its arrows moving and choosing;
+  or the tabs of panels (`role="tablist"`).
+- **`useNow`**: the time now, read again every interval; the components asking for the same interval share one
+  timer, which stops when none is left.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
