@@ -1,11 +1,11 @@
-import { ACCENTS, LookPicker, PageHeader, Panel, ThemeToggle, useTheme } from 'ioiti-ui'
+import { ACCENTS, CodeBlock, LookPicker, PageHeader, Panel, ThemeToggle, useTheme } from 'ioiti-ui'
 import accentsCss from 'ioiti-ui/accents.css?raw'
 import designCss from 'ioiti-ui/design.css?raw'
 import glassCss from 'ioiti-ui/glass.css?raw'
 import themeCss from 'ioiti-ui/theme.css?raw'
 import tokensCss from 'ioiti-ui/tokens.css?raw'
 
-import { Code, Demo, Rule } from '../parts'
+import { Demo, Rule } from '../parts'
 import { lookTokens, valueOf } from '../tokens'
 
 const SHEETS = [tokensCss, themeCss, accentsCss, glassCss, designCss]
@@ -95,11 +95,11 @@ export function Themes() {
       </Panel>
 
       <Panel title="The application's own" description="Given to the Vite plugin, written on the page before its first paint; a person's choice wins over it.">
-        <Code>{`// vite.config.ts
+        <CodeBlock language="ts" code={`// vite.config.ts
 ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })
 
 // The top bar, with the picker beside the theme's button (without it, every person sees the application's)
-<AppShell menu={MENU} pathname={pathname} topBarEnd={<><LookPicker /><ThemeToggle /></>}>`}</Code>
+<AppShell menu={MENU} pathname={pathname} topBarEnd={<><LookPicker /><ThemeToggle /></>}>`} />
       </Panel>
 
       <Panel title="In a component" description="The rules that keep every look right, and the design as it was.">

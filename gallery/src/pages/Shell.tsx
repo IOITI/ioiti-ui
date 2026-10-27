@@ -1,7 +1,7 @@
-import { AppBrand, ButtonLink, PageHeader, SidebarFooterButton, StateChip } from 'ioiti-ui'
+import { AppBrand, ButtonLink, CodeBlock, PageHeader, SidebarFooterButton, StateChip } from 'ioiti-ui'
 import { KeyRound, LogOut, RotateCw } from 'lucide-react'
 
-import { Code, Demo } from '../parts'
+import { Demo } from '../parts'
 
 export function Shell() {
   return (
@@ -18,7 +18,7 @@ export function Shell() {
         names={['AppShell', 'Sidebar', 'SidebarTrigger', 'PageTrailProvider', 'TopBarTrail', 'useMainScroll']}
         className="flex flex-col items-stretch gap-3"
       >
-        <Code>{`const MENU: Menu = {
+        <CodeBlock language="tsx" code={`const MENU: Menu = {
   sections: ['Work', 'Settings'],
   entries: [
     { id: 'home', path: '/', label: 'Dashboard', section: 'Work', icon: <LayoutDashboard /> },
@@ -32,7 +32,7 @@ export function Shell() {
   topBarChips={needsRestart && <StateChip … />}
   topBarEnd={<><SearchButton /><ThemeToggle /></>}>
   {page}
-</AppShell>`}</Code>
+</AppShell>`} />
         <p className="text-sm text-muted-foreground">
           A page deeper than the menu (/orders/42) stands under the entry its address starts with; its PageHeader gives
           the trail its name, and the pages between (parents).
@@ -46,12 +46,12 @@ export function Shell() {
         names={['PageHeader', 'usePageName', 'useTabTitle']}
         className="flex flex-col items-stretch gap-3"
       >
-        <Code>{`<PageHeader
+        <CodeBlock language="tsx" code={`<PageHeader
   title="Invoice 2026-0042"
   description="Sent to Acme on 12 Oct."
   parents={[{ label: 'October', href: '/invoices?month=10' }]}
   actions={<ButtonLink to="/invoices/2026-0042.pdf" size="sm">Download</ButtonLink>}
-/>`}</Code>
+/>`} />
       </Demo>
 
       <Demo

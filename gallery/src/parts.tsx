@@ -1,4 +1,4 @@
-import { Panel } from 'ioiti-ui'
+import { CodeBlock, Panel } from 'ioiti-ui'
 import type { ReactNode } from 'react'
 
 interface DemoProps {
@@ -23,9 +23,7 @@ export function Demo({ id, title, description, names, from = 'ioiti-ui', classNa
       <div data-names={names.join(' ')} className={className ?? 'flex flex-wrap items-center gap-3'}>
         {children}
       </div>
-      <pre className="mt-5 overflow-x-auto rounded-lg border border-border/60 bg-surface-raised/30 px-3 py-2 font-mono text-[11px] text-muted-foreground">
-        {`import { ${names.join(', ')} } from '${from}'`}
-      </pre>
+      <CodeBlock className="mt-5" language="ts" copyable={false} code={`import { ${names.join(', ')} } from '${from}'`} />
     </Panel>
   )
 }
@@ -37,14 +35,5 @@ export function Rule({ title, children }: { title: string; children: ReactNode }
       <p className="text-sm font-medium">{title}</p>
       <p className="text-sm text-muted-foreground">{children}</p>
     </li>
-  )
-}
-
-/** Code to copy, as written in an application. */
-export function Code({ children }: { children: string }) {
-  return (
-    <pre className="w-full overflow-x-auto rounded-lg border border-border/60 bg-surface-raised/30 p-3 font-mono text-xs leading-relaxed">
-      {children}
-    </pre>
   )
 }

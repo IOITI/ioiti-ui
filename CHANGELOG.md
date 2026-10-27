@@ -123,6 +123,12 @@ the data tables' filters as Elastic UI's filter group.
   in a column of their own (`columns`), figures side by side, each term over its figure (`grid`), facts in a line
   (`inline`); `divided`, `boxed`, `compressed`, and `numeric` for figures that line up. As Elastic UI's
   description list does.
+- **`CodeBlock`** and **`Code`**: code to read and copy (a payload, a configuration, a command), coloured in the
+  design's code colours, which nothing drew with until now: json, js and ts (with jsx), css and a shell, or a
+  tokeniser of the caller's (`highlight`). Its lines numbered, some marked, a label above it, a long one scrolled
+  or wrapped, a button that copies it; on a surface every code colour is read on at 4.5:1 in every look, which
+  the contrast tests now hold. `Code` is the word of code in a sentence. As Elastic UI's code block does. The
+  gallery's code is drawn with them.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

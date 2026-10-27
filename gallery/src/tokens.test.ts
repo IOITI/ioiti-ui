@@ -5,6 +5,8 @@ import { ACCENTS, MATERIALS } from 'ioiti-ui'
 import { describe, expect, it } from 'vitest'
 
 import {
+  CODE_SURFACES,
+  CODE_TEXTS,
   colourOf,
   contrast,
   contrastPairs,
@@ -174,6 +176,8 @@ describe('every look: a theme, an accent, a material', () => {
       const pairs = lookPairs(lookTokens(SHEETS, look), look)
       // Every text colour on every surface was read: none is lost to a format the reader does not know.
       expect(pairs.filter((pair) => pair.minimum === 4.5).length).toBeGreaterThanOrEqual(50)
+      // The code colours too, on CodeBlock's surfaces.
+      expect(pairs.filter((pair) => pair.text.startsWith('--code-'))).toHaveLength(CODE_TEXTS.length * CODE_SURFACES.length)
       const under = pairs.filter((pair) => pair.ratio < pair.minimum)
       const known = KNOWN_UNDER_IN_LOOKS.filter((pair) => (['theme', 'accent', 'material'] as const).every((key) => pair[key] === undefined || pair[key] === look[key]))
       expect(under.map(({ text, surface, ratio }) => `${text} on ${surface}: ${ratio.toFixed(2)}`)).toEqual(

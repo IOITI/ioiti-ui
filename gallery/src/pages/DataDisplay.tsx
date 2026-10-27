@@ -8,6 +8,8 @@ import {
   AnimatedNumber,
   Badge,
   Button,
+  Code,
+  CodeBlock,
   DataTable,
   DataTableContent,
   DataTableFilters,
@@ -261,6 +263,42 @@ export function DataDisplay() {
             { term: 'Paid by', details: 'Card' },
           ]}
         />
+      </Demo>
+
+      <Demo
+        id="code"
+        title="CodeBlock and Code"
+        description="Code to read and copy (a payload, a configuration, a command), coloured in the design's code colours, each 4.5:1 on its surface in every look: json, js and ts, css, a shell. Its lines numbered, some marked, a long one scrolled or wrapped; inline, a word of code in a sentence."
+        names={['CodeBlock', 'Code']}
+        className="grid w-full gap-4 lg:grid-cols-2"
+      >
+        <CodeBlock
+          label="Order IT-1042, as the server sent it"
+          language="json"
+          lineNumbers
+          highlightLines={[4]}
+          code={`{
+  "id": "IT-1042",
+  "customer": "Atelier Brun",
+  "status": "paid",
+  "total": 1840,
+  "lines": 4,
+  "gift": false
+}`}
+        />
+        <div className="flex min-w-0 flex-col gap-4">
+          <CodeBlock language="shell" code={'npm install github:IOITI/ioiti-ui#v0.3.0 react react-dom framer-motion\nnpm run dev -- --port 5180'} />
+          <CodeBlock
+            language="ts"
+            label="order.ts"
+            code={`export function late(order: Order, now = Date.now()) {
+  return now - Date.parse(order.promisedAt) > 2 * DAY
+}`}
+          />
+          <p className="text-sm text-muted-foreground">
+            A toast is shown with <Code>useToast()</Code>, and leaves on its own after <Code>4 s</Code>.
+          </p>
+        </div>
       </Demo>
 
       <Demo

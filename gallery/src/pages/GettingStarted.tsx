@@ -1,7 +1,7 @@
-import { Button, ButtonLink, PageHeader, Panel, ThemeToggle, useToast } from 'ioiti-ui'
+import { Button, ButtonLink, CodeBlock, PageHeader, Panel, ThemeToggle, useToast } from 'ioiti-ui'
 import { ArrowRight } from 'lucide-react'
 
-import { Code, Demo } from '../parts'
+import { Demo } from '../parts'
 
 function ToastButton() {
   const toast = useToast()
@@ -26,33 +26,33 @@ export function GettingStarted() {
       />
 
       <Panel title="Start a new application" description="The starter template has the shell, a sign-in page, a dashboard and a list, ready to change.">
-        <Code>{`npx degit IOITI/ioiti-ui/templates/app#v0.1.0 my-app
-cd my-app && npm install && npm run dev`}</Code>
+        <CodeBlock language="shell" code={`npx degit IOITI/ioiti-ui/templates/app#v0.1.0 my-app
+cd my-app && npm install && npm run dev`} />
       </Panel>
 
       <Panel title="Or add it to an application" description="Installed from a tag of its repository: a release carries the package built, nothing is built on install.">
         <div className="space-y-3">
-          <Code>{`npm install github:IOITI/ioiti-ui#v0.1.0 react react-dom framer-motion react-router
-npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`}</Code>
+          <CodeBlock language="shell" code={`npm install github:IOITI/ioiti-ui#v0.1.0 react react-dom framer-motion react-router
+npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`} />
           <p className="text-sm text-muted-foreground">
             One line of CSS brings Tailwind and the design: the tokens of both themes, the fonts, the focus ring. It
             replaces <code>@import "tailwindcss"</code>, never sits beside it.
           </p>
-          <Code>{`/* src/index.css */
-@import "ioiti-ui/styles.css";`}</Code>
+          <CodeBlock language="css" code={`/* src/index.css */
+@import "ioiti-ui/styles.css";`} />
           <p className="text-sm text-muted-foreground">
             The Vite plugin sets the theme before the first paint (no flash of the other one), under the
             application's own key, and keeps the fonts out of <code>data:</code> URIs for a strict
             Content-Security-Policy.
           </p>
-          <Code>{`// vite.config.ts
+          <CodeBlock language="ts" code={`// vite.config.ts
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { ioiti } from 'ioiti-ui/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), ioiti({ themeStorageKey: 'my-app.theme' })],
-})`}</Code>
+})`} />
         </div>
       </Panel>
 
@@ -63,11 +63,11 @@ export default defineConfig({
         names={['IoitiProvider', 'ThemeProvider', 'ThemeToggle', 'LinkProvider', 'ToastProvider']}
         className="flex flex-col items-start gap-3"
       >
-        <Code>{`createRoot(document.getElementById('root')!).render(
+        <CodeBlock language="tsx" code={`createRoot(document.getElementById('root')!).render(
   <IoitiProvider appName="My App">
     <RouterProvider router={router} />
   </IoitiProvider>,
-)`}</Code>
+)`} />
         <div className="flex flex-wrap items-center gap-3">
           <ToastButton />
           <span className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -84,7 +84,7 @@ export default defineConfig({
         from="ioiti-ui/react-router"
         className="flex flex-col items-start gap-3"
       >
-        <Code>{`const router = createBrowserRouter([
+        <CodeBlock language="tsx" code={`const router = createBrowserRouter([
   {
     element: <RouterRoot />,
     children: [
@@ -99,7 +99,7 @@ export default defineConfig({
       },
     ],
   },
-])`}</Code>
+])`} />
       </Demo>
     </>
   )

@@ -265,6 +265,23 @@ export const TEXTS = [
   '--info',
 ]
 
+/**
+ * The code colours (CodeBlock), and the surfaces it draws them on: its own, solid in every look, and the
+ * colour of a line marked. Not with the other texts: they are not promised on the raised surfaces or on glass.
+ */
+export const CODE_TEXTS = [
+  '--code-keyword',
+  '--code-string',
+  '--code-number',
+  '--code-comment',
+  '--code-function',
+  '--code-namespace',
+  '--code-type',
+  '--code-builtin',
+  '--code-operator',
+]
+export const CODE_SURFACES = ['--surface', '--surface-hover']
+
 export interface Pair {
   text: string
   surface: string
@@ -354,6 +371,8 @@ export function lookPairs(tokens: Record<string, string>, look: Look): LookPair[
     if (colour) for (const [surface, under] of on) pairs.push({ text, surface, ratio: worst(colour, under), minimum })
   }
   for (const text of look.accent === 'neutral' ? TEXTS : [...TEXTS, '--brand-text']) add(text, 4.5)
+  const code = surfaces.filter(([surface]) => CODE_SURFACES.includes(surface))
+  for (const text of CODE_TEXTS) add(text, 4.5, code)
   add('--focus-ring', 3)
   if (look.accent === 'neutral') return pairs
   add('--brand', 3)

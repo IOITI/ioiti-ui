@@ -3,6 +3,7 @@ import {
   ACCENTS,
   Button,
   cn,
+  CodeBlock,
   IconButton,
   Meter,
   motionTransitions,
@@ -22,7 +23,7 @@ import {
 import { MousePointerClick } from 'lucide-react'
 import { useState } from 'react'
 
-import { Code, Demo, Rule } from '../parts'
+import { Demo, Rule } from '../parts'
 
 const USES: Record<keyof typeof motionTransitions, string> = {
   springGentle: 'Tabs, an accordion, a dialog growing in: about 400 ms, no overshoot.',
@@ -166,9 +167,9 @@ export function Motion() {
           ))}
         </div>
         <div className="mt-5">
-          <Code>{`<div className="transition-colors">       {/* easeFast's curve, 150 ms: every transition-* class */}
+          <CodeBlock language="tsx" code={`<div className="transition-colors">       {/* easeFast's curve, 150 ms: every transition-* class */}
 <div className="transition-opacity duration-300 ease-soft">
-<div className="motion-safe:transition-[width] motion-safe:ease-soft">  {/* not where motion is reduced */}`}</Code>
+<div className="motion-safe:transition-[width] motion-safe:ease-soft">  {/* not where motion is reduced */}`} />
         </div>
       </Panel>
 
@@ -189,11 +190,11 @@ export function Motion() {
             <TextLink to="/components/overlays">Overlays</TextLink>
             <TextLink to="?query=another">This page, another query (nothing moves)</TextLink>
           </p>
-          <Code>{`// React Router: nothing to do, its changes of page are React transitions.
+          <CodeBlock language="tsx" code={`// React Router: nothing to do, its changes of page are React transitions.
 <RouterAppShell menu={MENU} />
 
 // Another router: give AppShell the new address in a transition.
-startTransition(() => setPathname(next))`}</Code>
+startTransition(() => setPathname(next))`} />
         </div>
       </Panel>
 

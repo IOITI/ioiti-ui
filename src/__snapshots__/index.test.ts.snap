@@ -31,6 +31,8 @@ exports[`the package's interface > is the list of names it was 1`] = `
   "CheckIcon",
   "CheckList",
   "Checkbox",
+  "Code",
+  "CodeBlock",
   "Combobox",
   "ConfirmAction",
   "CopyButton",

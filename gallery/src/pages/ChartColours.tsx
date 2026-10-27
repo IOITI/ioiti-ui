@@ -1,11 +1,11 @@
-import { ACCENTS, PageHeader, Panel } from 'ioiti-ui'
+import { ACCENTS, CodeBlock, PageHeader, Panel } from 'ioiti-ui'
 import accentsCss from 'ioiti-ui/accents.css?raw'
 import designCss from 'ioiti-ui/design.css?raw'
 import glassCss from 'ioiti-ui/glass.css?raw'
 import themeCss from 'ioiti-ui/theme.css?raw'
 import tokensCss from 'ioiti-ui/tokens.css?raw'
 
-import { Code, Rule } from '../parts'
+import { Rule } from '../parts'
 import { lookTokens, themeTokens, valueOf } from '../tokens'
 import type { ThemeName } from '../tokens'
 
@@ -92,28 +92,22 @@ export function ChartColours() {
       </Panel>
 
       <Panel title="Code" description="A code editor's highlighting: text colours, each 4.5:1 at least on its surface.">
-        <pre className="overflow-x-auto rounded-lg border border-border/60 bg-surface p-3 font-mono text-xs leading-relaxed">
-          <span style={{ color: 'var(--code-comment)' }}>{'// What an order costs, with its tax\n'}</span>
-          <span style={{ color: 'var(--code-keyword)' }}>export function </span>
-          <span style={{ color: 'var(--code-function)' }}>total</span>
-          <span style={{ color: 'var(--code-operator)' }}>(</span>order<span style={{ color: 'var(--code-operator)' }}>: </span>
-          <span style={{ color: 'var(--code-type)' }}>Order</span>
-          <span style={{ color: 'var(--code-operator)' }}>{') {\n  '}</span>
-          <span style={{ color: 'var(--code-keyword)' }}>return </span>
-          <span style={{ color: 'var(--code-namespace)' }}>Math</span>.<span style={{ color: 'var(--code-builtin)' }}>round</span>(order.amount
-          <span style={{ color: 'var(--code-operator)' }}> * </span>
-          <span style={{ color: 'var(--code-number)' }}>1.2</span>
-          <span style={{ color: 'var(--code-operator)' }}>)</span> <span style={{ color: 'var(--code-comment)' }}>{'// '}</span>
-          <span style={{ color: 'var(--code-string)' }}>{"'with tax'"}</span>
-          {'\n}'}
-        </pre>
+        <CodeBlock
+          language="ts"
+          label="total.ts"
+          code={`// What an order costs, with its tax
+export function total(order: Order) {
+  const rate = 1.2
+  return Math.round(order.amount * rate) + ' with tax'
+}`}
+        />
         <p className="mt-3 text-xs text-muted-foreground">{CODE.join(' · ')}</p>
       </Panel>
 
       <Panel title="In a chart" description="Recharts (or any SVG) reads the tokens as CSS variables, and follows the theme by itself.">
-        <Code>{`<Line dataKey="total" stroke="var(--chart-series)" dot={false} />
+        <CodeBlock language="tsx" code={`<Line dataKey="total" stroke="var(--chart-series)" dot={false} />
 <CartesianGrid stroke="var(--chart-grid)" />
-<XAxis stroke="var(--chart-axis)" tick={{ fill: 'var(--muted-foreground)' }} />`}</Code>
+<XAxis stroke="var(--chart-axis)" tick={{ fill: 'var(--muted-foreground)' }} />`} />
       </Panel>
 
       <Panel title="Rules">
