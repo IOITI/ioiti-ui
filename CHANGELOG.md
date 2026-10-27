@@ -10,6 +10,14 @@ draws itself, and a sheet that can push the page aside. And motion, calm and the
 look that change in one cross-fade, toasts that leave, and one motion for everything in front of the page. And
 the data tables' filters as Elastic UI's filter group.
 
+And 37 components more, what pages wrote by hand or did without: charts (bars, a donut, lines over time,
+sparklines, a legend, lists of bars, a progress), the data a page shows (terms and their details, code in the
+design's code colours, changes from before to after, more on demand, a value to copy, a moment from now, a
+figure watched, avatars), menus and inputs (a popover, a menu and a context menu, a segmented control, a number,
+sliders, several values as chips, a value edited where it is, a range of time and its refresh), and the flow of
+an application (a skip link, the bar of unsaved changes and the guard of leaving, keyboard shortcuts, panels to
+resize, a tour of a page).
+
 - **Bloom**: the flyer's orchid on what is chosen, current or primary, on links, the focus ring and one-series
   charts, as every accent's colour. A filled button and the application's mark take the flyer's gradient
   itself, lilac to pink to tangerine, under a fine grain, with the page's ink on it in both themes. With
@@ -219,7 +227,13 @@ An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own
 its props: the new box comes with the update. So does the motion, on React 19.3 at least: an application on
 React 19.2 updates `react` and `react-dom`. `IoitiProvider reducedMotion="always"` reduces it everywhere. A
 table's filters change their look: a column of two options becomes an on/off pair (`filterDisplay: 'list'`
-keeps it a list), and `initialFilters` works as before. No name was added to the package's interface.
+keeps it a list), and `initialFilters` works as before.
+
+The new components add names to the package's interface (`src/index.ts`; `RouterLeaveGuard` to
+`ioiti-ui/react-router`), and change nothing an application has: what it sees change is the charts' small text,
+lighter on dark (the design's muted text, where it was under 4.5:1); the shell's skip link, shown once the
+keyboard reaches it; `?` listing the application's shortcuts once it registers one (`shortcutsDialog={false}`
+for none); and `Badge`'s ×, which draws no ring of its own.
 
 ## [0.2.1] - 2026-10-27
 

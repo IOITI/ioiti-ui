@@ -13,7 +13,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
 | `src/shell/` | the application shell, the trail, the 404, the sign-in frame |
-| `src/lib/` | helpers (`cn`, formats, theme, CSV, dates), EasyUI's chart helpers |
+| `src/lib/` | helpers (`cn`, formats, theme, CSV, dates, date maths, keys, the clock), the placing of a layer (`anchor.ts`), the charts' scales and colours, EasyUI's chart helpers |
 | `src/react-router/` | the adapter for React Router, the only code that imports it |
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
 | `gallery/` | an application made with the package: every component, in both themes |
@@ -66,6 +66,14 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   document, would cover it. It names the layer while a view transition plays only, never at rest, which would
   take the blur of its glass away. `motion.css` only
   adds, as the accents and glass.
+- **A layer placed beside its trigger** (a popover, a menu, a list) is placed by `src/lib/anchor.ts`
+  (`useAnchoredLayer`): in `document.body`, following its trigger, its Escape and Tab its own inside a dialog.
+  No new placement written by hand.
+- **A chart's series take the design's colours** (`src/lib/chart-colours.ts`): one series `--chart-series`,
+  things compared `--chart-compare-1…4` in order, never recycled (a fifth is grey).
+- **What MotionConfig does not reduce** (a value animated by hand: `pathLength`, `d`, a size, `useSpring`) is
+  reduced through `useReducedMotionConfig()`, which follows IoitiProvider as well as the system; framer's
+  `useReducedMotion` follows the system only.
 - **One focus ring**, the global rule of `design.css`; no component draws its own.
 - **What leads somewhere is a link**, drawn by `useLinkComponent()` (the application's, from `LinkProvider`),
   or by the component's own `linkComponent` prop when given; a plain click is left to the router, a click with

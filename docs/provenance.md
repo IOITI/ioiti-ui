@@ -18,6 +18,8 @@ ioiti-ui is the design of the admin interface of WATA (IOITI's trading assistant
 | `src/lib/*` | `lib/{utils,links,motion-tokens,theme,format,csv,dateRange,checks,chart-primitives,dashboard-chart-utils}` |
 | `Field`, `IconButton`, `Table`…, `EmptyText`, `ErrorText`, `KpiGrid`, `TextLink` | class recipes WATA's pages wrote by hand, with the same classes |
 | `LookPicker` | nothing: ioiti-ui's own |
+| `src/components/ui/{bar-chart,donut-chart,product-tour}.tsx` | nothing: EasyUI's (`7c106d4`), taken by ioiti-ui itself, not through WATA (`docs/easyui-changes.md`) |
+| The components of 0.3.0 in `src/components/` (`Kbd`, `CopyButton`, `SegmentedControl`, `Sparkline`, `ChartLegend`, `LineChart`, `ProgressBar`, `BarList`, `DescriptionList`, `CodeBlock`, `ChangeList`, `Disclosure`, `Popover`, `DropdownMenu`, `NumberInput`, `Slider`, `MultiSelect`, `InlineEdit`, `TimeRangePicker`, `SaveBar`, `ShortcutsDialog`, `ResizablePanels`, `Avatar`, `LiveValue`, `RelativeTime`, `CopyChip`…), `src/react-router/RouterLeaveGuard.tsx`, and `src/lib/{anchor,keys,now,announce,controllable,refs,chart-colours,chart-scale,highlight,date-math}.ts` | nothing: ioiti-ui's own; several do what Elastic UI's components do, as its documentation describes them (none of its code); some are what WATA's pages wrote by hand |
 
 The name of the application and of its broker appear nowhere in the package's code, its gallery or its template
 (`scripts/check-source.mjs`): only in these documents, which say where it comes from.
