@@ -237,6 +237,9 @@ resize, a tour of a page).
 - **`OTPInput`**'s boxes look like `Input` (its border, its surface and its text in both themes, its focus in the
   accent), where EasyUI's were grey with a violet focus: a code's boxes under a password field look like it.
   `boxClassName` still restyles them.
+- **`NotificationBell`**'s button looks like the top bar's other buttons (`IconButton`): square, quiet until hovered,
+  giving a little when pressed, held as pressed while its panel is open; EasyUI's was a bordered box that grew under
+  the pointer. `triggerClassName` still restyles it.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

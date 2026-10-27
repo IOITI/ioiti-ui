@@ -137,8 +137,6 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             : {}
         }
         transition={{ duration: 0.5, ease: 'easeInOut' }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
         aria-expanded={isPanelOpen}
         aria-label={
           unreadCount > 0
@@ -148,15 +146,17 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
         className={cn(
           'relative cursor-pointer transition-colors',
           triggerClassName ??
+            // ioiti-ui: the top bar's icon buttons' look (IconButton), where it sits: square, quiet until hovered, giving
+            // a little when pressed; held as pressed while its panel is open. EasyUI's was a bordered box that grew.
             cn(
-              'p-2.5 rounded-xl border',
+              'grid size-9 shrink-0 place-items-center rounded-lg transition motion-safe:active:scale-95 [&>svg]:size-[18px]',
               isPanelOpen
-                ? 'bg-neutral-100 border-neutral-400 text-neutral-900 dark:bg-[#141414] dark:border-[#4A4A4A] dark:text-[#FAFAFA]'
-                : 'bg-white border-neutral-200 text-neutral-500 hover:text-neutral-900 hover:border-neutral-400 dark:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:text-[#525252] dark:hover:text-[#FAFAFA] dark:hover:border-[#4A4A4A]'
+                ? 'bg-neutral-200/70 text-neutral-900 dark:bg-neutral-800 dark:text-white'
+                : 'text-neutral-500 hover:bg-neutral-200/70 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white'
             )
         )}
       >
-        <Bell className="w-5 h-5" />
+        <Bell />
 
         {/* Unread Badge / Red Dot */}
         <AnimatePresence>

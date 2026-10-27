@@ -364,6 +364,9 @@ otherwise).
   "0"), with a space before it for the tab's name.
 - `otp-input` (0.3.0): its boxes take the look of the form's `Input`, its border, its surface and its text in both
   themes, its border darker in focus (the accent's under an accent), where EasyUI's were grey with a violet focus.
+- `notification-bell` (0.3.0): its button takes the look of the top bar's icon buttons (`IconButton`), square and
+  quiet until hovered, giving a little when pressed (`motion-safe:active:scale-95`), held as pressed while its panel
+  is open, where EasyUI's was a bordered box that grew under the pointer (`whileHover`, `whileTap`).
 
 ## ioiti-ui's own changes
 
