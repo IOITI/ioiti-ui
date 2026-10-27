@@ -165,12 +165,13 @@ export function LineChart({
   const base = y(domain.min <= 0 && domain.max >= 0 ? 0 : domain.min)
   const axis = timeTicks(tMin, tMax, Math.max(2, Math.floor(iw / 90)), timeZone)
   const daily = axis.unit === 'day' || axis.unit === 'month'
+  // A moment as the design writes it elsewhere (formatDay, formatDateTime): "07 Oct 2026, 09:30".
   const timeText =
     formatTime ??
     ((t: number) =>
       new Intl.DateTimeFormat('en-GB', {
         timeZone,
-        day: 'numeric',
+        day: '2-digit',
         month: 'short',
         year: 'numeric',
         ...(daily ? {} : { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }),

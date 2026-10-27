@@ -112,7 +112,7 @@ export function timeTicks(from: number, to: number, count: number, timeZone = 'U
   return { ticks, unit: chosen.unit }
 }
 
-/** A time of the axis, as its unit reads it: "09:30", "27 Oct", "Oct 2026". */
+/** A time of the axis, as its unit reads it: "09:30", "07 Oct" (a day as `formatDay` writes it), "Oct 2026". */
 export function formatTimeTick(at: number, unit: TimeUnit, timeZone = 'UTC'): string {
   const options: Intl.DateTimeFormatOptions =
     unit === 'second'
@@ -120,7 +120,7 @@ export function formatTimeTick(at: number, unit: TimeUnit, timeZone = 'UTC'): st
       : unit === 'minute' || unit === 'hour'
         ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
         : unit === 'day'
-          ? { day: 'numeric', month: 'short' }
+          ? { day: '2-digit', month: 'short' }
           : { month: 'short', year: 'numeric' }
   return new Intl.DateTimeFormat('en-GB', { timeZone, ...options }).format(new Date(at))
 }

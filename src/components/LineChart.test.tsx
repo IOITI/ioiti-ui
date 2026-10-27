@@ -26,7 +26,7 @@ describe('LineChart', () => {
     render(<LineChart ariaLabel="Balance of two runs" data={RUNS} series={SERIES} animated={false} />)
     const table = screen.getByRole('table', { name: 'Balance of two runs' })
     expect(within(table).getAllByRole('row')).toHaveLength(RUNS.length + 1)
-    expect(within(table).getByRole('row', { name: '5 Oct 2026 1,048 —' })).toBeInTheDocument()
+    expect(within(table).getByRole('row', { name: '05 Oct 2026 1,048 —' })).toBeInTheDocument()
   })
 
   it('compares series in the compare colours, a gap splitting a line in two', () => {
@@ -61,7 +61,7 @@ describe('LineChart', () => {
     expect(tooltip).toHaveTextContent('10 Oct 2026')
     expect(tooltip).toHaveTextContent('1,108')
     await user.keyboard('{Home}')
-    expect(tooltip).toHaveTextContent('1 Oct 2026')
+    expect(tooltip).toHaveTextContent('01 Oct 2026')
   })
 
   it('hides a series from its legend, never the last', async () => {

@@ -40,6 +40,11 @@ describe('a time axis', () => {
     expect(ticks.every((tick) => formatTimeTick(tick, unit, 'Europe/Paris').endsWith(':00'))).toBe(true)
   })
 
+  it('writes a day as formatDay does', () => {
+    expect(formatTimeTick(Date.UTC(2026, 9, 7, 12), 'day')).toBe('07 Oct')
+    expect(formatTimeTick(Date.UTC(2026, 9, 27, 12), 'day', 'Europe/Paris')).toBe('27 Oct')
+  })
+
   it('ticks at midnight for days', () => {
     const from = Date.UTC(2026, 9, 1, 13)
     const to = Date.UTC(2026, 9, 20)

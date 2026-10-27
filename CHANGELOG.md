@@ -3,6 +3,13 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.4.1] - 2026-10-27
+
+- **`LineChart` writes a day as the rest of the design does**: "07 Oct" on its time axis and "07 Oct 2026" at
+  the top of its tooltip, as `formatDay` and `formatDateTime` write them (and a `BarChart` of days, whose labels
+  an application gives with `formatDay`). It wrote "7 Oct", so two charts of the same days one above the other
+  read differently. `formatTimeTick` with it.
+
 ## [0.4.0] - 2026-10-27
 
 What an application needs to give up its own bar of unsaved changes, its guard of leaving, its live figures and
