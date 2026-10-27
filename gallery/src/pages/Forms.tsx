@@ -16,6 +16,7 @@ import {
   FormMessage,
   Input,
   lastDays,
+  MultiSelect,
   NumberInput,
   OTPInput,
   PageHeader,
@@ -54,6 +55,38 @@ async function pretendUpload(_file: unknown, onProgress: (progress: number) => v
 }
 
 const TOPICS = ['Product updates', 'Newsletter', 'Beta features']
+
+const CUSTOMERS = [
+  { value: 'brun', label: 'Atelier Brun', description: 'Lyon', group: 'Regulars' },
+  { value: 'acme', label: 'Acme', description: 'Paris', group: 'Regulars' },
+  { value: 'nord', label: 'Nord Logistique', description: 'Lille', group: 'Regulars' },
+  { value: 'vega', label: 'Vega Studio', description: 'Berlin', group: 'New this month' },
+  { value: 'lumen', label: 'Lumen & Co', description: 'Rome', group: 'New this month' },
+  { value: 'old', label: 'Maison Ancienne', description: 'Closed', group: 'New this month', disabled: true },
+]
+
+/** Tags typed as they come: what is not in the list becomes one. */
+function Tags() {
+  const [options, setOptions] = useState([
+    { value: 'urgent', label: 'urgent' },
+    { value: 'gift', label: 'gift' },
+    { value: 'fragile', label: 'fragile' },
+  ])
+  return (
+    <Field label="Tags" htmlFor="order-tags">
+      <MultiSelect
+        id="order-tags"
+        options={options}
+        defaultValue={['urgent']}
+        placeholder="Add a tag"
+        onCreateOption={(text) => {
+          setOptions((now) => [...now, { value: text, label: text }])
+          return text
+        }}
+      />
+    </Field>
+  )
+}
 
 /** A box over a list of others: indeterminate while some of them are checked, as a table's header is. */
 function CheckboxGroup() {
@@ -194,6 +227,19 @@ export function Forms() {
           ]}
         />
         <StretchSwitch checked={notify} onChange={setNotify} label="Notify the customer" description="An email when the order leaves" />
+      </Demo>
+
+      <Demo
+        id="multi-select"
+        title="MultiSelect"
+        description="Several values from a list, each a chip: typing filters the list, the arrows move, Enter ticks or unticks, Backspace in an empty field removes the last chip. Options in groups, with a second line; what is typed may become a value of its own, a tag."
+        names={['MultiSelect']}
+        className="grid w-full gap-4 sm:grid-cols-2"
+      >
+        <Field label="Customers" htmlFor="customers">
+          <MultiSelect id="customers" options={CUSTOMERS} defaultValue={['brun', 'acme', 'vega']} maxChips={2} placeholder="Choose customers" />
+        </Field>
+        <Tags />
       </Demo>
 
       <Demo

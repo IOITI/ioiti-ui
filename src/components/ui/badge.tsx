@@ -48,6 +48,10 @@ export type BadgeProps = Omit<HTMLMotionProps<"span">, "children"> & {
   pulse?: boolean;
   /** Shows an × button (chip). */
   onRemove?: () => void;
+  /** ioiti-ui: the × button's name for a screen reader: "Remove Lyon", each chip's its own ("Remove" otherwise). */
+  removeLabel?: string;
+  /** ioiti-ui: whether the × button is a stop of the keyboard (a field of chips removes them with Backspace). */
+  removeFocusable?: boolean;
   children?: React.ReactNode;
 };
 
@@ -57,6 +61,8 @@ export function Badge({
   dot,
   pulse,
   onRemove,
+  removeLabel = "Remove",
+  removeFocusable = true,
   className,
   children,
   ...props
@@ -111,9 +117,11 @@ export function Badge({
       {onRemove && (
         <button
           type="button"
-          aria-label="Remove"
+          aria-label={removeLabel}
+          tabIndex={removeFocusable ? undefined : -1}
           onClick={onRemove}
-          className="grid size-4 place-items-center rounded-full opacity-60 outline-none transition hover:bg-black/10 hover:opacity-100 focus-visible:ring-2 focus-visible:ring-current dark:hover:bg-white/15"
+          // ioiti-ui: no ring of its own (the global one), and a target of 24 px around its 16.
+          className="relative grid size-4 place-items-center rounded-full opacity-60 transition after:absolute after:-inset-1 after:content-[''] hover:bg-black/10 hover:opacity-100 dark:hover:bg-white/15"
         >
           <X className="size-3" />
         </button>

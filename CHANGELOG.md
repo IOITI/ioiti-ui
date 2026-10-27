@@ -155,6 +155,13 @@ the data tables' filters as Elastic UI's filter group.
   (its arrows, Page Up and Down, Home and End, said in words to a screen reader), its thumb ringed in the accent;
   ticks with their labels, bands of the track in a tone (where a value is safe, to watch, too far), a field beside
   it to type the value. As Elastic UI's range and dual range do.
+- **`MultiSelect`**: several values from a list, each a chip in the field: typing filters the list, the arrows
+  move in it, Enter ticks or unticks, Backspace in an empty field removes the last chip; options in groups, with
+  a second line, "+N" past `maxChips`; with `onCreateOption`, what is typed becomes a value of its own (a tag).
+  The field keeps the focus, the list floats beside it; inside a dialog, Escape closes the list only. As Elastic
+  UI's combo box does.
+- **`Badge`**'s × has a name of its own (`removeLabel`: "Remove Lyon"), may be no stop of the keyboard
+  (`removeFocusable`), draws no ring of its own, and takes a press 24 px wide.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

@@ -333,6 +333,9 @@ otherwise).
   springs and curves), and the arcs, the total and the thickness, which it animates by hand and MotionConfig does
   not reduce, are still where motion is reduced (`useReducedMotionConfig`); its count-up, `AnimatedNumber` there,
   is `CentreTotal`, the package's own `AnimatedNumber` being another.
+- `badge`: `removeLabel`, the name of its × for a screen reader ("Remove Lyon", each chip its own, where every
+  one was "Remove"), and `removeFocusable`, for a field of chips that removes them with Backspace; the × draws no
+  ring of its own (the global one) and takes a press 24 px wide around its 16.
 
 ## ioiti-ui's own changes
 
