@@ -7,6 +7,7 @@ import {
   CheckList,
   Loader,
   PageHeader,
+  ProgressBar,
   RequestStatus,
   Skeleton,
   SkeletonAvatar,
@@ -203,6 +204,19 @@ export function Feedback() {
         <Loader variant="dots" label="Loading" />
         <Loader variant="line" label="Loading" />
         <Loader variant="rings" label="Loading" />
+      </Demo>
+
+      <Demo
+        id="progress"
+        title="ProgressBar"
+        description="How far a piece of work has come, in words beside the bar and for a screen reader; in a tone when it goes wrong. Its length unknown, the fill breathes. A ratio against a limit is a Meter."
+        names={['ProgressBar']}
+        className="grid w-full max-w-md gap-4"
+      >
+        <ProgressBar label="Importing the files" value={42} max={120} valueText="42 of 120 files" />
+        <ProgressBar label="Computing the run" value={0.8} max={1} />
+        <ProgressBar label="Retrying the upload" value={3} max={5} valueText="Attempt 3 of 5" tone="warning" size="sm" />
+        <ProgressBar label="Connecting to the server" />
       </Demo>
 
       <Demo id="skeleton" title="Skeleton" description="The shape of what is coming, as high as it will be: nothing jumps when it arrives." names={['Skeleton', 'SkeletonText', 'SkeletonAvatar', 'SkeletonReveal']} className="flex flex-col items-stretch gap-4">

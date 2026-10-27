@@ -1,6 +1,7 @@
 import {
   ActivityHeatmap,
   BarChart,
+  BarList,
   ChartLegend,
   DependencyTrace,
   DonutChart,
@@ -250,6 +251,24 @@ export function Charts() {
           references={[{ value: 250, label: 'Limit, 250 ms', tone: 'negative' }]}
           markers={[{ t: Date.UTC(2026, 9, 27, 12, 30), label: 'Restart' }]}
           formatValue={(value) => `${Math.round(value)} ms`}
+        />
+      </Demo>
+
+      <Demo
+        id="bar-list"
+        title="BarList"
+        description="Things ranked by a figure, a row each: its label, its bar and the figure. A row may lead to what it counts. Values read against an axis are a BarChart."
+        names={['BarList']}
+        className="block w-full max-w-md"
+      >
+        <BarList
+          label="Returns by reason"
+          items={[
+            { label: 'Too small', value: 42, href: '/components/data' },
+            { label: 'Not as described', value: 28 },
+            { label: 'Damaged on the way', value: 17, tone: 'negative' },
+            { label: 'Changed their mind', value: 11 },
+          ]}
         />
       </Demo>
 

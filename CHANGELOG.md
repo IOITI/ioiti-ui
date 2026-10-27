@@ -114,6 +114,11 @@ the data tables' filters as Elastic UI's filter group.
   readers every one; its legend shows and hides a series. Where `LiveLineChart` shows a value as it arrives,
   `LineChart` shows a history.
 - **`MeterTone`**, the type of `Meter`'s four tones, is exported: the tone of a chart's limit, and of what follows.
+- **`ProgressBar`**: how far a piece of work has come, in words beside the bar and for a screen reader ("42 of 120
+  files"), in a tone when it goes wrong; its length unknown, the fill breathes, still where motion is reduced.
+  For a ratio against a limit, `Meter`.
+- **`BarList`**: things ranked by a figure, a row each of its label, its bar and the figure, a row leading where
+  it counts what is there.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
