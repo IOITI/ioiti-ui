@@ -184,6 +184,26 @@ export type { DrawCheckboxProps as CheckboxProps } from './components/ui/draw-ch
 export { DynamicIsland } from './components/ui/dynamic-island.js'
 export type { DynamicIslandProps, DynamicIslandState } from './components/ui/dynamic-island.js'
 export {
+  Flysheet,
+  FlysheetBody,
+  FlysheetClose,
+  FlysheetContent,
+  FlysheetDescription,
+  FlysheetFooter,
+  FlysheetHeader,
+  FlysheetTitle,
+  FlysheetTrigger,
+} from './components/ui/flysheet.js'
+export type {
+  FlysheetCloseReason,
+  FlysheetContentProps,
+  FlysheetPadding,
+  FlysheetProps,
+  FlysheetSide,
+  FlysheetSize,
+  FlysheetType,
+} from './components/ui/flysheet.js'
+export {
   Form,
   FormControl,
   FormDescription,

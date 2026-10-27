@@ -1,7 +1,18 @@
 import {
   Button,
+  buttonClassName,
+  Checkbox,
   DirectionalTooltip,
   DynamicIsland,
+  Flysheet,
+  FlysheetBody,
+  FlysheetClose,
+  FlysheetContent,
+  FlysheetDescription,
+  FlysheetFooter,
+  FlysheetHeader,
+  FlysheetTitle,
+  FlysheetTrigger,
   NotificationBell,
   PageHeader,
   PeekCard,
@@ -9,6 +20,7 @@ import {
   SettleModal,
   SignedValue,
   SpotlightSearch,
+  Textarea,
 } from 'ioiti-ui'
 import type { Notification } from 'ioiti-ui'
 import { useState } from 'react'
@@ -58,6 +70,114 @@ function Dialogs() {
           Escape or a click outside closes it.
         </p>
       </SettleModal>
+    </>
+  )
+}
+
+const LINES = [
+  { item: 'Standing desk', quantity: 2, amount: '1,240.00 €' },
+  { item: 'Desk lamp', quantity: 4, amount: '360.00 €' },
+  { item: 'Delivery', quantity: 1, amount: '240.00 €' },
+]
+
+function Sheets() {
+  const trigger = buttonClassName({ variant: 'outline', size: 'sm' })
+  return (
+    <>
+      <Flysheet>
+        <FlysheetTrigger className={trigger}>An order</FlysheetTrigger>
+        <FlysheetContent resizable>
+          <FlysheetHeader>
+            <FlysheetTitle>Order 2026-0042</FlysheetTitle>
+            <FlysheetDescription>Placed on 26 Oct by Acme. Drag its edge, or use the arrow keys on it, to widen it.</FlysheetDescription>
+          </FlysheetHeader>
+          <FlysheetBody className="space-y-4">
+            <dl className="divide-y divide-border text-sm">
+              {LINES.map((line) => (
+                <div key={line.item} className="flex items-baseline justify-between gap-4 py-2">
+                  <dt>
+                    {line.item} <span className="text-muted-foreground">× {line.quantity}</span>
+                  </dt>
+                  <dd className="tabular-nums">{line.amount}</dd>
+                </div>
+              ))}
+            </dl>
+            <Flysheet>
+              <FlysheetTrigger className={trigger}>Acme, the customer</FlysheetTrigger>
+              <FlysheetContent size="sm">
+                <FlysheetHeader>
+                  <FlysheetTitle>Acme</FlysheetTitle>
+                  <FlysheetDescription>A customer since 2021: 14 orders, 18,420.00 €.</FlysheetDescription>
+                </FlysheetHeader>
+                <FlysheetBody>
+                  <p className="text-sm text-muted-foreground">
+                    A child sheet: beside the order while the window has room for both, over it otherwise. Escape closes it
+                    first; closing the order closes it too.
+                  </p>
+                </FlysheetBody>
+              </FlysheetContent>
+            </Flysheet>
+          </FlysheetBody>
+          <FlysheetFooter>
+            <FlysheetClose className={buttonClassName({ variant: 'ghost', size: 'sm' })}>Cancel</FlysheetClose>
+            <Button size="sm">Send the invoice</Button>
+          </FlysheetFooter>
+        </FlysheetContent>
+      </Flysheet>
+
+      <Flysheet>
+        <FlysheetTrigger className={trigger}>Notes, beside the page</FlysheetTrigger>
+        <FlysheetContent type="push" size="sm" resizable>
+          <FlysheetHeader>
+            <FlysheetTitle>Notes</FlysheetTitle>
+            <FlysheetDescription>
+              From a window 1024 px wide, the page makes room for them and stays in use; on a narrower one, they cover it.
+            </FlysheetDescription>
+          </FlysheetHeader>
+          <FlysheetBody>
+            <Textarea rows={6} aria-label="Notes" placeholder="What the next person should know" />
+          </FlysheetBody>
+        </FlysheetContent>
+      </Flysheet>
+
+      <Flysheet>
+        <FlysheetTrigger className={trigger}>Filters, from the left</FlysheetTrigger>
+        <FlysheetContent side="left" size="sm" closePosition="outside">
+          <FlysheetHeader>
+            <FlysheetTitle>Filters</FlysheetTitle>
+            <FlysheetDescription>Its close button outside it, over the page.</FlysheetDescription>
+          </FlysheetHeader>
+          <FlysheetBody className="space-y-3 py-3">
+            {['Open', 'Sent', 'Late'].map((status) => (
+              <Checkbox key={status} label={status} defaultChecked={status !== 'Late'} />
+            ))}
+          </FlysheetBody>
+        </FlysheetContent>
+      </Flysheet>
+
+      <Flysheet>
+        <FlysheetTrigger className={trigger}>Without a backdrop</FlysheetTrigger>
+        <FlysheetContent modal={false} size="sm">
+          <FlysheetHeader>
+            <FlysheetTitle>Help</FlysheetTitle>
+            <FlysheetDescription>The page stays in use under it: its trigger closes it, and Escape while the focus is in it.</FlysheetDescription>
+          </FlysheetHeader>
+        </FlysheetContent>
+      </Flysheet>
+
+      <Flysheet>
+        <FlysheetTrigger className={trigger}>From the bottom</FlysheetTrigger>
+        <FlysheetContent side="bottom">
+          <FlysheetHeader>
+            <FlysheetTitle>Share the order</FlysheetTitle>
+            <FlysheetDescription>EasyUI's sheet, dragged down by its handle to close it.</FlysheetDescription>
+          </FlysheetHeader>
+          <FlysheetFooter>
+            <FlysheetClose className={buttonClassName({ variant: 'ghost', size: 'sm' })}>Cancel</FlysheetClose>
+            <Button size="sm">Copy the link</Button>
+          </FlysheetFooter>
+        </FlysheetContent>
+      </Flysheet>
     </>
   )
 }
@@ -140,6 +260,15 @@ export function Overlays() {
 
       <Demo id="dialog" title="SettleModal" description="A dialog, in four widths (and a full one, for two things side by side)." names={['SettleModal']}>
         <Dialogs />
+      </Demo>
+
+      <Demo
+        id="flysheet"
+        title="Flysheet"
+        description="EasyUI's sheet with Elastic's flyout: from any side, swiped away on a touch screen; a side sheet in three widths or any, widened by its edge or the arrow keys on it; beside the page instead of over it; with or without a backdrop; a child sheet beside its parent, or over it on a narrow screen."
+        names={['Flysheet', 'FlysheetTrigger', 'FlysheetContent', 'FlysheetHeader', 'FlysheetTitle', 'FlysheetDescription', 'FlysheetBody', 'FlysheetFooter', 'FlysheetClose']}
+      >
+        <Sheets />
       </Demo>
 
       <Demo id="bell" title="NotificationBell" description="What happened while the page was open, newest first, each leading where it is dealt with; only what is urgent pulses." names={['NotificationBell']}>

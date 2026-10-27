@@ -5,8 +5,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
 ## [0.3.0] - Unreleased
 
-A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain. And a check box whose
-mark draws itself.
+A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain. A check box whose mark
+draws itself, and a sheet that can push the page aside.
 
 - **Bloom**: the flyer's orchid on what is chosen, current or primary, on links, the focus ring and one-series
   charts, as every accent's colour. A filled button and the application's mark take the flyer's gradient
@@ -32,6 +32,16 @@ mark draws itself.
   `indeterminate`, a bar, which screen readers hear as partly checked. The focus ring shows on it (the box it
   replaces hid it), and its label alone names it, its description read after. The boxes of `AdvancedDataTable`
   (rows, cards, header, column list) are the same box, no longer the browser's. A Check box demo in the gallery.
+- **`Flysheet`**, EasyUI's sheet with what Elastic UI's flyout does: from any side, swiped away on a touch
+  screen; a side sheet in three widths or any (`size`, `minWidth`, `maxWidth`), widened or narrowed by its edge
+  or the arrow keys on it (`resizable`, `onResize`); pushing the page aside instead of covering it, from a
+  window 1024 px wide (`type="push"`, `pushMinWidth`; `--flysheet-push-left` and `--flysheet-push-right` for
+  what an application fixes to the window); without a backdrop, the page in use (`modal={false}`); its close
+  button outside (`closePosition`); the padding of its parts (`padding`); a child sheet, a `Flysheet` in the
+  content of another, beside its parent or over it on a narrow screen, closed with it; why it closed
+  (`onOpenChange(false, { reason })`). Its parts: `FlysheetTrigger`, `FlysheetContent`, `FlysheetHeader`,
+  `FlysheetTitle`, `FlysheetDescription`, `FlysheetBody`, `FlysheetFooter`, `FlysheetClose`. Shown on the
+  gallery's Overlays page.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

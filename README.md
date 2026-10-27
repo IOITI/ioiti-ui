@@ -7,7 +7,7 @@ interface, as a package any application can install. React 19, Tailwind CSS 4, f
   or violet, indigo, blue, bloom: a printed flyer's grainy gradient) and a material (flat, or glass). The page
   follows the system until a theme is chosen, shows the application's accent and material until a person
   picks others, and is painted in its look from the first frame.
-- **117 components** (counting their parts): 44 of EasyUI's, reworked for the keyboard, screen readers,
+- **127 components** (counting their parts): 46 of EasyUI's, reworked for the keyboard, screen readers,
   phones and a light theme; the blocks pages are made of (panels, tiles, tables, fields); and the shell
   (sidebar, top bar, the trail of where a page is).
 - **Checked**: every text colour is 4.5:1 on every surface of every look (20), one focus ring everywhere, links

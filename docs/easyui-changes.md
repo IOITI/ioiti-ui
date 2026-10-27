@@ -58,9 +58,10 @@ otherwise).
   `selection-basket` and `smart-comparison`, whose hover is the fill's own colour.
 - **Glass.** Under the glass material (`data-material="glass"` on `<html>`, src/styles/glass.css), a surface
   turns to glass through a utility that does nothing otherwise, after EasyUI's classes, which stay: `glass-bar`
-  for the sidebar; `glass-card` for `stat-card`, the frames of `advanced-data-table` and `ai-agent-activity`,
+  for the sidebar and a `flysheet` pushing the page; `glass-card` for `stat-card`, the frames of `advanced-data-table` and `ai-agent-activity`,
   `smooth-accordion`, `request-status`, `airport-matrix-clock` and `recovery-ledger`; `glass-float`, the only
-  one blurred, for what floats: the sidebar's drawer, `settle-modal`, `spotlight-search`, `directional-tooltip`,
+  one blurred, for what floats: the sidebar's drawer, `settle-modal`, `flysheet` (its children are drawn beside
+  its panel, not in it), `spotlight-search`, `directional-tooltip`,
   `peek-card`, the popovers of `date-picker`, `combobox` and `spring-select`, `notification-bell` (its header
   clear on it), the `split-button` menu, the column list of `advanced-data-table`, the chart tooltip of
   `chart-primitives`, both toasts, `selection-basket`, `scroll-progress-nav`'s pill (not the phone's menu
@@ -111,6 +112,30 @@ otherwise).
   `aria-describedby`): a screen reader said only "switch, on".
 - `form`, `animated-tabs`, `smooth-accordion`: the literal grey `#6B6B6B` (3.6:1 on the dark surface)
   replaced by `text-muted-foreground`; hints at 12 px instead of 11.
+- `flysheet`: EasyUI's `sheet`, renamed, with what Elastic UI's flyout (`EuiFlyout`) does, written from its
+  documentation (none of Elastic UI's code). A side sheet's `size` (`sm`, 22 rem; `md`, 26 rem, EasyUI's;
+  `lg`, 40 rem; or pixels), `minWidth` (280 px) and `maxWidth`, within EasyUI's 88% of the window.
+  `resizable`: its inner edge dragged, or the arrow keys on it (a focusable separator with its value; Shift
+  for 50 px, Home and End for its narrowest and widest), `onResize`; the width chosen stays while the page is
+  open. `type="push"`, from a window `pushMinWidth` wide (1024 px): the page pushed aside by the body's margin
+  (the shell's row narrows with it), `--flysheet-push-left` and `--flysheet-push-right` set on `<html>` for
+  what an application fixes to the window; a region of the page, not a dialog: no backdrop, the focus free,
+  no slide in; narrower, it is drawn over the page. `modal={false}`: no backdrop, the page in use, Escape
+  only while the focus is in the sheet. `closeOnOutsideClick` (its backdrop's click by default; a click on
+  the page when asked, never one on its trigger). A child sheet, a `Flysheet` in another's content: drawn in
+  its parent's layer (one dialog, one backdrop), beside it while the window has room for both, over it
+  otherwise, at least as wide and the parent `inert`; it takes its parent's side and mode, is a group named
+  by its title, and closes before it on Escape and with it (`reason: 'parent'`). `padding` of the header,
+  body and footer; `closePosition="outside"` (inside while a child is beside it, which it would cover); why
+  it closed, given to `onOpenChange` (`close-button`, `escape`, `outside-click`, `drag`, `trigger`,
+  `parent`). The trigger says whether the sheet is open (`aria-expanded`, `aria-controls`) and closes it too.
+  The dialog is the layer, not the panel, as `settle-modal`'s (a child beside the panel is in it), named by
+  its title only when it has one (EasyUI pointed at an id that might be missing), by `aria-label` otherwise;
+  the focus held from the document, as `settle-modal` holds it, and given back only while it is in the
+  sheet; a sheet that leaves the page in use does not take it when the page opens with it. Escape closes
+  the last sheet that holds the page or the focus, not what is open in it (a list, a menu or a picker,
+  expanded, or another dialog). The close button in the design's greys (EasyUI's `neutral-400` was 2.5:1 on
+  white), its own focus ring gone; the description in `text-muted-foreground`; the scrim lighter under glass.
 - `draw-checkbox`: the package's `Checkbox` (`src/index.ts` exports it under that name, with its props as
   `CheckboxProps`); `form`'s own box is gone. The input lies over the box, transparent, and takes its clicks
   and the design's focus ring: EasyUI's was `sr-only`, which clipped the ring, and the box passed its clicks on
