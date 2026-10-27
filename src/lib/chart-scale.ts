@@ -23,17 +23,22 @@ export interface Domain {
 }
 
 /**
- * An axis over the values from `min` to `max`, zero always on it (a bar starts there), in about `count`
- * nice steps: `niceDomain(-120, 340)` is −200 to 400 by 200.
+ * An axis over the values from `min` to `max` in about `count` nice steps, zero on it (a bar starts there):
+ * `niceDomain(-120, 340)` is −200 to 400 by 200. Without `zero`, it fits the values (a price far from zero).
  */
-export function niceDomain(min: number, max: number, count = 4): Domain {
-  let low = Math.min(0, min)
-  let high = Math.max(0, max)
+export function niceDomain(min: number, max: number, count = 4, zero = true): Domain {
+  let low = zero ? Math.min(0, min) : min
+  let high = zero ? Math.max(0, max) : max
   if (!Number.isFinite(low) || !Number.isFinite(high)) {
     low = 0
     high = 1
   }
-  if (low === high) high = low + 1
+  if (low === high) {
+    // One value: a step either side of it.
+    const pad = Math.abs(low) / 10 || 1
+    low = zero ? Math.min(0, low - pad) : low - pad
+    high = high + pad
+  }
   const step = niceStep((high - low) / count)
   const from = Math.floor(low / step) * step
   const to = Math.ceil(high / step) * step

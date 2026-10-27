@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 
 import { cn } from '../lib/utils.js'
+import { METER_FILL, METER_TRACK } from './meter-tones.js'
+import type { MeterTone } from './meter-tones.js'
 
 interface KpiTileProps {
   label: string
@@ -27,24 +29,6 @@ export function KpiTile({ label, value, hint, children, className }: KpiTileProp
       {children && <div className="mt-auto pt-3">{children}</div>}
     </div>
   )
-}
-
-type MeterTone = 'neutral' | 'positive' | 'warning' | 'negative'
-
-const METER_FILL: Record<MeterTone, string> = {
-  // In the accent, where the theme has one.
-  neutral: 'bg-foreground/70 accent:bg-brand',
-  positive: 'bg-positive',
-  warning: 'bg-warning',
-  negative: 'bg-negative',
-}
-
-// The track is a faint step of the fill's own colour, so the state reads across the whole bar.
-const METER_TRACK: Record<MeterTone, string> = {
-  neutral: 'bg-foreground/10',
-  positive: 'bg-positive/15',
-  warning: 'bg-warning/15',
-  negative: 'bg-negative/15',
 }
 
 interface MeterProps {

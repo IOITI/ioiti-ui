@@ -9,6 +9,7 @@ import {
   FunnelChart,
   KpiGrid,
   KpiTile,
+  LineChart,
   LiveLineChart,
   PageHeader,
   SegmentedControl,
@@ -128,6 +129,32 @@ function Bars() {
   )
 }
 
+const HOUR = 3_600_000
+
+/** Four runs of the same strategy, their balance day by day: things compared, in the compare colours. */
+function runs() {
+  const random = seeded(23)
+  const start = Date.UTC(2026, 7, 3)
+  const balances = [10_000, 10_000, 10_000, 10_000]
+  const drift = [0.004, 0.0025, 0.001, -0.0008]
+  return Array.from({ length: 60 }, (_, day) => {
+    balances.forEach((balance, run) => {
+      balances[run] = balance * (1 + drift[run] + (random() - 0.5) * 0.02)
+    })
+    return { t: start + day * DAY, a: balances[0], b: balances[1], c: balances[2], d: balances[3] }
+  })
+}
+
+/** A delay through a day, a reading every ten minutes, two readings lost, and a restart at noon. */
+function delays() {
+  const random = seeded(31)
+  const start = Date.UTC(2026, 9, 27, 6)
+  return Array.from({ length: 72 }, (_, index) => ({
+    t: start + index * (HOUR / 6),
+    delay: index === 40 || index === 41 ? null : Math.round(120 + Math.sin(index / 7) * 40 + random() * 60 + (index > 50 ? 60 : 0)),
+  }))
+}
+
 /** A legend whose items show or hide their series: the chart decides that one is always left. */
 function Legends() {
   const [shown, setShown] = useState([true, true, true, true])
@@ -144,6 +171,8 @@ function Legends() {
 export function Charts() {
   const calendar = useMemo(days, [])
   const matrix = useMemo(hours, [])
+  const balances = useMemo(runs, [])
+  const readings = useMemo(delays, [])
   return (
     <>
       <PageHeader title="Charts" description="Drawn in the chart colours of both themes, each with a table or a summary for screen readers." />
@@ -189,6 +218,39 @@ export function Charts() {
         className="block w-full"
       >
         <Bars />
+      </Demo>
+
+      <Demo
+        id="line"
+        title="LineChart"
+        description="Values over time: up to four series compared, in the compare colours; one series with an area under it, its limit and the moments that matter. A gap in the data is a gap in the line. The pointer or the arrow keys read a moment; a table gives screen readers every one."
+        names={['LineChart']}
+        className="block w-full space-y-8"
+      >
+        <LineChart
+          ariaLabel="Balance of four runs"
+          data={balances}
+          series={[
+            { key: 'a', label: 'Run 41' },
+            { key: 'b', label: 'Run 42' },
+            { key: 'c', label: 'Run 43' },
+            { key: 'd', label: 'Benchmark', dashed: true },
+          ]}
+          timeZone="Europe/Paris"
+          formatValue={(value) => formatMoney(value)}
+        />
+        <LineChart
+          ariaLabel="Delay of the orders through the day"
+          data={readings}
+          series={[{ key: 'delay', label: 'Delay' }]}
+          area
+          zero
+          height={200}
+          timeZone="Europe/Paris"
+          references={[{ value: 250, label: 'Limit, 250 ms', tone: 'negative' }]}
+          markers={[{ t: Date.UTC(2026, 9, 27, 12, 30), label: 'Restart' }]}
+          formatValue={(value) => `${Math.round(value)} ms`}
+        />
       </Demo>
 
       <Demo

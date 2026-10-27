@@ -22,6 +22,12 @@ describe('a value axis', () => {
   it('has a span where every value is the same', () => {
     expect(niceDomain(0, 0).max).toBeGreaterThan(0)
   })
+
+  it('fits values far from zero when asked', () => {
+    const domain = niceDomain(18_120, 18_460, 4, false)
+    expect(domain.min).toBeGreaterThan(17_000)
+    expect(domain.max).toBeGreaterThanOrEqual(18_460)
+  })
 })
 
 describe('a time axis', () => {

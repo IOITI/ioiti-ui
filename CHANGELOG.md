@@ -107,6 +107,13 @@ the data tables' filters as Elastic UI's filter group.
 - **`DonutChart`**, EasyUI's: parts of a whole, or a gauge (`variant="semi"`). Four segments take the compare
   colours; the fifth and those after it are one segment, "Other" (`otherLabel`), in grey. Its centre and its legend
   say a segment's figure and share; a table gives screen readers every segment, those grouped included.
+- **`LineChart`**: values over time, on an axis of the time zone's round moments: up to four series compared in
+  the compare colours (a benchmark dashed), or one with an area under it; its `references` (a limit, in its tone)
+  and `markers` (a restart); zero kept on the axis or the axis fitted to the values. A gap in the data is a gap
+  in the line. The pointer or the arrow keys read a moment, every series in its tooltip; a table gives screen
+  readers every one; its legend shows and hides a series. Where `LiveLineChart` shows a value as it arrives,
+  `LineChart` shows a history.
+- **`MeterTone`**, the type of `Meter`'s four tones, is exported: the tone of a chart's limit, and of what follows.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
