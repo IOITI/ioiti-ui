@@ -78,7 +78,8 @@ the data tables' filters as Elastic UI's filter group.
   many are ticked. It opens its options in a list to tick, each with the rows it would leave under the search and
   the other filters, with a search of its own from eight options; a column of two options is an on/off pair,
   pressed one at a time. `ColumnDef`'s `filterDisplay` (`auto`, `list`, `toggle`) chooses; "Clear filters"
-  clears them all. `useDataTable()` gives `setFilter` and `countOptions`. Shown on the gallery's Data display
+  clears them all. A list follows its button as the page scrolls; on a phone, a tap opens it without the
+  keyboard, which comes when its search is tapped. `useDataTable()` gives `setFilter` and `countOptions`. Shown on the gallery's Data display
   page, the orders filtered by customer, status and channel.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type

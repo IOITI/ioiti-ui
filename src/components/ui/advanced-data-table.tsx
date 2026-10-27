@@ -387,16 +387,35 @@ interface FilterListPlace {
   left: number;
   top?: number;
   bottom?: number;
+  width: number;
   maxHeight: number;
   below: boolean;
 }
 
 /**
+ * ioiti-ui: where a list goes, from its button's rect: under it, or above it where the window has no room
+ * below. A list open keeps its side as it follows its button; its height too as the page scrolls
+ * (`keepHeight`), fitting the room a new size of the window leaves it.
+ */
+function placeFilterList(button: DOMRect, opened?: FilterListPlace, keepHeight = false): FilterListPlace {
+  const roomBelow = window.innerHeight - button.bottom - FILTER_LIST_MARGIN;
+  const roomAbove = button.top - FILTER_LIST_MARGIN;
+  const width = Math.min(FILTER_LIST_WIDTH, window.innerWidth - FILTER_LIST_MARGIN * 2);
+  const left = Math.min(Math.max(button.left, FILTER_LIST_MARGIN), window.innerWidth - width - FILTER_LIST_MARGIN);
+  const below = opened ? opened.below : roomBelow >= 240 || roomBelow >= roomAbove;
+  const maxHeight = opened && keepHeight ? opened.maxHeight : Math.max((below ? roomBelow : roomAbove) - 6, 0);
+  return below
+    ? { left, top: button.bottom + 6, width, maxHeight, below }
+    : { left, bottom: window.innerHeight - button.top + 6, width, maxHeight, below };
+}
+
+/**
  * ioiti-ui: a column's options in a list that opens from its button (EUI's EuiFilterButton in a popover, with
  * a searchable list): each ticked or not, with the rows it would leave. Drawn in document.body at fixed
- * coordinates under its button, or above it where the window has no room below: the table's frame cuts what
- * overflows it. The focus goes in when it opens; Escape, or a Tab past its ends, gives it back to the button;
- * a click elsewhere, a scroll or a resize close it.
+ * coordinates under its button, or above it where the window has no room below (the table's frame cuts what
+ * overflows it), following its button when the page scrolls or the window changes size. The focus goes in
+ * when it opens, on its search, or on its first option when a finger opened it; Escape, or a Tab past its
+ * ends, gives it back to the button; a click elsewhere closes it.
  */
 function FilterList<T>({ column }: { column: ColumnDef<T> }) {
   const { activeFilters, toggleFilter, setFilter, countOptions } = useDataTable<T>();
@@ -408,6 +427,9 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
   const id = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  // What pressed the button, and whether a finger opened the list.
+  const lastPointer = useRef<string | null>(null);
+  const openedByFinger = useRef(false);
   const searchable = options.length >= FILTER_SEARCH_FROM;
   const counts = open ? countOptions(column.id) : {};
   // Every word typed is in the option's label.
@@ -424,23 +446,17 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
 
   useLayoutEffect(() => {
     if (!open || !buttonRef.current) return;
-    const rect = buttonRef.current.getBoundingClientRect();
-    const roomBelow = window.innerHeight - rect.bottom - FILTER_LIST_MARGIN;
-    const roomAbove = rect.top - FILTER_LIST_MARGIN;
-    const width = Math.min(FILTER_LIST_WIDTH, window.innerWidth - FILTER_LIST_MARGIN * 2);
-    const left = Math.min(Math.max(rect.left, FILTER_LIST_MARGIN), window.innerWidth - width - FILTER_LIST_MARGIN);
-    const below = roomBelow >= 240 || roomBelow >= roomAbove;
-    setPlace(
-      below
-        ? { left, top: rect.bottom + 6, maxHeight: roomBelow - 6, below }
-        : { left, bottom: window.innerHeight - rect.top + 6, maxHeight: roomAbove - 6, below }
-    );
+    setPlace(placeFilterList(buttonRef.current.getBoundingClientRect()));
   }, [open]);
 
+  // Once, when it is first placed: not again as it follows its button.
+  const placed = place !== null;
   useEffect(() => {
-    if (!open || !place) return;
-    panelRef.current?.querySelector<HTMLElement>('input')?.focus();
-  }, [open, place]);
+    if (!open || !placed || !panelRef.current) return;
+    // Not the search under a finger: a phone's keyboard would open over the list.
+    const first = openedByFinger.current ? panelRef.current.querySelector<HTMLElement>('input[type="checkbox"]') : null;
+    (first ?? panelRef.current.querySelector<HTMLElement>('input'))?.focus();
+  }, [open, placed]);
 
   useEffect(() => {
     if (!open) return;
@@ -449,11 +465,17 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
     const pointerDown = (event: PointerEvent) => {
       if (!inside(event.target)) close(false);
     };
+    // A scroll or a new size moves it with its button, never closes it: a phone's keyboard scrolls the page
+    // as it opens, or shortens the window, which would close the list under the finger typing in its search.
+    const follow = (keepHeight: boolean) => {
+      const button = buttonRef.current?.getBoundingClientRect();
+      if (button) setPlace((opened) => opened && placeFilterList(button, opened, keepHeight));
+    };
     // Not its own list scrolling.
     const scroll = (event: Event) => {
-      if (!(event.target instanceof Node && panelRef.current?.contains(event.target))) close(false);
+      if (!(event.target instanceof Node && panelRef.current?.contains(event.target))) follow(true);
     };
-    const resize = () => close(false);
+    const resize = () => follow(false);
     document.addEventListener('pointerdown', pointerDown);
     window.addEventListener('scroll', scroll, true);
     window.addEventListener('resize', resize);
@@ -494,7 +516,17 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
         type="button"
         aria-expanded={open}
         aria-controls={open ? `${id}-list` : undefined}
-        onClick={() => (open ? close(false) : setOpen(true))}
+        onPointerDown={(event) => {
+          lastPointer.current = event.pointerType;
+        }}
+        onClick={() => {
+          // A click without a pointer before it is the keyboard's.
+          const finger = lastPointer.current === 'touch' || lastPointer.current === 'pen';
+          lastPointer.current = null;
+          if (open) return close(false);
+          openedByFinger.current = finger;
+          setOpen(true);
+        }}
         className={cn(FILTER_BUTTON, chosen.length > 0 ? FILTER_BUTTON_ON : FILTER_BUTTON_IDLE, open && 'bg-surface-hover/60')}
       >
         {column.header}
@@ -523,7 +555,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                 left: place.left,
                 top: place.top,
                 bottom: place.bottom,
-                width: Math.min(FILTER_LIST_WIDTH, window.innerWidth - FILTER_LIST_MARGIN * 2),
+                width: place.width,
                 maxHeight: place.maxHeight,
                 transformOrigin: place.below ? 'top left' : 'bottom left',
               }}

@@ -1,7 +1,7 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { AdvancedDataTable } from './ui/advanced-data-table.js'
 import type { ColumnDef } from './ui/advanced-data-table.js'
@@ -185,6 +185,10 @@ describe('the data table, as the pages use it', () => {
 })
 
 describe('the filters, as one group of buttons', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   function renderFiltered() {
     render(<AdvancedDataTable<Row> data={ROWS} columns={FILTERED} getRowId={(row) => row.id} selectable={false} defaultPageSize={20} />)
   }
@@ -268,5 +272,43 @@ describe('the filters, as one group of buttons', () => {
     await user.type(search, 'row nine')
     expect(within(list).queryAllByRole('checkbox')).toHaveLength(0)
     expect(within(list).getByText('No option matches.')).toBeInTheDocument()
+  })
+
+  it('follows its button when the page scrolls or the window changes size, as a phone\'s keyboard makes them, the focus left where it is', async () => {
+    const user = userEvent.setup()
+    renderFiltered()
+    const button = screen.getByRole('button', { name: 'Name, 12 options' })
+    await user.click(button)
+    const list = screen.getByRole('group', { name: 'Filter by Name' })
+    const search = within(list).getByRole('searchbox', { name: 'Search the options of Name' })
+    expect(search).toHaveFocus()
+    await user.type(search, 'row')
+
+    // The page scrolled the button 300px down: the list follows it, its height kept.
+    const opened = list.style.maxHeight
+    vi.spyOn(button, 'getBoundingClientRect').mockReturnValue({ top: 300, bottom: 332, left: 40, right: 140, width: 100, height: 32, x: 40, y: 300, toJSON: () => ({}) })
+    fireEvent.scroll(window)
+    expect(list).toHaveStyle({ top: '338px', left: '40px', maxHeight: opened })
+
+    // The keyboard shortened the window to 500px: the list fits what is left under its button.
+    vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500)
+    fireEvent(window, new Event('resize'))
+    expect(list).toHaveStyle({ top: '338px', maxHeight: `${500 - 332 - 8 - 6}px` })
+
+    expect(screen.getByRole('group', { name: 'Filter by Name' })).toBe(list)
+    expect(search).toHaveFocus()
+    expect(search).toHaveValue('row')
+  })
+
+  it('opened by a finger, takes the focus on its first option, not its search: a phone\'s keyboard opens when the search is tapped', async () => {
+    const user = userEvent.setup()
+    renderFiltered()
+    await user.pointer({ keys: '[TouchA]', target: screen.getByRole('button', { name: 'Name, 12 options' }) })
+    const list = screen.getByRole('group', { name: 'Filter by Name' })
+    expect(within(list).getByRole('checkbox', { name: 'Row 1, 1 row' })).toHaveFocus()
+
+    const search = within(list).getByRole('searchbox', { name: 'Search the options of Name' })
+    await user.pointer({ keys: '[TouchA]', target: search })
+    expect(search).toHaveFocus()
   })
 })

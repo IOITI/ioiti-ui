@@ -105,8 +105,11 @@ otherwise).
   its own from eight options, the button saying how many options there are or how many are ticked (EUI's
   `numFilters` and `numActiveFilters`); a column of one or two options as buttons pressed one at a time, an
   on/off pair (`aria-pressed`); `filterDisplay` (`auto`, `list`, `toggle`) to choose; "Clear filters" after
-  them. The list is drawn in `document.body` at fixed coordinates (the frame's `overflow-hidden` cut it), the
-  focus goes in, and Escape or a Tab past its ends gives it back to its button. The search's and the filters'
+  them. The list is drawn in `document.body` at fixed coordinates (the frame's `overflow-hidden` cut it),
+  following its button when the page scrolls or the window changes size (a phone's keyboard does both: closing
+  then closed it under the finger typing in its search); the focus goes in, on its first option when a finger
+  opened it (not its search, whose keyboard would cover it), and Escape or a Tab past its ends gives it back to
+  its button. The search's and the filters'
   rules are shared with those counts; `useDataTable` gives `setFilter` and `countOptions`.
 - `breadcrumb`: its text in `text-muted-foreground` and `text-foreground` (`neutral-500` was 4.54:1 on the
   light background, a hair from the limit); `wrap={false}` keeps a trail on one line, each step cut short with
