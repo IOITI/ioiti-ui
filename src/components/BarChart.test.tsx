@@ -76,4 +76,71 @@ describe('BarChart', () => {
     await user.click(fees)
     expect(fees).toHaveAttribute('aria-pressed', 'true')
   })
+
+  it('titles a category in its tooltip and its row, and says more of it', async () => {
+    const user = userEvent.setup()
+    render(
+      <BarChart
+        ariaLabel="Profit by day"
+        data={DAYS}
+        series={[{ key: 'profit', label: 'Profit' }]}
+        formatTitle={(datum) => `${datum.label}day`}
+        details={(datum) => [{ label: 'Fees', value: String(datum.fees) }]}
+        animated={false}
+      />,
+    )
+
+    const table = screen.getByRole('table', { name: 'Profit by day' })
+    expect(within(table).getByRole('row', { name: 'Tueday -80 Fees 9' })).toBeInTheDocument()
+    await user.tab()
+    await user.keyboard('{Home}')
+    const tooltip = document.querySelector('.glass-float') as HTMLElement
+    expect(tooltip).toHaveTextContent('Monday')
+    expect(tooltip).toHaveTextContent('Fees12')
+  })
+
+  it('names the categories asked for, and counts in whole numbers', () => {
+    const counts = [
+      { label: '09:00', runs: 1 },
+      { label: '09:10', runs: 2 },
+      { label: '09:20', runs: 0 },
+    ]
+    const { container } = render(
+      <BarChart data={counts} series={[{ key: 'runs', label: 'Runs' }]} tickAt={(_, index) => index !== 1} integer animated={false} />,
+    )
+    const texts = Array.from(container.querySelectorAll('svg text')).map((text) => text.textContent)
+    expect(texts).toContain('09:00')
+    expect(texts).toContain('09:20')
+    expect(texts).not.toContain('09:10')
+    expect(texts.filter((text) => text?.includes('.'))).toEqual([])
+  })
+
+  it('sets one category apart: its bar in the series colour, a line through it named, the others grey', () => {
+    const bins = [
+      { label: '-2%', runs: 3 },
+      { label: '0%', runs: 8 },
+      { label: '2%', runs: 4 },
+    ]
+    const { container } = render(
+      <BarChart data={bins} series={[{ key: 'runs', label: 'Runs' }]} marked={{ index: 2, label: 'This run' }} animated={false} />,
+    )
+    expect(fills(container)).toEqual(['var(--chart-muted)', 'var(--chart-muted)', 'var(--chart-series)'])
+    expect(container.querySelector('line[stroke="var(--chart-series)"]')).toBeInTheDocument()
+    expect(container).toHaveTextContent('This run')
+  })
+
+  it('draws no bar for a missing value, and says it with a dash', () => {
+    const slots = [
+      { label: '09:00', spread: 0.04 },
+      { label: '09:30', spread: null },
+    ]
+    const { container } = render(
+      <BarChart ariaLabel="Spread" data={slots} series={[{ key: 'spread', label: 'Spread' }]} animated={false} />,
+    )
+    const table = screen.getByRole('table', { name: 'Spread' })
+    expect(within(table).getByRole('row', { name: '09:30 —' })).toBeInTheDocument()
+    // The second bar has no height: its path is a point on the zero line.
+    const paths = Array.from(container.querySelectorAll('svg path')).map((path) => path.getAttribute('d'))
+    expect(paths[1]).not.toEqual(paths[0])
+  })
 })

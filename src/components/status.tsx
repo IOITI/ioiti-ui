@@ -42,6 +42,8 @@ export function SignedValue({
   currency,
   className,
   animate = false,
+  stale = false,
+  staleLabel = 'stale',
 }: {
   value: number | null | undefined
   kind: 'money' | 'percent'
@@ -50,12 +52,32 @@ export function SignedValue({
   className?: string
   /** Its digits roll to each new value: for a figure that changes in front of the user. */
   animate?: boolean
+  /**
+   * The figure is old: what sends it stopped (a live result no longer published). It is muted, as `LiveValue`
+   * mutes one, its sign telling a gain from a loss still, and a screen reader hears that it is stale.
+   */
+  stale?: boolean
+  /** The word a screen reader hears for a stale figure. */
+  staleLabel?: string
 }) {
   const text = kind === 'money' ? formatMoney(value, currency ?? 'EUR', true) : formatPercent(value, true)
+  const tone = stale ? 'text-text-muted' : TONE_TEXT[toneOf(value)]
+  const said = stale && <span className="sr-only"> ({staleLabel})</span>
   if (animate && typeof value === 'number' && Number.isFinite(value)) {
-    return <AnimatedNumber value={value} text={text} className={cn(TONE_TEXT[toneOf(value)], className)} />
+    // The number first in both cases: it is not drawn again (its digits rolled anew) as it goes stale.
+    return (
+      <>
+        <AnimatedNumber value={value} text={text} className={cn(tone, className)} />
+        {said}
+      </>
+    )
   }
-  return <span className={cn('tabular-nums', TONE_TEXT[toneOf(value)], className)}>{text}</span>
+  return (
+    <span className={cn('tabular-nums', tone, className)}>
+      {text}
+      {said}
+    </span>
+  )
 }
 
 interface QueryStateProps {

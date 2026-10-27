@@ -86,6 +86,9 @@ describe('dates', () => {
     const now = Date.parse('2026-10-11T12:00:00Z')
     expect(formatRelative('2026-10-11T12:05:00Z', now)).toBe('in 5 min')
     expect(formatRelative('2026-10-11T11:42:00Z', now)).toBe('18 min ago')
+    expect(formatRelative('2026-10-11T12:00:00Z', now)).toBe('0 s ago')
+    expect(formatRelative('2026-10-11T12:00:00.400Z', now)).toBe('0 s ago')
+    expect(formatRelative('2026-10-11T12:00:01Z', now)).toBe('in 1 s')
   })
 
   it('keeps the seconds of a length of time measured to the ten seconds', () => {

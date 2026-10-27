@@ -85,4 +85,24 @@ describe('SaveBar', () => {
     // jsdom lays nothing out: the bar's height is read as none, and its gap is all that is left.
     expect(frame.style.marginBottom).toBe('16px')
   })
+
+  it('keeps Save from being pressed while what there is to save is not valid, and says why at once', async () => {
+    const user = userEvent.setup()
+    let saved = 0
+    render(
+      <SaveBar
+        open
+        message="2 unsaved changes"
+        saveDisabled
+        error="1 field holds a value that cannot be used."
+        onSave={() => (saved += 1)}
+      />,
+    )
+
+    const save = screen.getByRole('button', { name: 'Save' })
+    expect(save).toBeDisabled()
+    await user.click(save)
+    expect(saved).toBe(0)
+    expect(screen.getByRole('alert')).toHaveTextContent('1 field holds a value that cannot be used.')
+  })
 })

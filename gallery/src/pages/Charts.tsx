@@ -70,6 +70,7 @@ const RUNS = [
   { label: 'Run 42', color: 'var(--chart-compare-2)', shape: 'line' as const, value: '+1.8%' },
   { label: 'Benchmark', color: 'var(--chart-muted)', shape: 'dashed' as const, value: '+0.9%' },
   { label: 'Trades', color: 'var(--chart-compare-3)', shape: 'dot' as const },
+  { label: 'Restart', color: 'var(--chart-axis)', shape: 'marker' as const },
 ]
 
 const MONTHS = [
@@ -82,14 +83,30 @@ const MONTHS = [
 ]
 
 const MARGIN = [
-  { label: 'Mon', margin: 420 },
-  { label: 'Tue', margin: -180 },
-  { label: 'Wed', margin: 310 },
-  { label: 'Thu', margin: -60 },
-  { label: 'Fri', margin: 520 },
-  { label: 'Sat', margin: 240 },
-  { label: 'Sun', margin: -90 },
+  { label: 'Mon', margin: 420, orders: 38 },
+  { label: 'Tue', margin: -180, orders: 12 },
+  { label: 'Wed', margin: 310, orders: 29 },
+  { label: 'Thu', margin: -60, orders: 17 },
+  { label: 'Fri', margin: 520, orders: 44 },
+  { label: 'Sat', margin: 240, orders: 26 },
+  { label: 'Sun', margin: -90, orders: 9 },
 ]
+
+const WEEKDAY: Record<string, string> = {
+  Mon: 'Monday',
+  Tue: 'Tuesday',
+  Wed: 'Wednesday',
+  Thu: 'Thursday',
+  Fri: 'Friday',
+  Sat: 'Saturday',
+  Sun: 'Sunday',
+}
+
+/** The totals of 100 runs with random entries, by step of one percent: the run itself is marked among them. */
+const RANDOM_TOTALS = [1, 2, 4, 7, 11, 15, 17, 14, 11, 8, 5, 3, 1, 1].map((count, index) => ({
+  label: `${index - 6 > 0 ? '+' : ''}${index - 6}%`,
+  count,
+}))
 
 /** Bars side by side or piled up: changing it moves them from one to the other. */
 function Bars() {
@@ -125,6 +142,18 @@ function Bars() {
         data={MARGIN}
         series={[{ key: 'margin', label: 'Margin' }]}
         formatValue={(value) => formatMoney(value)}
+        formatTitle={(datum) => WEEKDAY[datum.label]}
+        details={(datum) => [{ label: 'Orders', value: String(datum.orders) }]}
+      />
+      <BarChart
+        ariaLabel="Totals of 100 random runs, and the run's own"
+        height={200}
+        data={RANDOM_TOTALS}
+        series={[{ key: 'count', label: 'Random runs' }]}
+        integer
+        marked={{ index: 11, label: 'This run' }}
+        tickAt={(_, index) => index % 2 === 0}
+        showLegend={false}
       />
     </div>
   )
@@ -153,12 +182,13 @@ function delays() {
   return Array.from({ length: 72 }, (_, index) => ({
     t: start + index * (HOUR / 6),
     delay: index === 40 || index === 41 ? null : Math.round(120 + Math.sin(index / 7) * 40 + random() * 60 + (index > 50 ? 60 : 0)),
+    orders: index === 40 || index === 41 ? null : 20 + Math.round(random() * 30),
   }))
 }
 
 /** A legend whose items show or hide their series: the chart decides that one is always left. */
 function Legends() {
-  const [shown, setShown] = useState([true, true, true, true])
+  const [shown, setShown] = useState(() => RUNS.map(() => true))
   const toggle = (index: number) =>
     setShown((now) => (now[index] && now.filter(Boolean).length === 1 ? now : now.map((each, at) => (at === index ? !each : each))))
   return (
@@ -204,7 +234,7 @@ export function Charts() {
       <Demo
         id="legend"
         title="ChartLegend"
-        description="What a chart's colours stand for, each swatch drawn as the chart draws its series: a bar, a line, a dashed line, a point. Its items can show and hide their series. For an application's own charts too."
+        description="What a chart's colours stand for, each swatch drawn as the chart draws its series: a bar, a line, a dashed line, a point, a moment marked. Its items can show and hide their series. For an application's own charts too."
         names={['ChartLegend']}
         className="block w-full"
       >
@@ -214,7 +244,7 @@ export function Charts() {
       <Demo
         id="bar"
         title="BarChart"
-        description="Values by category, side by side or stacked, things compared in the four compare colours (never recycled). Losses go below zero, and a sign's tone colours each bar as a gain or a loss. The arrow keys move from one category to the next; a table gives screen readers every figure."
+        description="Values by category, side by side or stacked, things compared in the four compare colours (never recycled). Losses go below zero, and a sign's tone colours each bar as a gain or a loss. A category may say more (its title and details, in the tooltip and the table); one may be set apart among those it is set against, the others grey; counts step by whole numbers. The arrow keys move from one category to the next; a table gives screen readers every figure."
         names={['BarChart']}
         className="block w-full"
       >
@@ -224,7 +254,7 @@ export function Charts() {
       <Demo
         id="line"
         title="LineChart"
-        description="Values over time: up to four series compared, in the compare colours; one series with an area under it, its limit and the moments that matter. A gap in the data is a gap in the line. The pointer or the arrow keys read a moment; a table gives screen readers every one."
+        description="Values over time: up to four series compared, in the compare colours; one series with an area under it, its limit and the moments that matter. A gap in the data is a gap in the line, unless the line is to join across it (connectGaps). The pointer or the arrow keys read a moment, with what more it has to say (details); a table gives screen readers every one."
         names={['LineChart']}
         className="block w-full space-y-8"
       >
@@ -251,6 +281,7 @@ export function Charts() {
           references={[{ value: 250, label: 'Limit, 250 ms', tone: 'negative' }]}
           markers={[{ t: Date.UTC(2026, 9, 27, 12, 30), label: 'Restart' }]}
           formatValue={(value) => `${Math.round(value)} ms`}
+          details={(point) => [{ label: 'Orders', value: point.orders === null ? '—' : String(point.orders) }]}
         />
       </Demo>
 

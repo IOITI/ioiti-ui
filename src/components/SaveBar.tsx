@@ -18,7 +18,9 @@ interface SaveBarProps {
   onDiscard?: () => void
   /** The save is on its way. */
   saving?: boolean
-  /** Why the last save failed. */
+  /** Save cannot be pressed: what there is to save is not valid yet (say why in `error`). */
+  saveDisabled?: boolean
+  /** Why it cannot be saved, or why the last save failed: said at once to a screen reader. */
   error?: ReactNode
   saveLabel?: string
   discardLabel?: string
@@ -41,6 +43,7 @@ export function SaveBar({
   onSave,
   onDiscard,
   saving = false,
+  saveDisabled = false,
   error,
   saveLabel = 'Save',
   discardLabel = 'Discard',
@@ -87,7 +90,11 @@ export function SaveBar({
         >
           <div className="min-w-0 flex-1 text-sm">
             <p className="font-medium text-text-primary">{message}</p>
-            {error && <p className="text-xs text-negative">{error}</p>}
+            {error && (
+              <p role="alert" className="text-xs text-negative">
+                {error}
+              </p>
+            )}
           </div>
           <div className="flex shrink-0 items-center gap-2">
             {children}
@@ -96,7 +103,7 @@ export function SaveBar({
                 {discardLabel}
               </Button>
             )}
-            <Button size="sm" onClick={onSave} isLoading={saving} loadingText="Saving">
+            <Button size="sm" onClick={onSave} isLoading={saving} loadingText="Saving" disabled={saveDisabled}>
               {saveLabel}
             </Button>
           </div>

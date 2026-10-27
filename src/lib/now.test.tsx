@@ -46,4 +46,16 @@ describe('useNow', () => {
     unmount()
     expect(stopped).toHaveBeenCalled()
   })
+
+  it('reads the time again when the clock was set back while nothing read it', () => {
+    const { unmount } = render(<Clock id="clock" interval={5000} />)
+    act(() => {
+      vi.advanceTimersByTime(10_000)
+    })
+    unmount()
+
+    vi.setSystemTime(new Date('2026-10-27T10:00:00Z'))
+    render(<Clock id="again" interval={5000} />)
+    expect(Number(screen.getByTestId('again').textContent)).toBe(Date.parse('2026-10-27T10:00:00Z'))
+  })
 })

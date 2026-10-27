@@ -20,6 +20,7 @@ ioiti-ui is the design of the admin interface of WATA (IOITI's trading assistant
 | `LookPicker` | nothing: ioiti-ui's own |
 | `src/components/ui/{bar-chart,donut-chart,product-tour}.tsx` | nothing: EasyUI's (`7c106d4`), taken by ioiti-ui itself, not through WATA (`docs/easyui-changes.md`) |
 | The components of 0.3.0 in `src/components/` (`Kbd`, `CopyButton`, `SegmentedControl`, `Sparkline`, `ChartLegend`, `LineChart`, `ProgressBar`, `BarList`, `DescriptionList`, `CodeBlock`, `ChangeList`, `Disclosure`, `Popover`, `DropdownMenu`, `NumberInput`, `Slider`, `MultiSelect`, `InlineEdit`, `TimeRangePicker`, `SaveBar`, `ShortcutsDialog`, `ResizablePanels`, `Avatar`, `LiveValue`, `RelativeTime`, `CopyChip`…), `src/react-router/RouterLeaveGuard.tsx`, and `src/lib/{anchor,keys,now,announce,controllable,refs,chart-colours,chart-scale,highlight,date-math}.ts` | nothing: ioiti-ui's own; several do what Elastic UI's components do, as its documentation describes them (none of its code); some are what WATA's pages wrote by hand |
+| What 0.4.0 added: `src/lib/chart-details.ts`, the options of `SaveBar`, `RouterLeaveGuard`, `SignedValue`, `RelativeTime`, `LineChart`, `ChartLegend` and `bar-chart` | nothing: ioiti-ui's own, for what WATA's pages still did by hand (the configuration page's bar and guard, an open position's live value, its Recharts charts) |
 
 The name of the application and of its broker appear nowhere in the package's code, its gallery or its template
 (`scripts/check-source.mjs`): only in these documents, which say where it comes from.

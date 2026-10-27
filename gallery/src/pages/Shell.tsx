@@ -45,6 +45,8 @@ function Unsaved({ guard = false }: { guard?: boolean }) {
         open={dirty}
         message="1 unsaved change"
         saving={saving}
+        saveDisabled={limit === null}
+        error={limit === null && 'The daily limit needs a value: an empty one cannot be saved.'}
         onDiscard={() => setLimit(saved)}
         onSave={() => {
           setSaving(true)
@@ -215,7 +217,7 @@ export function Shell() {
       <Demo
         id="save-bar"
         title="SaveBar"
-        description="The bar of unsaved changes, at the bottom of the page while there are any: what there is to save, Discard and Save. It stays in sight as the page scrolls, and the toasts rise above it."
+        description="The bar of unsaved changes, at the bottom of the page while there are any: what there is to save, Discard and Save, and why it cannot be saved yet (empty the limit). It stays in sight as the page scrolls, and the toasts rise above it."
         names={['SaveBar']}
       >
         <Unsaved />
@@ -224,7 +226,7 @@ export function Shell() {
       <Demo
         id="leave-guard"
         title="RouterLeaveGuard"
-        description="Asks before the page is left with changes not saved: another page of the application (Stay or Leave), or the tab closed (the browser's own question). A change of the query alone is no leaving."
+        description="Asks before the page is left with changes not saved: another page of the application (Stay or Leave), or the tab closed (the browser's own question). A change of the query alone is no leaving, nor one of the page's own views sharing its draft (within); the sign-in page a lapsed session is sent to can be let through (allowed)."
         names={['RouterLeaveGuard']}
         from="ioiti-ui/react-router"
       >

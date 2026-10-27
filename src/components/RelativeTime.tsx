@@ -19,6 +19,11 @@ interface RelativeTimeProps {
   value: Date | number | string
   /** The time zone its full date is written in, in its hint; the browser's otherwise. */
   timeZone?: string
+  /**
+   * The moment has happened (a last update, a message received), whatever the clocks say: one a little
+   * ahead of this one, taken on a server's, is said "0 s ago", not "in 2 s".
+   */
+  past?: boolean
   className?: string
 }
 
@@ -26,7 +31,7 @@ interface RelativeTimeProps {
  * A moment said from now ("3 min ago", "in 2 h"), kept true as time goes by, its full date in a hint and
  * for a screen reader. Every time on a page shares one clock for each precision (useNow).
  */
-export function RelativeTime({ value, timeZone, className }: RelativeTimeProps) {
+export function RelativeTime({ value, timeZone, past = false, className }: RelativeTimeProps) {
   const time = value instanceof Date ? value.getTime() : typeof value === 'number' ? value : Date.parse(value)
   const iso = Number.isNaN(time) ? '' : new Date(time).toISOString()
   const [pace, setPace] = useState(1000)
@@ -37,10 +42,12 @@ export function RelativeTime({ value, timeZone, className }: RelativeTimeProps) 
 
   const zone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
   const full = formatDateTime(iso, zone)
+  // Never later than now when it has happened: the clock it was read on is ahead of this one.
+  const said = past && iso && time > now ? new Date(now).toISOString() : iso
   return (
     <Hint content={full}>
       <time dateTime={iso} className={className}>
-        {formatRelative(iso, now)}
+        {formatRelative(said, now)}
         <span className="sr-only">, {full}</span>
       </time>
     </Hint>

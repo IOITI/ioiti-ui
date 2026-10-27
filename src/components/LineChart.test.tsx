@@ -73,4 +73,27 @@ describe('LineChart', () => {
     await user.click(screen.getByRole('button', { name: 'Run 41' }))
     expect(screen.getByRole('button', { name: 'Run 41' })).toHaveAttribute('aria-pressed', 'true')
   })
+
+  it('draws a line through a missing value when told to, and says more of a moment', async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <LineChart
+        ariaLabel="Runs"
+        data={RUNS}
+        series={SERIES}
+        connectGaps
+        details={(point) => [{ label: 'Trades', value: String((point.t as number) % 7) }]}
+        animated={false}
+      />,
+    )
+    // One line each: the gap of run 42 passed over.
+    expect(strokes(container)).toEqual(['var(--chart-compare-1)', 'var(--chart-compare-2)'])
+    const table = screen.getByRole('table', { name: 'Runs' })
+    expect(within(table).getByRole('columnheader', { name: 'Details' })).toBeInTheDocument()
+
+    await user.tab()
+    await user.keyboard('{Home}')
+    const tooltip = document.querySelector('.glass-float') as HTMLElement
+    expect(tooltip).toHaveTextContent('Trades')
+  })
 })

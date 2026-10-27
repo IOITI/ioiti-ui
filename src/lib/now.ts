@@ -40,8 +40,8 @@ function subscribe(interval: number, listener: () => void): () => void {
 
 function snapshot(interval: number): number {
   const clock = clockOf(interval)
-  // Nothing has kept it going: the time it last read is old.
-  if (clock.timer === undefined && Date.now() - clock.now >= interval) clock.now = Date.now()
+  // Nothing has kept it going: the time it last read is old, or ahead of a clock set back since.
+  if (clock.timer === undefined && Math.abs(Date.now() - clock.now) >= interval) clock.now = Date.now()
   return clock.now
 }
 

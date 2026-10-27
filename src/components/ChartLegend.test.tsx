@@ -29,4 +29,11 @@ describe('ChartLegend', () => {
     await user.click(hidden)
     expect(toggled).toHaveBeenCalledWith(1)
   })
+
+  it('draws a marked moment as the chart draws it: a dashed line across', () => {
+    render(<ChartLegend items={[{ label: 'Restarts', color: 'var(--chart-axis)', shape: 'marker' }]} />)
+    const swatch = screen.getByText('Restarts').previousElementSibling as HTMLElement
+    expect(swatch).toHaveClass('border-l', 'border-dashed')
+    expect(swatch.getAttribute('style')).toContain('var(--chart-axis)')
+  })
 })

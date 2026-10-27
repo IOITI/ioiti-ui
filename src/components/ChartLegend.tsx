@@ -6,8 +6,11 @@ export interface ChartLegendItem {
   label: ReactNode
   /** The series' colour, as the chart draws it: a token (`var(--chart-compare-1)`) or a colour. */
   color: string
-  /** How the chart draws it: a bar or an area (`square`, the default), a line, a dashed line, a point. */
-  shape?: 'square' | 'line' | 'dashed' | 'dot'
+  /**
+   * How the chart draws it: a bar or an area (`square`, the default), a line, a dashed line, a point, or a moment
+   * marked across the chart (`marker`: LineChart's markers, a restart).
+   */
+  shape?: 'square' | 'line' | 'dashed' | 'dot' | 'marker'
   /** A figure beside it: the series' total, its last value. */
   value?: ReactNode
   /** With `onToggle`: whether the chart shows it. */
@@ -24,7 +27,7 @@ interface ChartLegendProps {
 }
 
 function Swatch({ color, shape = 'square' }: { color: string; shape?: ChartLegendItem['shape'] }) {
-  const style: CSSProperties = shape === 'dashed' ? { borderColor: color } : { background: color }
+  const style: CSSProperties = shape === 'dashed' || shape === 'marker' ? { borderColor: color } : { background: color }
   return (
     <span
       aria-hidden
@@ -35,6 +38,7 @@ function Swatch({ color, shape = 'square' }: { color: string; shape?: ChartLegen
         shape === 'dot' && 'size-2 rounded-full',
         shape === 'line' && 'h-0.5 w-3.5 rounded-full',
         shape === 'dashed' && 'w-3.5 border-t-2 border-dashed',
+        shape === 'marker' && 'h-3 border-l border-dashed',
       )}
     />
   )

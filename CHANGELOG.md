@@ -3,6 +3,40 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.4.0] - 2026-10-27
+
+What an application needs to give up its own bar of unsaved changes, its guard of leaving, its live figures and
+its charts for the package's: the options they lacked. Each is new and off unless given; nothing to change in an
+application but `formatRelative`'s "in 0 s" (below).
+
+- **`SaveBar`**: `saveDisabled`, a Save that cannot be pressed while what there is to save is not valid yet;
+  `error`, why it cannot (or why the last save failed), said at once to a screen reader (`role="alert"`). The
+  gallery's bar says it when its limit is emptied.
+- **`RouterLeaveGuard`**: `within`, the address under which the changes are kept, the page's own views sharing
+  one draft (`/settings` for `/settings/mail` and `/settings/billing`): going from one to another is no leaving;
+  `allowed`, the addresses the page may go to without asking, whatever is lost (the sign-in page a lapsed
+  session is sent to, where staying would save nothing).
+- **`SignedValue`**: `stale` (and `staleLabel`), as `LiveValue`'s: the figure muted, its sign kept, and
+  "(stale)" for a screen reader; an animated one does not roll its digits anew as it goes stale.
+- **`RelativeTime`**: `past`, a moment that has happened, read on a clock a little ahead of this one (a
+  server's): said "0 s ago", never "in 2 s"; its full date stays the moment given.
+- **`formatRelative`**: now itself, to the half second, is "0 s ago"; it was "in 0 s".
+- **`useNow`**: a clock set back while nothing read it is read again; it kept the time ahead until the clock
+  caught up with it.
+- **`BarChart`**: `formatTitle`, a category's heading in the tooltip and its row of the table ("Monday" where
+  the axis says "Mon"); `details`, more to say of a category, in the tooltip and a "Details" column of the
+  table; `tickAt`, the categories the axis names (a time axis's round moments), as many as fit otherwise;
+  `integer`, whole numbers on the value axis, for counts; `marked`, one category set apart among those it is set
+  against (a result among random ones), for one series: its bar in the series colour and a line through it,
+  named above the plot, the others in the muted grey. A missing value (`null`) is no bar, and a dash in the
+  tooltip and the table.
+- **`LineChart`**: `details`, as `BarChart`'s, under a moment's values; `connectGaps`, one line across the
+  missing values where it would break.
+- **`ChartLegend`**: the shape `marker`, a moment marked across the chart (`LineChart`'s markers).
+- **`ChartDetail`**, the type of a detail (`{ label, value }`), exported.
+- The gallery shows each of them: the charts' titles, details, a run set apart among random ones, a restart in
+  the legend; a stale signed value; a moment received on a clock ahead.
+
 ## [0.3.0] - 2026-10-27
 
 A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain. A check box whose mark

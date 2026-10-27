@@ -324,6 +324,10 @@ otherwise).
   grow in with `easeSoft`, one category a moment after the other (the stagger capped at 0.3 s), then move with
   `springGentle`, the hover band with `springSnappy` (EasyUI's own spring, curve and 1200 ms timer), and stay
   still where motion is reduced (`useReducedMotionConfig`).
+  Since 0.4.0: a category's title (`formatTitle`) and details (`details`, `src/lib/chart-details.ts`) in the
+  tooltip and the table; the categories the axis names (`tickAt`); whole numbers for counts (`integer`); one
+  category set apart, the others in `--chart-muted` and a line through it named above the plot (`marked`, the
+  plot's top margin 22 px where it is 8); a missing value (`null`, which `BarDatum` now takes) no bar and a dash.
 - `donut-chart` (from `7c106d4`): its segments in the design's colours, four in `--chart-compare-1…4` and the
   fifth and those after them grouped as one segment, `otherLabel` ("Other"), in `--chart-muted`: new to it (EasyUI
   cycled six hex colours and grouped nothing); a screen-reader table of every segment, those grouped included

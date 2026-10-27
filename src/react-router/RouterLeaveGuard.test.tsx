@@ -11,7 +11,7 @@ function Address() {
   return <output aria-label="address">{location.pathname + location.search}</output>
 }
 
-function Settings() {
+function Settings({ within, allowed }: { within?: string; allowed?: (pathname: string) => boolean }) {
   const [dirty, setDirty] = useState(false)
   return (
     <>
@@ -24,16 +24,20 @@ function Settings() {
       </button>
       <Link to="/orders">Orders</Link>
       <Link to="?tab=mail">Mail</Link>
-      <RouterLeaveGuard when={dirty} />
+      <Link to="/settings/billing">Billing</Link>
+      <Link to="/sign-in">Sign in</Link>
+      <RouterLeaveGuard when={dirty} within={within} allowed={allowed} />
     </>
   )
 }
 
-function renderRouter() {
+function renderRouter(guard: { within?: string; allowed?: (pathname: string) => boolean } = {}) {
   const router = createMemoryRouter(
     [
-      { path: '/settings', element: <Settings /> },
+      // One route for the page and its views: the page and its draft stay mounted from one view to another.
+      { path: '/settings/*', element: <Settings {...guard} /> },
       { path: '/orders', element: <h1>Orders</h1> },
+      { path: '/sign-in', element: <h1>Sign in</h1> },
     ],
     { initialEntries: ['/settings'] },
   )
@@ -77,5 +81,51 @@ describe('RouterLeaveGuard', () => {
     await user.click(screen.getByRole('link', { name: 'Mail' }))
     expect(screen.getByLabelText('address')).toHaveTextContent('/settings?tab=mail')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('asks before another view of the page unless told the changes are kept there', async () => {
+    const user = userEvent.setup()
+    renderRouter()
+    await user.click(screen.getByRole('button', { name: 'Change' }))
+    await user.click(screen.getByRole('link', { name: 'Billing' }))
+    expect(await screen.findByRole('dialog', { name: 'Leave without saving?' })).toBeInTheDocument()
+  })
+
+  it("takes the page's own views for no leaving, and still asks before another page", async () => {
+    const user = userEvent.setup()
+    renderRouter({ within: '/settings' })
+    await user.click(screen.getByRole('button', { name: 'Change' }))
+    await user.click(screen.getByRole('link', { name: 'Billing' }))
+    expect(screen.getByLabelText('address')).toHaveTextContent('/settings/billing')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('link', { name: 'Orders' }))
+    expect(await screen.findByRole('dialog', { name: 'Leave without saving?' })).toBeInTheDocument()
+  })
+
+  it('lets the page go where it is allowed to, without asking', async () => {
+    const user = userEvent.setup()
+    renderRouter({ allowed: (pathname) => pathname === '/sign-in' })
+    await user.click(screen.getByRole('button', { name: 'Change' }))
+    await user.click(screen.getByRole('link', { name: 'Sign in' }))
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it("asks the browser's own question on a reload or a closed tab, only while there is something to lose", async () => {
+    const user = userEvent.setup()
+    renderRouter()
+    const closing = () => {
+      const event = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+    expect(closing()).toBe(false)
+
+    await user.click(screen.getByRole('button', { name: 'Change' }))
+    expect(closing()).toBe(true)
+
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    expect(closing()).toBe(false)
   })
 })

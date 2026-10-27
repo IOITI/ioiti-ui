@@ -113,13 +113,17 @@ const ACTIVITY: AgentActivityItemData[] = [
 
 function Rolling() {
   const [value, setValue] = useState(12.4)
+  const [stale, setStale] = useState(false)
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <SignedValue value={value} kind="percent" animate className="text-2xl font-semibold" />
-      <SignedValue value={value * 34.2} kind="money" className="text-sm" />
+      <SignedValue value={value} kind="percent" animate stale={stale} className="text-2xl font-semibold" />
+      <SignedValue value={value * 34.2} kind="money" stale={stale} className="text-sm" />
       <AnimatedNumber value={Math.round(value * 100)} useGrouping className="text-2xl font-semibold" />
       <Button size="sm" variant="outline" onClick={() => setValue((current) => Math.round((current + (Math.random() - 0.55) * 20) * 100) / 100)}>
         Change it
+      </Button>
+      <Button size="sm" variant="outline" onClick={() => setStale(!stale)}>
+        {stale ? 'The source is back' : 'The source stops'}
       </Button>
     </div>
   )
@@ -424,7 +428,7 @@ export function DataDisplay() {
       <Demo
         id="relative-time"
         title="RelativeTime"
-        description="A moment said from now, kept true as time goes by (each second under a minute, each minute after), its full date in a hint and for a screen reader. Every time on a page shares one clock for each precision."
+        description="A moment said from now, kept true as time goes by (each second under a minute, each minute after), its full date in a hint and for a screen reader. Every time on a page shares one clock for each precision. A moment that has happened, taken on a clock a little ahead of this one (a server's), is said just past, never to come (past)."
         names={['RelativeTime']}
         className="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm"
       >
@@ -439,6 +443,9 @@ export function DataDisplay() {
         </span>
         <span>
           Due <RelativeTime value={OPENED + 2 * 3_600_000} timeZone="Europe/Paris" />
+        </span>
+        <span>
+          Received <RelativeTime value={OPENED + 3_000} timeZone="Europe/Paris" past />
         </span>
       </Demo>
 
@@ -515,7 +522,7 @@ export function DataDisplay() {
       <Demo
         id="signed"
         title="SignedValue and AnimatedNumber"
-        description="A change says its sign, and its colour repeats it. A figure that changes in front of the reader rolls its digits (plain text where motion is reduced)."
+        description="A change says its sign, and its colour repeats it; once what sends it stops, it is muted, its sign still there, and said stale. A figure that changes in front of the reader rolls its digits (plain text where motion is reduced)."
         names={['SignedValue', 'AnimatedNumber']}
       >
         <Rolling />

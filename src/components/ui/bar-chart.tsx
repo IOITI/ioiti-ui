@@ -21,7 +21,17 @@ import {
   useElementWidth,
 } from "../../lib/chart-primitives.js";
 // ioiti-ui: the design's colours for series, gains and losses, its grid and axis; an axis that goes below zero.
-import { AXIS_COLOUR, GRID_COLOUR, NEGATIVE_COLOUR, POSITIVE_COLOUR, seriesColours } from "../../lib/chart-colours.js";
+import {
+  AXIS_COLOUR,
+  GRID_COLOUR,
+  MUTED_COLOUR,
+  NEGATIVE_COLOUR,
+  POSITIVE_COLOUR,
+  SERIES_COLOUR,
+  seriesColours,
+} from "../../lib/chart-colours.js";
+// ioiti-ui: more to say of a category, in the tooltip and the table.
+import { detailsText, type ChartDetail } from "../../lib/chart-details.js";
 import { niceDomain } from "../../lib/chart-scale.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { ChartLegend } from "../ChartLegend.js";
@@ -31,7 +41,8 @@ export interface BarSeries {
   label: string;
   color?: string;
 }
-export type BarDatum = { label: string } & Record<string, string | number>;
+// ioiti-ui: a value that is missing (`null`) is no bar, and a dash in the tooltip and the table.
+export type BarDatum = { label: string } & Record<string, string | number | null>;
 
 export interface BarChartProps {
   data: BarDatum[];
@@ -47,6 +58,19 @@ export interface BarChartProps {
   height?: number;
   formatValue?: (n: number) => string;
   formatTick?: (n: number) => string;
+  /** ioiti-ui: a category's heading in the tooltip and its row in the table ("12 Oct 2026" where the axis says "12 Oct"). */
+  formatTitle?: (datum: BarDatum, index: number) => string;
+  /** ioiti-ui: more to say of a category, under its series' values in the tooltip and in the table. */
+  details?: (datum: BarDatum, index: number) => ChartDetail[];
+  /** ioiti-ui: the categories the axis names (a time axis's round moments); as many as fit otherwise. */
+  tickAt?: (datum: BarDatum, index: number) => boolean;
+  /** ioiti-ui: whole numbers on the value axis, for counts. */
+  integer?: boolean;
+  /**
+   * ioiti-ui: one category set apart, a result among those it is set against (a run among random ones), for
+   * one series: its bar in the series colour and a line through it, named above; the others in the muted grey.
+   */
+  marked?: { index: number; label: string };
   showLegend?: boolean;
   /** Entrance animation (also disabled by prefers-reduced-motion) */
   animated?: boolean;
@@ -65,6 +89,15 @@ function barPath(x: number, y: number, w: number, h: number, rTop: number, rBott
   );
 }
 
+// ioiti-ui: a domain of whole numbers, for counts: the nice one stepped by less than one.
+function wholeDomain(min: number, max: number) {
+  const from = Math.floor(min);
+  const to = Math.max(from + 1, Math.ceil(max));
+  const ticks: number[] = [];
+  for (let tick = from; tick <= to; tick += 1) ticks.push(tick);
+  return { min: from, max: to, step: 1, ticks };
+}
+
 // ioiti-ui: bars grow in as what arrives does (easeSoft), one category a moment after the other, the
 // stagger capped; a change of the data or of the variant then moves them without overshoot.
 const STAGGER = 0.03;
@@ -78,6 +111,11 @@ export function BarChart({
   height = 260,
   formatValue = defaultFormat,
   formatTick = defaultTick,
+  formatTitle,
+  details,
+  tickAt,
+  integer = false,
+  marked,
   showLegend = true,
   animated = true,
   ariaLabel,
@@ -108,6 +146,11 @@ export function BarChart({
     const v = d[k];
     return typeof v === "number" && isFinite(v) ? v : 0;
   };
+  // ioiti-ui: a value said, or a dash where there is none.
+  const said = (d: BarDatum, k: string) => {
+    const v = d[k];
+    return typeof v === "number" && isFinite(v) ? formatValue(v) : "—";
+  };
   // ioiti-ui: stacked by sign: gains piled up from zero, losses down from it.
   const sums = (d: BarDatum) =>
     visible.reduce(
@@ -122,11 +165,14 @@ export function BarChart({
     const values = visible.map((x) => val(d, x.key));
     return { up: Math.max(0, ...values), down: Math.min(0, ...values) };
   });
-  const domain = niceDomain(Math.min(0, ...extent.map((e) => e.down)), Math.max(0, ...extent.map((e) => e.up)), 4);
+  const nice = niceDomain(Math.min(0, ...extent.map((e) => e.down)), Math.max(0, ...extent.map((e) => e.up)), 4);
+  // ioiti-ui: counts step by one at least.
+  const domain = integer && nice.step < 1 ? wholeDomain(nice.min, nice.max) : nice;
   const ticks = domain.ticks;
   const tickText = ticks.map(formatTick);
 
-  const M = { top: 8, right: 6, bottom: 26, left: Math.ceil(Math.max(...tickText.map((s) => s.length)) * 6.4) + 10 };
+  // ioiti-ui: room above the plot for the marked category's name.
+  const M = { top: marked ? 22 : 8, right: 6, bottom: 26, left: Math.ceil(Math.max(...tickText.map((s) => s.length)) * 6.4) + 10 };
   const iw = Math.max(10, width - M.left - M.right);
   const ih = height - M.top - M.bottom;
   const y = (v: number) => M.top + ((domain.max - v) / (domain.max - domain.min)) * ih;
@@ -138,7 +184,20 @@ export function BarChart({
   const groupW = stacked ? barW : barW * k + gapIn * (k - 1);
   const labelEvery = Math.max(1, Math.ceil((Math.max(...data.map((d) => d.label.length), 1) * 6.4 + 14) / stepX));
   const radius = Math.min(6, barW / 2);
-  const fillOf = (si: number, v: number) => (tone === "sign" ? (v >= 0 ? POSITIVE_COLOUR : NEGATIVE_COLOUR) : colors[si]);
+  // ioiti-ui: a sign's colour; else, with a category marked, the series colour for it and grey for the others.
+  const setApart = marked !== undefined && series.length === 1;
+  const fillOf = (si: number, v: number, i: number) =>
+    tone === "sign"
+      ? v >= 0
+        ? POSITIVE_COLOUR
+        : NEGATIVE_COLOUR
+      : setApart
+        ? i === marked.index
+          ? SERIES_COLOUR
+          : MUTED_COLOUR
+        : colors[si];
+  const titleOf = (i: number) => (formatTitle ? formatTitle(data[i], i) : data[i].label);
+  const detailsOf = (i: number) => details?.(data[i], i) ?? [];
 
   // Geometry of every bar (hidden series collapse onto their group's centre, on the zero line)
   const groupTop = (i: number) => Math.min(y(extent[i].up), zero);
@@ -253,7 +312,7 @@ export function BarChart({
               {group.map(({ s, si, v, d, opacity }) => (
                 <motion.path
                   key={s.key}
-                  fill={fillOf(si, v)}
+                  fill={fillOf(si, v, i)}
                   initial={
                     anim ? { d: barPath(M.left + stepX * i + stepX / 2 - barW / 2, zero, barW, 0, 0, 0), opacity: 0 } : false
                   }
@@ -264,9 +323,31 @@ export function BarChart({
             </g>
           ))}
 
-          {/* x labels */}
+          {/* ioiti-ui: the marked category, a line through it named above the plot */}
+          {marked && marked.index >= 0 && marked.index < n && (
+            <g>
+              <line
+                x1={M.left + stepX * marked.index + stepX / 2}
+                x2={M.left + stepX * marked.index + stepX / 2}
+                y1={M.top}
+                y2={M.top + ih}
+                stroke={SERIES_COLOUR}
+                strokeWidth={2}
+              />
+              <text
+                x={clamp(M.left + stepX * marked.index + stepX / 2, M.left + 24, width - M.right - 24)}
+                y={M.top - 8}
+                textAnchor="middle"
+                className="fill-foreground text-[11px]"
+              >
+                {marked.label}
+              </text>
+            </g>
+          )}
+
+          {/* x labels (ioiti-ui: those asked for, or as many as fit) */}
           {data.map((d, i) =>
-            i % labelEvery === 0 ? (
+            (tickAt ? tickAt(d, i) : i % labelEvery === 0) ? (
               <text
                 key={i}
                 x={M.left + stepX * i + stepX / 2}
@@ -295,15 +376,15 @@ export function BarChart({
         <Tooltip pos={active === null ? null : { x: M.left + stepX * (active + 0.5), y: groupTop(active) }} boundsWidth={width}>
           {active !== null && (
             <>
-              <p className="mb-1.5 font-medium text-foreground">{data[active].label}</p>
+              <p className="mb-1.5 font-medium text-foreground">{titleOf(active)}</p>
               <ul className="space-y-1">
                 {visible.map((s) => (
                   <li key={s.key} className="flex items-center justify-between gap-4">
                     <span className="flex items-center gap-2 text-muted-foreground">
-                      <Dot color={fillOf(s.i, val(data[active], s.key))} />
+                      <Dot color={fillOf(s.i, val(data[active], s.key), active)} />
                       {s.label}
                     </span>
-                    <span className="tabular-nums text-foreground">{formatValue(val(data[active], s.key))}</span>
+                    <span className="tabular-nums text-foreground">{said(data[active], s.key)}</span>
                   </li>
                 ))}
               </ul>
@@ -314,6 +395,17 @@ export function BarChart({
                     {formatValue(visible.reduce((s, x) => s + val(data[active], x.key), 0))}
                   </span>
                 </p>
+              )}
+              {/* ioiti-ui: what more there is to say of it */}
+              {detailsOf(active).length > 0 && (
+                <ul className="mt-1.5 space-y-1 border-t border-border pt-1.5">
+                  {detailsOf(active).map((detail) => (
+                    <li key={detail.label} className="flex items-center justify-between gap-4">
+                      <span className="text-muted-foreground">{detail.label}</span>
+                      <span className="tabular-nums text-foreground">{detail.value}</span>
+                    </li>
+                  ))}
+                </ul>
               )}
             </>
           )}
@@ -338,15 +430,17 @@ export function BarChart({
             {series.map((s) => (
               <th key={s.key} scope="col">{s.label}</th>
             ))}
+            {details && <th scope="col">Details</th>}
           </tr>
         </thead>
         <tbody>
           {data.map((d, i) => (
             <tr key={i}>
-              <th scope="row">{d.label}</th>
+              <th scope="row">{titleOf(i)}</th>
               {series.map((s) => (
-                <td key={s.key}>{formatValue(val(d, s.key))}</td>
+                <td key={s.key}>{said(d, s.key)}</td>
               ))}
+              {details && <td>{detailsText(detailsOf(i))}</td>}
             </tr>
           ))}
         </tbody>

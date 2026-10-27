@@ -3,6 +3,8 @@ import { useCallback, useId, useRef, useState } from 'react'
 import type { KeyboardEvent, PointerEvent } from 'react'
 
 import { GRID_COLOUR, AXIS_COLOUR, seriesColours } from '../lib/chart-colours.js'
+import { detailsText } from '../lib/chart-details.js'
+import type { ChartDetail } from '../lib/chart-details.js'
 import { Tooltip, defaultFormat, defaultTick, useDismissOutside, useElementWidth } from '../lib/chart-primitives.js'
 import { formatTimeTick, niceDomain, timeTicks } from '../lib/chart-scale.js'
 import { monotonePath } from '../lib/dashboard-chart-utils.js'
@@ -56,6 +58,13 @@ export interface LineChartProps {
   formatTick?: (value: number) => string
   /** The moment at the top of the tooltip. */
   formatTime?: (t: number) => string
+  /** More to say of a moment, under its series' values in the tooltip and in the table: "That day +€12.40". */
+  details?: (point: LinePoint, index: number) => ChartDetail[]
+  /**
+   * A missing value is passed over and the line drawn through it: series measured on days of their own (runs
+   * compared over the days of each). A gap in the line otherwise.
+   */
+  connectGaps?: boolean
   showLegend?: boolean
   /** Lines drawn in when they first show (not where motion is reduced). */
   animated?: boolean
@@ -114,6 +123,8 @@ export function LineChart({
   formatValue = defaultFormat,
   formatTick = defaultTick,
   formatTime,
+  details,
+  connectGaps = false,
   showLegend = true,
   animated = true,
   ariaLabel,
@@ -166,12 +177,15 @@ export function LineChart({
       }).format(new Date(t)))
 
   const lines = visible.map((each) => {
-    const parts = segments(data.map((point, index) => {
+    const points = data.map((point, index) => {
       const value = valueOf(point, each.key)
       return value === null ? null : ([x(times[index]), y(value)] as const)
-    }))
+    })
+    // Drawn through a missing value, or split there.
+    const parts = segments(connectGaps ? points.filter((point) => point !== null) : points)
     return { ...each, parts }
   })
+  const detailsOf = (index: number) => details?.(data[index], index) ?? []
 
   const pick = (event: PointerEvent<SVGRectElement>) => {
     const box = event.currentTarget.getBoundingClientRect()
@@ -355,6 +369,16 @@ export function LineChart({
                   )
                 })}
               </ul>
+              {detailsOf(active).length > 0 && (
+                <ul className="mt-1.5 space-y-1 border-t border-border pt-1.5">
+                  {detailsOf(active).map((detail) => (
+                    <li key={detail.label} className="flex items-center justify-between gap-4">
+                      <span className="text-muted-foreground">{detail.label}</span>
+                      <span className="tabular-nums text-foreground">{detail.value}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </>
           )}
         </Tooltip>
@@ -384,6 +408,7 @@ export function LineChart({
                 {each.label}
               </th>
             ))}
+            {details && <th scope="col">Details</th>}
           </tr>
         </thead>
         <tbody>
@@ -394,6 +419,7 @@ export function LineChart({
                 const value = valueOf(point, each.key)
                 return <td key={each.key}>{value === null ? '—' : formatValue(value)}</td>
               })}
+              {details && <td>{detailsText(detailsOf(index))}</td>}
             </tr>
           ))}
         </tbody>

@@ -155,12 +155,13 @@ export function formatSpan(seconds: number): string {
   return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')} min`
 }
 
+/** A moment from now: "in 5 min", "18 min ago"; now itself, to the second, "0 s ago" (never "in 0 s"). */
 export function formatRelative(value: string | null | undefined, now: number = Date.now()): string {
   const date = parseDate(value)
   if (!date) return EMPTY
   const difference = date.getTime() - now
   const duration = formatDuration(Math.abs(difference))
-  return difference >= 0 ? `in ${duration}` : `${duration} ago`
+  return difference >= 500 ? `in ${duration}` : `${duration} ago`
 }
 
 /** ISO day (YYYY-MM-DD) of a local Date, for an API's `from` / `to` parameters. */

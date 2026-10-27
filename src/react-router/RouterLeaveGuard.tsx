@@ -8,23 +8,47 @@ import { SettleModal } from '../components/ui/settle-modal.js'
 interface RouterLeaveGuardProps {
   /** Whether leaving the page would lose something: changes not saved. */
   when: boolean
+  /**
+   * The address under which the changes are kept, the page's own views (`/settings` for `/settings/mail`
+   * and `/settings/billing`, which share one draft): going from one to another is no leaving.
+   */
+  within?: string
+  /**
+   * An address the page may go to without asking, whatever is lost: the sign-in page a lapsed session is
+   * sent to, where staying would save nothing.
+   */
+  allowed?: (pathname: string) => boolean
   title?: string
   message?: ReactNode
   stayLabel?: string
   leaveLabel?: string
 }
 
-interface TextProps {
+interface GuardProps {
+  within?: string
+  allowed?: (pathname: string) => boolean
   title: string
   message: ReactNode
   stayLabel: string
   leaveLabel: string
 }
 
+/** Whether an address is the one given or under it: `/settings/mail` is under `/settings`, `/settingsx` is not. */
+function isUnder(pathname: string, root: string): boolean {
+  const base = root.replace(/\/+$/, '')
+  return base === '' || pathname === base || pathname.startsWith(`${base}/`)
+}
+
 /** Mounted only while there is something to lose: no blocker at rest, which every link would wake. */
-function Guard({ title, message, stayLabel, leaveLabel }: TextProps) {
-  // Another page only: a change of the query or of the part shown is no leaving.
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => currentLocation.pathname !== nextLocation.pathname)
+function Guard({ within, allowed, title, message, stayLabel, leaveLabel }: GuardProps) {
+  // Another page only: a change of the query or of the part shown is no leaving, nor one of the page's
+  // own views, nor an address it is allowed to go to.
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const next = nextLocation.pathname
+    if (next === currentLocation.pathname) return false
+    if (within !== undefined && isUnder(currentLocation.pathname, within) && isUnder(next, within)) return false
+    return !allowed?.(next)
+  })
   const blocked = blocker.state === 'blocked'
 
   // Gone while a page was asked for (saved meanwhile): the page asked for is not left waiting.
@@ -61,6 +85,8 @@ function Guard({ title, message, stayLabel, leaveLabel }: TextProps) {
  */
 export function RouterLeaveGuard({
   when,
+  within,
+  allowed,
   title = 'Leave without saving?',
   message = 'The changes on this page are not saved: leaving it loses them.',
   stayLabel = 'Stay',
@@ -77,5 +103,7 @@ export function RouterLeaveGuard({
     return () => window.removeEventListener('beforeunload', ask)
   }, [when])
 
-  return when ? <Guard title={title} message={message} stayLabel={stayLabel} leaveLabel={leaveLabel} /> : null
+  return when ? (
+    <Guard within={within} allowed={allowed} title={title} message={message} stayLabel={stayLabel} leaveLabel={leaveLabel} />
+  ) : null
 }
