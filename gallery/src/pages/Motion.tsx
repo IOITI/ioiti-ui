@@ -187,6 +187,7 @@ export function Motion() {
             <TextLink to="/foundations/type">Type</TextLink>
             <TextLink to="/foundations/colours">Colours</TextLink>
             <TextLink to="/components/overlays">Overlays</TextLink>
+            <TextLink to="?query=another">This page, another query (nothing moves)</TextLink>
           </p>
           <Code>{`// React Router: nothing to do, its changes of page are React transitions.
 <RouterAppShell menu={MENU} />
