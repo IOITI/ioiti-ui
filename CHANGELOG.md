@@ -162,6 +162,10 @@ the data tables' filters as Elastic UI's filter group.
   UI's combo box does.
 - **`Badge`**'s × has a name of its own (`removeLabel`: "Remove Lyon"), may be no stop of the keyboard
   (`removeFocusable`), draws no ring of its own, and takes a press 24 px wide.
+- **`InlineEdit`**: a value edited where it is shown, a name or a title: it reads as text, a click or Enter turns
+  it into a field, Enter saves and Escape gives up (inside a dialog, its Escape is its own). A save that takes its
+  time shows it; one refused says why and keeps the field; the focus comes back to the value. As Elastic UI's
+  inline edit does.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
