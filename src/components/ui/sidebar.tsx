@@ -4,6 +4,7 @@ import * as React from "react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronRight, PanelLeft } from "lucide-react";
 import { isPlainClick } from "../../lib/links.js";
+import { overPage } from "../../lib/motion.js";
 import { cn } from "../../lib/utils.js";
 import { useLinkComponent } from "../link-context.js";
 
@@ -131,7 +132,9 @@ export function Sidebar({
 
       <AnimatePresence>
         {mobileOpen && (
-          <div key="drawer" className="fixed inset-0 z-50 md:hidden">
+          // ioiti-ui: kept above the page while a page changes, as every layer over it (motion.css): a page
+          // chosen in the drawer arrives as the drawer leaves.
+          <div key="drawer" className="fixed inset-0 z-50 md:hidden" style={overPage("drawer")}>
             <motion.div
               aria-hidden
               className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px] glass:bg-[var(--glass-scrim)]"
@@ -453,7 +456,8 @@ function Panel({
           <div
             key="tip"
             className="pointer-events-none fixed z-[60] -translate-y-1/2"
-            style={{ left: tip.x, top: tip.y }}
+            // ioiti-ui: kept above the page while a page changes (motion.css), its entry clicked.
+            style={{ left: tip.x, top: tip.y, ...overPage("sidebar-tip") }}
           >
             <motion.div
               initial={{ opacity: 0, x: -4 }}

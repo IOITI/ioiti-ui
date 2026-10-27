@@ -99,7 +99,7 @@ describe('the stylesheets, as an application builds them', () => {
     expect(added.length).toBeGreaterThan(0)
     for (const block of added) {
       expect(block, block.slice(0, 80)).toMatch(
-        /^(:root\[data-(accent|material|reduced-motion)=|@supports not \(\(backdrop-filter|@media \(prefers-reduced-(transparency|motion)|@keyframes ioiti-)/,
+        /^(:root\[data-(accent|material|reduced-motion)=|@supports not \(\(backdrop-filter|@media \(prefers-reduced-(transparency|motion)|@keyframes ioiti-|::view-transition|:root:not\(\[data-look-change\]\)::view-transition)/,
       )
     }
   })
@@ -109,6 +109,18 @@ describe('the stylesheets, as an application builds them', () => {
 function curve(transition: Transition): string {
   const ease = 'ease' in transition ? transition.ease : undefined
   return `cubic-bezier(${Array.isArray(ease) ? ease.join(', ') : ''})`
+}
+
+/** A transition's length, as the stylesheets write it. */
+function length(transition: Transition): string {
+  const seconds = 'duration' in transition ? transition.duration : undefined
+  return `${Math.round((seconds ?? 0) * 1000)}ms`
+}
+
+/** The declarations of the rule a stylesheet writes for a selector. */
+function rule(css: string, selector: string): string {
+  const at = css.indexOf(`${selector} {`)
+  return at < 0 ? '' : (/\{([^{}]*)\}/.exec(css.slice(at))?.[1] ?? '')
 }
 
 describe('the motion, as an application builds it', () => {
@@ -131,6 +143,26 @@ describe('the motion, as an application builds it', () => {
     expect(css).toContain('.motion-reduce\\:animate-none:is(:root[data-reduced-motion="always"] *)')
     expect(css).toMatch(/@media \(prefers-reduced-motion: no-preference\) \{\s*\.motion-safe\\:active\\:scale-95:not\(:root\[data-reduced-motion="always"\] \*\):active/)
     expect(css).toContain('.motion-safe\\:active\\:scale-95:is(:root[data-reduced-motion="never"] *):active')
+  })
+
+  it('changes a page in one cross-fade, the page left first, the new one rising, the shell and the layers live', async () => {
+    const css = await build([])
+
+    expect(rule(css, '::view-transition-old(.ioiti-page)')).toContain(`${length(motionTransitions.easeExit)} var(--ease-exit) both ioiti-fade-out`)
+    expect(rule(css, '::view-transition-new(.ioiti-page)')).toContain('var(--ease-soft) both ioiti-rise-in')
+    expect(rule(css, '::view-transition')).toContain('pointer-events: none')
+    expect(rule(css, ':root:not([data-look-change])::view-transition-old(root)')).toContain('display: none')
+    expect(rule(css, ':root:not([data-look-change])::view-transition-old(.ioiti-layer)')).toContain('display: none')
+    expect(rule(css, ':root:not([data-look-change])::view-transition-new(.ioiti-layer)')).toContain('animation: none')
+  })
+
+  it('lets a page arrive without rising where motion is reduced', async () => {
+    const css = await build([])
+
+    expect(css).toMatch(
+      /@media \(prefers-reduced-motion: reduce\) \{[^@]*:root:not\(\[data-reduced-motion="never"\]\)::view-transition-new\(\.ioiti-page\) \{\s*animation-name: ioiti-fade-in;/,
+    )
+    expect(rule(css, ':root[data-reduced-motion="always"]::view-transition-new(.ioiti-page)')).toContain('animation-name: ioiti-fade-in')
   })
 
   it('stops the loops where motion is reduced', async () => {

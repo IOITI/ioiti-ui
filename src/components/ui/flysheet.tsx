@@ -4,6 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls, type PanInfo } from "framer-motion";
 import { X } from "lucide-react";
+import { overPage } from "../../lib/motion.js";
 import { cn } from "../../lib/utils.js";
 
 /*
@@ -716,6 +717,8 @@ export function FlysheetContent({
               aria-describedby={hasDesc ? descId : undefined}
               tabIndex={-1}
               className={cn("fixed inset-0 outline-none", pushing ? "z-40" : "z-50", !modal && "pointer-events-none")}
+              // ioiti-ui: kept above the page while a page changes, as every layer over it (motion.css).
+              style={overPage("sheet")}
             >
               {modal && (
                 <motion.div

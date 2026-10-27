@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
+import { overPage } from '../../lib/motion.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
 export interface SettleModalProps {
@@ -118,6 +119,8 @@ export const SettleModal: React.FC<SettleModalProps> = ({
           ref={dialogRef}
           tabIndex={-1}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 text-left outline-none"
+          // ioiti-ui: kept above the page while a page changes, as every layer over it (motion.css).
+          style={overPage('dialog')}
           aria-labelledby={title ? titleId : undefined}
           role="dialog"
           aria-modal="true"

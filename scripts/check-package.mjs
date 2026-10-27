@@ -56,6 +56,7 @@ const DESIGN = [
   ':root[data-accent=bloom]:not(.dark){--brand:#c2398b;',
   '.glass-float:is(:root[data-material=glass] *){background-color:var(--glass-float);',
   ':root[data-reduced-motion=always]{--animate-spin:none;',
+  '::view-transition-new(.ioiti-page){',
 ]
 
 // The images the stylesheets name: the grains of the bloom accent.
