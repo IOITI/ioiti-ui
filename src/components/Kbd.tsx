@@ -22,7 +22,7 @@ export function Kbd({ keys, children, className }: KbdProps) {
   if (keys === undefined) return <kbd className={cn(CAP, className)}>{children}</kbd>
   const strokes = keyLabels(keys)
   return (
-    <kbd className={cn('inline-flex items-center gap-1 align-middle', className)}>
+    <kbd className={cn('inline-flex items-center gap-1 align-middle font-sans', className)}>
       {strokes.map((stroke, index) => (
         <span key={index} className="inline-flex items-center gap-0.5">
           {index > 0 && (
