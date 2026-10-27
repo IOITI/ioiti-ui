@@ -16,6 +16,7 @@ import {
   Shapes,
   Sheet,
   SearchX,
+  Settings,
   SwatchBook,
   TextCursorInput,
   Type,
@@ -38,6 +39,7 @@ import { NotFoundPattern } from './pages/NotFoundPattern'
 import { Overlays } from './pages/Overlays'
 import { Shape } from './pages/Shape'
 import { Shell } from './pages/Shell'
+import { SettingsPattern } from './pages/SettingsPattern'
 import { SignInPattern } from './pages/SignInPattern'
 import { States } from './pages/States'
 import { Themes } from './pages/Themes'
@@ -71,6 +73,7 @@ export const PAGES: GalleryPage[] = [
   { id: 'charts', path: '/components/charts', label: 'Charts', section: 'Components', icon: <ChartLine />, element: <Charts /> },
   { id: 'dashboard', path: '/patterns/dashboard', label: 'Dashboard', section: 'Patterns', icon: <LayoutDashboard />, element: <DashboardPattern /> },
   { id: 'states', path: '/patterns/states', label: 'Empty, loading, failed', section: 'Patterns', icon: <Inbox />, element: <States /> },
+  { id: 'settings', path: '/patterns/settings', label: 'Settings page', section: 'Patterns', icon: <Settings />, element: <SettingsPattern /> },
   { id: 'sign-in', path: '/patterns/sign-in', label: 'Sign-in page', section: 'Patterns', icon: <LogIn />, element: <SignInPattern />, bare: true },
   { id: 'not-found', path: '/patterns/not-found', label: 'Page not found', section: 'Patterns', icon: <SearchX />, element: <NotFoundPattern /> },
 ]
