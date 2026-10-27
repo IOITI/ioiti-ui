@@ -183,7 +183,7 @@ export function Forms() {
       <Demo
         id="field"
         title="Field"
-        description="The way the pages put a control under its label. A Combobox takes its label beside it (htmlFor): a label around it would pass the clicks of its options on to it."
+        description="The way the pages put a control under its label. An Input may show its unit before or after the value, which a screen reader hears with the field. A Combobox takes its label beside it (htmlFor): a label around it would pass the clicks of its options on to it."
         names={['Field', 'Input', 'Select', 'Textarea', 'Combobox']}
         className="grid w-full gap-4 sm:grid-cols-2"
       >
@@ -192,6 +192,12 @@ export function Forms() {
         </Field>
         <Field label="Quantity" error="A whole number, from 1 to 99">
           <Input type="number" defaultValue="0" error />
+        </Field>
+        <Field label="Timeout">
+          <Input inputMode="numeric" defaultValue="250" suffix="ms" />
+        </Field>
+        <Field label="Website">
+          <Input defaultValue="example.com" prefix="https://" />
         </Field>
         <Field label="Status">
           <Select options={[{ value: 'open', label: 'Open' }, { value: 'done', label: 'Done' }]} defaultValue="open" />

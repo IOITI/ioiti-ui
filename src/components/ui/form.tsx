@@ -118,11 +118,16 @@ FormMessage.displayName = 'FormMessage';
    2. Input Component
    ========================================================================== */
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+// ioiti-ui: `prefix` is a unit drawn in the field here, not the RDFa attribute of the same name.
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
   /** Optional icon rendered at the start of input */
   leftIcon?: React.ReactNode;
   /** Optional icon rendered at the end of input */
   rightIcon?: React.ReactNode;
+  /** ioiti-ui: a unit before the value, inside the field ("€", "https://"): the text keeps clear of it, and a screen reader hears it. */
+  prefix?: React.ReactNode;
+  /** ioiti-ui: a unit after the value, inside the field ("ms", "kg", "%"). */
+  suffix?: React.ReactNode;
   /** Pass an error message or boolean to trigger danger styling */
   error?: string | boolean;
   /** For type="password", automatically provide a show/hide toggle icon */
@@ -139,6 +144,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       error,
       showPasswordToggle = false,
       disabled,
+      prefix,
+      suffix,
+      style,
       ...props
     },
     ref
@@ -147,12 +155,34 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const isPassword = type === 'password';
     const computedType = isPassword && showPassword ? 'text' : type;
 
+    // ioiti-ui: the units inside the field, measured, the text keeping clear of them; each describes the field.
+    const unitId = React.useId();
+    const before = React.useRef<HTMLSpanElement>(null);
+    const after = React.useRef<HTMLSpanElement>(null);
+    const [pad, setPad] = React.useState({ left: 0, right: 0 });
+    React.useLayoutEffect(() => {
+      setPad({ left: before.current?.offsetWidth ?? 0, right: after.current?.offsetWidth ?? 0 });
+    }, [prefix, suffix]);
+    const describedBy =
+      [props['aria-describedby'], prefix ? `${unitId}-prefix` : null, suffix ? `${unitId}-suffix` : null].filter(Boolean).join(' ') || undefined;
+
     return (
       <div className="relative w-full flex items-center">
         {leftIcon && (
           <div className="absolute left-3 text-neutral-500 dark:text-[#525252] pointer-events-none flex items-center justify-center">
             {leftIcon}
           </div>
+        )}
+        {prefix && (
+          <span
+            ref={before}
+            id={`${unitId}-prefix`}
+            // Not in a label's name around the field: its description (aria-describedby).
+            aria-hidden
+            className="absolute left-0 flex h-full items-center pl-3.5 pr-1.5 text-xs text-muted-foreground pointer-events-none"
+          >
+            {prefix}
+          </span>
         )}
 
         <input
@@ -171,7 +201,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className
           )}
           {...props}
+          aria-describedby={describedBy}
+          style={{ ...(prefix && pad.left ? { paddingLeft: pad.left } : {}), ...(suffix && pad.right ? { paddingRight: pad.right } : {}), ...style }}
         />
+
+        {suffix && (
+          <span
+            ref={after}
+            id={`${unitId}-suffix`}
+            aria-hidden
+            className="absolute right-0 flex h-full items-center pl-1.5 pr-3.5 text-xs text-muted-foreground pointer-events-none"
+          >
+            {suffix}
+          </span>
+        )}
 
         {isPassword && showPasswordToggle ? (
           <button

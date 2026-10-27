@@ -350,6 +350,9 @@ otherwise).
   `easeExit` (its own springs and curve); a step's words come 8 px from the side the tour goes, without their
   blur, and only fade where motion is reduced, the cutout then jumping (`useReducedMotionConfig`). It measures
   once where there is no `ResizeObserver`, and scrolls where the browser can (jsdom cannot).
+- `form` (0.3.0): `Input`'s `prefix` and `suffix`, a unit inside the field before or after the value, measured so
+  that the text keeps clear of it, describing the field (`aria-describedby`) and hidden from a label's name around
+  it; `prefix` is no longer the RDFa attribute of that name in `InputProps`.
 
 ## ioiti-ui's own changes
 

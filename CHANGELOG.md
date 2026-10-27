@@ -224,6 +224,8 @@ resize, a tour of a page).
 - **`DateRangeFilter`** takes the page's presets (`presets`: so many days, or a range of their own, type
   `DateRangePreset`), the day they end on (`today`: the last day there is data for), the calendar's bounds
   (`minDate`, `maxDate`) and no "All time" (`allTime={false}`). Without them, it is as it was.
+- **`Input`** shows a unit before or after its value (`prefix`, `suffix`: "€", "ms", "https://"), its text kept
+  clear of it; a screen reader hears it as the field's description, not in its name.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
