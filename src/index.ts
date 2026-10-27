@@ -79,6 +79,7 @@ export { usePageName, usePageTrail, useTabTitle, useTrail } from './shell/page-t
 export { useMainScroll } from './components/main-scroll-context.js'
 
 // The blocks pages are made of.
+export { Avatar, AvatarGroup } from './components/Avatar.js'
 export { ButtonLink } from './components/ButtonLink.js'
 export { ChangeList } from './components/ChangeList.js'
 export type { Change, ChangeGroup } from './components/ChangeList.js'

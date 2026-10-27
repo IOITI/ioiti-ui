@@ -21,6 +21,8 @@ exports[`the package's interface > is the list of names it was 1`] = `
   "AppShell",
   "AuthLayout",
   "AutoRefresh",
+  "Avatar",
+  "AvatarGroup",
   "Badge",
   "BarChart",
   "BarList",

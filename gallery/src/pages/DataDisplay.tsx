@@ -6,6 +6,8 @@ import {
   AIAgentActivity,
   AirportMatrixClock,
   AnimatedNumber,
+  Avatar,
+  AvatarGroup,
   Badge,
   Button,
   ChangeList,
@@ -352,6 +354,26 @@ export function DataDisplay() {
             ]}
           />
         </Disclosure>
+      </Demo>
+
+      <Demo
+        id="avatar"
+        title="Avatar and AvatarGroup"
+        description="A person, as their picture or their initials, named for a screen reader; together, overlapping, each named in a hint and the rest said as +N."
+        names={['Avatar', 'AvatarGroup']}
+        className="flex flex-wrap items-center gap-6"
+      >
+        <div className="flex items-center gap-2">
+          <Avatar name="Ana María Ortiz" size="xs" />
+          <Avatar name="Léa Brun" size="sm" />
+          <Avatar name="Omar Haddad" />
+          <Avatar name="Yuki Sato" size="lg" hint />
+        </div>
+        <AvatarGroup
+          label="Who works on the order"
+          max={3}
+          people={[{ name: 'Ana María Ortiz' }, { name: 'Léa Brun' }, { name: 'Omar Haddad' }, { name: 'Yuki Sato' }, { name: 'Jonas Weber' }]}
+        />
       </Demo>
 
       <Demo

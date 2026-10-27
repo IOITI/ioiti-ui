@@ -200,6 +200,9 @@ the data tables' filters as Elastic UI's filter group.
   element's selector, a getter or a ref. A dialog named by its step's title: the arrows move, Escape ends it, Tab
   stays in its card, the focus comes back where it was. Its cutout glides as a sheet does, still where motion is
   reduced.
+- **`Avatar`** and **`AvatarGroup`**: a person, as their picture (from the application's own origin) or their
+  initials, named for a screen reader; together, overlapping, each named in a hint, "+N" naming the rest, an
+  avatar lifting a little under the pointer (not where motion is reduced).
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
