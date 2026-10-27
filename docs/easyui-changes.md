@@ -324,6 +324,15 @@ otherwise).
   grow in with `easeSoft`, one category a moment after the other (the stagger capped at 0.3 s), then move with
   `springGentle`, the hover band with `springSnappy` (EasyUI's own spring, curve and 1200 ms timer), and stay
   still where motion is reduced (`useReducedMotionConfig`).
+- `donut-chart` (from `7c106d4`): its segments in the design's colours, four in `--chart-compare-1…4` and the
+  fifth and those after them grouped as one segment, `otherLabel` ("Other"), in `--chart-muted`: new to it (EasyUI
+  cycled six hex colours and grouped nothing); a screen-reader table of every segment, those grouped included
+  (it had none); the text in the design's tokens, a hidden segment's words muted and struck through rather than
+  faded under 4.5:1. Its motion: the arcs sweep in with `easeSoft`, their delays capped at 0.3 s, then move with
+  `springGentle`, a segment thickens with `springSnappy`, the centre fades with `easeFast` and `easeExit` (its own
+  springs and curves), and the arcs, the total and the thickness, which it animates by hand and MotionConfig does
+  not reduce, are still where motion is reduced (`useReducedMotionConfig`); its count-up, `AnimatedNumber` there,
+  is `CentreTotal`, the package's own `AnimatedNumber` being another.
 
 ## ioiti-ui's own changes
 

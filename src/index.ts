@@ -182,6 +182,8 @@ export { DependencyTrace } from './components/ui/dependency-trace.js'
 export type { DependencyTraceProps, TraceConnection, TraceNode, TraceStatus } from './components/ui/dependency-trace.js'
 export { DirectionalTooltip } from './components/ui/directional-tooltip.js'
 export type { DirectionalTooltipProps, TooltipAlign, TooltipSide } from './components/ui/directional-tooltip.js'
+export { DonutChart } from './components/ui/donut-chart.js'
+export type { DonutChartProps, DonutDatum } from './components/ui/donut-chart.js'
 export { DragToConfirm } from './components/ui/drag-to-confirm.js'
 export type {
   DragConfirmActionType,

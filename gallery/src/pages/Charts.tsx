@@ -3,6 +3,7 @@ import {
   BarChart,
   ChartLegend,
   DependencyTrace,
+  DonutChart,
   formatMoney,
   formatPercent,
   FunnelChart,
@@ -188,6 +189,38 @@ export function Charts() {
         className="block w-full"
       >
         <Bars />
+      </Demo>
+
+      <Demo
+        id="donut"
+        title="DonutChart"
+        description="Parts of a whole, or one value against its limit as a gauge. Four segments take the compare colours; the rest are one segment, in grey. Hovering a segment or its line of the legend says its figure and its share."
+        names={['DonutChart']}
+        className="grid w-full gap-8 lg:grid-cols-2"
+      >
+        <DonutChart
+          ariaLabel="Orders by channel"
+          centerLabel="Orders"
+          data={[
+            { label: 'Shop', value: 560 },
+            { label: 'Phone', value: 210 },
+            { label: 'Partners', value: 190 },
+            { label: 'Fairs', value: 80 },
+            { label: 'Post', value: 40 },
+            { label: 'Other sites', value: 25 },
+          ]}
+        />
+        <DonutChart
+          ariaLabel="Storage used"
+          variant="semi"
+          centerLabel="Used"
+          showLegend={false}
+          formatValue={(value) => `${Math.round(value)} GB`}
+          data={[
+            { label: 'Used', value: 312 },
+            { label: 'Free', value: 188, color: 'var(--chart-muted)' },
+          ]}
+        />
       </Demo>
 
       <Demo

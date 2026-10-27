@@ -104,6 +104,9 @@ the data tables' filters as Elastic UI's filter group.
   never recycled. Losses are drawn below a zero line, each bar rounded at its far end, stacked by sign;
   `tone="sign"` colours each bar as a gain or a loss (daily margins). The arrow keys move from one category to
   the next; a table gives screen readers every figure; its legend shows and hides a series.
+- **`DonutChart`**, EasyUI's: parts of a whole, or a gauge (`variant="semi"`). Four segments take the compare
+  colours; the fifth and those after it are one segment, "Other" (`otherLabel`), in grey. Its centre and its legend
+  say a segment's figure and share; a table gives screen readers every segment, those grouped included.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
