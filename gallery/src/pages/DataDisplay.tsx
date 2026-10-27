@@ -462,7 +462,7 @@ export function DataDisplay() {
       <Demo
         id="kpi"
         title="KpiTile, KpiGrid and Meter"
-        description="The figures a page is about, four across from 1280 px, two on a phone. A meter is one ratio against a limit, its track a faint step of its own colour."
+        description="The figures a page is about, four across from 1280 px (or the columns asked: three here), two on a phone. A meter is one ratio against a limit, its track a faint step of its own colour."
         names={['KpiGrid', 'KpiTile', 'Meter']}
         className="block w-full"
       >
@@ -475,6 +475,11 @@ export function DataDisplay() {
           <KpiTile label="Errors" value="0" hint="In the last hour">
             <Meter ratio={0.05} tone="positive" label="Error budget used" />
           </KpiTile>
+        </KpiGrid>
+        <KpiGrid columns={3} className="mt-4">
+          <KpiTile label="Returns" value="38" hint="This week" />
+          <KpiTile label="Refunded" value={formatMoney(1260, 'EUR')} hint="This week" />
+          <KpiTile label="Median delivery" value="2.4 days" hint="−0.3 on last week" />
         </KpiGrid>
       </Demo>
 

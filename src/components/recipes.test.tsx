@@ -128,6 +128,17 @@ describe('the short texts and the grid of tiles', () => {
     expect(screen.getByRole('alert')).toHaveClass('text-sm', 'text-negative')
     expect(screen.getByText('tiles')).toHaveClass('grid', 'grid-cols-2', 'gap-3', 'sm:gap-4', 'xl:grid-cols-4')
   })
+
+  it('lay the tiles in the columns asked from a wide screen, two on a phone', () => {
+    render(
+      <>
+        <KpiGrid columns={3}>three</KpiGrid>
+        <KpiGrid columns={5}>five</KpiGrid>
+      </>,
+    )
+    expect(screen.getByText('three')).toHaveClass('grid-cols-2', 'lg:grid-cols-3')
+    expect(screen.getByText('five')).toHaveClass('grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-5')
+  })
 })
 
 describe('a link made of words', () => {

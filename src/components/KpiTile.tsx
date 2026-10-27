@@ -69,7 +69,23 @@ export function Meter({ ratio, tone = 'neutral', label, scale }: MeterProps) {
   )
 }
 
-/** Tiles side by side: two on a phone, four from a wide screen (1280 px) up. */
-export function KpiGrid({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn('grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4', className)}>{children}</div>
+// Written out whole for Tailwind to find them: two on a phone, the columns asked from a wide screen up.
+const COLUMNS = {
+  2: 'grid-cols-2',
+  3: 'grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-2 xl:grid-cols-4',
+  5: 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-5',
+  6: 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-6',
+}
+
+interface KpiGridProps {
+  /** How many tiles side by side on a wide screen (1280 px; three from 1024 for five or six): four by default. */
+  columns?: 2 | 3 | 4 | 5 | 6
+  className?: string
+  children: ReactNode
+}
+
+/** Tiles side by side: two on a phone, four (or the columns asked) from a wide screen (1280 px) up. */
+export function KpiGrid({ columns = 4, className, children }: KpiGridProps) {
+  return <div className={cn('grid gap-3 sm:gap-4', COLUMNS[columns], className)}>{children}</div>
 }

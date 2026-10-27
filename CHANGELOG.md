@@ -226,6 +226,8 @@ resize, a tour of a page).
   (`minDate`, `maxDate`) and no "All time" (`allTime={false}`). Without them, it is as it was.
 - **`Input`** shows a unit before or after its value (`prefix`, `suffix`: "€", "ms", "https://"), its text kept
   clear of it; a screen reader hears it as the field's description, not in its name.
+- **`KpiGrid`** lays its tiles in the columns asked (`columns`: 2 to 6 from a wide screen), two on a phone; four by
+  default, as it was.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
