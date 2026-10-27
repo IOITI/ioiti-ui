@@ -10,16 +10,25 @@ interface Row {
   id: string
   name: string
   kind: string
+  group: string
 }
 
 const ROWS: Row[] = Array.from({ length: 12 }, (_, index) => ({
   id: `r${index + 1}`,
   name: `Row ${index + 1}`,
   kind: index % 2 === 0 ? 'even' : 'odd',
+  // Rows 1 to 6, 7 to 9, 10 to 12.
+  group: index < 6 ? 'a' : index < 9 ? 'b' : 'c',
 }))
 const COLUMNS: ColumnDef<Row>[] = [
   { id: 'name', header: 'Name', accessorKey: 'name' },
   { id: 'kind', header: 'Kind', accessorKey: 'kind', filterable: true, filterOptions: [{ label: 'Even', value: 'even' }, { label: 'Odd', value: 'odd' }] },
+]
+// A list of twelve names (searchable), an on/off pair, a list of three.
+const FILTERED: ColumnDef<Row>[] = [
+  { id: 'name', header: 'Name', accessorKey: 'name', filterable: true, filterOptions: ROWS.map((row) => ({ label: row.name, value: row.name })) },
+  COLUMNS[1],
+  { id: 'group', header: 'Group', accessorKey: 'group', filterable: true, filterOptions: [{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }, { label: 'C', value: 'c' }] },
 ]
 const shown = () =>
   within(screen.getByRole('table'))
@@ -172,5 +181,92 @@ describe('the data table, as the pages use it', () => {
     await user.click(within(kind.closest('label')!).getByText('Kind'))
     expect(screen.getByRole('checkbox', { name: 'Kind' })).not.toBeChecked()
     expect(screen.queryByRole('columnheader', { name: 'Kind' })).not.toBeInTheDocument()
+  })
+})
+
+describe('the filters, as one group of buttons', () => {
+  function renderFiltered() {
+    render(<AdvancedDataTable<Row> data={ROWS} columns={FILTERED} getRowId={(row) => row.id} selectable={false} defaultPageSize={20} />)
+  }
+  const names = () => shown().map((text) => text?.match(/^Row \d+/)?.[0])
+
+  it('draws two options as an on/off pair, pressed one at a time', async () => {
+    const user = userEvent.setup()
+    renderFiltered()
+    const odd = screen.getByRole('button', { name: 'Kind: Odd' })
+    const even = screen.getByRole('button', { name: 'Kind: Even' })
+    expect(screen.getByRole('group', { name: 'Filters' })).toContainElement(odd)
+
+    await user.click(odd)
+    expect(odd).toHaveAttribute('aria-pressed', 'true')
+    expect(names()).toEqual(['Row 2', 'Row 4', 'Row 6', 'Row 8', 'Row 10', 'Row 12'])
+
+    await user.click(even)
+    expect(even).toHaveAttribute('aria-pressed', 'true')
+    expect(odd).toHaveAttribute('aria-pressed', 'false')
+    expect(names()).toHaveLength(6)
+
+    // Pressed again, let go: every row.
+    await user.click(even)
+    expect(even).toHaveAttribute('aria-pressed', 'false')
+    expect(names()).toHaveLength(12)
+  })
+
+  it('opens a list of options, each with the rows it would leave under the other filters, and filters by those ticked', async () => {
+    const user = userEvent.setup()
+    renderFiltered()
+    await user.click(screen.getByRole('button', { name: 'Kind: Odd' }))
+
+    const button = screen.getByRole('button', { name: 'Group, 3 options' })
+    await user.click(button)
+    expect(button).toHaveAttribute('aria-expanded', 'true')
+    const list = screen.getByRole('group', { name: 'Filter by Group' })
+    // The odd rows: 2, 4 and 6 in A, 8 in B, 10 and 12 in C. The focus goes in.
+    expect(within(list).getByRole('checkbox', { name: 'A, 3 rows' })).toHaveFocus()
+    expect(within(list).getByRole('checkbox', { name: 'B, 1 row' })).toBeInTheDocument()
+
+    await user.click(within(list).getByRole('checkbox', { name: 'C, 2 rows' }))
+    expect(names()).toEqual(['Row 10', 'Row 12'])
+    expect(screen.getByRole('button', { name: 'Group, 1 of 3 chosen' })).toBeInTheDocument()
+
+    // Escape: the list closes, the focus back on its button.
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('group', { name: 'Filter by Group' })).not.toBeInTheDocument())
+    expect(screen.getByRole('button', { name: 'Group, 1 of 3 chosen' })).toHaveFocus()
+    expect(names()).toEqual(['Row 10', 'Row 12'])
+  })
+
+  it('gives the focus back to the button when a Tab leaves the list, and clears a column from it', async () => {
+    const user = userEvent.setup()
+    renderFiltered()
+    await user.click(screen.getByRole('button', { name: 'Group, 3 options' }))
+    const list = screen.getByRole('group', { name: 'Filter by Group' })
+    await user.click(within(list).getByRole('checkbox', { name: 'B, 3 rows' }))
+    expect(names()).toEqual(['Row 7', 'Row 8', 'Row 9'])
+
+    await user.click(within(list).getByRole('button', { name: 'Clear' }))
+    expect(names()).toHaveLength(12)
+    expect(within(list).getByRole('checkbox', { name: 'A, 6 rows' })).toHaveFocus()
+
+    await user.tab({ shift: true })
+    await waitFor(() => expect(screen.queryByRole('group', { name: 'Filter by Group' })).not.toBeInTheDocument())
+    expect(screen.getByRole('button', { name: 'Group, 3 options' })).toHaveFocus()
+  })
+
+  it('searches a long list, every word typed in an option', async () => {
+    const user = userEvent.setup()
+    renderFiltered()
+    await user.click(screen.getByRole('button', { name: 'Name, 12 options' }))
+    const search = screen.getByRole('searchbox', { name: 'Search the options of Name' })
+    expect(search).toHaveFocus()
+
+    await user.type(search, 'row 1')
+    const list = screen.getByRole('group', { name: 'Filter by Name' })
+    expect(within(list).getAllByRole('checkbox')).toHaveLength(4)
+
+    await user.clear(search)
+    await user.type(search, 'row nine')
+    expect(within(list).queryAllByRole('checkbox')).toHaveLength(0)
+    expect(within(list).getByText('No option matches.')).toBeInTheDocument()
   })
 })

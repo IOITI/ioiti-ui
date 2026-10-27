@@ -97,9 +97,17 @@ otherwise).
   anywhere on a row opens it, except on a link, a button, a field or the end of a selection of its text; the
   arrow stays for the keyboard), `singleExpand` (one row open at a time) and `rowLabel` (each arrow named
   "Open …" after its row, instead of all "Expand row details"); a search goes back to the first page, where
-  what it found starts; from a tablet up, a filter with more options than the bar is wide wraps onto a second
-  line; its boxes (rows, cards, header, column list) are `draw-checkbox`, not the browser's, the header's
-  partly checked state its bar.
+  what it found starts; its boxes (rows, cards, header, column list) are `draw-checkbox`, not the browser's, the
+  header's partly checked state its bar. Its filters are Elastic UI's filter group (`EuiFilterGroup`,
+  `EuiFilterButton`), written from its documentation (none of its code), where EasyUI showed every option of
+  every column at once: one bar of buttons joined together; a column's options in a list that opens from its
+  button, each ticked or not with the rows it would leave under the search and the other filters, a search of
+  its own from eight options, the button saying how many options there are or how many are ticked (EUI's
+  `numFilters` and `numActiveFilters`); a column of one or two options as buttons pressed one at a time, an
+  on/off pair (`aria-pressed`); `filterDisplay` (`auto`, `list`, `toggle`) to choose; "Clear filters" after
+  them. The list is drawn in `document.body` at fixed coordinates (the frame's `overflow-hidden` cut it), the
+  focus goes in, and Escape or a Tab past its ends gives it back to its button. The search's and the filters'
+  rules are shared with those counts; `useDataTable` gives `setFilter` and `countOptions`.
 - `breadcrumb`: its text in `text-muted-foreground` and `text-foreground` (`neutral-500` was 4.54:1 on the
   light background, a hair from the limit); `wrap={false}` keeps a trail on one line, each step cut short with
   an ellipsis, the last one first.

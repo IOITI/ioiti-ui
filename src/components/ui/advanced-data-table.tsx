@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, createContext, useContext } from 'react';
+import React, { useState, useEffect, useMemo, createContext, useContext, useId, useLayoutEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   ChevronDown,
@@ -20,6 +21,8 @@ import {
   List,
 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
+// ioiti-ui: the filters' lists float as everything that floats.
+import { motionTransitions } from '../../lib/motion-tokens.js';
 import { SelectionBasket } from './selection-basket.js';
 import type { SelectionActionItem } from './selection-basket.js';
 // ioiti-ui: every box of the table is the package's checkbox, EasyUI's draw-checkbox.
@@ -52,6 +55,13 @@ export interface ColumnDef<T> {
   sortable?: boolean;
   filterable?: boolean;
   filterOptions?: Array<{ label: string; value: string }>;
+  /**
+   * ioiti-ui: how its filter is drawn in the filter group. `list`: a button that opens its options to
+   * tick, each with the rows it would leave, a search of its own past seven of them. `toggle`: each
+   * option a button of its own, pressed one at a time. `auto` (the default): a toggle for one or two
+   * options (an on/off pair: give them labels that say themselves, "Paid" and "Unpaid"), a list for more.
+   */
+  filterDisplay?: 'auto' | 'list' | 'toggle';
   width?: string;
   align?: 'left' | 'center' | 'right';
   priority?: 'high' | 'medium' | 'low';
@@ -76,6 +86,10 @@ export interface DataTableContextValue<T = any> {
   activeFilters: Record<string, string[]>;
   toggleFilter: (columnId: string, value: string) => void;
   clearFilters: () => void;
+  /** ioiti-ui: a column's filter set at once (an option pressed, the other one of its pair let go; a list cleared). */
+  setFilter: (columnId: string, values: string[]) => void;
+  /** ioiti-ui: how many rows each option of a column's filter would leave, the search and the other filters as they are. */
+  countOptions: (columnId: string) => Record<string, number>;
   // Selection
   selectable: boolean;
   selectedRowIds: ReadonlySet<string>;
@@ -305,8 +319,285 @@ export interface DataTableFiltersProps {
   className?: string;
 }
 
+// ioiti-ui: what the filters compare a row by in a column (its value as text), and whether the search finds a
+// row: one rule for the rows shown and for the counts of the filters' options.
+function filterValue<T>(row: T, column: ColumnDef<T>): string {
+  const value = column.accessorKey ? row[column.accessorKey] : column.accessorFn ? column.accessorFn(row) : '';
+  return String(value);
+}
+
+function searchFinds(row: unknown, query: string): boolean {
+  return Object.values(row as Record<string, unknown>).some((value) =>
+    typeof value === 'string' || typeof value === 'number' ? String(value).toLowerCase().includes(query) : false
+  );
+}
+
+/** ioiti-ui: drawn as an on/off pair, or as a list (ColumnDef's filterDisplay). */
+function drawnAsToggles(column: ColumnDef<any>): boolean {
+  const display = column.filterDisplay ?? 'auto';
+  return display === 'toggle' || (display === 'auto' && (column.filterOptions?.length ?? 0) <= 2);
+}
+
+// ioiti-ui: a button of the filter group, as Elastic UI's EuiFilterButton: the group's border around it, a
+// divider between two, its ends rounded as the group is.
+const FILTER_BUTTON =
+  'inline-flex h-8 shrink-0 items-center gap-1.5 px-3 text-xs whitespace-nowrap transition-colors cursor-pointer first:rounded-l-[calc(var(--radius-lg)-1px)] last:rounded-r-[calc(var(--radius-lg)-1px)] hover:bg-surface-hover/60';
+const FILTER_BUTTON_IDLE = 'text-muted-foreground hover:text-foreground';
+// What is on, in the accent where the theme has one (accent:).
+const FILTER_BUTTON_ON = 'text-foreground font-medium accent:text-brand-text';
+
+// ioiti-ui: how many options a list has (subdued), or how many are ticked (bright): EUI's numFilters and
+// numActiveFilters.
+const FILTER_COUNT = 'inline-grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-medium tabular-nums';
+const FILTER_COUNT_ALL = 'bg-foreground/10 text-foreground';
+const FILTER_COUNT_TICKED = 'bg-foreground text-background accent:bg-brand accent:text-brand-foreground';
+
+/** ioiti-ui: from this many options, a list has a search of its own. */
+const FILTER_SEARCH_FROM = 8;
+const FILTER_LIST_WIDTH = 256;
+const FILTER_LIST_MARGIN = 8;
+
+/** ioiti-ui: a column's options as buttons of their own, pressed one at a time: an on/off pair (EUI's withNext). */
+function FilterToggles<T>({ column }: { column: ColumnDef<T> }) {
+  const { activeFilters, setFilter } = useDataTable<T>();
+  const chosen = activeFilters[column.id] ?? [];
+  return (
+    <>
+      {column.filterOptions?.map((option) => {
+        const pressed = chosen.includes(option.value);
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={pressed}
+            // Which column it filters, said to screen readers: the label alone shows it.
+            aria-label={`${column.header}: ${option.label}`}
+            onClick={() => setFilter(column.id, pressed ? [] : [option.value])}
+            className={cn(FILTER_BUTTON, pressed ? cn(FILTER_BUTTON_ON, 'bg-foreground/[0.06] accent:bg-brand-soft') : FILTER_BUTTON_IDLE)}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </>
+  );
+}
+
+interface FilterListPlace {
+  left: number;
+  top?: number;
+  bottom?: number;
+  maxHeight: number;
+  below: boolean;
+}
+
+/**
+ * ioiti-ui: a column's options in a list that opens from its button (EUI's EuiFilterButton in a popover, with
+ * a searchable list): each ticked or not, with the rows it would leave. Drawn in document.body at fixed
+ * coordinates under its button, or above it where the window has no room below: the table's frame cuts what
+ * overflows it. The focus goes in when it opens; Escape, or a Tab past its ends, gives it back to the button;
+ * a click elsewhere, a scroll or a resize close it.
+ */
+function FilterList<T>({ column }: { column: ColumnDef<T> }) {
+  const { activeFilters, toggleFilter, setFilter, countOptions } = useDataTable<T>();
+  const options = column.filterOptions ?? [];
+  const chosen = activeFilters[column.id] ?? [];
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [place, setPlace] = useState<FilterListPlace | null>(null);
+  const id = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const searchable = options.length >= FILTER_SEARCH_FROM;
+  const counts = open ? countOptions(column.id) : {};
+  // Every word typed is in the option's label.
+  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const listed = options.filter((option) => words.every((word) => option.label.toLowerCase().includes(word)));
+
+  const close = (giveBackFocus: boolean) => {
+    setOpen(false);
+    setQuery('');
+    // Placed again when it opens again: the button may have moved.
+    setPlace(null);
+    if (giveBackFocus) buttonRef.current?.focus();
+  };
+
+  useLayoutEffect(() => {
+    if (!open || !buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    const roomBelow = window.innerHeight - rect.bottom - FILTER_LIST_MARGIN;
+    const roomAbove = rect.top - FILTER_LIST_MARGIN;
+    const width = Math.min(FILTER_LIST_WIDTH, window.innerWidth - FILTER_LIST_MARGIN * 2);
+    const left = Math.min(Math.max(rect.left, FILTER_LIST_MARGIN), window.innerWidth - width - FILTER_LIST_MARGIN);
+    const below = roomBelow >= 240 || roomBelow >= roomAbove;
+    setPlace(
+      below
+        ? { left, top: rect.bottom + 6, maxHeight: roomBelow - 6, below }
+        : { left, bottom: window.innerHeight - rect.top + 6, maxHeight: roomAbove - 6, below }
+    );
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !place) return;
+    panelRef.current?.querySelector<HTMLElement>('input')?.focus();
+  }, [open, place]);
+
+  useEffect(() => {
+    if (!open) return;
+    const inside = (target: EventTarget | null) =>
+      target instanceof Node && (!!panelRef.current?.contains(target) || !!buttonRef.current?.contains(target));
+    const pointerDown = (event: PointerEvent) => {
+      if (!inside(event.target)) close(false);
+    };
+    // Not its own list scrolling.
+    const scroll = (event: Event) => {
+      if (!(event.target instanceof Node && panelRef.current?.contains(event.target))) close(false);
+    };
+    const resize = () => close(false);
+    document.addEventListener('pointerdown', pointerDown);
+    window.addEventListener('scroll', scroll, true);
+    window.addEventListener('resize', resize);
+    return () => {
+      document.removeEventListener('pointerdown', pointerDown);
+      window.removeEventListener('scroll', scroll, true);
+      window.removeEventListener('resize', resize);
+    };
+  }, [open]);
+
+  const onPanelKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      // Its own: not a sheet's or a dialog's around the table.
+      event.preventDefault();
+      event.stopPropagation();
+      close(true);
+      return;
+    }
+    if (event.key !== 'Tab' || !panelRef.current) return;
+    const stops = Array.from(panelRef.current.querySelectorAll<HTMLElement>('input, button')).filter((stop) => !stop.hasAttribute('disabled'));
+    const leaving = event.shiftKey ? document.activeElement === stops[0] : document.activeElement === stops[stops.length - 1];
+    if (leaving) {
+      event.preventDefault();
+      close(true);
+    }
+  };
+
+  const clearColumn = () => {
+    setFilter(column.id, []);
+    // The button pressed goes: the focus stays in the list, on its first option.
+    panelRef.current?.querySelector<HTMLInputElement>('input[type="checkbox"]')?.focus();
+  };
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-expanded={open}
+        aria-controls={open ? `${id}-list` : undefined}
+        onClick={() => (open ? close(false) : setOpen(true))}
+        className={cn(FILTER_BUTTON, chosen.length > 0 ? FILTER_BUTTON_ON : FILTER_BUTTON_IDLE, open && 'bg-surface-hover/60')}
+      >
+        {column.header}
+        <span aria-hidden className={cn(FILTER_COUNT, chosen.length > 0 ? FILTER_COUNT_TICKED : FILTER_COUNT_ALL)}>
+          {chosen.length > 0 ? chosen.length : options.length}
+        </span>
+        <span className="sr-only">
+          {chosen.length > 0 ? `, ${chosen.length} of ${options.length} chosen` : `, ${options.length} options`}
+        </span>
+        <ChevronDown aria-hidden className={cn('size-3 shrink-0 transition-transform', open && 'rotate-180')} />
+      </button>
+      {createPortal(
+        <AnimatePresence>
+          {open && place && (
+            <motion.div
+              ref={panelRef}
+              id={`${id}-list`}
+              role="group"
+              aria-label={`Filter by ${column.header}`}
+              onKeyDown={onPanelKeyDown}
+              initial={{ opacity: 0, scale: 0.98, y: place.below ? -4 : 4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98, transition: motionTransitions.easeExit }}
+              transition={motionTransitions.springSnappy}
+              style={{
+                left: place.left,
+                top: place.top,
+                bottom: place.bottom,
+                width: Math.min(FILTER_LIST_WIDTH, window.innerWidth - FILTER_LIST_MARGIN * 2),
+                maxHeight: place.maxHeight,
+                transformOrigin: place.below ? 'top left' : 'bottom left',
+              }}
+              className="fixed z-50 flex flex-col overflow-hidden rounded-xl border border-border bg-surface text-foreground shadow-elevated font-sans select-none glass-float"
+            >
+              {searchable && (
+                <div className="border-b border-border/60 p-2">
+                  <div className="relative">
+                    <Search aria-hidden className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="search"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      aria-label={`Search the options of ${column.header}`}
+                      placeholder="Search…"
+                      className="w-full rounded-lg border border-border/60 bg-surface-raised/20 py-1.5 pl-8 pr-2 text-xs text-foreground placeholder:text-muted-foreground transition-colors focus:border-border"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="min-h-0 flex-1 overflow-y-auto p-1.5">
+                {listed.length === 0 ? (
+                  <p className="px-2 py-3 text-xs text-muted-foreground">No option matches.</p>
+                ) : (
+                  listed.map((option) => {
+                    const ticked = chosen.includes(option.value);
+                    const count = counts[option.value] ?? 0;
+                    return (
+                      <label
+                        key={option.value}
+                        className={cn(
+                          'flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-xs hover:bg-surface-hover/60',
+                          // An option that would leave no row, unless ticked, recedes.
+                          count === 0 && !ticked ? 'text-muted-foreground' : 'text-foreground'
+                        )}
+                      >
+                        <DrawCheckbox checked={ticked} onChange={() => toggleFilter(column.id, option.value)} />
+                        <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                        <span aria-hidden className="tabular-nums text-muted-foreground">
+                          {count}
+                        </span>
+                        <span className="sr-only">, {count === 1 ? '1 row' : `${count} rows`}</span>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+              {chosen.length > 0 && (
+                <div className="border-t border-border/60 p-1.5">
+                  <button
+                    type="button"
+                    onClick={clearColumn}
+                    className="w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-surface-hover/60 hover:text-foreground"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
+  );
+}
+
+/**
+ * ioiti-ui: the filters as Elastic UI's filter group (EuiFilterGroup, EuiFilterButton), written from its
+ * documentation (none of its code): one bar of buttons joined together, a column that filters a button, or an
+ * on/off pair; then a way to clear them. EasyUI showed every option of every column at once.
+ */
 export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className }) => {
-  const { columns, activeFilters, toggleFilter, clearFilters } = useDataTable();
+  const { columns, activeFilters, clearFilters } = useDataTable();
 
   const filterableColumns = columns.filter((c) => c.filterable && c.filterOptions && c.filterOptions.length > 0);
   const activeCount = Object.values(activeFilters).reduce((sum, vals) => sum + vals.length, 0);
@@ -314,35 +605,12 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className })
   if (filterableColumns.length === 0) return null;
 
   return (
-    <div className={cn('px-4 py-2 sm:px-7 sm:py-2.5 border-b border-border/50 bg-surface-raised/15 flex items-center gap-2 sm:gap-2.5 text-xs overflow-x-auto scrollbar-none sm:flex-wrap font-sans select-none', className)}>
-      <span className="text-xs text-muted-foreground font-normal shrink-0">Filters:</span>
-
-      {filterableColumns.map((col) => {
-        const selectedValues = activeFilters[col.id] || [];
-        return (
-          <div key={col.id} className="flex items-center gap-1 bg-surface-raised/30 border border-border/50 p-0.5 rounded-lg shrink-0 sm:shrink sm:flex-wrap sm:max-w-full">
-            <span className="text-xs text-muted-foreground px-2 font-normal">{col.header}:</span>
-            {col.filterOptions?.map((opt) => {
-              const isSelected = selectedValues.includes(opt.value);
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => toggleFilter(col.id, opt.value)}
-                  className={cn(
-                    'px-2 py-0.5 rounded-md text-xs font-normal transition-colors cursor-pointer',
-                    isSelected
-                      ? 'bg-foreground text-background font-medium accent:bg-brand accent:text-brand-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover/50'
-                  )}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
-        );
-      })}
+    <div className={cn('px-4 py-2 sm:px-7 sm:py-2.5 border-b border-border/50 bg-surface-raised/15 flex items-center gap-2 sm:gap-3 text-xs overflow-x-auto scrollbar-none font-sans select-none', className)}>
+      <div role="group" aria-label="Filters" className="flex shrink-0 items-stretch divide-x divide-border/60 rounded-lg border border-border/60 bg-surface-raised/20">
+        {filterableColumns.map((col) =>
+          drawnAsToggles(col) ? <FilterToggles key={col.id} column={col} /> : <FilterList key={col.id} column={col} />
+        )}
+      </div>
 
       {activeCount > 0 && (
         <button
@@ -350,7 +618,7 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className })
           onClick={clearFilters}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors ml-auto shrink-0 cursor-pointer"
         >
-          Reset ({activeCount})
+          Clear filters
         </button>
       )}
     </div>
@@ -992,6 +1260,32 @@ export function DataTable<T = any>({
     setCurrentPage(1);
   };
 
+  // ioiti-ui: a column's filter set at once: an option of a pair pressed, the other let go; a list cleared.
+  const setFilter = (columnId: string, values: string[]) => {
+    setActiveFilters((prev) => ({ ...prev, [columnId]: values }));
+    setCurrentPage(1);
+  };
+
+  // ioiti-ui: the rows each option of a column's filter would leave: the search and the other columns'
+  // filters as they are, this column's own left out, its options being alternatives to one another.
+  const countOptions = (columnId: string) => {
+    const counts: Record<string, number> = {};
+    const column = columns.find((c) => c.id === columnId);
+    if (!column) return counts;
+    const query = searchTerm.toLowerCase();
+    const others = Object.entries(activeFilters).flatMap(([id, values]) => {
+      const other = id !== columnId && values.length > 0 ? columns.find((c) => c.id === id) : undefined;
+      return other ? [{ column: other, values }] : [];
+    });
+    for (const row of data) {
+      if (searchTerm.trim() && !searchFinds(row, query)) continue;
+      if (!others.every((other) => other.values.includes(filterValue(row, other.column)))) continue;
+      const value = filterValue(row, column);
+      counts[value] = (counts[value] ?? 0) + 1;
+    }
+    return counts;
+  };
+
   const toggleRowSelection = (id: string) => {
     setSelectedRowIds((prev) => {
       const next = new Set(prev);
@@ -1023,15 +1317,10 @@ export function DataTable<T = any>({
   const filteredData = useMemo(() => {
     let result = [...data];
 
+    // ioiti-ui: the search's and the filters' rules shared with the counts of the filters' options.
     if (searchTerm.trim()) {
       const query = searchTerm.toLowerCase();
-      result = result.filter((row: any) =>
-        Object.values(row).some((val) =>
-          typeof val === 'string' || typeof val === 'number'
-            ? String(val).toLowerCase().includes(query)
-            : false
-        )
-      );
+      result = result.filter((row) => searchFinds(row, query));
     }
 
     Object.entries(activeFilters).forEach(([colId, filterVals]) => {
@@ -1039,14 +1328,7 @@ export function DataTable<T = any>({
       const col = columns.find((c) => c.id === colId);
       if (!col) return;
 
-      result = result.filter((row: any) => {
-        const val = col.accessorKey
-          ? row[col.accessorKey]
-          : col.accessorFn
-          ? col.accessorFn(row)
-          : '';
-        return filterVals.includes(String(val));
-      });
+      result = result.filter((row) => filterVals.includes(filterValue(row, col)));
     });
 
     if (sortColumn && sortDirection) {
@@ -1132,6 +1414,8 @@ export function DataTable<T = any>({
     activeFilters,
     toggleFilter,
     clearFilters,
+    setFilter,
+    countOptions,
     selectable,
     selectedRowIds,
     isRowSelectable,

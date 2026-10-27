@@ -7,7 +7,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
 A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain. A check box whose mark
 draws itself, and a sheet that can push the page aside. And motion, calm and the same everywhere: a page and a
-look that change in one cross-fade, toasts that leave, and one motion for everything in front of the page.
+look that change in one cross-fade, toasts that leave, and one motion for everything in front of the page. And
+the data tables' filters as Elastic UI's filter group.
 
 - **Bloom**: the flyer's orchid on what is chosen, current or primary, on links, the focus ring and one-series
   charts, as every accent's colour. A filled button and the application's mark take the flyer's gradient
@@ -72,12 +73,20 @@ look that change in one cross-fade, toasts that leave, and one motion for everyt
   its pages, keeps it above a change of page. It only adds: the reference blocks of the design hold.
 - **The gallery**: the Motion page shows the curves in CSS, a change of page and of look, what moves within a
   page and the motion of what floats.
+- **The data tables' filters as one group of buttons** (`AdvancedDataTable`, `DataTableFilters`), as Elastic UI's
+  filter group: a button for each column that filters, joined in one bar, saying how many options it has or how
+  many are ticked. It opens its options in a list to tick, each with the rows it would leave under the search and
+  the other filters, with a search of its own from eight options; a column of two options is an on/off pair,
+  pressed one at a time. `ColumnDef`'s `filterDisplay` (`auto`, `list`, `toggle`) chooses; "Clear filters"
+  clears them all. `useDataTable()` gives `setFilter` and `countOptions`. Shown on the gallery's Data display
+  page, the orders filtered by customer, status and channel.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
 its props: the new box comes with the update. So does the motion, on React 19.3 at least: an application on
-React 19.2 updates `react` and `react-dom`. `IoitiProvider reducedMotion="always"` reduces it everywhere. No
-name was added to the package's interface.
+React 19.2 updates `react` and `react-dom`. `IoitiProvider reducedMotion="always"` reduces it everywhere. A
+table's filters change their look: a column of two options becomes an on/off pair (`filterDisplay: 'list'`
+keeps it a list), and `initialFilters` works as before. No name was added to the package's interface.
 
 ## [0.2.1] - 2026-10-27
 
