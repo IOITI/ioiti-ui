@@ -6,7 +6,7 @@ import type { HtmlTagDescriptor, Plugin, UserConfig } from 'vite'
 
 // The accents and materials of src/lib/theme.ts, which this Node-side module cannot import (its
 // tests hold the two lists equal).
-const ACCENTS = ['neutral', 'violet', 'indigo', 'blue'] as const
+const ACCENTS = ['neutral', 'violet', 'indigo', 'blue', 'bloom'] as const
 const MATERIALS = ['flat', 'glass'] as const
 
 export interface IoitiPluginOptions {

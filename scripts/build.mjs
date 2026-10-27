@@ -1,6 +1,6 @@
-// Builds dist/: the TypeScript of src/ compiled file by file (tsc), the stylesheets and the
-// pre-paint theme script copied as they are (they stay Tailwind's source, compiled by each
-// application's own Tailwind). With --watch, keeps doing it as files change.
+// Builds dist/: the TypeScript of src/ compiled file by file (tsc), the stylesheets, the images
+// they name (the grains) and the pre-paint theme script copied as they are (they stay Tailwind's
+// source, compiled by each application's own Tailwind). With --watch, keeps doing it as files change.
 import { spawn, spawnSync } from 'node:child_process'
 import { copyFileSync, mkdirSync, readdirSync, rmSync, watch } from 'node:fs'
 import { createRequire } from 'node:module'
@@ -14,7 +14,7 @@ const watching = process.argv.includes('--watch')
 function copyAssets() {
   mkdirSync(join(root, 'dist/styles'), { recursive: true })
   for (const name of readdirSync(join(root, 'src/styles'))) {
-    if (name.endsWith('.css')) copyFileSync(join(root, 'src/styles', name), join(root, 'dist/styles', name))
+    if (/\.(css|svg)$/.test(name)) copyFileSync(join(root, 'src/styles', name), join(root, 'dist/styles', name))
   }
   copyFileSync(join(root, 'src/theme.js'), join(root, 'dist/theme.js'))
 }
@@ -28,7 +28,7 @@ if (watching) {
   }
   for (const folder of ['src/styles', 'src']) {
     watch(join(root, folder), (_event, name) => {
-      if (name && (name.endsWith('.css') || name === 'theme.js')) copyAssets()
+      if (name && (/\.(css|svg)$/.test(name) || name === 'theme.js')) copyAssets()
     })
   }
 } else {

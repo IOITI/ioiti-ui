@@ -10,13 +10,15 @@ import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 import { useTheme } from './theme-context.js'
 
-// Each accent's fill in both themes, as src/styles/accents.css gives it (a test holds them to it).
-// Neutral's is ink, the primary colour of the design as it was.
+// Each accent's fill in both themes, as src/styles/accents.css gives it, and its gradient over it where it
+// has one (a test holds them to it). Neutral's is ink, the primary colour of the design as it was.
 const ACCENT_SWATCH: Record<Accent, string> = {
   neutral: 'bg-[var(--text-primary)]',
   violet: 'bg-[#7c3aed] dark:bg-[#a78bfa]',
   indigo: 'bg-[#4f46e5] dark:bg-[#818cf8]',
   blue: 'bg-[#2563eb] dark:bg-[#60a5fa]',
+  bloom:
+    'bg-[#c2398b] dark:bg-[#f39ac8] bg-linear-110/srgb from-[#d58ecf] via-[#e77ab5] to-[#fa8749] dark:from-[#f0b5e2] dark:via-[#f39ac8] dark:to-[#fca676]',
 }
 
 const MATERIAL_SWATCH: Record<Material, string> = {

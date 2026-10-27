@@ -44,7 +44,8 @@ const PACKAGE_ONLY = [
 ]
 
 // The design itself, as the built CSS writes it: the light page and secondary text, the dark
-// palette, the contrast fixes, a chart ramp, the global focus ring; an accent and the glass material.
+// palette, the contrast fixes, a chart ramp, the global focus ring; the accents, a gradient one too,
+// and the glass material.
 const DESIGN = [
   ':root:not(.dark){--background:#fafafa;--muted-foreground:#676772}',
   '.dark{--bg:#111113;',
@@ -52,8 +53,12 @@ const DESIGN = [
   '--chart-funnel-1:#1e40af',
   ':focus-visible:not([tabindex="-1"]){outline:2px solid var(--focus-ring);outline-offset:2px}',
   ':root[data-accent=violet]:not(.dark){--brand:#7c3aed;',
+  ':root[data-accent=bloom]:not(.dark){--brand:#c2398b;',
   '.glass-float:is(:root[data-material=glass] *){background-color:var(--glass-float);',
 ]
+
+// The images the stylesheets name: the grains of the bloom accent.
+const GRAINS = ['grain-white', 'grain-black']
 
 const FILES = [
   'package.json',
@@ -69,6 +74,7 @@ const FILES = [
   'dist/styles/theme.css',
   'dist/styles/accents.css',
   'dist/styles/glass.css',
+  ...GRAINS.map((grain) => `dist/styles/${grain}.svg`),
   'dist/theme.js',
   'dist/vite/index.js',
   'dist/vite/index.d.ts',
@@ -122,6 +128,11 @@ try {
 
   const fonts = assets.filter((name) => name.endsWith('.woff2'))
   check(fonts.length === 11, `the 11 font files are written as files (${fonts.length})`)
+  for (const grain of GRAINS) {
+    const file = assets.find((name) => name.startsWith(`${grain}-`) && name.endsWith('.svg'))
+    const named = Boolean(file) && new RegExp(`url\\(["']?/assets/${file}["']?\\)`).test(css)
+    check(named, `${grain}.svg is written as a file, and the CSS names it there${file ? ` (${file})` : ''}`)
+  }
   check(!/url\(\s*["']?data:/.test(css) && !`${css}${js}`.includes('data:font'), 'nothing is inlined as a data: URI (font-src and img-src stay at self)')
 
   const html = readFileSync(join(dist, 'index.html'), 'utf8')

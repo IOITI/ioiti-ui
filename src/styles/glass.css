@@ -23,7 +23,8 @@
    Fields, rows and buttons stay solid. A dialog's scrim is lighter than the
    design's (--glass-scrim): the dialog's glass shows what is under it. With an
    accent, the backdrop's first wash, the reflection and the floats' glow take
-   its colour (accents.css).
+   its colour (accents.css); an accent that gives the other washes too (bloom)
+   is the whole backdrop, its grain over it.
 
    Light values under :root[data-material="glass"]:not(.dark), dark ones under
    :root[data-material="glass"].dark, what both share under
@@ -93,13 +94,14 @@
 }
 
 /* The backdrop: the page itself, which never scrolls under the shell (its main column does). With an
-   accent, the first wash is the accent's. */
+   accent, each wash it gives is the accent's (the first, or all three), and its grain lies over them. */
 :root[data-material="glass"] body {
   background-color: var(--glass-base);
   background-image:
+    var(--brand-grain, none),
     radial-gradient(52rem 38rem at 8% -6%, var(--brand-wash, var(--glass-tint-1)), transparent 70%),
-    radial-gradient(46rem 34rem at 96% 4%, var(--glass-tint-2), transparent 70%),
-    radial-gradient(54rem 40rem at 72% 104%, var(--glass-tint-3), transparent 70%);
+    radial-gradient(46rem 34rem at 96% 4%, var(--brand-wash-2, var(--glass-tint-2)), transparent 70%),
+    radial-gradient(54rem 40rem at 72% 104%, var(--brand-wash-3, var(--glass-tint-3)), transparent 70%);
   background-attachment: fixed;
 }
 

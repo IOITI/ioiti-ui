@@ -60,6 +60,15 @@ describe('the stylesheets, as an application builds them', () => {
     expect(at('.accent\\:hover\\:bg-brand-soft:is')).toBeGreaterThan(at('.dark\\:hover\\:bg-neutral-800:is'))
   })
 
+  it('draw an accent\'s gradient over a filled control, and the text it takes, where the accent has one', async () => {
+    const css = await build(['accent:bg-brand', 'accent:bg-(image:--brand-fill)', 'accent:text-brand-fill-foreground'])
+    const rule = (selector: string) => /\{([^{}]*)\}/.exec(css.slice(css.indexOf(selector)))?.[1] ?? ''
+
+    expect(rule('.accent\\:bg-\\(image\\:--brand-fill\\):is(:root[data-accent] *)')).toContain('background-image: var(--brand-fill)')
+    // An accent without a gradient: its fill's own text.
+    expect(rule('.accent\\:text-brand-fill-foreground:is(:root[data-accent] *)')).toContain('color: var(--brand-fill-foreground, var(--brand-foreground))')
+  })
+
   it('turn a surface to glass only where the material is glass, and blur only what floats', async () => {
     const css = await build(['glass-bar', 'glass-card', 'glass-float', 'glass:bg-black/20'])
     const rule = (utility: string) => /\{([^{}]*)\}/.exec(css.slice(css.indexOf(`.${utility}:is(:root[data-material="glass"] *)`)))?.[1] ?? ''

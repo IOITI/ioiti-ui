@@ -87,6 +87,8 @@ export function applyTheme(theme: Theme, root: HTMLElement = document.documentEl
 /**
  * The accent: the colour of what is chosen, current or primary. `neutral` is the design as it was
  * (ink); the others are presets, checked for contrast in both themes (src/styles/accents.css).
+ * `bloom` is a flyer's grainy gradient: its orchid, the gradient on a filled button and the
+ * application's mark, and under glass the flyer as the backdrop.
  *
  * The material: `flat`, the surfaces as they were, or `glass`, translucent over a colour backdrop
  * (src/styles/glass.css).
@@ -95,7 +97,7 @@ export function applyTheme(theme: Theme, root: HTMLElement = document.documentEl
  * written on <html> before the first paint); a person's choice (LookPicker) wins over it and is
  * kept beside the theme's, under the same key. The first of each list writes nothing on <html>.
  */
-export const ACCENTS = ['neutral', 'violet', 'indigo', 'blue'] as const
+export const ACCENTS = ['neutral', 'violet', 'indigo', 'blue', 'bloom'] as const
 export type Accent = (typeof ACCENTS)[number]
 export const MATERIALS = ['flat', 'glass'] as const
 export type Material = (typeof MATERIALS)[number]
@@ -179,7 +181,7 @@ export function applyMaterial(material: Material, root: HTMLElement = document.d
   else root.setAttribute(MATERIAL_ATTRIBUTE, material)
 }
 
-export const ACCENT_LABEL: Record<Accent, string> = { neutral: 'Neutral', violet: 'Violet', indigo: 'Indigo', blue: 'Blue' }
+export const ACCENT_LABEL: Record<Accent, string> = { neutral: 'Neutral', violet: 'Violet', indigo: 'Indigo', blue: 'Blue', bloom: 'Bloom' }
 export const MATERIAL_LABEL: Record<Material, string> = { flat: 'Flat', glass: 'Glass' }
 
 /** What the picker's button says: what it is for, and what is shown ("Accent and material: violet, glass"). */

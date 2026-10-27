@@ -51,7 +51,11 @@ otherwise).
   `color` is given; the page shown in the sidebar and its dot; the traced links of `dependency-trace` (a node's
   health ring keeps its colour), the progress and nodes of `interactive-timeline` (EasyUI's blue), the
   heatmap's active cell. The tones (success, warning, danger, info) keep their colours: gain and loss are said
-  by them. One-series charts and funnels take the accent through their tokens.
+  by them. One-series charts and funnels take the accent through their tokens. Where the accent has a
+  gradient (bloom), `button`'s filled variants draw it over the fill, under its grain, with the text it takes
+  (`accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground`). The split button's primary keeps the
+  fill, as each of its two halves would start the gradient again, and so do the primary actions of
+  `selection-basket` and `smart-comparison`, whose hover is the fill's own colour.
 - **Glass.** Under the glass material (`data-material="glass"` on `<html>`, src/styles/glass.css), a surface
   turns to glass through a utility that does nothing otherwise, after EasyUI's classes, which stay: `glass-bar`
   for the sidebar; `glass-card` for `stat-card`, the frames of `advanced-data-table` and `ai-agent-activity`,

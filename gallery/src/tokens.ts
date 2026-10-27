@@ -189,6 +189,67 @@ export function colourOf(tokens: Record<string, string>, name: string): Rgba | n
   return parseColor(valueOf(tokens, name) ?? '')
 }
 
+/** What a list holds at its top level, split at its commas (not those inside a function's parentheses). */
+function items(list: string): string[] {
+  const found: string[] = []
+  let depth = 0
+  let start = 0
+  for (let at = 0; at < list.length; at++) {
+    if (list[at] === '(') depth++
+    else if (list[at] === ')') depth--
+    else if (list[at] === ',' && depth === 0) {
+      found.push(list.slice(start, at).trim())
+      start = at + 1
+    }
+  }
+  return [...found, list.slice(start).trim()]
+}
+
+/**
+ * Every colour a `linear-gradient()` of opaque stops shows: its stops, and nine points between each
+ * two, mixed in sRGB as the browser mixes them when the gradient names no colour space (a mix can be
+ * darker than both its ends). Where a stop stands changes where its colours are, not which: left out.
+ * Empty for anything else.
+ */
+export function gradientColours(value: string | undefined): Rgba[] {
+  const inner = /^linear-gradient\(([\s\S]+)\)$/.exec(value?.trim() ?? '')?.[1]
+  if (!inner) return []
+  // An angle or a direction is no colour.
+  const stops = items(inner).flatMap((item) => {
+    const colour = parseColor(item.replace(/(\s+-?[\d.]+%)+$/, ''))
+    return colour ? [colour] : []
+  })
+  return stops.flatMap((stop, index) => {
+    const next = stops[index + 1]
+    if (!next) return [stop]
+    const mix = (t: number) => ({ r: stop.r + (next.r - stop.r) * t, g: stop.g + (next.g - stop.g) * t, b: stop.b + (next.b - stop.b) * t, a: 1 })
+    return [stop, ...Array.from({ length: 9 }, (_, step) => mix((step + 1) / 10))]
+  })
+}
+
+/**
+ * The grains (src/styles/grain-*.svg): fine noise of one colour, from clear to opaque, the whole laid
+ * at its rect's opacity. Each is read as its speck at its strongest: that colour at that opacity
+ * (the tests hold each to its file).
+ */
+export const GRAINS: Record<string, Rgba> = {
+  'grain-white.svg': { r: 1, g: 1, b: 1, a: 0.14 },
+  'grain-black.svg': { r: 0, g: 0, b: 0, a: 0.14 },
+}
+
+/** The grain a look lays over its fill and its backdrop (--brand-grain), as its speck; none where it has none. */
+export function grainOf(tokens: Record<string, string>): Rgba | undefined {
+  const file = /url\(["']?(?:[^"')]*\/)?([^/"')]+)["']?\)/.exec(tokens['--brand-grain'] ?? '')?.[1]
+  if (file === undefined) return undefined
+  if (!GRAINS[file]) throw new Error(`${file}: a grain the contrast tests do not know (GRAINS)`)
+  return GRAINS[file]
+}
+
+/** Colours under a grain: each as it is, and under the grain's speck. */
+function grained(colours: Rgba[], speck: Rgba | undefined): Rgba[] {
+  return speck ? colours.flatMap((colour) => [colour, over(speck, colour)]) : colours
+}
+
 /** The surfaces text is read on, and the text colours the design promises 4.5:1 on all of them. */
 export const SURFACES = ['--background', '--bg', '--surface', '--surface-raised', '--surface-hover']
 export const TEXTS = [
@@ -235,8 +296,9 @@ export const GLASS_SURFACES = ['--glass-float', '--glass-bar', '--glass-card']
 /**
  * What text and marks are read on in a look, each surface as the colours it can show. An opaque
  * surface is one colour. Glass shows the backdrop through it: the page's base, and the strongest point
- * of each wash over it (the accent's in place of the first, as glass.css paints it), a dialog its scrim
- * too. Text set straight on the page is read on the backdrop itself.
+ * of each wash over it (the accent's in place of each it gives, as glass.css paints them), under the
+ * accent's grain where it has one; a dialog its scrim too. Text set straight on the page is read on the
+ * backdrop itself.
  */
 export function lookSurfaces(tokens: Record<string, string>, look: Look): Record<string, Rgba[]> {
   const surfaces: Record<string, Rgba[]> = {}
@@ -247,11 +309,15 @@ export function lookSurfaces(tokens: Record<string, string>, look: Look): Record
   if (look.material !== 'glass') return surfaces
   const base = colourOf(tokens, '--glass-base')
   if (!base) return surfaces
-  const washes = [look.accent === 'neutral' ? '--glass-tint-1' : '--brand-wash', '--glass-tint-2', '--glass-tint-3']
-  const backdrop = [base, ...washes.flatMap((wash) => {
-    const colour = colourOf(tokens, wash)
+  const washes = [
+    ['--brand-wash', '--glass-tint-1'],
+    ['--brand-wash-2', '--glass-tint-2'],
+    ['--brand-wash-3', '--glass-tint-3'],
+  ].flatMap(([accent, glass]) => {
+    const colour = colourOf(tokens, accent) ?? colourOf(tokens, glass)
     return colour ? [over(colour, base)] : []
-  })]
+  })
+  const backdrop = grained([base, ...washes], grainOf(tokens))
   surfaces.backdrop = backdrop
   // Each surface as it is, and where its light and its reflection are strongest.
   const lights = ['--glass-shine', '--glass-reflection'].flatMap((name) => {
@@ -276,7 +342,8 @@ export function lookSurfaces(tokens: Record<string, string>, look: Look): Record
 /**
  * Every pair a look must hold, at its worst over the colours a surface can show: each text colour (the
  * accent's too) on each surface; with an accent, its text on the tint of a chosen item over each
- * surface, the text on its fill, and its fill against each surface; the focus ring against each.
+ * surface, the text on its fill (on every point of its gradient too, under its grain), and its fill
+ * against each surface; the focus ring against each. The gradient is no mark: not held against them.
  */
 export function lookPairs(tokens: Record<string, string>, look: Look): LookPair[] {
   const surfaces = Object.entries(lookSurfaces(tokens, look))
@@ -294,5 +361,10 @@ export function lookPairs(tokens: Record<string, string>, look: Look): LookPair[
   if (soft) add('--brand-text', 4.5, surfaces.map(([surface, under]) => [`--brand-soft on ${surface}`, under.map((colour) => over(soft, colour))]))
   const fill = colourOf(tokens, '--brand')
   if (fill) add('--brand-foreground', 4.5, [['--brand', [fill]]])
+  const gradient = gradientColours(valueOf(tokens, '--brand-gradient'))
+  if (gradient.length) {
+    const text = tokens['--brand-fill-foreground'] === undefined ? '--brand-foreground' : '--brand-fill-foreground'
+    add(text, 4.5, [['--brand-gradient', grained(gradient, grainOf(tokens))]])
+  }
   return pairs
 }

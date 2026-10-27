@@ -4,13 +4,13 @@ IOITI's design system: the design tokens, the React components and the applicati
 interface, as a package any application can install. React 19, Tailwind CSS 4, framer-motion, lucide-react.
 
 - **Themes**: light and dark, each a full set of tokens; with them an accent (neutral, the design as it was,
-  or violet, indigo, blue) and a material (flat, or glass). The page follows the system until a theme is
-  chosen, shows the application's accent and material until a person picks others, and is painted in its look
-  from the first frame.
+  or violet, indigo, blue, bloom: a printed flyer's grainy gradient) and a material (flat, or glass). The page
+  follows the system until a theme is chosen, shows the application's accent and material until a person
+  picks others, and is painted in its look from the first frame.
 - **117 components** (counting their parts): 44 of EasyUI's, reworked for the keyboard, screen readers,
   phones and a light theme; the blocks pages are made of (panels, tiles, tables, fields); and the shell
   (sidebar, top bar, the trail of where a page is).
-- **Checked**: every text colour is 4.5:1 on every surface of every look (16), one focus ring everywhere, links
+- **Checked**: every text colour is 4.5:1 on every surface of every look (20), one focus ring everywhere, links
   that open in another tab, nothing loaded from another origin (a strict Content-Security-Policy holds).
 
 The gallery shows all of it, in every look: https://ioiti.github.io/ioiti-ui/ (`main`'s, published by CI once every
@@ -128,7 +128,10 @@ it was, and the default.
 
 - **An accent** colours what is chosen, current or primary (a filled button, a checked box, a switch on, the
   day picked, the page in the menu, a progress), links, the focus ring and one-series charts: `violet`,
-  `indigo` or `blue`. The tones of gain, loss and warning keep their colours.
+  `indigo`, `blue` or `bloom`. The tones of gain, loss and warning keep their colours. Bloom is a printed
+  flyer's grainy gradient: its orchid on all of these, the gradient itself (lilac, pink, tangerine) under a
+  grain on a filled button and the application's mark, and with glass the flyer's pink, tangerine and mustard
+  as the backdrop.
 - **The glass material** turns the sidebar and the top bar, the panels and cards, and what floats over the page
   (popovers, menus, dialogs, toasts, tooltips) to glass, over a still backdrop of colour washes. Only what
   floats is blurred; fields, rows and buttons stay solid.
@@ -148,16 +151,17 @@ application's key; without it, every person sees the application's.
 
 An application's own classes follow them the way the components do: `accent:` and `glass:` variants (on
 `data-accent` and `data-material` of `<html>`), the accent's tokens (`bg-brand`, `text-brand-foreground`,
-`bg-brand-soft`, `text-brand-text`) and the glass's utilities (`glass-bar`, `glass-card`, `glass-float`).
-`useTheme()` says what is shown (`theme`, `accent`, `material`).
+`bg-brand-soft`, `text-brand-text`; for a filled, primary control, `bg-(image:--brand-fill)` and
+`text-brand-fill-foreground` after them, the accent's gradient where it has one) and the glass's utilities
+(`glass-bar`, `glass-card`, `glass-float`). `useTheme()` says what is shown (`theme`, `accent`, `material`).
 
 ## The rules of the design
 
 - **Two values for every colour.** A class that names a colour has its dark value beside it
   (`text-neutral-600 dark:text-neutral-400`), or goes through a token that has both (`text-muted-foreground`).
-- **Text is 4.5:1** on every surface of every look, glass over its backdrop's strongest colours included,
-  checked by the tests (the gallery's Colours page has the tables). One pair of the original palette is under:
-  dark `--text-subtle` on a hovered surface (4.44:1).
+- **Text is 4.5:1** on every surface of every look, glass over its backdrop's strongest colours and a grain at
+  its strongest speck included, checked by the tests (the gallery's Colours page has the tables). One pair of
+  the original palette is under: dark `--text-subtle` on a hovered surface (4.44:1).
 - **The accent after the neutral classes, glass by role**: what is chosen or primary keeps its classes and adds
   `accent:` ones; a surface adds `glass-bar`, `glass-card` or `glass-float`. With neutral and flat, nothing
   changes.

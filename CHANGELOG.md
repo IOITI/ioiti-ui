@@ -3,6 +3,32 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.3.0] - Unreleased
+
+A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain.
+
+- **Bloom**: the flyer's orchid on what is chosen, current or primary, on links, the focus ring and one-series
+  charts, as every accent's colour. A filled button and the application's mark take the flyer's gradient
+  itself, lilac to pink to tangerine, under a fine grain, with the page's ink on it in both themes. With
+  glass, the backdrop is the flyer: its pink, its tangerine and its mustard, grainy too. The grain's specks
+  are the page's own colour (white in light, black in dark): they never bring the backdrop nearer the text on
+  it. Text holds 4.5:1 on every surface of the 20 looks, on every point of the gradient, the grain's strongest
+  speck included; the funnel ramps passed the dataviz validator.
+- **Tokens** an accent with a gradient sets: `--brand-gradient`; `--brand-fill`, the gradient under its grain,
+  for `accent:bg-(image:--brand-fill)`; `--brand-fill-foreground`, the text on it, for
+  `accent:text-brand-fill-foreground` (the fill's own text where the accent has no gradient); `--brand-grain`;
+  and the backdrop's other washes, `--brand-wash-2` and `--brand-wash-3`.
+- **Two images**, `grain-white.svg` and `grain-black.svg`, beside `accents.css`, which names them: an
+  application's build writes them beside its own files, never inlined (`img-src 'self'` holds).
+- **`Button`'s filled variants (and `ButtonLink`) and `AppBrand`'s mark** draw the gradient where the accent has
+  one; with any other accent, nothing changes. `SplitButton`'s primary and the primary actions of
+  `SelectionBasket` and `SmartComparison` keep the accent's fill.
+- **The gallery**: bloom in the picker, the Themes, Colours and Chart colours pages; the contrast of the text on
+  the gradient in every look.
+
+An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
+`Accent` have one more value, which a `switch` naming every accent must handle.
+
 ## [0.2.1] - 2026-10-27
 
 Found while moving WATA's admin interface onto the package, the one place where it did not do what the

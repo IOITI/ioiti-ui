@@ -21,10 +21,11 @@ npm run preview    # serves dist/
   `index.html`, the `name` of `package.json`, `title` in `src/pages/LoginPage.tsx`.
 - **The theme's key**: `themeStorageKey` in `vite.config.ts`. One key per application, or two
   applications on one site share the theme chosen.
-- **The look**: an accent (`neutral`, `violet`, `indigo`, `blue`) and a material (`flat`, `glass`), given
-  beside the key, `ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })`: the
-  application's own, from the first paint. Each person can pick another with the palette button of the top
-  bar (`LookPicker`, in `src/router.tsx`), kept in their browser; take it out for one look for all.
+- **The look**: an accent (`neutral`, `violet`, `indigo`, `blue`, `bloom`) and a material (`flat`,
+  `glass`), given beside the key, `ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material:
+  'glass' })`: the application's own, from the first paint. Each person can pick another with the palette
+  button of the top bar (`LookPicker`, in `src/router.tsx`), kept in their browser; take it out for one
+  look for all.
 - **The menu**: `src/menu.tsx`. Each entry is a page; a page deeper than the menu (`/items/42`)
   stands under the entry its address starts with, and names itself with `PageHeader`.
 - **The pages**: `src/pages/`, routed in `src/router.tsx`. The data of `src/data.ts` are examples.

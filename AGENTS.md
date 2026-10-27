@@ -8,7 +8,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 
 | Path | Content |
 |---|---|
-| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own) |
+| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `grain-*.svg` (bloom's grains) |
 | `src/theme.js` | the pre-paint theme script, a file of its own (no inline script under a strict CSP) |
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
@@ -38,15 +38,20 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   gallery's test the contrast table. A change on purpose is a new reference (`scripts/golden-from.mjs`) and a
   line of CHANGELOG.md. `design.css`'s import order is load-bearing (`--border` and `--accent` are set twice).
 - **Two values for every colour** (`light dark:dark`, or a token with both); text at 4.5:1 on every surface of
-  every look (a theme, an accent, a material: 16). The one known exception is pinned in
-  `gallery/src/tokens.test.ts`, which composites glass over its backdrop before measuring.
+  every look (a theme, an accent, a material: 20). The one known exception is pinned in
+  `gallery/src/tokens.test.ts`, which composites glass over its backdrop, and a grain at its strongest speck,
+  before measuring.
 - **Accents and glass only add.** A look's tokens are in its own file, in blocks of one selector:
-  `:root[data-accent="…"]:not(.dark)` and `:root[data-accent="…"].dark` (the same for `data-material`), never a
-  rule in a layer (the reference holds the base layer whole), never an edit to a block of the design. A
-  component keeps its classes and adds `accent:` ones after them (the `brand` tokens), or `glass-bar`,
-  `glass-card`, `glass-float`. `glass-float` is the only blur: never on an element with a fixed child of its own
-  (a blur becomes its containing block), never on white text on ink. The tones (gain, loss, warning) keep their
-  colours.
+  `:root[data-accent="…"]:not(.dark)` and `:root[data-accent="…"].dark`, what both share under
+  `:root[data-accent="…"]` (the same for `data-material`), never a rule in a layer (the reference holds the base
+  layer whole), never an edit to a block of the design. A component keeps its classes and adds `accent:` ones
+  after them (the `brand` tokens), or `glass-bar`, `glass-card`, `glass-float`. A filled, primary control adds
+  `accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground`, the accent's gradient where it has one
+  (bloom): an image as `bg-(image:…)`, since tailwind-merge takes any other `bg-brand-…` for a colour and drops
+  `bg-brand`. A grain is an SVG beside `accents.css`, never a `data:` URI, and `GRAINS` in
+  `gallery/src/tokens.ts` reads it. `glass-float` is the only blur: never on an element with a fixed child of
+  its own (a blur becomes its containing block), never on white text on ink. The tones (gain, loss, warning)
+  keep their colours.
 - **One focus ring**, the global rule of `design.css`; no component draws its own.
 - **What leads somewhere is a link**, drawn by `useLinkComponent()` (the application's, from `LinkProvider`),
   or by the component's own `linkComponent` prop when given; a plain click is left to the router, a click with

@@ -59,7 +59,7 @@ describe('the accent and material picker', () => {
     expect(trigger()).toHaveAttribute('aria-controls', choices()?.id)
     expect(screen.getByRole('radio', { name: 'Indigo' })).toBeChecked()
     expect(screen.getByRole('radio', { name: 'Flat' })).toBeChecked()
-    expect(screen.getAllByRole('radio')).toHaveLength(6)
+    expect(screen.getAllByRole('radio')).toHaveLength(7)
   })
 
   it('shows a choice at once and keeps it, open for another', async () => {
@@ -101,20 +101,31 @@ describe('the accent and material picker', () => {
     await waitFor(() => expect(choices()).not.toBeInTheDocument(), { timeout: 3000 })
   })
 
-  it('shows each accent in the fill the stylesheet gives it, in both themes', async () => {
+  it('shows each accent in the fill the stylesheet gives it, and its gradient over it, in both themes', async () => {
     // From disk: a stylesheet imported in a test is empty.
     const css = readFileSync('src/styles/accents.css', 'utf8')
-    const fill = (accent: string, theme: string) =>
-      new RegExp(`:root\\[data-accent="${accent}"\\]${theme === 'dark' ? '\\.dark' : ':not\\(\\.dark\\)'}\\s*\\{[^}]*?--brand:\\s*(#[0-9a-f]{6});`).exec(css)?.[1]
+    const token = (accent: string, theme: string, name: string) =>
+      new RegExp(`:root\\[data-accent="${accent}"\\]${theme === 'dark' ? '\\.dark' : ':not\\(\\.dark\\)'}\\s*\\{[^}]*?${name}:\\s*([^;]+);`).exec(css)?.[1]
     const user = userEvent.setup()
     renderPicker()
 
     await user.click(trigger())
+    const gradients: string[] = []
     for (const accent of ACCENTS.filter((accent) => accent !== 'neutral')) {
       const swatch = document.querySelector(`[data-swatch="${accent}"]`)?.className ?? ''
-      expect(swatch, accent).toContain(`bg-[${fill(accent, 'light')}]`)
-      expect(swatch, accent).toContain(`dark:bg-[${fill(accent, 'dark')}]`)
+      for (const [theme, prefix] of [['light', ''], ['dark', 'dark:']]) {
+        expect(swatch, accent).toContain(`${prefix}bg-[${token(accent, theme, '--brand')}]`)
+        const gradient = token(accent, theme, '--brand-gradient')
+        if (!gradient) continue
+        gradients.push(accent)
+        // A first stop, a middle one at half way and a last: from, via and to.
+        const [from, via, to] = [...gradient.matchAll(/#[0-9a-f]{6}/g)].map(([stop]) => stop)
+        expect(gradient, accent).toMatch(/^linear-gradient\(110deg, #[0-9a-f]{6}, #[0-9a-f]{6} 50%, #[0-9a-f]{6}\)$/)
+        expect(swatch, accent).toContain('bg-linear-110/srgb')
+        for (const [part, stop] of [['from', from], ['via', via], ['to', to]]) expect(swatch, accent).toContain(`${prefix}${part}-[${stop}]`)
+      }
     }
+    expect(gradients).toEqual(['bloom', 'bloom'])
   })
 
   it('goes when the focus leaves it, and stays while it moves inside it', async () => {

@@ -81,11 +81,16 @@ const BRAND: Token[] = [
   { name: '--brand-foreground', utility: 'accent:text-brand-foreground', use: 'Text and icons on the fill.' },
   { name: '--brand-soft', utility: 'accent:bg-brand-soft', use: 'The tint of what is chosen: the page in the menu, a row, an option, a range.' },
   { name: '--brand-text', utility: 'accent:text-brand-text', use: 'The accent as text: a link, the tab and the step shown.' },
+  {
+    name: '--brand-gradient',
+    utility: 'accent:bg-(image:--brand-fill)',
+    use: 'A filled button and the application\'s mark, under the grain, where the accent has one (bloom); its text is --brand-fill-foreground.',
+  },
 ]
 
 const GLASS: Token[] = [
   { name: '--glass-base', utility: 'body', use: 'The page under the washes.' },
-  { name: '--glass-tint-1', utility: 'body', use: 'The washes of the backdrop, at their strongest (an accent\'s in place of the first).' },
+  { name: '--glass-tint-1', utility: 'body', use: 'The washes of the backdrop, at their strongest (an accent\'s in place of each it gives: the first, or all three).' },
   { name: '--glass-tint-2', utility: 'body', use: '' },
   { name: '--glass-tint-3', utility: 'body', use: '' },
   { name: '--glass-bar', utility: 'glass-bar', use: 'The sidebar and the top bar.' },
@@ -156,7 +161,9 @@ function ContrastTable({ theme }: { theme: ThemeName }) {
 /** The look shown: every text and mark on every surface it has, glass at its worst over the backdrop. */
 function LookContrast({ look }: { look: Look }) {
   const pairs = lookPairs(lookTokens(SHEETS, look), look)
-  const surfaces = [...new Set(pairs.map((pair) => pair.surface))].filter((surface) => !surface.startsWith('--brand-soft on') && surface !== '--brand')
+  const surfaces = [...new Set(pairs.map((pair) => pair.surface))].filter(
+    (surface) => !surface.startsWith('--brand-soft on') && surface !== '--brand' && surface !== '--brand-gradient',
+  )
   const texts = [...new Set(pairs.filter((pair) => surfaces.includes(pair.surface)).map((pair) => pair.text))]
   return (
     <Table density="dense" aria-label={`Contrast of text and marks, ${look.theme}, ${look.accent}, ${look.material}`} className="min-w-[56rem]">
@@ -376,7 +383,7 @@ export function Colours() {
 
       <Panel
         title={`The look shown: ${theme}, ${accent}, ${material}`}
-        description="Text at 4.5:1 and marks (the accent's fill, the focus ring) at 3:1, each at its worst over what a surface can show: glass over the base and each wash at its strongest, with its light and reflection, a dialog over its scrim. Choose another with the palette button."
+        description="Text at 4.5:1 and marks (the accent's fill, the focus ring) at 3:1, each at its worst over what a surface can show: glass over the base and each wash at its strongest, with its light and reflection and the accent's grain, a dialog over its scrim. Choose another with the palette button."
         dense
       >
         <LookContrast look={{ theme, accent, material }} />
@@ -384,7 +391,7 @@ export function Colours() {
 
       <Panel
         title="Every look"
-        description="The weakest text and the weakest mark of each of the 16 looks. The design's one exception shows in the dark flat ones: --text-subtle on a hovered surface (4.44)."
+        description="The weakest text and the weakest mark of each of the 20 looks, the text on an accent's gradient included. The design's one exception shows in the dark flat ones: --text-subtle on a hovered surface (4.44)."
         dense
       >
         <EveryLook />

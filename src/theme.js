@@ -33,6 +33,6 @@
     if (value === values[0]) root.removeAttribute(attribute)
     else root.setAttribute(attribute, value)
   }
-  show('data-accent', ['neutral', 'violet', 'indigo', 'blue'], 'accent')
+  show('data-accent', ['neutral', 'violet', 'indigo', 'blue', 'bloom'], 'accent')
   show('data-material', ['flat', 'glass'], 'material')
 })()

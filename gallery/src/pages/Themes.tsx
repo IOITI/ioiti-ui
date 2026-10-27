@@ -10,11 +10,17 @@ import { lookTokens, valueOf } from '../tokens'
 
 const SHEETS = [tokensCss, themeCss, accentsCss, glassCss, designCss]
 
-/** An accent as the stylesheets give it, drawn whatever the look shown: a filled button, a chosen item, a link. */
+/**
+ * An accent as the stylesheets give it, drawn whatever the look shown: a filled button (its gradient where it
+ * has one, without the grain, which is the page's), a chosen item, a link.
+ */
 function AccentPreview({ accent, theme }: { accent: string; theme: 'light' | 'dark' }) {
   const tokens = lookTokens(SHEETS, { theme, accent, material: 'flat' })
   const value = (name: string) => valueOf(tokens, name)
   const neutral = accent === 'neutral'
+  const filled = value('--brand-gradient')
+    ? { background: value('--brand-gradient'), color: value('--brand-fill-foreground') }
+    : { background: value('--brand'), color: value('--brand-foreground') }
   return (
     <div className="flex flex-col gap-2.5 rounded-xl border border-border p-3" style={{ background: value('--surface'), color: value('--foreground') }}>
       <p className="text-[11px] font-medium" style={{ color: value('--muted-foreground') }}>
@@ -22,7 +28,7 @@ function AccentPreview({ accent, theme }: { accent: string; theme: 'light' | 'da
       </p>
       <span
         className="inline-flex h-8 w-fit items-center rounded-lg px-3 text-xs font-medium"
-        style={neutral ? { background: value('--text-primary'), color: value('--bg') } : { background: value('--brand'), color: value('--brand-foreground') }}
+        style={neutral ? { background: value('--text-primary'), color: value('--bg') } : filled}
       >
         Save
       </span>
@@ -64,7 +70,7 @@ export function Themes() {
 
       <Panel
         title="The accents"
-        description="Neutral is ink, as the design was. A preset puts its colour on what is chosen, current or primary, on links, the focus ring and one-series charts; the tones of gain, loss and warning keep theirs, which is why no preset is green, red, amber or teal."
+        description="Neutral is ink, as the design was. A preset puts its colour on what is chosen, current or primary, on links, the focus ring and one-series charts; the tones of gain, loss and warning keep theirs, which is why no preset's colour is green, red, amber, orange or teal. Bloom is a flyer's grainy gradient: its orchid on all of these, the gradient itself on a filled button and the application's mark, and under glass the flyer as the backdrop; its tangerine and mustard are never a mark's."
       >
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {ACCENTS.flatMap((preset) => (['light', 'dark'] as const).map((mode) => <AccentPreview key={`${preset}-${mode}`} accent={preset} theme={mode} />))}
@@ -100,7 +106,9 @@ ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })
         <ul className="grid gap-4 sm:grid-cols-2">
           <Rule title="The accent after the neutral classes">
             What is chosen, current or primary keeps its classes and adds the accent's after them:
-            bg-neutral-900 dark:bg-white accent:bg-brand accent:text-brand-foreground. Neutral changes nothing.
+            bg-neutral-900 dark:bg-white accent:bg-brand accent:text-brand-foreground. A filled, primary control
+            takes the accent's gradient too, where it has one: accent:bg-(image:--brand-fill)
+            accent:text-brand-fill-foreground. Neutral changes nothing.
           </Rule>
           <Rule title="A surface's material by its role">
             glass-bar, glass-card or glass-float after the surface's own classes; they do nothing until the material
@@ -111,8 +119,9 @@ ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })
             inside it: glass-float on what holds neither, never on a white text on ink.
           </Rule>
           <Rule title="Every look, checked">
-            The gallery's tests hold text at 4.5:1 and marks at 3:1 on every surface of the 16 looks, glass over its
-            backdrop's strongest colours; a look's tokens are in its own file, in blocks of one selector.
+            The gallery's tests hold text at 4.5:1 and marks at 3:1 on every surface of the 20 looks, glass over its
+            backdrop's strongest colours, a grain at its strongest speck; a look's tokens are in its own file, in
+            blocks of one selector.
           </Rule>
         </ul>
       </Panel>

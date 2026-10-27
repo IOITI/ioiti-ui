@@ -119,11 +119,14 @@ function Shell<S extends string>({
   )
 }
 
-/** The application's name at the top of the sidebar, beside its mark; the mark alone once the sidebar is folded. */
+/**
+ * The application's name at the top of the sidebar, beside its mark; the mark alone once the sidebar is folded.
+ * The mark is in the accent, as a filled button is: its gradient and grain where it has them.
+ */
 export function AppBrand({ name, detail, mark }: { name: string; detail?: ReactNode; mark?: ReactNode }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="grid size-7 shrink-0 place-items-center rounded-lg bg-foreground text-xs font-bold text-background accent:bg-brand accent:text-brand-foreground">
+      <div className="grid size-7 shrink-0 place-items-center rounded-lg bg-foreground text-xs font-bold text-background accent:bg-brand accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground">
         {mark ?? name.slice(0, 1).toUpperCase()}
       </div>
       <div className="min-w-0 leading-tight">

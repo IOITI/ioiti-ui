@@ -15,13 +15,21 @@
    - --brand-glow       a coloured shadow
    - --brand-wash       the accent's colour in the glass backdrop (glass.css)
    - --brand-reflection the accent's colour in the glass itself, a corner of it
+   - --brand-fill       what a filled, primary control draws over --brand
+                        (accent:bg-(image:--brand-fill)): the accent's gradient
+                        under its grain where it has them, nothing otherwise
+   - --brand-fill-foreground
+                        the text on it (accent:text-brand-fill-foreground),
+                        4.5:1 on every point of it; --brand-foreground where the
+                        accent has no gradient
 
    Each preset writes its light values under :root[data-accent="…"]:not(.dark)
    and its dark ones under :root[data-accent="…"].dark: (0,3,0), more specific
    than every :root and .dark block of the design, which design.css writes
-   after this file. One selector per block: the gallery reads them by name and
-   holds every one to its contrast (gallery/src/tokens.test.ts). No preset is
-   green, red, amber, orange or teal: those say gain, loss and warning here.
+   after this file; what both share, under :root[data-accent="…"]. One selector
+   per block: the gallery reads them by name and holds every one to its
+   contrast (gallery/src/tokens.test.ts). No preset's colour is green, red,
+   amber, orange or teal: those say gain, loss and warning here.
 
    Light fills are a 600 step with white on them; dark ones a lighter step with
    the dark page's ink on them, as the design's own inverted fills are. Funnel
@@ -29,6 +37,20 @@
    apart a step, the first stage the strongest on its card and the last one
    2.4:1 at least on it (dataviz validator, --ordinal). Blue keeps the design's
    own chart colours.
+
+   Bloom is a printed flyer's colours, a soft gradient with a grain. Its colour
+   is the flyer's orchid, its fills and ramps as every preset's. A filled button
+   and the application's mark take the gradient itself, lilac to pink to
+   tangerine (--brand-gradient): light in both themes, as the flyer is, with the
+   dark page's ink on it. The gradient is no mark: what it fills says what it is
+   in its text. Under glass, the backdrop is the flyer: its pink, its tangerine
+   and its mustard (--brand-wash, -2, -3). Tangerine and mustard are the
+   gradient's and the backdrop's alone, never a mark's or a text's.
+
+   Both lie under a grain (--brand-grain: grain-white.svg and grain-black.svg,
+   beside this file), its specks of the page's own colour: white in light, black
+   in dark. They pull the backdrop toward the page, away from every text on it,
+   which keeps the washes as strong as the tests allow without one.
    --------------------------------------------------------------------------- */
 
 @theme inline {
@@ -36,6 +58,7 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-soft: var(--brand-soft);
   --color-brand-text: var(--brand-text);
+  --color-brand-fill-foreground: var(--brand-fill-foreground, var(--brand-foreground));
 }
 
 :root[data-accent="violet"]:not(.dark) {
@@ -138,4 +161,58 @@
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
   --focus-ring: var(--brand);
+}
+
+/* Bloom. Its grains' urls, in the blocks of each theme, are this file's: an application's Tailwind and Vite
+   rewrite them for the page, and write the files beside the application's own. */
+:root[data-accent="bloom"] {
+  --brand-fill: var(--brand-grain), var(--brand-gradient);
+}
+
+:root[data-accent="bloom"]:not(.dark) {
+  --brand: #c2398b;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(194 57 139 / 0.12);
+  --brand-text: #a62675;
+  --brand-glow: rgb(194 57 139 / 0.35);
+  --brand-wash: rgb(243 154 200 / 0.24);
+  --brand-wash-2: rgb(250 135 73 / 0.18);
+  --brand-wash-3: rgb(228 178 97 / 0.26);
+  --brand-reflection: rgb(194 57 139 / 0.08);
+  --brand-grain: url("./grain-white.svg");
+  --brand-gradient: linear-gradient(110deg, #d58ecf, #e77ab5 50%, #fa8749);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #89195f;
+  --chart-funnel-2: #a62675;
+  --chart-funnel-3: #c2398b;
+  --chart-funnel-4: #d6559f;
+  --chart-funnel-5: #e477b2;
+}
+
+:root[data-accent="bloom"].dark {
+  --brand: #f39ac8;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(243 154 200 / 0.16);
+  --brand-text: #fabcda;
+  --brand-glow: rgb(243 154 200 / 0.3);
+  --brand-wash: rgb(214 85 159 / 0.22);
+  --brand-wash-2: rgb(250 135 73 / 0.18);
+  --brand-wash-3: rgb(161 146 84 / 0.2);
+  --brand-reflection: rgb(243 154 200 / 0.08);
+  --brand-grain: url("./grain-black.svg");
+  --brand-gradient: linear-gradient(110deg, #f0b5e2, #f39ac8 50%, #fca676);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #e77ab5;
+  --chart-funnel-1: #fabcda;
+  --chart-funnel-2: #f39ac8;
+  --chart-funnel-3: #e77ab5;
+  --chart-funnel-4: #d65da1;
+  --chart-funnel-5: #c2428d;
 }

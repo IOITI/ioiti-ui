@@ -63,7 +63,7 @@ describe('the plugin of an application built with Vite', () => {
     for (const material of MATERIALS) expect(() => ioiti({ material })).not.toThrow()
     // As a configuration written in JavaScript could give them.
     expect(() => ioiti({ accent: 'sepia' } as unknown as IoitiPluginOptions)).toThrow(
-      'ioiti(): the accent is one of neutral, violet, indigo, blue, not "sepia"',
+      'ioiti(): the accent is one of neutral, violet, indigo, blue, bloom, not "sepia"',
     )
     expect(() => ioiti({ material: 'paper' } as unknown as IoitiPluginOptions)).toThrow('the material is one of flat, glass')
   })

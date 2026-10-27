@@ -1,9 +1,25 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 
 import { ACCENTS, MATERIALS } from 'ioiti-ui'
 import { describe, expect, it } from 'vitest'
 
-import { colourOf, contrast, contrastPairs, inside, lookPairs, lookSelectors, lookTokens, parseColor, themeTokens, toHex, tokensOf, valueOf } from './tokens.js'
+import {
+  colourOf,
+  contrast,
+  contrastPairs,
+  GRAINS,
+  gradientColours,
+  grainOf,
+  inside,
+  lookPairs,
+  lookSelectors,
+  lookTokens,
+  parseColor,
+  themeTokens,
+  toHex,
+  tokensOf,
+  valueOf,
+} from './tokens.js'
 import type { Look } from './tokens.js'
 
 // The package's stylesheets, from disk: the tests treat a stylesheet imported as an empty one.
@@ -67,6 +83,41 @@ describe('the colours, read as the browser reads them', () => {
     expect(colourOf(tokens, '--wash')).toMatchObject({ a: 0.5 })
     expect(valueOf(tokens, '--nothing')).toBeUndefined()
   })
+
+  it('read a gradient as every colour it shows: its stops, and the sRGB mixes between them', () => {
+    const colours = gradientColours('linear-gradient(110deg, #ff0000, oklch(0.5 0 0) 30%, rgb(0 255 0))')
+    expect(colours).toHaveLength(21)
+    expect([colours[0], colours[10], colours[20]].map(toHex)).toEqual(['#ff0000', toHex(parseColor('oklch(0.5 0 0)')!), '#00ff00'])
+    // Half way from red to green is olive: darker than both, which the stops alone would miss.
+    const olive = gradientColours('linear-gradient(#ff0000, #00ff00)')[5]
+    expect(toHex(olive)).toBe('#808000')
+    expect(contrast(olive, parseColor('#000')!)).toBeLessThan(contrast(parseColor('#ff0000')!, parseColor('#000')!))
+    expect(gradientColours('var(--brand)')).toEqual([])
+    expect(gradientColours(undefined)).toEqual([])
+  })
+})
+
+describe('the grains', () => {
+  // A grain's speck, as its file draws it: the colour its matrix gives every pixel, at its rect's opacity.
+  const drawn = (svg: string) => {
+    const matrix = /<feColorMatrix values="([^"]+)"/.exec(svg)![1].trim().split(/\s+/).map(Number)
+    return { r: matrix[4], g: matrix[9], b: matrix[14], a: Number(/<rect [^>]*opacity="([\d.]+)"/.exec(svg)![1]) }
+  }
+
+  it('are read as their files draw them', () => {
+    const files = readdirSync('src/styles').filter((name) => /^grain-.*\.svg$/.test(name))
+    expect(files.sort()).toEqual(Object.keys(GRAINS).sort())
+    for (const file of files) expect(drawn(readFileSync(`src/styles/${file}`, 'utf8')), file).toEqual(GRAINS[file])
+  })
+
+  it('are the ones the stylesheets name, read by their name', () => {
+    const declared = SHEETS.join('\n').replace(/\/\*[\s\S]*?\*\//g, '')
+    const named = [...declared.matchAll(/--brand-grain:\s*([^;]+);/g)].map(([, value]) => value)
+    expect(named.length).toBeGreaterThan(0)
+    for (const value of named) expect(Object.values(GRAINS), value).toContain(grainOf({ '--brand-grain': value }))
+    expect(grainOf({})).toBeUndefined()
+    expect(() => grainOf({ '--brand-grain': 'url("./sand.svg")' })).toThrow('sand.svg')
+  })
 })
 
 describe('the contrast of text', () => {
@@ -85,8 +136,8 @@ describe('the contrast of text', () => {
 })
 
 describe('every look: a theme, an accent, a material', () => {
-  it('is 16 of them, and neutral and flat are the design as it was', () => {
-    expect(LOOKS).toHaveLength(16)
+  it('is 20 of them, and neutral and flat are the design as it was', () => {
+    expect(LOOKS).toHaveLength(20)
     for (const theme of ['light', 'dark'] as const) {
       expect(lookTokens(SHEETS, { theme, accent: 'neutral', material: 'flat' })).toEqual(themeTokens(SHEETS, theme))
     }
