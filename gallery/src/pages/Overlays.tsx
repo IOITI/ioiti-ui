@@ -2,6 +2,7 @@ import {
   Button,
   buttonClassName,
   Checkbox,
+  DescriptionList,
   DirectionalTooltip,
   DynamicIsland,
   Flysheet,
@@ -92,16 +93,11 @@ function Sheets() {
             <FlysheetDescription>Placed on 26 Oct by Acme. Drag its edge, or use the arrow keys on it, to widen it.</FlysheetDescription>
           </FlysheetHeader>
           <FlysheetBody className="space-y-4">
-            <dl className="divide-y divide-border text-sm">
-              {LINES.map((line) => (
-                <div key={line.item} className="flex items-baseline justify-between gap-4 py-2">
-                  <dt>
-                    {line.item} <span className="text-muted-foreground">× {line.quantity}</span>
-                  </dt>
-                  <dd className="tabular-nums">{line.amount}</dd>
-                </div>
-              ))}
-            </dl>
+            <DescriptionList
+              divided
+              numeric
+              items={LINES.map((line) => ({ term: `${line.item} × ${line.quantity}`, details: line.amount }))}
+            />
             <Flysheet>
               <FlysheetTrigger className={trigger}>Acme, the customer</FlysheetTrigger>
               <FlysheetContent size="sm">

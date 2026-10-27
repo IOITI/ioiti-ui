@@ -45,6 +45,7 @@ exports[`the package's interface > is the list of names it was 1`] = `
   "DateRangeFilter",
   "DateRangePicker",
   "DependencyTrace",
+  "DescriptionList",
   "DirectionalTooltip",
   "DonutChart",
   "DragToConfirm",

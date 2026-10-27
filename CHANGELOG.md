@@ -119,6 +119,10 @@ the data tables' filters as Elastic UI's filter group.
   For a ratio against a limit, `Meter`.
 - **`BarList`**: things ranked by a figure, a row each of its label, its bar and the figure, a row leading where
   it counts what is there.
+- **`DescriptionList`**: terms and their details, a `<dl>`: a summary in rows, a record's details with its terms
+  in a column of their own (`columns`), figures side by side, each term over its figure (`grid`), facts in a line
+  (`inline`); `divided`, `boxed`, `compressed`, and `numeric` for figures that line up. As Elastic UI's
+  description list does.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
