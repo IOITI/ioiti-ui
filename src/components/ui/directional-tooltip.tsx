@@ -227,7 +227,8 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
                 aria-hidden="true"
                 initial={{ opacity: 0, scale: 0.94, x: offsetT.x, y: offsetT.y }}
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, x: offsetT.x * 0.5, y: offsetT.y * 0.5 }}
+                // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
+                exit={{ opacity: 0, scale: 0.96, x: offsetT.x * 0.5, y: offsetT.y * 0.5, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springSnappy}
                 // ioiti-ui: long hints wrap, within the screen; glass under the glass material (glass-float).
                 className={cn(

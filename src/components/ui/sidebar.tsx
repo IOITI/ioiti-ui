@@ -5,6 +5,7 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronRight, PanelLeft } from "lucide-react";
 import { isPlainClick } from "../../lib/links.js";
 import { overPage } from "../../lib/motion.js";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 import { useLinkComponent } from "../link-context.js";
 
@@ -33,7 +34,9 @@ function useControllableState<T>(
   return [current, set];
 }
 
-const spring = { type: "spring", stiffness: 420, damping: 36, mass: 0.8 } as const;
+// ioiti-ui: the sheets' and the drawer's motion, the design's own (EasyUI's was 420/36/0.8): its width,
+// its pill and its dot too.
+const spring = motionTransitions.springSheet;
 
 // ioiti-ui: the sidebar stays beside the page from md up; below, it is a drawer. Asked only where
 // the browser can answer (jsdom has no matchMedia).
@@ -140,7 +143,9 @@ export function Sidebar({
               className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px] glass:bg-[var(--glass-scrim)]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
+              exit={{ opacity: 0, transition: motionTransitions.easeExit }}
+              transition={motionTransitions.easeFast}
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
@@ -463,8 +468,9 @@ function Panel({
             <motion.div
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12 }}
+              // ioiti-ui: the motion of everything that floats: springSnappy arriving, easeExit leaving.
+              exit={{ opacity: 0, transition: motionTransitions.easeExit }}
+              transition={motionTransitions.springSnappy}
               className="whitespace-nowrap rounded-md bg-neutral-900 px-2 py-1 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-neutral-900"
             >
               {tip.label}

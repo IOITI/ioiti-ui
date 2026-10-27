@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useId, useRef } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -41,9 +41,10 @@ const sizeMap: Record<NonNullable<SettleModalProps['size']>, string> = {
 /**
  * SettleModal — Content has a tiny scale + settle instead of a generic fade.
  *
- * The panel scales from 0.94 -> 1.02 -> 1.0 (with a slight y travel), then the
- * inner content crossfades in with a tiny 0.96 -> 1.0 scale-up, so the
- * perceived motion is "settle" rather than "fade in".
+ * ioiti-ui: one calm entrance, the design's: the panel grows from what opened
+ * it (0.96 to 1, 6 px of travel, springGentle), without EasyUI's overshoot
+ * (0.94 -> 1.02 -> 1), and its content with it rather than a layer after it.
+ * It leaves quicker than it came (easeExit).
  *
  * ioiti-ui: rendered in document.body, so that it takes nothing from the element
  * that opens it (a table cell passes its alignment and wrapping on to what is
@@ -64,6 +65,23 @@ export const SettleModal: React.FC<SettleModalProps> = ({
 }) => {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
+  // ioiti-ui: the dialog grows from what opened it: the middle of the control the focus is on when it
+  // opens (the effect below moves it into the dialog), as the panel's transform origin; from its centre
+  // when nothing did.
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [origin, setOrigin] = useState<string | undefined>(undefined);
+  useLayoutEffect(() => {
+    if (!open) return;
+    const opener = document.activeElement;
+    const panel = panelRef.current;
+    if (!panel || !(opener instanceof HTMLElement) || opener === document.body) {
+      setOrigin(undefined);
+      return;
+    }
+    // Its place on the screen, which a transform does not move (the layer is the whole window).
+    const from = opener.getBoundingClientRect();
+    setOrigin(`${from.left + from.width / 2 - panel.offsetLeft}px ${from.top + from.height / 2 - panel.offsetTop}px`);
+  }, [open]);
   // Callers pass a new function at every render: read through a ref, so that
   // the effect below runs when the dialog opens and closes, not at each render.
   const onCloseRef = useRef(onClose);
@@ -130,24 +148,20 @@ export const SettleModal: React.FC<SettleModalProps> = ({
             className="absolute inset-0 bg-black/50 backdrop-blur-md glass:bg-[var(--glass-scrim)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={motionTransitions.easeSoft}
+            // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
+            exit={{ opacity: 0, transition: motionTransitions.easeExit }}
+            transition={motionTransitions.easeFast}
             onClick={() => closeOnBackdrop && onClose()}
           />
 
-          {/* Panel: scale + slight overshoot for the "settle" feel */}
+          {/* Panel: scale + slight travel for the "settle" feel. ioiti-ui: from what opened it, no overshoot. */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.94, y: 8 }}
-            animate={{
-              opacity: 1,
-              scale: [0.94, 1.02, 1],
-              y: 0,
-            }}
-            exit={{ opacity: 0, scale: 0.96, y: 4 }}
-            transition={{
-              duration: 0.42,
-              ease: [0.16, 1, 0.3, 1],
-            }}
+            ref={panelRef}
+            initial={{ opacity: 0, scale: 0.96, y: 6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, transition: motionTransitions.easeExit }}
+            transition={motionTransitions.springGentle}
+            style={{ transformOrigin: origin }}
             className={cn(
               // ioiti-ui: no taller than the screen; what does not fit scrolls inside it (a phone, a long form).
               'relative w-full max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] p-6 sm:p-8 focus:outline-none glass-float',
@@ -166,17 +180,8 @@ export const SettleModal: React.FC<SettleModalProps> = ({
               </button>
             )}
 
-            {/* Inner content does its own tiny scale/settle — a layer deeper than the panel */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98, y: 4 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.99, y: 2 }}
-              transition={{
-                duration: 0.4,
-                ease: [0.16, 1, 0.3, 1],
-                delay: 0.05,
-              }}
-            >
+            {/* ioiti-ui: the content arrives with the panel, not a layer after it. */}
+            <div>
               {title && (
                 <h2
                   id={titleId}
@@ -192,7 +197,7 @@ export const SettleModal: React.FC<SettleModalProps> = ({
               {children && <div className="mt-5">{children}</div>}
 
               {footer && <div className="mt-6 flex justify-end gap-2">{footer}</div>}
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       )}

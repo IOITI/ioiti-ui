@@ -3,6 +3,7 @@
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays } from "lucide-react";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 import { Calendar, type CalendarOptions, type DateRange } from "./calendar.js";
 
@@ -90,8 +91,9 @@ const popoverMotion = (side: Side, align: "start" | "end" = "start") =>
   ({
     initial: { opacity: 0, scale: 0.96 },
     animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.97, transition: { duration: 0.1 } },
-    transition: { type: "spring", stiffness: 520, damping: 38, mass: 0.7 },
+    // ioiti-ui: the motion of everything that floats: springSnappy arriving, easeExit leaving.
+    exit: { opacity: 0, scale: 0.97, transition: motionTransitions.easeExit },
+    transition: motionTransitions.springSnappy,
     style: {
       transformOrigin: `${side === "top" ? "bottom" : "top"} ${align === "end" ? "right" : "left"}`,
     },

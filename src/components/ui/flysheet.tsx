@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls, type PanInfo } from "framer-motion";
 import { X } from "lucide-react";
 import { overPage } from "../../lib/motion.js";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 
 /*
@@ -42,7 +43,8 @@ function useControllableState<T, D>(
   return [current, set];
 }
 
-const spring = { type: "spring", stiffness: 380, damping: 38, mass: 0.9 } as const;
+// ioiti-ui: the sheets' and the drawer's motion, the design's own (EasyUI's was 380/38/0.9).
+const spring = motionTransitions.springSheet;
 
 export type FlysheetSide = "right" | "left" | "top" | "bottom";
 
@@ -727,8 +729,9 @@ export function FlysheetContent({
                   className="absolute inset-0 bg-neutral-950/30 backdrop-blur-[2px] dark:bg-black/60 glass:bg-[var(--glass-scrim)]"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                  // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
+                  exit={{ opacity: 0, transition: motionTransitions.easeExit }}
+                  transition={motionTransitions.easeFast}
                   onClick={() => closesOutside && setOpen(false, { reason: "outside-click" })}
                 />
               )}

@@ -203,7 +203,8 @@ export const PeekCard: React.FC<PeekCardProps> = ({
                     opacity: 0,
                     y: place.side === 'top' ? 4 : -4,
                     scale: 0.96,
-                    transition: { duration: 0.12 },
+                    // ioiti-ui: easeExit, as everything that floats.
+                    transition: motionTransitions.easeExit,
                   }}
                   transition={motionTransitions.springSnappy}
                   onPointerEnter={() => {
