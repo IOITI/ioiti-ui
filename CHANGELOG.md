@@ -177,6 +177,14 @@ the data tables' filters as Elastic UI's filter group.
 - **A skip link in the shell** (`AppShell`, `RouterAppShell`): the first stop of the keyboard, "Skip to the page",
   shown once it has the focus, gives the focus to the page past the menu and the top bar; the address keeps no
   fragment of it.
+- **`SaveBar`**: the bar of unsaved changes at the bottom of the page while there are any (what there is to save,
+  Discard and Save, saving and an error), in sight as the page scrolls; a screen reader hears it once. The toasts
+  rise above it while it is there (`ToastProvider` clears what sits at the bottom of the page). As Elastic UI's
+  bottom bar does.
+- **`RouterLeaveGuard`** (`ioiti-ui/react-router`): asks before the page is left with changes not saved, another
+  page of the application (a dialog: Stay, Leave) or the tab closed or reloaded (the browser's own question); a
+  change of the query or of the part shown is no leaving. Needs a data router (`createBrowserRouter`).
+- **`SettleModal`**'s description is read with its title (`aria-describedby`).
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

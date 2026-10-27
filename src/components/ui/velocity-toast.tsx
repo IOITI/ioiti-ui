@@ -28,6 +28,8 @@ export interface VelocityToastProps {
   className?: string;
   /** ioiti-ui: classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom. */
   wrapperClassName?: string;
+  /** ioiti-ui: the positioned wrapper's style: lifted above a bar at the bottom of the page (ToastProvider). */
+  wrapperStyle?: React.CSSProperties;
   /** ioiti-ui: once it has left, its exit played: a queue shows the next one then (ToastProvider). */
   onExitComplete?: () => void;
 }
@@ -79,6 +81,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
   icon,
   className,
   wrapperClassName,
+  wrapperStyle,
   onExitComplete,
 }) => {
   const [isVisible, setIsVisible] = useState(open);
@@ -155,6 +158,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
         positionClasses[position],
         wrapperClassName
       )}
+      style={wrapperStyle}
     >
       <AnimatePresence onExitComplete={onExitComplete}>
         {isVisible && (

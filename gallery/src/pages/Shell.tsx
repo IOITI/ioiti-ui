@@ -1,7 +1,45 @@
-import { AppBrand, ButtonLink, CodeBlock, PageHeader, SidebarFooterButton, StateChip } from 'ioiti-ui'
+import { AppBrand, ButtonLink, CodeBlock, Field, NumberInput, PageHeader, SaveBar, SidebarFooterButton, StateChip, useToast } from 'ioiti-ui'
+import { RouterLeaveGuard } from 'ioiti-ui/react-router'
 import { KeyRound, LogOut, RotateCw } from 'lucide-react'
+import { useState } from 'react'
 
 import { Demo } from '../parts'
+
+/** A setting changed and not saved: the bar comes, and leaving the page asks first. */
+function Unsaved({ guard = false }: { guard?: boolean }) {
+  const toast = useToast()
+  const [saved, setSaved] = useState(500)
+  const [limit, setLimit] = useState<number | null>(500)
+  const [saving, setSaving] = useState(false)
+  const dirty = limit !== saved
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <Field label="Daily limit" htmlFor={guard ? 'guarded-limit' : 'unsaved-limit'} className="max-w-xs">
+        <NumberInput id={guard ? 'guarded-limit' : 'unsaved-limit'} value={limit} onChange={setLimit} min={0} step={50} suffix="€" />
+      </Field>
+      {guard && (
+        <p className="text-sm text-muted-foreground">
+          Change it, then go to <ButtonLink to="/components/forms" variant="link">the forms</ButtonLink>: the page asks first.
+        </p>
+      )}
+      <SaveBar
+        open={dirty}
+        message="1 unsaved change"
+        saving={saving}
+        onDiscard={() => setLimit(saved)}
+        onSave={() => {
+          setSaving(true)
+          window.setTimeout(() => {
+            setSaved(limit ?? 0)
+            setSaving(false)
+            toast({ title: 'Saved', variant: 'success' })
+          }, 700)
+        }}
+      />
+      {guard && <RouterLeaveGuard when={dirty} />}
+    </div>
+  )
+}
 
 export function Shell() {
   return (
@@ -88,6 +126,25 @@ export function Shell() {
           label="Sign in again"
           hint="The connection to the bank expired: nothing is sent until it is renewed."
         />
+      </Demo>
+
+      <Demo
+        id="save-bar"
+        title="SaveBar"
+        description="The bar of unsaved changes, at the bottom of the page while there are any: what there is to save, Discard and Save. It stays in sight as the page scrolls, and the toasts rise above it."
+        names={['SaveBar']}
+      >
+        <Unsaved />
+      </Demo>
+
+      <Demo
+        id="leave-guard"
+        title="RouterLeaveGuard"
+        description="Asks before the page is left with changes not saved: another page of the application (Stay or Leave), or the tab closed (the browser's own question). A change of the query alone is no leaving."
+        names={['RouterLeaveGuard']}
+        from="ioiti-ui/react-router"
+      >
+        <Unsaved guard />
       </Demo>
 
       <Demo

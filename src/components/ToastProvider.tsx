@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { cn } from '../lib/utils.js'
 import { VelocityToast } from './ui/velocity-toast.js'
 
-import { ToastContext } from './toast-context.js'
+import { ToastContext, ToastInsetContext } from './toast-context.js'
 import type { ShowToast, ToastMessage } from './toast-context.js'
 
 /** Beyond this, the oldest waiting toasts are dropped: a burst must not take minutes to read out. */
@@ -53,9 +53,16 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
 
   const current = queue[0]
 
+  // Lifted above what sits at the bottom of the page, as long as it is there.
+  const [insets, setInsets] = useState<Record<string, number>>({})
+  const setInset = useCallback((key: string, inset: number) => {
+    setInsets((now) => (now[key] === inset ? now : { ...now, [key]: inset }))
+  }, [])
+  const lift = Math.max(0, ...Object.values(insets))
+
   return (
     <ToastContext.Provider value={show}>
-      {children}
+      <ToastInsetContext.Provider value={setInset}>{children}</ToastInsetContext.Provider>
       {current && (
         <VelocityToast
           key={current.id}
@@ -70,7 +77,8 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
           variant={current.variant ?? 'default'}
           position="bottom-center"
           // The frame stays above the page while a page changes, as every layer over it (over-page, motion.css).
-          wrapperClassName={cn('over-page', wrapperClassName)}
+          wrapperClassName={cn('over-page motion-safe:transition-[margin-bottom] motion-safe:duration-300 motion-safe:ease-soft', wrapperClassName)}
+          wrapperStyle={lift ? { marginBottom: lift } : undefined}
           duration={displayTime(current, queue.length - 1)}
         />
       )}

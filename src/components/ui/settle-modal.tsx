@@ -138,6 +138,8 @@ export const SettleModal: React.FC<SettleModalProps> = ({
           // ioiti-ui: kept above the page while a page changes, as every layer over it (over-page, motion.css).
           className="fixed inset-0 z-50 flex items-center justify-center p-4 text-left outline-none over-page"
           aria-labelledby={title ? titleId : undefined}
+          // ioiti-ui: its description is read with its title.
+          aria-describedby={description ? `${titleId}-description` : undefined}
           role="dialog"
           aria-modal="true"
         >
@@ -189,7 +191,7 @@ export const SettleModal: React.FC<SettleModalProps> = ({
                 </h2>
               )}
               {description && (
-                <p className="text-sm text-[var(--text-secondary)] mt-1.5 leading-relaxed">{description}</p>
+                <p id={`${titleId}-description`} className="text-sm text-[var(--text-secondary)] mt-1.5 leading-relaxed">{description}</p>
               )}
 
               {children && <div className="mt-5">{children}</div>}

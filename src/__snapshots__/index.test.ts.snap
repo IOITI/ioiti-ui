@@ -115,6 +115,7 @@ exports[`the package's interface > is the list of names it was 1`] = `
   "RangeSlider",
   "RecoveryLedger",
   "RequestStatus",
+  "SaveBar",
   "ScrollProgressNav",
   "SegmentedControl",
   "Select",

@@ -336,6 +336,9 @@ otherwise).
 - `badge`: `removeLabel`, the name of its × for a screen reader ("Remove Lyon", each chip its own, where every
   one was "Remove"), and `removeFocusable`, for a field of chips that removes them with Backspace; the × draws no
   ring of its own (the global one) and takes a press 24 px wide around its 16.
+- `settle-modal` (0.3.0): its `description` named by `aria-describedby`, read with its title.
+- `velocity-toast` (0.3.0): `wrapperStyle`, the style of its frame: `ToastProvider` lifts it above what sits at the
+  bottom of the page (`SaveBar`), its margin sliding where motion is not reduced.
 
 ## ioiti-ui's own changes
 
