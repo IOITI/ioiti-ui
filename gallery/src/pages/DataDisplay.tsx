@@ -13,6 +13,7 @@ import {
   ChangeList,
   Code,
   CodeBlock,
+  CopyChip,
   DataTable,
   DataTableContent,
   DataTableFilters,
@@ -439,6 +440,23 @@ export function DataDisplay() {
         <span>
           Due <RelativeTime value={OPENED + 2 * 3_600_000} timeZone="Europe/Paris" />
         </span>
+      </Demo>
+
+      <Demo
+        id="copy-chip"
+        title="CopyChip"
+        description="A value to read and copy, in a chip with its button: a reference, an API key, an address. A long one is cut in its middle (its ends tell it apart) or at its end; the whole of it in a hint and for a screen reader."
+        names={['CopyChip']}
+        className="flex flex-col items-start gap-3"
+      >
+        <CopyChip value="IT-1042" label="the reference" />
+        <CopyChip value="whsec_4f9a2c7e1b0d93a6ff21c8e5" label="the signing secret" truncate="middle" />
+        <CopyChip
+          value="https://example.com/hooks/orders/2026/received?token=7c106d4a195f9ce566ffbbc672fc48bed68d30bd"
+          label="the address of the webhook"
+          truncate="end"
+          className="w-72"
+        />
       </Demo>
 
       <Demo

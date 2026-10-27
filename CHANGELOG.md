@@ -210,6 +210,9 @@ the data tables' filters as Elastic UI's filter group.
   is said in (each second under a minute, each minute up to two days, then each hour), its full date in a hint
   and for a screen reader; every time on a page shares one clock for each precision (`useNow`). The gallery's
   dashboard says its events' times so.
+- **`CopyChip`**: a value to read and copy, in a chip with its `CopyButton` (a reference, an API key, a webhook's
+  address); a long one cut in its middle, its ends telling it apart, or at its end, the whole of it in a hint and
+  for a screen reader.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
