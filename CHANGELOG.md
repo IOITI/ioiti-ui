@@ -6,7 +6,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 ## [0.3.0] - Unreleased
 
 A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain. A check box whose mark
-draws itself, and a sheet that can push the page aside.
+draws itself, and a sheet that can push the page aside. And motion, calm and the same everywhere: a page and a
+look that change in one cross-fade, toasts that leave, and one motion for everything in front of the page.
 
 - **Bloom**: the flyer's orchid on what is chosen, current or primary, on links, the focus ring and one-series
   charts, as every accent's colour. A filled button and the application's mark take the flyer's gradient
@@ -42,10 +43,40 @@ draws itself, and a sheet that can push the page aside.
   (`onOpenChange(false, { reason })`). Its parts: `FlysheetTrigger`, `FlysheetContent`, `FlysheetHeader`,
   `FlysheetTitle`, `FlysheetDescription`, `FlysheetBody`, `FlysheetFooter`, `FlysheetClose`. Shown on the
   gallery's Overlays page.
+- **A change of page in one cross-fade** (`AppShell`, `RouterAppShell`): the page left fades out in 150 ms as
+  the new one fades in and rises 6 px in 240 ms, the sidebar and the top bar staying as they are, and in use.
+  React 19.3's `ViewTransition`, which React Router's changes of page start; with another router, a new
+  `pathname` given to `AppShell` in a React transition. A change of the query alone, Back and Forward, and a
+  browser without view transitions change the page at once; where motion is reduced, the new page fades in
+  without rising. What is fixed over the page stays above it while it changes (a dialog, a sheet, the drawer,
+  the toasts). Another page opens at its top before the browser paints.
+- **A change of look in one cross-fade**: a theme, an accent or a material chosen changes the whole page at once,
+  where a mix of 150 ms colour fades and snaps did; the components' own transitions hold still meanwhile. A press
+  is answered at once all the same: where the browser draws no frame soon, the change comes without its fade. The
+  theme button's icon turns.
+- **Within a page**: a toast leaves, its exit played, before the next one comes (`ToastProvider` took it away
+  before its exit could play); what arrives where a skeleton was fades in (`QueryState`), what was there already
+  is shown as it is; a meter slides to its ratio; the icon buttons and `ButtonLink` give when pressed, as
+  `Button` does.
+- **One motion for what floats**: popovers, menus, tooltips, peek cards, the palette and the toasts arrive with
+  `springSnappy` and leave with `easeExit`, quicker than they came; sheets and the drawer slide with
+  `springSheet`, the sidebar's width and pill too; scrims fade in with `easeFast` and out with `easeExit`.
+  `SettleModal` grows from what opened it, without its overshoot. The components' own values are listed in
+  `docs/easyui-changes.md`.
+- **Tokens**: `motionTransitions.springSheet` and `.easeExit`. For the stylesheets, `ioiti-ui/motion.css`
+  (imported by `design.css`): `ease-soft`, `ease-fast` and `ease-exit`, framer-motion's curves, and
+  `animate-reveal`; every `transition-*` class takes `ease-fast`'s curve, its 150 ms kept. `motion-safe:` and
+  `motion-reduce:` follow `IoitiProvider`'s `reducedMotion` as well as the system (`data-reduced-motion` on
+  `<html>`), and the loops of spinners stop where motion is reduced. It only adds: the reference blocks of the
+  design hold.
+- **The gallery**: the Motion page shows the curves in CSS, a change of page and of look, what moves within a
+  page and the motion of what floats.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
-its props: the new box comes with the update.
+its props: the new box comes with the update. So does the motion, on React 19.3 at least: an application on
+React 19.2 updates `react` and `react-dom`. `IoitiProvider reducedMotion="always"` reduces it everywhere. No
+name was added to the package's interface.
 
 ## [0.2.1] - 2026-10-27
 

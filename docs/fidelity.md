@@ -87,6 +87,16 @@ gallery's 19 pages (the set of their distinct values, per page, in the light the
 recorded before the change and compared after each step of it: identical, but for the picker added to the
 gallery's top bar.
 
+## The motion
+
+ioiti-ui's own too, and on by default (`src/styles/motion.css`, `src/lib/motion.ts`): the reference was not
+taken again, as it holds nothing of it. Its curves are Tailwind's theme layer (`--ease-soft`, `--ease-fast`,
+`--ease-exit`, and `ease-fast`'s curve for every `transition-*` class, their 150 ms kept), which the reference
+leaves out; its rules are blocks of their own after the glass's (`::view-transition-…`,
+`:root[data-reduced-motion=…]`, `:root[data-look-change] …`), nothing in a layer. `src/styles/styles.test.ts`
+holds that it only adds, as the accents and the glass do. Compare styles at rest: a change of page or of look
+is a picture over the page while it plays, and a change of look holds the components' own transitions still.
+
 ## What the package changed, and why
 
 Nothing of the design's values. The differences an application can see are listed in
