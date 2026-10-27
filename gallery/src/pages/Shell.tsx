@@ -1,4 +1,20 @@
-import { AppBrand, ButtonLink, CodeBlock, Field, NumberInput, PageHeader, SaveBar, SidebarFooterButton, StateChip, useToast } from 'ioiti-ui'
+import {
+  AppBrand,
+  Button,
+  ButtonLink,
+  CodeBlock,
+  Field,
+  Kbd,
+  NumberInput,
+  PageHeader,
+  SaveBar,
+  ShortcutsDialog,
+  SidebarFooterButton,
+  StateChip,
+  useNavigateTo,
+  useShortcut,
+  useToast,
+} from 'ioiti-ui'
 import { RouterLeaveGuard } from 'ioiti-ui/react-router'
 import { KeyRound, LogOut, RotateCw } from 'lucide-react'
 import { useState } from 'react'
@@ -37,6 +53,26 @@ function Unsaved({ guard = false }: { guard?: boolean }) {
         }}
       />
       {guard && <RouterLeaveGuard when={dirty} />}
+    </div>
+  )
+}
+
+/** Shortcuts that go to other pages: listed by the dialog on ?, or from its button. */
+function Shortcuts() {
+  const navigate = useNavigateTo()
+  const [open, setOpen] = useState(false)
+  useShortcut('g f', () => navigate('/components/forms'), { description: 'Go to the forms', group: 'Navigation' })
+  useShortcut('g c', () => navigate('/components/charts'), { description: 'Go to the charts', group: 'Navigation' })
+  useShortcut('g d', () => navigate('/patterns/dashboard'), { description: 'Go to the dashboard', group: 'Navigation' })
+  return (
+    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        Keyboard shortcuts
+      </Button>
+      <span className="inline-flex items-center gap-2">
+        or press <Kbd keys="?" />, then <Kbd keys="g f" /> for the forms
+      </span>
+      <ShortcutsDialog open={open} onOpenChange={setOpen} keys={null} />
     </div>
   )
 }
@@ -126,6 +162,15 @@ export function Shell() {
           label="Sign in again"
           hint="The connection to the bank expired: nothing is sent until it is renewed."
         />
+      </Demo>
+
+      <Demo
+        id="shortcuts"
+        title="useShortcut and ShortcutsDialog"
+        description="A shortcut is registered where it means something, heard while that part is on the page: a combination (⌘K), a sequence (G, then F). Keys without ⌘ or Ctrl wait while text is typed, and every key while a dialog is open. Those described are listed on ?, by group (AppShell draws the list)."
+        names={['ShortcutsDialog', 'useShortcut']}
+      >
+        <Shortcuts />
       </Demo>
 
       <Demo

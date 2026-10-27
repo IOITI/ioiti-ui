@@ -185,6 +185,11 @@ the data tables' filters as Elastic UI's filter group.
   page of the application (a dialog: Stay, Leave) or the tab closed or reloaded (the browser's own question); a
   change of the query or of the part shown is no leaving. Needs a data router (`createBrowserRouter`).
 - **`SettleModal`**'s description is read with its title (`aria-describedby`).
+- **`useShortcut`** and **`ShortcutsDialog`**: a keyboard shortcut registered where it means something, heard while
+  that part is on the page: a combination (`mod+k`, ⌘K or Ctrl K), a sequence (`g o`), a character (`?`). Keys
+  without ⌘ or Ctrl wait while text is typed, every key while a dialog is open. Those given a description are
+  listed by group, with their keys, in `ShortcutsDialog`, which `AppShell` draws and `?` opens once there is one
+  to list (`shortcutsDialog={false}` for none). Each application has its own registry (`IoitiProvider`).
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

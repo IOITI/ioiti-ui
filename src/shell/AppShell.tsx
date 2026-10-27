@@ -3,6 +3,7 @@ import type { ComponentProps, ElementType, MouseEvent, ReactNode } from 'react'
 
 import { useAppName } from '../components/app-context.js'
 import { MainScrollContext } from '../components/main-scroll-context.js'
+import { ShortcutsDialog } from '../components/ShortcutsDialog.js'
 import { ThemeToggle } from '../components/ThemeToggle.js'
 import { Sidebar, SidebarTrigger, useSidebar } from '../components/ui/sidebar.js'
 import { isPlainClick } from '../lib/links.js'
@@ -40,6 +41,8 @@ export interface AppShellProps<S extends string = string> {
   /** What draws the menu's links; the application's (LinkProvider) by default. */
   linkComponent?: ElementType
   defaultCollapsed?: boolean
+  /** The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none. */
+  shortcutsDialog?: boolean
 }
 
 /**
@@ -70,6 +73,7 @@ function Shell<S extends string>({
   home,
   linkComponent,
   defaultCollapsed,
+  shortcutsDialog = true,
 }: AppShellProps<S>) {
   const providedName = useAppName()
   const name = appName ?? providedName ?? ''
@@ -144,6 +148,7 @@ function Shell<S extends string>({
           </main>
         </ViewTransition>
       </div>
+      {shortcutsDialog && <ShortcutsDialog />}
     </div>
   )
 }
