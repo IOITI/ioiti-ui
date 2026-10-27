@@ -99,6 +99,11 @@ the data tables' filters as Elastic UI's filter group.
 - **`ChartLegend`**: what a chart's colours stand for, each swatch drawn as the chart draws its series (a bar, a
   line, a dashed line, a point), a figure beside it where there is one; with `onToggle`, each item shows or hides
   its series. For an application's own charts too.
+- **`BarChart`**, EasyUI's: values by category, side by side or stacked (changing it moves the bars from one to the
+  other), in the design's colours: one series in the series colour, things compared in the four compare colours,
+  never recycled. Losses are drawn below a zero line, each bar rounded at its far end, stacked by sign;
+  `tone="sign"` colours each bar as a gain or a loss (daily margins). The arrow keys move from one category to
+  the next; a table gives screen readers every figure; its legend shows and hides a series.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

@@ -310,6 +310,20 @@ otherwise).
   (shared `layoutId`) over the page from the pill's left edge, across the screen under the top bar on a phone,
   so that the bar keeps its height; the keyboard follows it in and back out; a dialog over the page takes its
   own clicks and its Escape, which starts in it.
+- `chart-primitives` (what the charts share): `muted` is `text-muted-foreground` (`neutral-500` was 3.6:1 on the
+  dark card); `focus` draws no ring (the global one is the ring); the tooltip follows the pointer with
+  `springSnappy` (its own spring was 520/42/0.6), fades in with `easeFast` and out with `easeExit`, and jumps to
+  the pointer where motion is reduced (`useReducedMotionConfig`, which follows `IoitiProvider` too).
+- `bar-chart` (from `7c106d4`): a value keeps its sign, a loss drawn below a zero line, on an axis that spans it
+  (`niceDomain`, `src/lib/chart-scale.ts`, where EasyUI clamped at zero), each bar rounded at its far end by the
+  same commands as any other (grouped and stacked still morph into each other), stacked by sign; `tone="sign"`,
+  each bar in `--chart-positive` or `--chart-negative`; the series in the design's colours
+  (`src/lib/chart-colours.ts`: one series in `--chart-series`, things compared in `--chart-compare-1…4`, never
+  recycled, where EasyUI cycled six hex colours); the grid in `--chart-grid`, zero in `--chart-axis`, the text in
+  the design's tokens; the package's `ChartLegend` in place of its chips; no ring of its own. Its motion: the bars
+  grow in with `easeSoft`, one category a moment after the other (the stagger capped at 0.3 s), then move with
+  `springGentle`, the hover band with `springSnappy` (EasyUI's own spring, curve and 1200 ms timer), and stay
+  still where motion is reduced (`useReducedMotionConfig`).
 
 ## ioiti-ui's own changes
 
