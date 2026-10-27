@@ -78,6 +78,8 @@ export { useMainScroll } from './components/main-scroll-context.js'
 
 // The blocks pages are made of.
 export { ButtonLink } from './components/ButtonLink.js'
+export { ChangeList } from './components/ChangeList.js'
+export type { Change, ChangeGroup } from './components/ChangeList.js'
 export { ChartLegend } from './components/ChartLegend.js'
 export type { ChartLegendItem } from './components/ChartLegend.js'
 export { CheckIcon, CheckList } from './components/CheckList.js'
