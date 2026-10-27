@@ -1,10 +1,11 @@
-import { useLayoutEffect, useMemo, useRef, useState, ViewTransition } from 'react'
-import type { ComponentProps, ElementType, ReactNode } from 'react'
+import { useId, useLayoutEffect, useMemo, useRef, useState, ViewTransition } from 'react'
+import type { ComponentProps, ElementType, MouseEvent, ReactNode } from 'react'
 
 import { useAppName } from '../components/app-context.js'
 import { MainScrollContext } from '../components/main-scroll-context.js'
 import { ThemeToggle } from '../components/ThemeToggle.js'
 import { Sidebar, SidebarTrigger, useSidebar } from '../components/ui/sidebar.js'
+import { isPlainClick } from '../lib/links.js'
 import { cn } from '../lib/utils.js'
 import { menuEntry, sidebarSections } from './navigation.js'
 import type { Menu } from './navigation.js'
@@ -88,8 +89,28 @@ function Shell<S extends string>({
   const current = menuEntry(menu, pathname)
   const sections = useMemo(() => sidebarSections(menu), [menu])
 
+  // Past the menu to the page: the page takes the focus for as long as it keeps it, without the address
+  // taking its fragment (a change of the address a router's guard would have to judge).
+  const mainId = useId()
+  const skip = (event: MouseEvent<HTMLAnchorElement>) => {
+    const page = main.current
+    if (!isPlainClick(event) || !page) return
+    event.preventDefault()
+    page.tabIndex = -1
+    page.addEventListener('blur', () => page.removeAttribute('tabindex'), { once: true })
+    page.focus()
+  }
+
   return (
     <div className="flex h-dvh overflow-hidden">
+      {/* The first stop of the keyboard, shown once it has the focus. */}
+      <a
+        href={`#${mainId}`}
+        onClick={skip}
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[70] focus:rounded-lg focus:border focus:border-border focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-text-primary focus:shadow-lg"
+      >
+        Skip to the page
+      </a>
       <Sidebar
         sections={sections}
         activeId={current?.id ?? ''}
@@ -116,7 +137,7 @@ function Shell<S extends string>({
             against the page would otherwise make the window itself scroll, onto nothing. The
             transition takes it whole, cut to what it shows. */}
         <ViewTransition default="none" update={pageChanged ? 'ioiti-page' : 'none'}>
-          <main ref={main} className="relative flex-1 overflow-y-auto">
+          <main ref={main} id={mainId} className="relative flex-1 overflow-y-auto">
             <div className={cn('mx-auto flex w-full flex-col gap-6 p-4 sm:p-6', wide ? 'max-w-none' : 'max-w-7xl')}>
               <MainScrollContext.Provider value={main}>{children}</MainScrollContext.Provider>
             </div>

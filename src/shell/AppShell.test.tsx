@@ -274,4 +274,16 @@ describe('without a router', () => {
     expect(wholeTrail().getByRole('link', { name: 'Assets' })).toHaveAttribute('href', '/library/assets')
     expect(isCurrent(wholeTrail().getByText('Blue logo'))).toBe(true)
   })
+
+  it('lets the keyboard skip past the menu to the page, its first stop', async () => {
+    const user = userEvent.setup()
+    renderShell()
+
+    await user.tab()
+    const skip = screen.getByRole('link', { name: 'Skip to the page' })
+    expect(skip).toHaveFocus()
+    await user.keyboard('{Enter}')
+    expect(screen.getByRole('main')).toHaveFocus()
+    expect(screen.getByLabelText('address')).toHaveTextContent('/orders')
+  })
 })

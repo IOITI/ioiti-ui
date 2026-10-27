@@ -174,6 +174,9 @@ the data tables' filters as Elastic UI's filter group.
   UI's super date picker does.
 - **`resolveTimeRange`** gives a range's two moments now (for `rangeParams` and a query), **`formatTimeRange`** says
   it in words; type **`TimeRange`**.
+- **A skip link in the shell** (`AppShell`, `RouterAppShell`): the first stop of the keyboard, "Skip to the page",
+  shown once it has the focus, gives the focus to the page past the menu and the top bar; the address keeps no
+  fragment of it.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
