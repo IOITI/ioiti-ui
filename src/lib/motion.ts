@@ -27,3 +27,28 @@ export function applyReducedMotion(setting: ReducedMotion, root: HTMLElement = d
   if (setting === 'user') root.removeAttribute(REDUCED_MOTION_ATTRIBUTE)
   else root.setAttribute(REDUCED_MOTION_ATTRIBUTE, setting)
 }
+
+/** On <html> while the look changes: the page's own transitions hold still meanwhile (motion.css). */
+export const LOOK_CHANGE_ATTRIBUTE = 'data-look-change'
+
+let lookChanges = 0
+
+/**
+ * A change of look (the theme, the accent, the material) in one cross-fade of the whole page, where
+ * the browser has view transitions; at once where it has none. `update` changes the page before it
+ * returns (React's flushSync). Meanwhile the components' own transitions hold still, so that no colour
+ * arrives a step after the others. A fade, which stays where motion is reduced.
+ */
+export function changeLook(update: () => void, root: HTMLElement = document.documentElement): void {
+  if (typeof document.startViewTransition !== 'function') {
+    update()
+    return
+  }
+  const change = ++lookChanges
+  root.setAttribute(LOOK_CHANGE_ATTRIBUTE, '')
+  const done = () => {
+    // A later change keeps it until its own end.
+    if (change === lookChanges) root.removeAttribute(LOOK_CHANGE_ATTRIBUTE)
+  }
+  document.startViewTransition(update).finished.then(done, done)
+}

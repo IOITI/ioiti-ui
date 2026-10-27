@@ -99,7 +99,7 @@ describe('the stylesheets, as an application builds them', () => {
     expect(added.length).toBeGreaterThan(0)
     for (const block of added) {
       expect(block, block.slice(0, 80)).toMatch(
-        /^(:root\[data-(accent|material|reduced-motion)=|@supports not \(\(backdrop-filter|@media \(prefers-reduced-(transparency|motion)|@keyframes ioiti-|::view-transition|:root:not\(\[data-look-change\]\)::view-transition)/,
+        /^(:root\[data-(accent|material|reduced-motion)=|@supports not \(\(backdrop-filter|@media \(prefers-reduced-(transparency|motion)|@keyframes ioiti-|::view-transition|:root(:not\()?\[data-look-change\])/,
       )
     }
   })
@@ -154,6 +154,13 @@ describe('the motion, as an application builds it', () => {
     expect(rule(css, ':root:not([data-look-change])::view-transition-old(root)')).toContain('display: none')
     expect(rule(css, ':root:not([data-look-change])::view-transition-old(.ioiti-layer)')).toContain('display: none')
     expect(rule(css, ':root:not([data-look-change])::view-transition-new(.ioiti-layer)')).toContain('animation: none')
+  })
+
+  it('changes a look in one cross-fade of the whole page, the components\' own transitions held still meanwhile', async () => {
+    const css = await build([])
+
+    expect(rule(css, ':root[data-look-change] *, :root[data-look-change] ::before, :root[data-look-change] ::after')).toContain('transition: none !important')
+    expect(rule(css, ':root[data-look-change]::view-transition-old(*), :root[data-look-change]::view-transition-new(*)')).toContain('animation-duration: 260ms')
   })
 
   it('lets a page arrive without rising where motion is reduced', async () => {

@@ -2,8 +2,10 @@ import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { LOOK_CHANGE_ATTRIBUTE } from '../lib/motion.js'
 import { ACCENT_ATTRIBUTE, DEFAULT_THEME_STORAGE_KEY, MATERIAL_ATTRIBUTE, THEME_KEY_ATTRIBUTE } from '../lib/theme.js'
 import { stubSystemTheme } from '../test/systemTheme.js'
+import { stubViewTransitions } from '../test/viewTransition.js'
 
 import { IoitiProvider } from './IoitiProvider.js'
 import { useTheme } from './theme-context.js'
@@ -46,6 +48,7 @@ beforeEach(() => {
   html.removeAttribute(THEME_KEY_ATTRIBUTE)
   html.removeAttribute(ACCENT_ATTRIBUTE)
   html.removeAttribute(MATERIAL_ATTRIBUTE)
+  html.removeAttribute(LOOK_CHANGE_ATTRIBUTE)
 })
 
 afterEach(() => {
@@ -247,6 +250,55 @@ describe('the accent and the material', () => {
     await user.click(screen.getByRole('button', { name: 'Neutral' }))
     expect(html.hasAttribute(ACCENT_ATTRIBUTE)).toBe(false)
     expect(window.localStorage.getItem('my-app.theme.accent')).toBe('neutral')
+  })
+})
+
+describe('a change of look', () => {
+  function renderChoices() {
+    render(
+      <ThemeProvider>
+        <ThemeToggle />
+        <Look />
+      </ThemeProvider>,
+    )
+  }
+
+  it('is one cross-fade where the browser has view transitions: drawn inside it, the page\'s own transitions held still to its end', async () => {
+    stubSystemTheme(false)
+    const transitions = stubViewTransitions()
+    const user = userEvent.setup()
+    try {
+      renderChoices()
+
+      // Always light, then always dark: each a change of look, the page changed inside it.
+      await user.click(button())
+      await user.click(button())
+      expect(transitions.start).toHaveBeenCalledTimes(2)
+      expect(isDark()).toBe(true)
+      expect(html.hasAttribute(LOOK_CHANGE_ATTRIBUTE)).toBe(true)
+
+      await act(async () => transitions.finish())
+      expect(html.hasAttribute(LOOK_CHANGE_ATTRIBUTE)).toBe(false)
+
+      await user.click(screen.getByRole('button', { name: 'Indigo' }))
+      await user.click(screen.getByRole('button', { name: 'Glass' }))
+      expect(transitions.start).toHaveBeenCalledTimes(4)
+      expect(html.getAttribute(ACCENT_ATTRIBUTE)).toBe('indigo')
+      expect(html.getAttribute(MATERIAL_ATTRIBUTE)).toBe('glass')
+    } finally {
+      transitions.restore()
+    }
+  })
+
+  it('is at once where the browser has none, and writes nothing more on the page', async () => {
+    stubSystemTheme(false)
+    const user = userEvent.setup()
+    renderChoices()
+
+    await user.click(button())
+    await user.click(button())
+    expect(isDark()).toBe(true)
+    expect(html.hasAttribute(LOOK_CHANGE_ATTRIBUTE)).toBe(false)
   })
 })
 

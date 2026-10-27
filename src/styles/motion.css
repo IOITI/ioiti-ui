@@ -1,8 +1,8 @@
 /* -----------------------------------------------------------------------------
    The motion, for the stylesheets: the curves framer-motion moves with
-   (motionTransitions, src/lib/motion-tokens.ts), a change of page, and motion
-   reduced here as framer-motion reduces its own. ioiti-ui's own, not the
-   design it was taken from.
+   (motionTransitions, src/lib/motion-tokens.ts), a change of page and of
+   look, and motion reduced here as framer-motion reduces its own. ioiti-ui's
+   own, not the design it was taken from.
 
    - ease-soft        easeSoft's curve: fades, what arrives
    - ease-fast        easeFast's: a property changing quickly. Every transition-*
@@ -134,6 +134,26 @@
 
 :root:not([data-look-change])::view-transition-new(.ioiti-layer) {
   animation: none;
+}
+
+/* -----------------------------------------------------------------------------
+   A change of look (ThemeProvider, changeLook() in src/lib/motion.ts): the
+   theme, the accent or the material chosen, the whole page in one cross-fade,
+   the layers over it with it. The components' own transitions hold still
+   meanwhile, or their colours would arrive a step after the rest. A fade,
+   which stays where motion is reduced.
+   --------------------------------------------------------------------------- */
+
+:root[data-look-change] *,
+:root[data-look-change] ::before,
+:root[data-look-change] ::after {
+  transition: none !important;
+}
+
+:root[data-look-change]::view-transition-old(*),
+:root[data-look-change]::view-transition-new(*) {
+  animation-duration: 260ms;
+  animation-timing-function: var(--ease-soft);
 }
 
 /* -----------------------------------------------------------------------------
