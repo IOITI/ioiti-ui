@@ -24,6 +24,7 @@ import {
   InteractiveTimeline,
   KpiGrid,
   KpiTile,
+  LiveValue,
   Meter,
   PageHeader,
   RecoveryLedger,
@@ -40,7 +41,7 @@ import {
 } from 'ioiti-ui'
 import type { AgentActivityItemData, ColumnDef } from 'ioiti-ui'
 import { GitCompare } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Demo } from '../parts'
 
@@ -117,6 +118,35 @@ function Rolling() {
       <AnimatedNumber value={Math.round(value * 100)} useGrouping className="text-2xl font-semibold" />
       <Button size="sm" variant="outline" onClick={() => setValue((current) => Math.round((current + (Math.random() - 0.55) * 20) * 100) / 100)}>
         Change it
+      </Button>
+    </div>
+  )
+}
+
+/** A price that changes every second and a queue that waits: each change shows in its tone a moment. */
+function Watched() {
+  const [price, setPrice] = useState(18_120.5)
+  const [queue, setQueue] = useState(42)
+  const [stale, setStale] = useState(false)
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setPrice((now) => Math.round((now + (Math.random() - 0.5) * 12) * 100) / 100)
+      setQueue((now) => Math.max(0, now + Math.round((Math.random() - 0.5) * 6)))
+    }, 1500)
+    return () => window.clearInterval(timer)
+  }, [])
+  return (
+    <div className="flex flex-wrap items-center gap-8 text-sm">
+      <span className="flex items-baseline gap-2">
+        <span className="text-muted-foreground">Index</span>
+        <LiveValue value={price} format={(value) => value.toLocaleString('en-GB', { minimumFractionDigits: 2 })} stale={stale} className="text-lg font-semibold" />
+      </span>
+      <span className="flex items-baseline gap-2">
+        <span className="text-muted-foreground">Orders waiting</span>
+        <LiveValue value={queue} invert className="text-lg font-semibold" />
+      </span>
+      <Button size="sm" variant="outline" onClick={() => setStale(!stale)}>
+        {stale ? 'The source is back' : 'The source stops'}
       </Button>
     </div>
   )
@@ -374,6 +404,16 @@ export function DataDisplay() {
           max={3}
           people={[{ name: 'Ana María Ortiz' }, { name: 'Léa Brun' }, { name: 'Omar Haddad' }, { name: 'Yuki Sato' }, { name: 'Jonas Weber' }]}
         />
+      </Demo>
+
+      <Demo
+        id="live-value"
+        title="LiveValue"
+        description="A figure that changes as it is watched: each change in its tone a moment, then back, in a fade (which stays where motion is reduced); muted, and said stale, once what sends it stops. Where down is good, the tones swap."
+        names={['LiveValue']}
+        className="block w-full"
+      >
+        <Watched />
       </Demo>
 
       <Demo
