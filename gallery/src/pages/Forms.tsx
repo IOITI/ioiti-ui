@@ -423,7 +423,7 @@ export function Forms() {
       <Demo
         id="dates"
         title="Dates"
-        description="A day, or a range, from a field or a calendar: weeks start on Monday, days are written as en-GB writes them. DateRangeFilter puts the ranges people ask for first."
+        description="A day, or a range, from a field or a calendar: weeks start on Monday, days are written as en-GB writes them. DateRangeFilter puts the ranges people ask for first: its own, or the page's, ending on the last day there is data for."
         names={['DatePicker', 'DateRangePicker', 'Calendar', 'DateRangeFilter']}
         className="flex flex-col items-start gap-4"
       >
@@ -432,6 +432,17 @@ export function Forms() {
           <DateRangePicker value={range} onChange={setRange} locale="en-GB" weekStartsOn={1} />
         </div>
         <DateRangeFilter value={range} onChange={setRange} />
+        <DateRangeFilter
+          value={range}
+          onChange={setRange}
+          allTime={false}
+          today={new Date(2026, 9, 23)}
+          maxDate={new Date(2026, 9, 23)}
+          presets={[
+            { label: 'Last week of data', days: 7 },
+            { label: 'Third quarter', range: { from: new Date(2026, 6, 1), to: new Date(2026, 8, 30) } },
+          ]}
+        />
         <Calendar mode="single" value={day} onChange={setDay} locale="en-GB" weekStartsOn={1} />
       </Demo>
 

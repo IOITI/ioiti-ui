@@ -221,6 +221,9 @@ resize, a tour of a page).
 - **`CopyChip`**: a value to read and copy, in a chip with its `CopyButton` (a reference, an API key, a webhook's
   address); a long one cut in its middle, its ends telling it apart, or at its end, the whole of it in a hint and
   for a screen reader.
+- **`DateRangeFilter`** takes the page's presets (`presets`: so many days, or a range of their own, type
+  `DateRangePreset`), the day they end on (`today`: the last day there is data for), the calendar's bounds
+  (`minDate`, `maxDate`) and no "All time" (`allTime={false}`). Without them, it is as it was.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
