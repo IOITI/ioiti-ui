@@ -9,6 +9,7 @@ import {
   motionTransitions,
   PageHeader,
   Panel,
+  SegmentedControl,
   Table,
   TableBody,
   TableCell,
@@ -91,11 +92,13 @@ function LookTrial() {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <ThemeToggle />
-      {ACCENTS.map((value) => (
-        <Button key={value} size="sm" variant={value === accent ? 'primary' : 'outline'} aria-pressed={value === accent} onClick={() => setAccent(value)}>
-          {value[0].toUpperCase() + value.slice(1)}
-        </Button>
-      ))}
+      <SegmentedControl
+        label="Accent"
+        size="sm"
+        value={accent}
+        onChange={setAccent}
+        options={ACCENTS.map((value) => ({ value, label: value[0].toUpperCase() + value.slice(1) }))}
+      />
     </div>
   )
 }

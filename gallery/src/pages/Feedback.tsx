@@ -2,6 +2,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Avatar,
   Badge,
   Button,
   CheckList,
@@ -9,6 +10,7 @@ import {
   PageHeader,
   ProgressBar,
   RequestStatus,
+  SegmentedControl,
   Skeleton,
   SkeletonAvatar,
   SkeletonReveal,
@@ -93,13 +95,13 @@ function Request() {
   const current = STEPS[step]
   return (
     <div className="w-full space-y-3">
-      <div className="flex flex-wrap gap-2">
-        {STEPS.map((item, index) => (
-          <Button key={item.status} size="sm" variant={index === step ? 'primary' : 'outline'} aria-pressed={index === step} onClick={() => setStep(index)}>
-            {item.status}
-          </Button>
-        ))}
-      </div>
+      <SegmentedControl
+        label="State of the request"
+        size="sm"
+        value={current.status}
+        onChange={(status) => setStep(STEPS.findIndex((item) => item.status === status))}
+        options={STEPS.map((item) => ({ value: item.status, label: item.status }))}
+      />
       <RequestStatus
         status={current.status}
         title={current.title}
@@ -130,7 +132,7 @@ function Reveal() {
         }
       >
         <div className="flex items-center gap-3">
-          <div className="grid size-10 place-items-center rounded-full bg-surface-raised text-sm font-semibold">AM</div>
+          <Avatar name="Ana Martins" size="lg" />
           <div>
             <p className="text-sm font-medium">Ana Martins</p>
             <p className="text-xs text-muted-foreground">Ordered 3 items today</p>

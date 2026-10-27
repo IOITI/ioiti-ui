@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertTitle, Button, EmptyText, ErrorText, KpiGrid, PageHeader, Panel, QueryState, Skeleton } from 'ioiti-ui'
+import { Alert, AlertDescription, AlertTitle, Button, EmptyText, ErrorText, KpiGrid, PageHeader, Panel, QueryState, SegmentedControl, Skeleton } from 'ioiti-ui'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -23,13 +23,13 @@ function Query() {
   const error = phase === 'failed' || phase === 'stale' ? new Error('The server answered 503 Service Unavailable.') : null
   return (
     <div className="w-full space-y-4">
-      <div className="flex flex-wrap gap-2" role="group" aria-label="State of the data">
-        {(['loading', 'failed', 'stale', 'loaded'] as const).map((each) => (
-          <Button key={each} size="sm" variant={phase === each ? 'primary' : 'outline'} aria-pressed={phase === each} onClick={() => setPhase(each)}>
-            {each}
-          </Button>
-        ))}
-      </div>
+      <SegmentedControl
+        label="State of the data"
+        size="sm"
+        value={phase}
+        onChange={setPhase}
+        options={(['loading', 'failed', 'stale', 'loaded'] as const).map((each) => ({ value: each, label: each }))}
+      />
       <QueryState
         isPending={phase === 'loading' || phase === 'failed'}
         error={error}
