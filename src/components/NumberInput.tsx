@@ -75,10 +75,11 @@ export function NumberInput({
   const toText = (number: number | null) => (number === null ? '' : precision === undefined ? String(number) : number.toFixed(precision))
   const [text, setText] = useState(() => toText(current))
 
-  // A value given from outside, not the one being typed: shown as it is.
-  const [shownFor, setShownFor] = useState(current)
-  if (current !== shownFor) {
-    setShownFor(current)
+  // A new value from outside (not the one being typed) is shown as it is. A value its caller refused leaves
+  // what is being typed alone.
+  const [seen, setSeen] = useState(current)
+  if (current !== seen) {
+    setSeen(current)
     if (parse(text) !== current) setText(toText(current))
   }
 
@@ -88,7 +89,6 @@ export function NumberInput({
   }
   const set = (number: number | null) => {
     setCurrent(number)
-    setShownFor(number)
     setText(toText(number))
   }
   const stepBy = (count: number) => {
@@ -102,10 +102,7 @@ export function NumberInput({
     const typed = event.target.value.replace(allowed, '')
     setText(typed)
     const number = parse(typed)
-    if (number === null || !Number.isNaN(number)) {
-      setShownFor(number)
-      setCurrent(number)
-    }
+    if (number === null || !Number.isNaN(number)) setCurrent(number)
   }
   const onBlur = () => {
     const number = parse(text)

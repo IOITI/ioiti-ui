@@ -83,4 +83,15 @@ describe('NumberInput', () => {
     expect(field).toHaveValue('0')
     expect(minus).toBeDisabled()
   })
+
+  it('leaves what is being typed alone where its caller refuses a value', async () => {
+    const user = userEvent.setup()
+    // A caller that holds 30 and takes no empty value.
+    render(<NumberInput label="Minutes" value={30} onChange={() => {}} />)
+    const field = screen.getByRole('spinbutton', { name: 'Minutes' })
+    await user.clear(field)
+    expect(field).toHaveValue('')
+    await user.type(field, '4')
+    expect(field).toHaveValue('4')
+  })
 })

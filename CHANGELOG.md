@@ -151,6 +151,10 @@ the data tables' filters as Elastic UI's filter group.
   field ("1." on the way to "1.5"), a comma or a point marking the decimals; it keeps to its minimum, its maximum
   and its step, whole numbers when asked, with a unit before or after it. A spin button to a screen reader, its
   value said with its unit.
+- **`Slider`** and **`RangeSlider`**: a value along a scale, or a range between two, the browser's own range input
+  (its arrows, Page Up and Down, Home and End, said in words to a screen reader), its thumb ringed in the accent;
+  ticks with their labels, bands of the track in a tone (where a value is safe, to watch, too far), a field beside
+  it to type the value. As Elastic UI's range and dual range do.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

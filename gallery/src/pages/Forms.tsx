@@ -21,8 +21,10 @@ import {
   PageHeader,
   RadioGroup,
   RadioGroupItem,
+  RangeSlider,
   SegmentedControl,
   Select,
+  Slider,
   SpringSelect,
   StretchSwitch,
   Switch,
@@ -210,6 +212,48 @@ export function Forms() {
         <Field label="Delay before retrying" htmlFor="retry-delay">
           <NumberInput id="retry-delay" defaultValue={1.5} min={0} step={0.5} precision={1} suffix="s" />
         </Field>
+      </Demo>
+
+      <Demo
+        id="slider"
+        title="Slider and RangeSlider"
+        description="A value along a scale, or a range between two: the browser's own range input, its arrows, Page Up and Down, Home and End, its value said in words. Ticks with their labels, bands in a tone where a value is safe or too far, a field beside it to type the value."
+        names={['Slider', 'RangeSlider']}
+        className="grid w-full gap-8 sm:grid-cols-2"
+      >
+        <Slider
+          label="Risk per order"
+          defaultValue={1.5}
+          min={0}
+          max={5}
+          step={0.5}
+          format={(value) => `${value.toFixed(1)}%`}
+          ticks={[
+            { value: 0, label: '0%' },
+            { value: 2.5, label: '2.5%' },
+            { value: 5, label: '5%' },
+          ]}
+          levels={[
+            { from: 0, to: 2, tone: 'positive' },
+            { from: 2, to: 3.5, tone: 'warning' },
+            { from: 3.5, to: 5, tone: 'negative' },
+          ]}
+        />
+        <Slider label="Delay before retrying" defaultValue={30} min={0} max={120} step={5} format={(value) => `${value} s`} showInput />
+        <RangeSlider
+          label="Price"
+          defaultValue={[20, 80]}
+          min={0}
+          max={150}
+          step={5}
+          format={(value) => `${value} €`}
+          ticks={[
+            { value: 0, label: '0 €' },
+            { value: 75, label: '75 €' },
+            { value: 150, label: '150 €' },
+          ]}
+        />
+        <RangeSlider label="Opening hours" defaultValue={[9, 18]} min={0} max={24} format={(value) => `${String(value).padStart(2, '0')}:00`} ticks />
       </Demo>
 
       <Demo
