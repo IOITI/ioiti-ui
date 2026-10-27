@@ -154,7 +154,9 @@ export function MultiSelect({
         onClick={() => inputRef.current?.focus()}
         // The look of the form's Input, chips inside it.
         className={cn(
-          'flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-lg border bg-white px-1.5 py-1 text-xs transition-colors dark:bg-[#141414]',
+          'relative flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-lg border bg-white px-1.5 py-1 text-xs transition-colors dark:bg-[#141414]',
+          // Room for the clear button, which keeps to the first line's end however many lines the chips take.
+          chosen.length > 0 && !disabled && 'pr-9',
           'border-neutral-300 hover:border-neutral-500 dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A]',
           'focus-within:border-neutral-500 dark:focus-within:border-[#4A4A4A] accent:focus-within:border-brand',
           error && 'border-negative/60 focus-within:border-negative',
@@ -203,20 +205,22 @@ export function MultiSelect({
           className="h-7 min-w-24 flex-1 bg-transparent px-1.5 text-xs text-neutral-900 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed dark:text-[#FAFAFA]"
         />
         {chosen.length > 0 && !disabled && (
-          <Hint content="Clear">
-            <button
-              type="button"
-              aria-label="Clear"
-              onClick={(event) => {
-                event.stopPropagation()
-                setChosen([])
-                inputRef.current?.focus()
-              }}
-              className="grid size-7 shrink-0 place-items-center rounded-md text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary [&>svg]:size-3.5"
-            >
-              <X />
-            </button>
-          </Hint>
+          <span className="absolute right-1 top-1.5">
+            <Hint content="Clear">
+              <button
+                type="button"
+                aria-label="Clear"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  setChosen([])
+                  inputRef.current?.focus()
+                }}
+                className="grid size-7 shrink-0 place-items-center rounded-md text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary [&>svg]:size-3.5"
+              >
+                <X />
+              </button>
+            </Hint>
+          </span>
         )}
       </div>
       {typeof document !== 'undefined' &&
