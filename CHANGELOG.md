@@ -135,6 +135,10 @@ the data tables' filters as Elastic UI's filter group.
 - **`Disclosure`**: more, shown on demand, the browser's own `<details>` (find in the page opens it on what it
   finds), plain or boxed, held by its caller or not; its height follows what it holds where the browser can
   animate to a height of auto, at once where motion is reduced.
+- **`Popover`**: a panel beside a button (filters, a few settings), in the page's body, beside its button where
+  the window has room and following it as the page scrolls; the focus goes in, and Escape, a Tab past its end or
+  a press elsewhere closes it and gives the focus back. Not modal; inside a dialog or a sheet, Escape and Tab stay
+  its own. Every layer placed beside its trigger from now on is placed by the same code (`src/lib/anchor.ts`).
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

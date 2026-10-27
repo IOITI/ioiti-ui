@@ -14,16 +14,21 @@ import {
   FlysheetHeader,
   FlysheetTitle,
   FlysheetTrigger,
+  IconButton,
+  Input,
   NotificationBell,
   PageHeader,
   PeekCard,
   PeekLink,
+  Popover,
   SettleModal,
+  SegmentedControl,
   SignedValue,
   SpotlightSearch,
   Textarea,
 } from 'ioiti-ui'
 import type { Notification } from 'ioiti-ui'
+import { Columns3 } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -178,6 +183,55 @@ function Sheets() {
   )
 }
 
+/** A popover's settings, applied by its own button, which closes it. */
+function Popovers() {
+  const [filters, setFilters] = useState({ customer: '', status: 'all' })
+  return (
+    <>
+      <Popover label="Filters" trigger={<Button variant="outline" size="sm">Filters</Button>}>
+        {(close) => (
+          <form
+            className="flex w-64 flex-col gap-3"
+            onSubmit={(event) => {
+              event.preventDefault()
+              close()
+            }}
+          >
+            <Input
+              placeholder="Customer"
+              aria-label="Customer"
+              value={filters.customer}
+              onChange={(event) => setFilters({ ...filters, customer: event.target.value })}
+            />
+            <SegmentedControl
+              label="Status"
+              size="sm"
+              fullWidth
+              value={filters.status}
+              onChange={(status) => setFilters({ ...filters, status })}
+              options={[
+                { value: 'all', label: 'All' },
+                { value: 'open', label: 'Open' },
+                { value: 'paid', label: 'Paid' },
+              ]}
+            />
+            <Button type="submit" size="sm">
+              Apply
+            </Button>
+          </form>
+        )}
+      </Popover>
+      <Popover label="Columns" side="bottom" align="end" trigger={<IconButton label="Columns" icon={<Columns3 />} hint="Choose the columns" />}>
+        <div className="flex flex-col gap-2">
+          {['Reference', 'Customer', 'Status', 'Total'].map((column) => (
+            <Checkbox key={column} label={column} defaultChecked={column !== 'Status'} />
+          ))}
+        </div>
+      </Popover>
+    </>
+  )
+}
+
 function Bell() {
   const [items, setItems] = useState<Notification[]>(() => [
     { id: '1', message: 'Export ready', detail: 'orders-2026-10-26.csv', timestamp: new Date(Date.now() - 2 * MINUTE), read: false, href: '/components/data', tone: 'success' },
@@ -252,6 +306,15 @@ export function Overlays() {
             1,840.00 €
           </button>
         </PeekCard>
+      </Demo>
+
+      <Demo
+        id="popover"
+        title="Popover"
+        description="A panel beside a button: filters, a few settings. Beside its button where the window has room, the focus in it; Escape, a Tab past its end or a press elsewhere closes it, the focus back on its button. The page stays in use; inside a dialog, its keys stay its own."
+        names={['Popover']}
+      >
+        <Popovers />
       </Demo>
 
       <Demo id="dialog" title="SettleModal" description="A dialog, in four widths (and a full one, for two things side by side)." names={['SettleModal']}>
