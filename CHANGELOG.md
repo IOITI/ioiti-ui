@@ -231,6 +231,9 @@ resize, a tour of a page).
 - **`SpotlightSearch`** draws what it was given and did not show: an entry's `icon`, its `shortcut` (its keys, with
   `Kbd`), and the `recentSearches`, offered while nothing is typed and typed again when chosen. `grouped` lists the
   entries under their categories. Without them, it is as it was.
+- **`AnimatedTabs`** is a tablist where its tabs switch panels: tabs, the panel named by the tab shown, one stop of
+  the keyboard whose arrows, Home and End move and choose (`label` names it). Tabs that lead to pages stay links.
+  A badge of 0 is a badge, where a bare "0" was drawn.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

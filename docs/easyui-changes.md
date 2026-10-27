@@ -357,6 +357,11 @@ otherwise).
   (each key a `Kbd`), and the `recentSearches`, rows of the list while nothing is typed, typed again when chosen
   (the arrows reach them as they reach the entries); `grouped`, the entries under a heading for each category, in
   the order the categories first come, the category no longer repeated on each row.
+- `animated-tabs` (0.3.0): where no tab leads to a page, a tablist (`role="tablist"`, `label` naming it): each tab
+  a `tab`, `aria-selected`, controlling the panel, one stop of the keyboard (`tabIndex` 0 on the tab shown), the
+  arrows, Home and End moving and choosing; the panel a `tabpanel` named by its tab, leaving with `easeExit`.
+  Tabs that lead to pages stay links (`aria-current`). A badge of 0 is drawn as a badge (`0 && …` drew a bare
+  "0"), with a space before it for the tab's name.
 
 ## ioiti-ui's own changes
 

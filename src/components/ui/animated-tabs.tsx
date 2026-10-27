@@ -32,6 +32,8 @@ export interface AnimatedTabsProps {
   variant?: 'default' | 'glass' | 'pill';
   /** ioiti-ui: what draws a tab that has an `href`; the application's link (LinkProvider) by default, else `a`. */
   linkComponent?: React.ElementType;
+  /** ioiti-ui: the tabs' name for a screen reader: "Views of the order". */
+  label?: string;
 }
 
 export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
@@ -45,6 +47,7 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
   layoutId: customLayoutId,
   variant = 'default',
   linkComponent,
+  label,
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
@@ -69,9 +72,33 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
   const currentTabObj = tabs.find((t) => t.id === activeTab);
   const isGlass = variant === 'glass' || variant === 'pill';
 
+  // ioiti-ui: tabs that switch panels are a tablist (tab, tabpanel, one stop of the keyboard, the arrows,
+  // Home and End moving and choosing); tabs that lead to pages (`href`) stay links, the current one said so.
+  const asTabs = tabs.every((tab) => tab.href === undefined);
+  const tabId = (id: string) => `${uniqueId}-tab-${id}`;
+  const panelId = `${uniqueId}-panel`;
+  const tabRefs = React.useRef<Record<string, HTMLElement | null>>({});
+  const onTabKeyDown = (event: React.KeyboardEvent) => {
+    if (!asTabs) return;
+    const at = tabs.findIndex((tab) => tab.id === activeTab);
+    const next =
+      event.key === 'ArrowRight' ? (at + 1) % tabs.length
+      : event.key === 'ArrowLeft' ? (at - 1 + tabs.length) % tabs.length
+      : event.key === 'Home' ? 0
+      : event.key === 'End' ? tabs.length - 1
+      : null;
+    if (next === null) return;
+    event.preventDefault();
+    handleTabClick(tabs[next].id);
+    tabRefs.current[tabs[next].id]?.focus();
+  };
+
   return (
     <div className={cn('flex flex-col gap-4', className)}>
       <div
+        role={asTabs ? 'tablist' : undefined}
+        aria-label={label}
+        onKeyDown={onTabKeyDown}
         className={cn(
           'flex items-center gap-1 self-start select-none',
           isGlass
@@ -86,7 +113,19 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
           return (
             <Tab
               key={tab.id}
+              ref={(element: HTMLElement | null) => {
+                tabRefs.current[tab.id] = element;
+              }}
               {...(tab.href !== undefined ? { href: tab.href, 'aria-current': isActive ? 'page' : undefined } : { type: 'button' })}
+              {...(asTabs
+                ? {
+                    id: tabId(tab.id),
+                    role: 'tab',
+                    'aria-selected': isActive,
+                    'aria-controls': renderContent ? panelId : undefined,
+                    tabIndex: isActive ? 0 : -1,
+                  }
+                : {})}
               onClick={(e: React.MouseEvent) => {
                 if (tab.href !== undefined) {
                   if (!isPlainClick(e)) return;
@@ -121,7 +160,10 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
               <span className="relative z-10 flex items-center gap-1.5">
                 {tab.icon && <span>{tab.icon}</span>}
                 {tab.label}
-                {tab.badge && (
+                {/* ioiti-ui: a badge of 0 is a badge too, not a bare 0 (`0 && …` drew one); a space before it for the
+                    name a screen reader hears ("Lines 4"), which the flex row does not draw. */}
+                {tab.badge !== undefined && tab.badge !== null && tab.badge !== '' && ' '}
+                {tab.badge !== undefined && tab.badge !== null && tab.badge !== '' && (
                   <span className="px-1.5 py-0.5 text-[10px] font-mono rounded bg-surface-hover border border-border text-text-secondary dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
                     {tab.badge}
                   </span>
@@ -138,9 +180,12 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
             {currentTabObj?.content && (
               <motion.div
                 key={activeTab}
+                // ioiti-ui: the panel of its tab, named by it.
+                {...(asTabs ? { id: panelId, role: 'tabpanel', 'aria-labelledby': tabId(activeTab), tabIndex: 0 } : {})}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
+                // ioiti-ui: it leaves quicker than it came (easeExit).
+                exit={{ opacity: 0, y: -6, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springGentle}
                 className="text-sm text-text-secondary dark:text-[#A1A1A1]"
               >

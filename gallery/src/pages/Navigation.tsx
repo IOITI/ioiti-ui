@@ -94,11 +94,12 @@ export function Navigation() {
       <Demo
         id="tabs"
         title="AnimatedTabs"
-        description="Views of one thing. A tab whose view has an address (?tab=) is a link; its background slides to the tab chosen."
+        description="Views of one thing: a tablist, its panel named by the tab shown, one stop of the keyboard whose arrows, Home and End move and choose. A tab whose view has an address (?tab=) is a link; its background slides to the tab chosen."
         names={['AnimatedTabs']}
         className="flex flex-col items-start gap-4"
       >
         <AnimatedTabs
+          label="Orders by state"
           tabs={[
             { id: 'open', label: 'Open', badge: 3, content: <p className="pt-3 text-sm text-muted-foreground">Three open orders.</p> },
             { id: 'sent', label: 'Sent', content: <p className="pt-3 text-sm text-muted-foreground">Sent this week.</p> },
@@ -106,7 +107,7 @@ export function Navigation() {
           ]}
           renderContent
         />
-        <AnimatedTabs variant="pill" tabs={[{ id: 'day', label: 'Day' }, { id: 'week', label: 'Week' }, { id: 'month', label: 'Month' }]} />
+        <AnimatedTabs variant="pill" label="Period" tabs={[{ id: 'day', label: 'Day' }, { id: 'week', label: 'Week' }, { id: 'month', label: 'Month' }]} />
       </Demo>
 
       <Demo id="breadcrumb" title="Breadcrumb" description="Where a page is, from Home: the top bar has one on every page. Too many steps fold into '…'." names={['Breadcrumb']} className="flex flex-col items-start gap-3">
