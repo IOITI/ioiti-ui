@@ -19,7 +19,7 @@ export function IconButton({ label, icon, hint, className, type = 'button', ...p
       type={type}
       aria-label={label}
       className={cn(
-        'grid size-9 shrink-0 place-items-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-200/70 hover:text-neutral-900 focus-ring dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white [&>svg]:size-[18px]',
+        'grid size-9 shrink-0 place-items-center rounded-lg text-neutral-500 transition motion-safe:active:scale-95 hover:bg-neutral-200/70 hover:text-neutral-900 focus-ring dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white [&>svg]:size-[18px]',
         className,
       )}
       {...props}

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { formatMoney, formatPercent, toneOf } from '../lib/format.js'
@@ -66,9 +67,16 @@ interface QueryStateProps {
   children: ReactNode
 }
 
-/** Loading and failure states shared by the pages. A failed refresh never blanks what is on screen. */
+/**
+ * Loading and failure states shared by the pages. A failed refresh never blanks what is on screen.
+ * What arrives where a skeleton was fades in (animate-reveal); what is there from the start is shown
+ * as it is.
+ */
 export function QueryState({ isPending, error, hasData, skeleton, children }: QueryStateProps) {
-  if (isPending && !hasData) {
+  const waiting = isPending && !hasData
+  const [waited, setWaited] = useState(waiting)
+  if (waiting && !waited) setWaited(true)
+  if (waiting) {
     return skeleton ?? <Skeleton className="h-40 w-full rounded-2xl" />
   }
   return (
@@ -79,7 +87,13 @@ export function QueryState({ isPending, error, hasData, skeleton, children }: Qu
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
-      {hasData && children}
+      {hasData &&
+        (waited ? (
+          // No box of its own: what it holds keeps its place among the page's (a column's gaps, a grid's cells).
+          <div className="contents [&>*]:animate-reveal">{children}</div>
+        ) : (
+          children
+        ))}
     </>
   )
 }

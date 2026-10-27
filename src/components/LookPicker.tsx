@@ -3,6 +3,7 @@ import { Palette } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
+import { motionTransitions } from '../lib/motion-tokens.js'
 import { ACCENT_LABEL, ACCENTS, lookLabel, MATERIAL_LABEL, MATERIALS } from '../lib/theme.js'
 import type { Accent, Material } from '../lib/theme.js'
 import { cn } from '../lib/utils.js'
@@ -88,8 +89,8 @@ export function LookPicker({ className }: { className?: string }) {
             tabIndex={-1}
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.1 } }}
-            transition={{ type: 'spring', stiffness: 520, damping: 38, mass: 0.7 }}
+            exit={{ opacity: 0, scale: 0.97, transition: motionTransitions.easeExit }}
+            transition={motionTransitions.springSnappy}
             style={{ transformOrigin: 'top right' }}
             className="absolute right-0 top-full z-50 mt-2 w-64 space-y-3 rounded-xl border border-border bg-surface p-3 text-foreground shadow-elevated glass-float"
           >

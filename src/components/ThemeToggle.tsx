@@ -1,5 +1,7 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { Monitor, Moon, Sun } from 'lucide-react'
 
+import { motionTransitions } from '../lib/motion-tokens.js'
 import { nextPreference, themeLabel } from '../lib/theme.js'
 import { cn } from '../lib/utils.js'
 
@@ -23,11 +25,23 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={label}
       title={label}
       className={cn(
-        'grid size-9 shrink-0 place-items-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-200/70 hover:text-neutral-900 focus-ring dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white',
+        'relative grid size-9 shrink-0 place-items-center rounded-lg text-neutral-500 transition motion-safe:active:scale-95 hover:bg-neutral-200/70 hover:text-neutral-900 focus-ring dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white',
         className,
       )}
     >
-      <Icon className="size-[18px]" aria-hidden />
+      {/* The icon turns to the state chosen, the one left turning on out of the way. */}
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={preference}
+          className="grid place-items-center"
+          initial={{ opacity: 0, rotate: -45, scale: 0.8 }}
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={{ opacity: 0, rotate: 45, scale: 0.8, transition: motionTransitions.easeExit }}
+          transition={motionTransitions.springSnappy}
+        >
+          <Icon className="size-[18px]" aria-hidden />
+        </motion.span>
+      </AnimatePresence>
     </button>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState, ViewTransition } from 'react'
 import type { ComponentProps, ElementType, ReactNode } from 'react'
 
 import { useAppName } from '../components/app-context.js'
@@ -8,6 +8,7 @@ import { Sidebar, SidebarTrigger, useSidebar } from '../components/ui/sidebar.js
 import { cn } from '../lib/utils.js'
 import { menuEntry, sidebarSections } from './navigation.js'
 import type { Menu } from './navigation.js'
+import { usePageChanged } from './page-change.js'
 import { PageTrailProvider, TopBarTrail } from './PageTrail.js'
 
 export interface AppShellProps<S extends string = string> {
@@ -75,10 +76,14 @@ function Shell<S extends string>({
   const [mobileOpen, setMobileOpen] = useState(false)
   const main = useRef<HTMLElement>(null)
   // Another page opens at its top: where the one left was scrolled to means nothing there. A change
-  // of the query alone leaves the page where it is.
-  useEffect(() => {
+  // of the query alone leaves the page where it is. Before the browser paints: no frame of the new
+  // page where the old one was.
+  useLayoutEffect(() => {
     if (main.current) main.current.scrollTop = 0
   }, [pathname])
+  // Another page fades in as the one left fades out, the shell staying as it is (motion.css): where
+  // the browser has view transitions and the page changes in a React transition, as the router's do.
+  const pageChanged = usePageChanged(pathname)
 
   const current = menuEntry(menu, pathname)
   const sections = useMemo(() => sidebarSections(menu), [menu])
@@ -108,12 +113,15 @@ function Shell<S extends string>({
         </header>
 
         {/* Positioned, so that what it scrolls stays in it: text for screen readers placed
-            against the page would otherwise make the window itself scroll, onto nothing. */}
-        <main ref={main} className="relative flex-1 overflow-y-auto">
-          <div className={cn('mx-auto flex w-full flex-col gap-6 p-4 sm:p-6', wide ? 'max-w-none' : 'max-w-7xl')}>
-            <MainScrollContext.Provider value={main}>{children}</MainScrollContext.Provider>
-          </div>
-        </main>
+            against the page would otherwise make the window itself scroll, onto nothing. The
+            transition takes it whole, cut to what it shows. */}
+        <ViewTransition default="none" update={pageChanged ? 'ioiti-page' : 'none'}>
+          <main ref={main} className="relative flex-1 overflow-y-auto">
+            <div className={cn('mx-auto flex w-full flex-col gap-6 p-4 sm:p-6', wide ? 'max-w-none' : 'max-w-7xl')}>
+              <MainScrollContext.Provider value={main}>{children}</MainScrollContext.Provider>
+            </div>
+          </main>
+        </ViewTransition>
       </div>
     </div>
   )

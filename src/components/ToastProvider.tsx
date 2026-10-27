@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
+import { cn } from '../lib/utils.js'
 import { VelocityToast } from './ui/velocity-toast.js'
 
 import { ToastContext } from './toast-context.js'
@@ -8,6 +9,12 @@ import type { ShowToast, ToastMessage } from './toast-context.js'
 
 /** Beyond this, the oldest waiting toasts are dropped: a burst must not take minutes to read out. */
 const MAX_WAITING = 6
+
+/**
+ * The frame stays above the page while a page changes, as every layer over it (motion.css, overPage() in
+ * src/lib/motion.ts): one frame, one name. Classes, written whole for Tailwind to find them.
+ */
+const OVER_PAGE = '[view-transition-name:ioiti-toasts] [view-transition-class:ioiti-layer]'
 
 interface QueuedToast extends ToastMessage {
   id: number
@@ -39,6 +46,8 @@ interface ToastProviderProps {
  */
 export function ToastProvider({ wrapperClassName, children }: ToastProviderProps) {
   const [queue, setQueue] = useState<QueuedToast[]>([])
+  // The toast shown, once dismissed: it leaves, its exit played, before the next one comes.
+  const [leaving, setLeaving] = useState<number | null>(null)
   const nextId = useRef(0)
 
   const show = useCallback<ShowToast>((message) => {
@@ -55,13 +64,17 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
       {current && (
         <VelocityToast
           key={current.id}
-          open
-          onDismiss={() => setQueue((waiting) => waiting.filter((toast) => toast.id !== current.id))}
+          open={leaving !== current.id}
+          onDismiss={() => setLeaving(current.id)}
+          onExitComplete={() => {
+            setQueue((waiting) => waiting.filter((toast) => toast.id !== current.id))
+            setLeaving(null)
+          }}
           title={current.title}
           description={current.description}
           variant={current.variant ?? 'default'}
           position="bottom-center"
-          wrapperClassName={wrapperClassName}
+          wrapperClassName={cn(OVER_PAGE, wrapperClassName)}
           duration={displayTime(current, queue.length - 1)}
         />
       )}

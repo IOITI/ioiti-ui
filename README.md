@@ -7,6 +7,9 @@ interface, as a package any application can install. React 19, Tailwind CSS 4, f
   or violet, indigo, blue, bloom: a printed flyer's grainy gradient) and a material (flat, or glass). The page
   follows the system until a theme is chosen, shows the application's accent and material until a person
   picks others, and is painted in its look from the first frame.
+- **Motion**: calm and the same everywhere, framer-motion's springs and the stylesheets' curves alike. A page
+  changes in one cross-fade, the shell still; a look in one cross-fade of the whole page; what floats arrives and
+  leaves the same way. Reduced where the system asks.
 - **127 components** (counting their parts): 46 of EasyUI's, reworked for the keyboard, screen readers,
   phones and a light theme; the blocks pages are made of (panels, tiles, tables, fields); and the shell
   (sidebar, top bar, the trail of where a page is).
@@ -32,6 +35,8 @@ The template has a sign-in page, the shell with its menu, a dashboard and a list
 npm install github:IOITI/ioiti-ui#v0.1.0 react react-dom framer-motion react-router
 npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3 vite @vitejs/plugin-react
 ```
+
+React and React DOM 19.3 at least: the shell changes pages with React's `ViewTransition`.
 
 **One line of CSS** brings Tailwind CSS and the design (tokens, fonts, base rules, focus ring). It replaces
 `@import "tailwindcss"`: never import both.
@@ -154,6 +159,24 @@ An application's own classes follow them the way the components do: `accent:` an
 `bg-brand-soft`, `text-brand-text`; for a filled, primary control, `bg-(image:--brand-fill)` and
 `text-brand-fill-foreground` after them, the accent's gradient where it has one) and the glass's utilities
 (`glass-bar`, `glass-card`, `glass-float`). `useTheme()` says what is shown (`theme`, `accent`, `material`).
+
+## Motion
+
+On by default, and reduced where the system asks: movement goes, fades stay, the loops of spinners stop.
+
+- **A change of page** (`AppShell`) fades the page left out as the new one fades in and rises 6 px, the sidebar and
+  the top bar staying as they are, and in use: React 19.3's `ViewTransition`, which React Router's changes of page
+  start (with another router, give `AppShell` the new `pathname` in a React transition). A change of the query
+  alone, Back and Forward, and a browser without view transitions change the page at once.
+- **A change of look** (a theme, an accent, a material) is one cross-fade of the whole page.
+- **What floats** (dialogs, sheets, popovers, tooltips, toasts) arrives with `springSnappy` and leaves quicker with
+  `easeExit`; a dialog grows from what opened it.
+
+An application's own motion takes the same: `motionTransitions` for framer-motion, `ease-soft`, `ease-fast` and
+`ease-exit` for its classes, `motion-safe:` for what moves. `IoitiProvider`'s `reducedMotion` reduces it
+everywhere (`always`) or nowhere (`never`). A layer an application fixes over its pages takes a
+`view-transition-name` of its own and `view-transition-class: ioiti-layer`: a change of page would cover it
+otherwise while it plays.
 
 ## The rules of the design
 

@@ -4,6 +4,8 @@ import * as React from "react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronRight, PanelLeft } from "lucide-react";
 import { isPlainClick } from "../../lib/links.js";
+import { overPage } from "../../lib/motion.js";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 import { useLinkComponent } from "../link-context.js";
 
@@ -32,7 +34,9 @@ function useControllableState<T>(
   return [current, set];
 }
 
-const spring = { type: "spring", stiffness: 420, damping: 36, mass: 0.8 } as const;
+// ioiti-ui: the sheets' and the drawer's motion, the design's own (EasyUI's was 420/36/0.8): its width,
+// its pill and its dot too.
+const spring = motionTransitions.springSheet;
 
 // ioiti-ui: the sidebar stays beside the page from md up; below, it is a drawer. Asked only where
 // the browser can answer (jsdom has no matchMedia).
@@ -131,13 +135,17 @@ export function Sidebar({
 
       <AnimatePresence>
         {mobileOpen && (
-          <div key="drawer" className="fixed inset-0 z-50 md:hidden">
+          // ioiti-ui: kept above the page while a page changes, as every layer over it (motion.css): a page
+          // chosen in the drawer arrives as the drawer leaves.
+          <div key="drawer" className="fixed inset-0 z-50 md:hidden" style={overPage("drawer")}>
             <motion.div
               aria-hidden
               className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px] glass:bg-[var(--glass-scrim)]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
+              exit={{ opacity: 0, transition: motionTransitions.easeExit }}
+              transition={motionTransitions.easeFast}
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
@@ -173,7 +181,8 @@ export function SidebarTrigger({ className, ...props }: React.ComponentProps<"bu
       type="button"
       aria-label="Open navigation"
       className={cn(
-        "grid size-9 place-items-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 md:hidden dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white",
+        // ioiti-ui: pressed, it gives, as the top bar's other buttons do (motion-safe:).
+        "grid size-9 place-items-center rounded-lg text-neutral-500 transition motion-safe:active:scale-95 hover:bg-neutral-100 hover:text-neutral-900 md:hidden dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white",
         className
       )}
       {...props}
@@ -453,13 +462,15 @@ function Panel({
           <div
             key="tip"
             className="pointer-events-none fixed z-[60] -translate-y-1/2"
-            style={{ left: tip.x, top: tip.y }}
+            // ioiti-ui: kept above the page while a page changes (motion.css), its entry clicked.
+            style={{ left: tip.x, top: tip.y, ...overPage("sidebar-tip") }}
           >
             <motion.div
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12 }}
+              // ioiti-ui: the motion of everything that floats: springSnappy arriving, easeExit leaving.
+              exit={{ opacity: 0, transition: motionTransitions.easeExit }}
+              transition={motionTransitions.springSnappy}
               className="whitespace-nowrap rounded-md bg-neutral-900 px-2 py-1 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-neutral-900"
             >
               {tip.label}

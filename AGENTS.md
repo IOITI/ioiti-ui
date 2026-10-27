@@ -8,7 +8,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 
 | Path | Content |
 |---|---|
-| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `grain-*.png` (bloom's grains) |
+| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `grain-*.png` (bloom's grains) |
 | `src/theme.js` | the pre-paint theme script, a file of its own (no inline script under a strict CSP) |
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
@@ -53,6 +53,16 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   `gallery/src/tokens.ts` reads it. `glass-float` is the only blur: never on an element with a fixed child of
   its own (a blur becomes its containing block), never on white text on ink. The tones (gain, loss, warning)
   keep their colours.
+- **Motion is a token, and calm.** framer-motion takes `motionTransitions` (`src/lib/motion-tokens.ts`), the
+  stylesheets the same curves (`ease-soft`, `ease-fast`, `ease-exit`: `motion.css`, a test holding them equal):
+  no spring or curve written by hand in ioiti-ui's own code. An entrance settles in about 300 ms without
+  overshoot (a gesture's return excepted), an exit is quicker (`easeExit`), a distance a few pixels. Reduced
+  (the system, or IoitiProvider's `reducedMotion`, `data-reduced-motion` on `<html>`), movement goes and fades
+  stay: framer's by MotionConfig, the stylesheets' by `motion-safe:` and `motion-reduce:` (written again to
+  follow both) and the loops' `--animate-*`. A layer fixed over the page (a dialog, a sheet, the drawer, the
+  toasts) has a view-transition name of its own on its container, which does not move (`overPage()`,
+  `src/lib/motion.ts`): a change of page, drawn above the whole document, would cover it. `motion.css` only
+  adds, as the accents and glass.
 - **One focus ring**, the global rule of `design.css`; no component draws its own.
 - **What leads somewhere is a link**, drawn by `useLinkComponent()` (the application's, from `LinkProvider`),
   or by the component's own `linkComponent` prop when given; a plain click is left to the router, a click with
@@ -79,6 +89,11 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 ## Testing quirks
 
 - Vitest runs in jsdom, with `src/test/setup.ts`; framer-motion is not mocked: wait for exits (`waitFor`).
+  Under fake timers, framer-motion draws on the window's real frames, taken when it loads, and reads the faked
+  clock: an animation starts on one of its frames and moves as the clock is advanced (`ToastProvider.test.tsx`).
+- jsdom has no view transitions: pages and looks change at once there. `src/test/viewTransition.ts` stands in
+  for `document.startViewTransition` (a change of look), not for React's `ViewTransition`, whose pictures jsdom
+  cannot animate.
 - **A stylesheet imported in a test is empty** (`css: false`), `?raw` included: read it from disk
   (`gallery/src/tokens.test.ts`), or compile it with Tailwind's `compile` (`src/styles/styles.test.ts`, which holds
   the variants' order and every block of the design). A gallery page reading one gets an empty string.

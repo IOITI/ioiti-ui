@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { isPlainClick } from '../../lib/links.js';
+import { overPage } from '../../lib/motion.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
@@ -200,13 +201,18 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 font-sans select-none">
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 font-sans select-none"
+          // ioiti-ui: kept above the page while a page changes, as every layer over it (motion.css).
+          style={overPage('palette')}
+        >
           {/* Calm backdrop. ioiti-ui: lighter under the glass material, and the dialog glass (glass-float). */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
+            exit={{ opacity: 0, transition: motionTransitions.easeExit }}
+            transition={motionTransitions.easeFast}
             onClick={handleClose}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm glass:bg-[var(--glass-scrim)]"
           />
@@ -218,7 +224,8 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
             aria-label={label}
             initial={{ opacity: 0, scale: 0.98, y: -6 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: -6 }}
+            // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
+            exit={{ opacity: 0, scale: 0.98, y: -6, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
             className={cn(
               'relative w-full max-w-lg rounded-2xl border border-border bg-surface-raised shadow-elevated overflow-hidden z-10 glass-float',

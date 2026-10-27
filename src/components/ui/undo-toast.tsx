@@ -171,7 +171,8 @@ export const UndoToast: React.FC<UndoToastProps> = ({
             layout
             initial={{ opacity: 0, y: position.startsWith('top') ? -16 : 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.94, y: position.startsWith('top') ? -10 : 10 }}
+            // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
+            exit={{ opacity: 0, scale: 0.94, y: position.startsWith('top') ? -10 : 10, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}

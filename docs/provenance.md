@@ -9,6 +9,7 @@ ioiti-ui is the design of the admin interface of WATA (IOITI's trading assistant
 | `src/styles/theme.css` | `styles/theme.css`: the values unchanged, the comments made general |
 | `src/styles/design.css` | `styles/index.css` from its `@custom-variant` to its end, unchanged but two comments, the package's `@source`, and ioiti-ui's imports of `accents.css` and `glass.css` and its `accent` and `glass` variants |
 | `src/styles/accents.css`, `src/styles/glass.css` | nothing: ioiti-ui's own, the accents and the glass material (`docs/fidelity.md`) |
+| `src/styles/motion.css`, `src/lib/motion.ts` | nothing: ioiti-ui's own, the motion for the stylesheets and the page, a page's and a look's changes (`docs/fidelity.md`) |
 | `src/styles/styles.css` | the first line of `styles/index.css` (`@import "tailwindcss"`) and `design.css` |
 | `src/theme.js` | `public/theme.js`, its key taken from its tag (`data-storage-key`); the accent and the material are ioiti-ui's own |
 | `src/components/ui/*` | `components/ui/*` (EasyUI's components with WATA's changes, `docs/easyui-changes.md`) |

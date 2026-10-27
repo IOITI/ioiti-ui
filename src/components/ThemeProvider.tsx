@@ -1,6 +1,8 @@
 import { useCallback, useLayoutEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import type { ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 
+import { changeLook } from '../lib/motion.js'
 import {
   applyAccent,
   applyMaterial,
@@ -48,7 +50,8 @@ export function ThemeProvider({ storageKey, children }: ThemeProviderProps) {
   const [accent, setAccentShown] = useState<Accent>(() => resolveAccent(readAccent(key), shownAccent()))
   const [material, setMaterialShown] = useState<Material>(() => resolveMaterial(readMaterial(key), shownMaterial()))
 
-  // Before the browser paints: no frame in the theme being left.
+  // Before the browser paints: no frame in the theme being left. A choice is drawn inside the change of
+  // look (changeLook: the whole page in one cross-fade), the system's at once.
   useLayoutEffect(() => {
     applyTheme(theme)
   }, [theme])
@@ -62,21 +65,21 @@ export function ThemeProvider({ storageKey, children }: ThemeProviderProps) {
   const setPreference = useCallback(
     (next: ThemePreference) => {
       writePreference(next, key)
-      setStored(next)
+      changeLook(() => flushSync(() => setStored(next)))
     },
     [key],
   )
   const setAccent = useCallback(
     (next: Accent) => {
       writeAccent(next, key)
-      setAccentShown(next)
+      changeLook(() => flushSync(() => setAccentShown(next)))
     },
     [key],
   )
   const setMaterial = useCallback(
     (next: Material) => {
       writeMaterial(next, key)
-      setMaterialShown(next)
+      changeLook(() => flushSync(() => setMaterialShown(next)))
     },
     [key],
   )

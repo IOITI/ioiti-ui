@@ -69,7 +69,11 @@ export function Meter({ ratio, tone = 'neutral', label, scale }: MeterProps) {
         aria-valuenow={Math.round(clamped * 100)}
         className={cn('h-1.5 w-full overflow-hidden rounded-full', METER_TRACK[tone])}
       >
-        <div className={cn('h-full rounded-full', METER_FILL[tone])} style={{ width: `${clamped * 100}%` }} />
+        {/* A new ratio slides to its place: the change is seen. */}
+        <div
+          className={cn('h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-soft', METER_FILL[tone])}
+          style={{ width: `${clamped * 100}%` }}
+        />
       </div>
       {scale && (
         <div aria-hidden className="mt-1 flex justify-between text-xs tabular-nums text-muted-foreground">

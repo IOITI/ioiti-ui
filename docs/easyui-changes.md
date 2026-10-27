@@ -68,6 +68,18 @@ otherwise).
   inside it, whose blur would see nothing but the pill), `dynamic-island` and `dependency-trace`'s status bar.
   None of these holds a fixed child of its own, which a blur would hold. The dialogs' scrims are lighter
   (`--glass-scrim`), and a filled button has the glass's glow. With the flat material, nothing changes.
+- **Motion.** What floats moves as one, on the design's tokens (`src/lib/motion-tokens.ts`) in place of
+  EasyUI's own values: arriving with `springSnappy` (the popovers of `date-picker` and `combobox`, whose
+  520/38/0.7 is gone, `spring-select`, the `split-button` menu and `selection-basket`, whose springs
+  overshot, `notification-bell`'s panel, `spotlight-search`, `directional-tooltip`, `peek-card`, the
+  sidebar's tip, both toasts), leaving with `easeExit` (150 ms, quicker than it came). A sheet and the
+  drawer slide with `springSheet` (`flysheet`'s 380/38/0.9 and `sidebar`'s 420/36/0.8 were near it), the
+  sidebar's width, pill and dot too. A scrim fades in with `easeFast` and out with `easeExit` (EasyUI's
+  took 0.15 s, 0.2 s, 0.32 s or framer's default). The layers fixed over the page are named for view
+  transitions (`overPage()`, `src/lib/motion.ts`: `settle-modal`, `flysheet` and `spotlight-search`'s
+  layers, the sidebar's drawer and its tip), so that a change of page, drawn above the whole document,
+  never covers them. The sidebar's trigger gives when pressed (`motion-safe:`). What a component does of
+  its own (a box drawing its mark, a switch stretching, the island growing) keeps EasyUI's motion.
 
 ## Component by component
 
@@ -93,7 +105,10 @@ otherwise).
 - `settle-modal`: drawn in `document.body` (a dialog opened from a table cell took the cell's alignment and
   wrapping); the focus moves into the dialog, stays in it and returns to what opened it; an `xl` size
   (`max-w-2xl`) and a `full` one (`max-w-[110rem]`, two versions of something side by side); a panel no
-  taller than the screen, what does not fit scrolling inside it.
+  taller than the screen, what does not fit scrolling inside it. One calm entrance: the panel grows from
+  what opened it (its transform origin the middle of the control the focus was on), 0.96 to 1 and 6 px
+  of travel with `springGentle`, without EasyUI's overshoot (0.94, 1.02, 1) and its content with it
+  rather than a layer after it.
 - `otp-input`: `id`, given to the first box for a `<label htmlFor>`. A box no longer keeps one character:
   several digits arriving in one box (a keyboard's suggestion) go on from it, a whole code (a password
   manager's or a phone's autofill) fills every box as a paste does, a digit typed beside the one a box holds
@@ -108,6 +123,10 @@ otherwise).
 - `drag-to-confirm`: the hidden fallback button is out of the Tab order (it was a stop nobody could see, on
   which Enter confirmed); ArrowRight no longer confirms, only Enter and Space.
 - `velocity-toast`, `undo-toast`: `wrapperClassName`, to lift a toast above a bar fixed at the bottom.
+  `velocity-toast`'s `onExitComplete`: once it has left, its exit played, `ToastProvider` shows the next
+  one (it took the toast away in the render that began its exit, which never played).
+- `motion-tokens`: `springSheet` (a sheet, the drawer, the sidebar) and `easeExit` (whatever leaves); the
+  stylesheets have its curves too (`src/styles/motion.css`), a test holding them the same.
 - `stretch-switch`: named by its label and described by its description (`aria-labelledby`,
   `aria-describedby`): a screen reader said only "switch, on".
 - `form`, `animated-tabs`, `smooth-accordion`: the literal grey `#6B6B6B` (3.6:1 on the dark surface)
@@ -180,7 +199,9 @@ otherwise).
 - `combobox`: `id` on the trigger for a `<label htmlFor>` (a `<label>` around it passed the clicks on its
   options to the trigger, which opened again); named by its label, not by its placeholder; placeholder,
   description and empty text a darker grey in light.
-- `directional-tooltip` (under `Hint`): drawn in `document.body` at fixed coordinates beside its trigger (a
+- `directional-tooltip` (under `Hint`): its trigger's own ref read from its props, where React 19 keeps it (EasyUI
+  read `element.ref`, which React 19 removed and which logged an error at every render); drawn in
+  `document.body` at fixed coordinates beside its trigger (a
   table's overflow cut it), on the other side when there is no room, and inside the screen; shown on a tap
   too, hidden by Escape, a tap elsewhere or a scroll; its arrow points at the trigger's middle, also when the
   tooltip was moved to stay on the screen; its text always in the page for screen readers

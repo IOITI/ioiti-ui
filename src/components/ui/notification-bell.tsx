@@ -185,7 +185,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
+            exit={{ opacity: 0, y: 8, scale: 0.95, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
             role="dialog"
             aria-label="Notifications"

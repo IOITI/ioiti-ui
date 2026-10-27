@@ -168,7 +168,8 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
             onKeyDown={handleListKey}
             initial={{ opacity: 0, y: -6, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
+            exit={{ opacity: 0, y: -4, scale: 0.98, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
             // The container itself rides the spring: a tiny upward slide that
             // "settles" with the snappy spring, plus a slight overshoot via the

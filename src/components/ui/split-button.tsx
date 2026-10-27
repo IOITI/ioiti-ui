@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
 import { useLinkComponent } from '../link-context.js';
 
@@ -17,12 +18,8 @@ import { useLinkComponent } from '../link-context.js';
 // Motion
 // -----------------------------------------------------------------------------
 
-const springSnappy = {
-  type: 'spring' as const,
-  stiffness: 400,
-  damping: 25,
-  mass: 0.5,
-};
+// ioiti-ui: the motion of everything that floats, the design's own spring (EasyUI's here overshot).
+const springSnappy = motionTransitions.springSnappy;
 
 // -----------------------------------------------------------------------------
 // Types
@@ -561,9 +558,10 @@ export function SplitButton({
             exit={{
               opacity: 0,
               scale: 0.97,
+              // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
               transition: reduceMotion
                 ? { duration: 0 }
-                : { duration: 0.12 },
+                : motionTransitions.easeExit,
             }}
             transition={menuTransition}
             className={cn(

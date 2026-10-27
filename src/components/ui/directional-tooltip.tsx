@@ -171,8 +171,9 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
   const trigger = empty ? children : React.cloneElement(children, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      // forward existing ref if any
-      const existingRef = (children as any).ref;
+      // forward existing ref if any. ioiti-ui: from its props, where React 19 keeps it (element.ref is
+      // gone, and reading it said so in the console at every render).
+      const existingRef = (children.props as { ref?: React.Ref<HTMLElement> }).ref;
       if (typeof existingRef === 'function') existingRef(node);
       else if (existingRef && 'current' in existingRef) {
         (existingRef as any).current = node;
@@ -227,7 +228,8 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
                 aria-hidden="true"
                 initial={{ opacity: 0, scale: 0.94, x: offsetT.x, y: offsetT.y }}
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, x: offsetT.x * 0.5, y: offsetT.y * 0.5 }}
+                // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
+                exit={{ opacity: 0, scale: 0.96, x: offsetT.x * 0.5, y: offsetT.y * 0.5, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springSnappy}
                 // ioiti-ui: long hints wrap, within the screen; glass under the glass material (glass-float).
                 className={cn(
