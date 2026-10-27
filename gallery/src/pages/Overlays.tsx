@@ -23,6 +23,7 @@ import {
   PeekCard,
   PeekLink,
   Popover,
+  ProductTour,
   SettleModal,
   SegmentedControl,
   SignedValue,
@@ -282,6 +283,29 @@ function Menus() {
   )
 }
 
+/** A tour of this page: each step a part of it, the page scrolled to it. */
+function Tour() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        Take the tour of this page
+      </Button>
+      <ProductTour
+        open={open}
+        onClose={() => setOpen(false)}
+        steps={[
+          { title: 'What floats over the page', body: 'Four of the layers this page shows, one after the other. The arrows move from one to the next, Escape ends it.' },
+          { target: '#popover', title: 'A popover', body: 'A panel beside its button: filters, a few settings.', placement: 'bottom' },
+          { target: '#menu', title: 'Menus', body: 'The actions on a thing, behind a button or at the pointer.', placement: 'bottom' },
+          { target: '#dialog', title: 'Dialogs', body: 'What asks for a decision, the page waiting behind it.', placement: 'top' },
+          { title: 'That is the tour', body: 'Each step can lead anywhere on a page: an element, or a ref to it.' },
+        ]}
+      />
+    </>
+  )
+}
+
 function Bell() {
   const [items, setItems] = useState<Notification[]>(() => [
     { id: '1', message: 'Export ready', detail: 'orders-2026-10-26.csv', timestamp: new Date(Date.now() - 2 * MINUTE), read: false, href: '/components/data', tone: 'success' },
@@ -374,6 +398,15 @@ export function Overlays() {
         names={['DropdownMenu', 'ContextMenu']}
       >
         <Menus />
+      </Demo>
+
+      <Demo
+        id="tour"
+        title="ProductTour"
+        description="A walk through a page, one part at a time: the page dims around each, scrolled to it, its step beside it (on a phone, at the bottom). The arrows move, Escape ends it, Tab stays in its card; the focus comes back where it was."
+        names={['ProductTour']}
+      >
+        <Tour />
       </Demo>
 
       <Demo id="dialog" title="SettleModal" description="A dialog, in four widths (and a full one, for two things side by side)." names={['SettleModal']}>

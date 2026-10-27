@@ -339,6 +339,17 @@ otherwise).
 - `settle-modal` (0.3.0): its `description` named by `aria-describedby`, read with its title.
 - `velocity-toast` (0.3.0): `wrapperStyle`, the style of its frame: `ToastProvider` lifts it above what sits at the
   bottom of the page (`SaveBar`), its margin sliding where motion is not reduced.
+- `product-tour` (from `7c106d4`): its demo (`ProductTourDemo`, a page of its own) and its default export are gone;
+  a step's `target` may be a ref too. Its layer is among the others over the page (`z-50`, where it was 9999: the
+  hints from its card were under it) and kept above it while a page changes (`over-page`); its scrim is the
+  design's (`fill-black/50`, `--glass-scrim` under glass), its card a dialog's surface, text and glass
+  (`glass-float`) with the package's buttons, its current step in the accent. A dialog named by its step's title
+  (`aria-labelledby`, where it was "Product tour"); Tab stays in its card, from wherever the focus is, by a
+  listener on the window as SettleModal's (the page is not made inert: the toasts would go with it). Its motion:
+  the cutout glides with `springSheet`, the card moves with `springSnappy`, what fades fades with `easeFast` and
+  `easeExit` (its own springs and curve); a step's words come 8 px from the side the tour goes, without their
+  blur, and only fade where motion is reduced, the cutout then jumping (`useReducedMotionConfig`). It measures
+  once where there is no `ResizeObserver`, and scrolls where the browser can (jsdom cannot).
 
 ## ioiti-ui's own changes
 

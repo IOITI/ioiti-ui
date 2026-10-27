@@ -22,8 +22,8 @@ come from EasyUI. They were copied by hand from these commits of its repository:
 - `7c106d4a195f9ce566ffbbc672fc48bed68d30bd` (2026-10-23): ai-agent-activity,
   airport-matrix-clock, animated-file-upload, bar-chart, dependency-trace, donut-chart,
   draw-checkbox, dynamic-island, funnel-chart, live-line-chart, payment-status
-  (`request-status.tsx` here), peek-card, sheet (`flysheet.tsx` here), split-button, stat-card,
-  undo-toast; `dashboard-chart-utils.ts`.
+  (`request-status.tsx` here), peek-card, product-tour, sheet (`flysheet.tsx` here), split-button,
+  stat-card, undo-toast; `dashboard-chart-utils.ts`.
 
 They were changed, first for WATA's admin interface, then for this package: `docs/easyui-changes.md`
 lists every change. `flysheet.tsx` also does what Elastic UI's flyout does, as Elastic UI's documentation

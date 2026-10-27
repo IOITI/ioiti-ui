@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { useToast } from './toast-context.js'
 import { ToastProvider } from './ToastProvider.js'
 import { Flysheet, FlysheetContent, FlysheetTitle } from './ui/flysheet.js'
+import { ProductTour } from './ui/product-tour.js'
 import { SettleModal } from './ui/settle-modal.js'
 import { Sidebar } from './ui/sidebar.js'
 import { SpotlightSearch } from './ui/spotlight-search.js'
@@ -55,5 +56,11 @@ describe('the layers over the page', () => {
 
     expectOverPage(await screen.findByRole('dialog', { name: 'Order 2026-0042' }))
     expectOverPage(screen.getByRole('status').parentElement)
+  })
+
+  it('are named only while a transition plays, the tour\'s', async () => {
+    render(<ProductTour open steps={[{ title: 'Welcome', body: 'A short tour.' }]} onClose={() => {}} />)
+    const card = await screen.findByRole('dialog', { name: 'Welcome' })
+    expectOverPage(card.parentElement)
   })
 })

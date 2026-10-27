@@ -195,6 +195,11 @@ the data tables' filters as Elastic UI's filter group.
   more, Home and End to the panels' bounds, Enter to fold a collapsible panel away and back, a double click back
   to the first sizes); a separator with its value to a screen reader; one under the other under `stackBelow`. As
   Elastic UI's resizable container does.
+- **`ProductTour`**, EasyUI's: a walk through a page, one part at a time, the page dimmed around it (the design's
+  scrim, the glass's under glass) and scrolled to it, its step beside it, at the bottom on a phone; a part is an
+  element's selector, a getter or a ref. A dialog named by its step's title: the arrows move, Escape ends it, Tab
+  stays in its card, the focus comes back where it was. Its cutout glides as a sheet does, still where motion is
+  reduced.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
