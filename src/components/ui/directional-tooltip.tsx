@@ -171,8 +171,9 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
   const trigger = empty ? children : React.cloneElement(children, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      // forward existing ref if any
-      const existingRef = (children as any).ref;
+      // forward existing ref if any. ioiti-ui: from its props, where React 19 keeps it (element.ref is
+      // gone, and reading it said so in the console at every render).
+      const existingRef = (children.props as { ref?: React.Ref<HTMLElement> }).ref;
       if (typeof existingRef === 'function') existingRef(node);
       else if (existingRef && 'current' in existingRef) {
         (existingRef as any).current = node;

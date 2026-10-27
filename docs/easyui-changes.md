@@ -199,7 +199,9 @@ otherwise).
 - `combobox`: `id` on the trigger for a `<label htmlFor>` (a `<label>` around it passed the clicks on its
   options to the trigger, which opened again); named by its label, not by its placeholder; placeholder,
   description and empty text a darker grey in light.
-- `directional-tooltip` (under `Hint`): drawn in `document.body` at fixed coordinates beside its trigger (a
+- `directional-tooltip` (under `Hint`): its trigger's own ref read from its props, where React 19 keeps it (EasyUI
+  read `element.ref`, which React 19 removed and which logged an error at every render); drawn in
+  `document.body` at fixed coordinates beside its trigger (a
   table's overflow cut it), on the other side when there is no room, and inside the screen; shown on a tap
   too, hidden by Escape, a tap elsewhere or a scroll; its arrow points at the trigger's middle, also when the
   tooltip was moved to stay on the screen; its text always in the page for screen readers

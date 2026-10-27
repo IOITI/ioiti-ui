@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { createRef } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 
 import { Hint } from './Hint.js'
 
@@ -21,6 +22,25 @@ describe('a hint', () => {
     // Drawn over the page, out of any parent that would cut it.
     expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent('Switch it off before deleting it')
     expect(screen.getByRole('tooltip', { hidden: true }).parentElement).toBe(document.body)
+  })
+
+  it('leaves its control\'s own ref to it, read where React 19 keeps it', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const ref = createRef<HTMLButtonElement>()
+    try {
+      render(
+        <Hint content="Switch it off before deleting it">
+          <button ref={ref} type="button">
+            Delete
+          </button>
+        </Hint>,
+      )
+
+      expect(ref.current).toBe(screen.getByRole('button', { name: 'Delete' }))
+      expect(error.mock.calls.flat().join(' ')).not.toContain('element.ref')
+    } finally {
+      error.mockRestore()
+    }
   })
 
   it('shows at once on a tap, and goes on Escape', async () => {
