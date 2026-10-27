@@ -51,7 +51,9 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   `bg-brand`. A grain is a PNG beside `accents.css`, made by `scripts/grains.mjs` (an SVG filter's noise
   vanishes or turns to moiré at some screens and zooms), never a `data:` URI; `GRAINS` in
   `gallery/src/tokens.ts` reads it. `glass-float` is the only blur: never on an element with a fixed child of
-  its own (a blur becomes its containing block), never on white text on ink. The tones (gain, loss, warning)
+  its own (a blur becomes its containing block), never on white text on ink, never under an element with a
+  `view-transition-name` at rest (a name makes it the root of its children's backdrop: their blur sees nothing
+  of the page). The tones (gain, loss, warning)
   keep their colours.
 - **Motion is a token, and calm.** framer-motion takes `motionTransitions` (`src/lib/motion-tokens.ts`), the
   stylesheets the same curves (`ease-soft`, `ease-fast`, `ease-exit`: `motion.css`, a test holding them equal):
@@ -60,8 +62,9 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   (the system, or IoitiProvider's `reducedMotion`, `data-reduced-motion` on `<html>`), movement goes and fades
   stay: framer's by MotionConfig, the stylesheets' by `motion-safe:` and `motion-reduce:` (written again to
   follow both) and the loops' `--animate-*`. A layer fixed over the page (a dialog, a sheet, the drawer, the
-  toasts) has a view-transition name of its own on its container, which does not move (`overPage()`,
-  `src/lib/motion.ts`): a change of page, drawn above the whole document, would cover it. `motion.css` only
+  toasts) carries `over-page` on its container, which does not move: a change of page, drawn above the whole
+  document, would cover it. It names the layer while a view transition plays only, never at rest, which would
+  take the blur of its glass away. `motion.css` only
   adds, as the accents and glass.
 - **One focus ring**, the global rule of `design.css`; no component draws its own.
 - **What leads somewhere is a link**, drawn by `useLinkComponent()` (the application's, from `LinkProvider`),

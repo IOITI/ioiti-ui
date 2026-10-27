@@ -10,11 +10,6 @@ import type { ShowToast, ToastMessage } from './toast-context.js'
 /** Beyond this, the oldest waiting toasts are dropped: a burst must not take minutes to read out. */
 const MAX_WAITING = 6
 
-/**
- * The frame stays above the page while a page changes, as every layer over it (motion.css, overPage() in
- * src/lib/motion.ts): one frame, one name. Classes, written whole for Tailwind to find them.
- */
-const OVER_PAGE = '[view-transition-name:ioiti-toasts] [view-transition-class:ioiti-layer]'
 
 interface QueuedToast extends ToastMessage {
   id: number
@@ -74,7 +69,8 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
           description={current.description}
           variant={current.variant ?? 'default'}
           position="bottom-center"
-          wrapperClassName={cn(OVER_PAGE, wrapperClassName)}
+          // The frame stays above the page while a page changes, as every layer over it (over-page, motion.css).
+          wrapperClassName={cn('over-page', wrapperClassName)}
           duration={displayTime(current, queue.length - 1)}
         />
       )}

@@ -156,6 +156,16 @@ describe('the motion, as an application builds it', () => {
     expect(rule(css, ':root:not([data-look-change])::view-transition-new(.ioiti-layer)')).toContain('animation: none')
   })
 
+  it('names a layer over the page while a transition plays only: at rest, the blur in it has the page to blur', async () => {
+    const css = await build(['over-page'])
+
+    const named = rule(css, '.over-page:is(:root:active-view-transition:not([data-look-change]) *)')
+    expect(named).toContain('view-transition-name: match-element')
+    expect(named).toContain('view-transition-class: ioiti-layer')
+    // Nothing outside a transition: a name would make the layer the root of its glass's backdrop.
+    expect(css).not.toMatch(/\.over-page\s*\{/)
+  })
+
   it('changes a look in one cross-fade of the whole page, the components\' own transitions held still meanwhile', async () => {
     const css = await build([])
 

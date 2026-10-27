@@ -10,6 +10,7 @@
                       its 150 ms kept
    - ease-exit        easeExit's: what leaves, quicker than it arrived
    - animate-reveal   content arriving where a skeleton was (QueryState)
+   - over-page        a layer fixed over the page, kept above it while it changes
 
    A test holds the curves to motionTransitions' (src/styles/styles.test.ts).
    They are Tailwind's theme layer, which the reference of the design leaves
@@ -121,9 +122,19 @@
   animation: none;
 }
 
-/* A layer fixed over the page (a dialog, a sheet, the drawer, the toasts: overPage(), in
-   src/lib/motion.ts) is named, and stays above the page while it changes, live: the page's pictures
-   are drawn above the whole document, and would cover it. */
+/* A layer fixed over the page (a dialog, a sheet, the drawer, the toasts: over-page, on its
+   container, which does not move) stays above the page while it changes, live: the page's pictures are
+   drawn above the whole document, and would cover it. It is named while a transition plays, and only
+   then: a name makes an element the root of its children's backdrop, which would leave their blur
+   (glass-float, a scrim's) nothing of the page to blur. Each its own name (match-element), so that no
+   two layers ever share one. Not in a change of look, which takes the whole page in one picture. */
+@utility over-page {
+  &:is(:root:active-view-transition:not([data-look-change]) *) {
+    view-transition-name: match-element;
+    view-transition-class: ioiti-layer;
+  }
+}
+
 :root:not([data-look-change])::view-transition-group(.ioiti-layer) {
   animation: none;
 }

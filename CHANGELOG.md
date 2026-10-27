@@ -49,7 +49,8 @@ look that change in one cross-fade, toasts that leave, and one motion for everyt
   `pathname` given to `AppShell` in a React transition. A change of the query alone, Back and Forward, and a
   browser without view transitions change the page at once; where motion is reduced, the new page fades in
   without rising. What is fixed over the page stays above it while it changes (a dialog, a sheet, the drawer,
-  the toasts). Another page opens at its top before the browser paints.
+  the toasts), its glass blurring the page behind it as ever. Another page opens at its top before the browser
+  paints.
 - **A change of look in one cross-fade**: a theme, an accent or a material chosen changes the whole page at once,
   where a mix of 150 ms colour fades and snaps did; the components' own transitions hold still meanwhile. A press
   is answered at once all the same: where the browser draws no frame soon, the change comes without its fade. The
@@ -67,8 +68,8 @@ look that change in one cross-fade, toasts that leave, and one motion for everyt
   (imported by `design.css`): `ease-soft`, `ease-fast` and `ease-exit`, framer-motion's curves, and
   `animate-reveal`; every `transition-*` class takes `ease-fast`'s curve, its 150 ms kept. `motion-safe:` and
   `motion-reduce:` follow `IoitiProvider`'s `reducedMotion` as well as the system (`data-reduced-motion` on
-  `<html>`), and the loops of spinners stop where motion is reduced. It only adds: the reference blocks of the
-  design hold.
+  `<html>`), and the loops of spinners stop where motion is reduced. `over-page`, for a layer an application fixes over
+  its pages, keeps it above a change of page. It only adds: the reference blocks of the design hold.
 - **The gallery**: the Motion page shows the curves in CSS, a change of page and of look, what moves within a
   page and the motion of what floats.
 

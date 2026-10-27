@@ -1,20 +1,8 @@
-import type { CSSProperties } from 'react'
-
 /**
- * ioiti-ui's motion as the page carries it: what is written on <html> and on the layers over the
- * page for the stylesheets (src/styles/motion.css) to read. Its curves are motion-tokens.ts, for
- * framer-motion, and the same in motion.css, for the stylesheets.
+ * ioiti-ui's motion as the page carries it: what is written on <html> for the stylesheets
+ * (src/styles/motion.css) to read. Its curves are motion-tokens.ts, for framer-motion, and the same
+ * in motion.css, for the stylesheets.
  */
-
-/**
- * The style of a layer fixed over the page (a dialog, a sheet, the drawer, the toasts), each with a
- * name of its own: a change of page is drawn above the whole document, and would cover it, but a
- * layer named stays above it, live (motion.css). On the layer's container, which does not move, so
- * that what moves inside it is seen moving.
- */
-export function overPage(name: string): CSSProperties {
-  return { viewTransitionName: `ioiti-${name}`, viewTransitionClass: 'ioiti-layer' }
-}
 
 /** IoitiProvider's `reducedMotion`, on <html> while it is not the system's: what motion.css reads. */
 export const REDUCED_MOTION_ATTRIBUTE = 'data-reduced-motion'

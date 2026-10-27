@@ -174,9 +174,9 @@ On by default, and reduced where the system asks: movement goes, fades stay, the
 
 An application's own motion takes the same: `motionTransitions` for framer-motion, `ease-soft`, `ease-fast` and
 `ease-exit` for its classes, `motion-safe:` for what moves. `IoitiProvider`'s `reducedMotion` reduces it
-everywhere (`always`) or nowhere (`never`). A layer an application fixes over its pages takes a
-`view-transition-name` of its own and `view-transition-class: ioiti-layer`: a change of page would cover it
-otherwise while it plays.
+everywhere (`always`) or nowhere (`never`). A layer an application fixes over its pages takes `over-page` on
+its container: a change of page would cover it otherwise while it plays. It names the layer only then, as a
+view-transition name at rest would take the blur of its glass away.
 
 ## The rules of the design
 

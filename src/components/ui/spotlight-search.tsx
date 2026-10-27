@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { isPlainClick } from '../../lib/links.js';
-import { overPage } from '../../lib/motion.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
@@ -201,11 +200,8 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 font-sans select-none"
-          // ioiti-ui: kept above the page while a page changes, as every layer over it (motion.css).
-          style={overPage('palette')}
-        >
+        // ioiti-ui: kept above the page while a page changes, as every layer over it (over-page, motion.css).
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 font-sans select-none over-page">
           {/* Calm backdrop. ioiti-ui: lighter under the glass material, and the dialog glass (glass-float). */}
           <motion.div
             initial={{ opacity: 0 }}

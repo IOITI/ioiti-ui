@@ -75,10 +75,11 @@ otherwise).
   sidebar's tip, both toasts), leaving with `easeExit` (150 ms, quicker than it came). A sheet and the
   drawer slide with `springSheet` (`flysheet`'s 380/38/0.9 and `sidebar`'s 420/36/0.8 were near it), the
   sidebar's width, pill and dot too. A scrim fades in with `easeFast` and out with `easeExit` (EasyUI's
-  took 0.15 s, 0.2 s, 0.32 s or framer's default). The layers fixed over the page are named for view
-  transitions (`overPage()`, `src/lib/motion.ts`: `settle-modal`, `flysheet` and `spotlight-search`'s
-  layers, the sidebar's drawer and its tip), so that a change of page, drawn above the whole document,
-  never covers them. The sidebar's trigger gives when pressed (`motion-safe:`). What a component does of
+  took 0.15 s, 0.2 s, 0.32 s or framer's default). The layers fixed over the page carry `over-page`
+  (`src/styles/motion.css`: `settle-modal`, `flysheet` and `spotlight-search`'s layers, the sidebar's drawer
+  and its tip), so that a change of page, drawn above the whole document, never covers them: named for view
+  transitions while one plays, and only then, as a name at rest would make the layer the root of its glass's
+  backdrop, which would then blur nothing of the page. The sidebar's trigger gives when pressed (`motion-safe:`). What a component does of
   its own (a box drawing its mark, a switch stretching, the island growing) keeps EasyUI's motion.
 
 ## Component by component
