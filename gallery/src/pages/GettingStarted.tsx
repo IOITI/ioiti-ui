@@ -26,13 +26,13 @@ export function GettingStarted() {
       />
 
       <Panel title="Start a new application" description="The starter template has the shell, a sign-in page, a dashboard and a list, ready to change.">
-        <CodeBlock language="shell" code={`npx degit IOITI/ioiti-ui/templates/app#v0.1.0 my-app
+        <CodeBlock language="shell" code={`npx degit IOITI/ioiti-ui/templates/app#v0.3.0 my-app
 cd my-app && npm install && npm run dev`} />
       </Panel>
 
       <Panel title="Or add it to an application" description="Installed from a tag of its repository: a release carries the package built, nothing is built on install.">
         <div className="space-y-3">
-          <CodeBlock language="shell" code={`npm install github:IOITI/ioiti-ui#v0.1.0 react react-dom framer-motion react-router
+          <CodeBlock language="shell" code={`npm install github:IOITI/ioiti-ui#v0.3.0 react react-dom framer-motion react-router
 npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`} />
           <p className="text-sm text-muted-foreground">
             One line of CSS brings Tailwind and the design: the tokens of both themes, the fonts, the focus ring. It

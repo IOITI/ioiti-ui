@@ -22,7 +22,7 @@ check passes), or `npm run gallery` (http://localhost:5180).
 ## Start a new application
 
 ```bash
-npx degit IOITI/ioiti-ui/templates/app#v0.1.0 my-app
+npx degit IOITI/ioiti-ui/templates/app#v0.3.0 my-app
 cd my-app && npm install && npm run dev
 ```
 
@@ -32,7 +32,7 @@ The template has a sign-in page, the shell with its menu, a dashboard and a list
 ## Add it to an application
 
 ```bash
-npm install github:IOITI/ioiti-ui#v0.1.0 react react-dom framer-motion react-router
+npm install github:IOITI/ioiti-ui#v0.3.0 react react-dom framer-motion react-router
 npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3 vite @vitejs/plugin-react
 ```
 
