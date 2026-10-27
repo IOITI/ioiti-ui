@@ -445,14 +445,14 @@ export function DataDisplay() {
       <Demo
         id="copy-chip"
         title="CopyChip"
-        description="A value to read and copy, in a chip with its button: a reference, an API key, an address. A long one is cut in its middle (its ends tell it apart) or at its end; the whole of it in a hint and for a screen reader."
+        description="A value to read and copy, in a chip with its button: a reference, an identifier, an address. A long one is cut in its middle (its ends tell it apart) or at its end; the whole of it in a hint and for a screen reader."
         names={['CopyChip']}
         className="flex flex-col items-start gap-3"
       >
         <CopyChip value="IT-1042" label="the reference" />
-        <CopyChip value="whsec_4f9a2c7e1b0d93a6ff21c8e5" label="the signing secret" truncate="middle" />
+        <CopyChip value="4f1c2a7e-9b0d-4d93-a6ff-21c8e5b7a042" label="the request ID" truncate="middle" />
         <CopyChip
-          value="https://example.com/hooks/orders/2026/received?token=7c106d4a195f9ce566ffbbc672fc48bed68d30bd"
+          value="https://example.com/webhooks/orders/2026/10/received?source=shop&order=IT-1042"
           label="the address of the webhook"
           truncate="end"
           className="w-72"

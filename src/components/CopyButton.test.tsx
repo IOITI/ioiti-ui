@@ -17,12 +17,12 @@ describe('CopyButton', () => {
     // userEvent's setup gives the page a clipboard to read back.
     const user = userEvent.setup()
     const copied = vi.fn()
-    render(<CopyButton value="sk_test_4242" label="Copy the key" onCopy={copied} />)
+    render(<CopyButton value="IT-1042" label="Copy the reference" onCopy={copied} />)
 
-    const button = screen.getByRole('button', { name: 'Copy the key' })
+    const button = screen.getByRole('button', { name: 'Copy the reference' })
     await user.click(button)
 
-    expect(await navigator.clipboard.readText()).toBe('sk_test_4242')
+    expect(await navigator.clipboard.readText()).toBe('IT-1042')
     expect(copied).toHaveBeenCalledWith(true)
     expect(button).toHaveFocus()
     await waitFor(() => expect(announcer()).toHaveTextContent('Copied'))
@@ -32,7 +32,7 @@ describe('CopyButton', () => {
     vi.stubGlobal('isSecureContext', true)
     const user = userEvent.setup()
     vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'))
-    render(<CopyButton value="sk_test_4242" showLabel />)
+    render(<CopyButton value="IT-1042" showLabel />)
 
     await user.click(screen.getByRole('button', { name: 'Copy' }))
 

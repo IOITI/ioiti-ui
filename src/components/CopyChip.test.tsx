@@ -11,10 +11,10 @@ describe('CopyChip', () => {
   })
 
   it('cuts a long value in its middle, the whole of it for a screen reader', () => {
-    const { container } = render(<CopyChip value="whsec_4f9a2c7e1b0d93a6ff21" label="the secret" truncate="middle" />)
-    expect(container).toHaveTextContent('whsec_4f…a6ff21')
+    const { container } = render(<CopyChip value="4f1c2a7e-9b0d-4d93-a6ff-21c8e5b7a042" label="the request ID" truncate="middle" />)
+    expect(container).toHaveTextContent('4f1c2a7e…b7a042')
     // Read whole, the cut shown hidden from a screen reader (its hint describes it, too).
-    expect(container.querySelector('.font-mono .sr-only')).toHaveTextContent('whsec_4f9a2c7e1b0d93a6ff21')
-    expect(screen.getByText('whsec_4f…a6ff21')).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelector('.font-mono .sr-only')).toHaveTextContent('4f1c2a7e-9b0d-4d93-a6ff-21c8e5b7a042')
+    expect(screen.getByText('4f1c2a7e…b7a042')).toHaveAttribute('aria-hidden', 'true')
   })
 })

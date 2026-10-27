@@ -154,7 +154,7 @@ export function Actions() {
         description="Copies a value and says it did: a check for two seconds, its hint saying what came of it, and the words for a screen reader. The focus stays on it."
         names={['CopyButton']}
       >
-        <CopyButton value="sk_test_4f9a2c7e1b" label="Copy the key" />
+        <CopyButton value="1Z 999 AA1 01 2345 6784" label="Copy the tracking number" />
         <CopyButton value="https://example.com/orders/IT-1042" label="Copy the link" size="sm" />
         <CopyButton value="IT-1042" label="Copy the reference" showLabel size="sm" />
       </Demo>
