@@ -1,6 +1,18 @@
-import { ActivityHeatmap, DependencyTrace, formatMoney, formatPercent, FunnelChart, LiveLineChart, PageHeader } from 'ioiti-ui'
+import {
+  ActivityHeatmap,
+  ChartLegend,
+  DependencyTrace,
+  formatMoney,
+  formatPercent,
+  FunnelChart,
+  KpiGrid,
+  KpiTile,
+  LiveLineChart,
+  PageHeader,
+  Sparkline,
+} from 'ioiti-ui'
 import type { HeatDay } from 'ioiti-ui'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { Demo } from '../parts'
 
@@ -48,12 +60,65 @@ function wander(push: (value: number) => void) {
   return () => window.clearInterval(timer)
 }
 
+const RUNS = [
+  { label: 'Run 41', color: 'var(--chart-compare-1)', shape: 'line' as const, value: '+4.2%' },
+  { label: 'Run 42', color: 'var(--chart-compare-2)', shape: 'line' as const, value: '+1.8%' },
+  { label: 'Benchmark', color: 'var(--chart-muted)', shape: 'dashed' as const, value: '+0.9%' },
+  { label: 'Trades', color: 'var(--chart-compare-3)', shape: 'dot' as const },
+]
+
+/** A legend whose items show or hide their series: the chart decides that one is always left. */
+function Legends() {
+  const [shown, setShown] = useState([true, true, true, true])
+  const toggle = (index: number) =>
+    setShown((now) => (now[index] && now.filter(Boolean).length === 1 ? now : now.map((each, at) => (at === index ? !each : each))))
+  return (
+    <div className="flex flex-col gap-4">
+      <ChartLegend label="Runs" items={RUNS} />
+      <ChartLegend label="Runs shown" items={RUNS.map((run, index) => ({ ...run, shown: shown[index] }))} onToggle={toggle} />
+    </div>
+  )
+}
+
 export function Charts() {
   const calendar = useMemo(days, [])
   const matrix = useMemo(hours, [])
   return (
     <>
       <PageHeader title="Charts" description="Drawn in the chart colours of both themes, each with a table or a summary for screen readers." />
+
+      <Demo
+        id="sparkline"
+        title="Sparkline"
+        description="The trend of a figure, small and without axes: in a tile, in a table's cell. Its colour says the direction; where down is good (a delay), it is given its tone. Bars start at zero, a loss below."
+        names={['Sparkline']}
+        className="block w-full space-y-4"
+      >
+        <KpiGrid>
+          <KpiTile label="Orders this week" value="1,284" hint="+12% on last week">
+            <Sparkline label="Orders per day" values={[160, 172, 168, 190, 184, 201, 209]} width={180} height={32} />
+          </KpiTile>
+          <KpiTile label="Median delivery" value="2.4 days" hint="−0.3 on last week">
+            <Sparkline label="Median delivery, days" values={[2.9, 2.8, 2.7, 2.7, 2.5, 2.4, 2.4]} tone="positive" width={180} height={32} />
+          </KpiTile>
+          <KpiTile label="Margin by day" value={formatMoney(1840)} hint="5 days of 7 above zero">
+            <Sparkline label="Margin by day" variant="bars" values={[420, 380, -120, 510, -60, 330, 380]} width={180} height={32} />
+          </KpiTile>
+          <KpiTile label="Returns" value="38" hint="Steady">
+            <Sparkline label="Returns per day" values={[6, 5, 6, 5, 6, 5, 5]} tone="neutral" width={180} height={32} />
+          </KpiTile>
+        </KpiGrid>
+      </Demo>
+
+      <Demo
+        id="legend"
+        title="ChartLegend"
+        description="What a chart's colours stand for, each swatch drawn as the chart draws its series: a bar, a line, a dashed line, a point. Its items can show and hide their series. For an application's own charts too."
+        names={['ChartLegend']}
+        className="block w-full"
+      >
+        <Legends />
+      </Demo>
 
       <Demo
         id="heatmap"

@@ -93,6 +93,12 @@ the data tables' filters as Elastic UI's filter group.
 - **The charts' small text** (StatCard, FunnelChart, ActivityHeatmap, LiveLineChart) is the design's muted text,
   4.5:1 on every surface of every look: it was 3.6:1 on the dark card. Their tooltips follow the pointer as what
   floats moves, and jump to it where motion is reduced; the focus on a chart is the global ring.
+- **`Sparkline`**: the trend of a figure, small and without axes, for a `KpiTile` or a table's cell: a line in the
+  colour of its direction (or the tone given, where down is good), or bars from zero, a loss below. A screen
+  reader hears what it shows, from its first value to its last, its highest and lowest.
+- **`ChartLegend`**: what a chart's colours stand for, each swatch drawn as the chart draws its series (a bar, a
+  line, a dashed line, a point), a figure beside it where there is one; with `onToggle`, each item shows or hides
+  its series. For an application's own charts too.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
