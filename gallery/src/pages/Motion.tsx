@@ -13,6 +13,8 @@ const USES: Record<keyof typeof motionTransitions, string> = {
   springSoft: 'A value following another (useSpring).',
   easeSoft: 'Colour and opacity: 320 ms, Apple\'s emphasised curve.',
   easeFast: 'Quick property changes: 200 ms.',
+  springSheet: 'A sheet or the drawer sliding in and out, the sidebar folding: about 270 ms, no overshoot.',
+  easeExit: 'Whatever leaves: 150 ms, quicker than it came, accelerating away.',
 }
 
 function Mover({ name }: { name: keyof typeof motionTransitions }) {

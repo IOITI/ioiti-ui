@@ -45,7 +45,7 @@ const PACKAGE_ONLY = [
 
 // The design itself, as the built CSS writes it: the light page and secondary text, the dark
 // palette, the contrast fixes, a chart ramp, the global focus ring; the accents, a gradient one too,
-// and the glass material.
+// the glass material, and the motion.
 const DESIGN = [
   ':root:not(.dark){--background:#fafafa;--muted-foreground:#676772}',
   '.dark{--bg:#111113;',
@@ -55,6 +55,7 @@ const DESIGN = [
   ':root[data-accent=violet]:not(.dark){--brand:#7c3aed;',
   ':root[data-accent=bloom]:not(.dark){--brand:#c2398b;',
   '.glass-float:is(:root[data-material=glass] *){background-color:var(--glass-float);',
+  ':root[data-reduced-motion=always]{--animate-spin:none;',
 ]
 
 // The images the stylesheets name: the grains of the bloom accent.
@@ -74,6 +75,7 @@ const FILES = [
   'dist/styles/theme.css',
   'dist/styles/accents.css',
   'dist/styles/glass.css',
+  'dist/styles/motion.css',
   ...GRAINS.map((grain) => `dist/styles/${grain}.png`),
   'dist/theme.js',
   'dist/vite/index.js',

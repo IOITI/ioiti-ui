@@ -1,0 +1,82 @@
+/* -----------------------------------------------------------------------------
+   The motion, for the stylesheets: the curves framer-motion moves with
+   (motionTransitions, src/lib/motion-tokens.ts), and motion reduced here as
+   framer-motion reduces its own. ioiti-ui's own, not the design it was taken
+   from.
+
+   - ease-soft        easeSoft's curve: fades, what arrives
+   - ease-fast        easeFast's: a property changing quickly. Every transition-*
+                      class takes it (--default-transition-timing-function),
+                      its 150 ms kept
+   - ease-exit        easeExit's: what leaves, quicker than it arrived
+   - animate-reveal   content arriving where a skeleton was (QueryState)
+
+   A test holds the curves to motionTransitions' (src/styles/styles.test.ts).
+   They are Tailwind's theme layer, which the reference of the design leaves
+   out (an application has the variables its pages use): no block of the
+   design changes, and nothing is written in its base layer.
+
+   Motion is reduced where the system asks, or where IoitiProvider says so:
+   `data-reduced-motion` on <html>, `always`, or `never` to move whatever the
+   system says (src/lib/motion.ts). Movement goes and fades stay, as in
+   framer-motion, which MotionConfig reduces: here the loops stop (a spinner,
+   a ping, a pulse), and Tailwind's motion-safe: and motion-reduce: follow
+   IoitiProvider as well as the system.
+   --------------------------------------------------------------------------- */
+
+@theme static {
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-fast: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  --animate-reveal: ioiti-reveal 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes ioiti-reveal {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* Tailwind's own variants, written again: Tailwind takes them in place of its own, which keep their
+   place in the order of the variants. */
+@custom-variant motion-reduce {
+  @media (prefers-reduced-motion: reduce) {
+    &:not(:root[data-reduced-motion="never"] *) {
+      @slot;
+    }
+  }
+
+  &:is(:root[data-reduced-motion="always"] *) {
+    @slot;
+  }
+}
+
+@custom-variant motion-safe {
+  @media (prefers-reduced-motion: no-preference) {
+    &:not(:root[data-reduced-motion="always"] *) {
+      @slot;
+    }
+  }
+
+  &:is(:root[data-reduced-motion="never"] *) {
+    @slot;
+  }
+}
+
+/* The loops stop: their utilities read these (animate-spin, animate-ping…). */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduced-motion="never"]) {
+    --animate-spin: none;
+    --animate-ping: none;
+    --animate-pulse: none;
+    --animate-bounce: none;
+  }
+}
+
+:root[data-reduced-motion="always"] {
+  --animate-spin: none;
+  --animate-ping: none;
+  --animate-pulse: none;
+  --animate-bounce: none;
+}
