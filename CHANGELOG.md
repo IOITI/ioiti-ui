@@ -132,6 +132,9 @@ the data tables' filters as Elastic UI's filter group.
 - **`ChangeList`**: what changes, each from its value before to its value after (a configuration about to be
   applied, a record edited), what is added new and what is removed said so, with a note, in groups; screen
   readers hear "from … to …".
+- **`Disclosure`**: more, shown on demand, the browser's own `<details>` (find in the page opens it on what it
+  finds), plain or boxed, held by its caller or not; its height follows what it holds where the browser can
+  animate to a height of auto, at once where motion is reduced.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

@@ -17,6 +17,7 @@ import {
   DataTablePagination,
   DataTableToolbar,
   DescriptionList,
+  Disclosure,
   formatMoney,
   InteractiveTimeline,
   KpiGrid,
@@ -326,6 +327,31 @@ export function DataDisplay() {
             { title: 'Mail', changes: [{ label: 'Sender', before: 'shop@example.com', after: 'orders@example.com' }] },
           ]}
         />
+      </Demo>
+
+      <Demo
+        id="disclosure"
+        title="Disclosure"
+        description="More, shown on demand: the figures of a chart as a table, the details of a request, what a setting does. The browser's own: find in the page opens it on what it finds. Its height follows what it holds."
+        names={['Disclosure']}
+        className="grid w-full gap-4 lg:grid-cols-2"
+      >
+        <Disclosure summary="What the daily limit does">
+          <p className="text-muted-foreground">
+            No order is accepted once the day's orders reach it: the next ones wait for the morning, and the customer is told when theirs will leave.
+          </p>
+        </Disclosure>
+        <Disclosure variant="boxed" summary="The figures as a table" defaultOpen>
+          <DescriptionList
+            compressed
+            numeric
+            items={[
+              { term: 'Monday', details: '182 orders' },
+              { term: 'Tuesday', details: '164 orders' },
+              { term: 'Wednesday', details: '201 orders' },
+            ]}
+          />
+        </Disclosure>
       </Demo>
 
       <Demo
