@@ -55,8 +55,14 @@ describe('the data table, as the pages use it', () => {
 
     // Row 1 cannot be chosen: no box, and the header's box leaves it out.
     expect(screen.queryByRole('checkbox', { name: 'Select Row 1' })).not.toBeInTheDocument()
-    await user.click(screen.getByRole('checkbox', { name: 'Select all rows' }))
+    // One row of the page chosen: the header's box says it is partly checked.
+    await user.click(screen.getByRole('checkbox', { name: 'Select Row 2' }))
+    const header = screen.getByRole('checkbox', { name: 'Select all rows' }) as HTMLInputElement
+    expect(header.indeterminate).toBe(true)
+    await user.click(header)
     expect(changes.at(-1)).toEqual(['r2', 'r3', 'r4', 'r5'])
+    expect(header.indeterminate).toBe(false)
+    expect(header).toBeChecked()
     const basket = within(await screen.findByRole('toolbar', { name: 'Bulk actions toolbar' }))
     expect(basket.getByText('rows selected')).toBeInTheDocument()
     // Said once: the table's own counter is not shown beside the basket.
@@ -140,5 +146,31 @@ describe('the data table, as the pages use it', () => {
     await user.click(screen.getByRole('button', { name: 'Open Row 2' }))
     expect(screen.getByText('Inside Row 1')).toBeInTheDocument()
     expect(screen.getByText('Inside Row 2')).toBeInTheDocument()
+  })
+
+  it('chooses a row by its box without opening it, and hides a column from the column list', async () => {
+    const user = userEvent.setup()
+    render(
+      <AdvancedDataTable<Row>
+        data={ROWS.slice(0, 2)}
+        columns={COLUMNS}
+        getRowId={(row) => row.id}
+        expandOnRowClick
+        rowLabel={(row) => row.name}
+        renderSubComponent={(row) => <p>Inside {row.name}</p>}
+      />,
+    )
+
+    await user.click(screen.getByRole('checkbox', { name: 'Select Row 1' }))
+    expect(screen.getByRole('checkbox', { name: 'Select Row 1' })).toBeChecked()
+    expect(screen.queryByText('Inside Row 1')).not.toBeInTheDocument()
+
+    // A click on a column's name in the list, as on its box.
+    await user.click(screen.getByRole('button', { name: 'Toggle visible columns' }))
+    const kind = screen.getByRole('checkbox', { name: 'Kind' })
+    expect(kind).toBeChecked()
+    await user.click(within(kind.closest('label')!).getByText('Kind'))
+    expect(screen.getByRole('checkbox', { name: 'Kind' })).not.toBeChecked()
+    expect(screen.queryByRole('columnheader', { name: 'Kind' })).not.toBeInTheDocument()
   })
 })

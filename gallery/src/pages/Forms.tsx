@@ -49,6 +49,36 @@ async function pretendUpload(_file: unknown, onProgress: (progress: number) => v
   return { href: '/components/data', label: 'Open' }
 }
 
+const TOPICS = ['Product updates', 'Newsletter', 'Beta features']
+
+/** A box over a list of others: indeterminate while some of them are checked, as a table's header is. */
+function CheckboxGroup() {
+  const [chosen, setChosen] = useState<ReadonlySet<string>>(() => new Set(['Product updates']))
+  const all = chosen.size === TOPICS.length
+  const toggle = (topic: string) =>
+    setChosen((prev) => {
+      const next = new Set(prev)
+      if (next.has(topic)) next.delete(topic)
+      else next.add(topic)
+      return next
+    })
+  return (
+    <div className="flex flex-col gap-3">
+      <Checkbox
+        label="Every email"
+        checked={all}
+        indeterminate={chosen.size > 0 && !all}
+        onChange={() => setChosen(all ? new Set() : new Set(TOPICS))}
+      />
+      <div className="flex flex-col gap-3 pl-6.5">
+        {TOPICS.map((topic) => (
+          <Checkbox key={topic} label={topic} checked={chosen.has(topic)} onChange={() => toggle(topic)} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function Forms() {
   const [country, setCountry] = useState<string | null>('fr')
   const [range, setRange] = useState<DateRange>(lastDays(30))
@@ -87,7 +117,7 @@ export function Forms() {
         id="form"
         title="Form"
         description="EasyUI's form parts: a labelled item, its description, its message; a check box, radio buttons, a switch."
-        names={['Form', 'FormItem', 'FormLabel', 'FormControl', 'FormDescription', 'FormMessage', 'Checkbox', 'RadioGroup', 'RadioGroupItem', 'Switch']}
+        names={['Form', 'FormItem', 'FormLabel', 'FormControl', 'FormDescription', 'FormMessage', 'RadioGroup', 'RadioGroupItem', 'Switch']}
         className="block w-full max-w-md"
       >
         <Form onSubmit={(event) => event.preventDefault()}>
@@ -126,6 +156,21 @@ export function Forms() {
             Save
           </Button>
         </Form>
+      </Demo>
+
+      <Demo
+        id="checkbox"
+        title="Check box"
+        description="EasyUI's draw-checkbox: its mark draws itself and the box settles with a small pop. Indeterminate while some of what it stands for is checked (a table's header); a description under its label; disabled. The boxes of the data table are the same."
+        names={['Checkbox']}
+        className="flex w-full flex-wrap gap-x-12 gap-y-6"
+      >
+        <CheckboxGroup />
+        <div className="flex flex-col gap-3">
+          <Checkbox label="Keep me signed in" description="On this browser only" defaultChecked />
+          <Checkbox label="Share usage data" description="Turned off by the administrator" disabled />
+          <Checkbox label="Archived" defaultChecked disabled />
+        </div>
       </Demo>
 
       <Demo

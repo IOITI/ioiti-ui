@@ -5,7 +5,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
 ## [0.3.0] - Unreleased
 
-A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain.
+A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain. And a check box whose
+mark draws itself.
 
 - **Bloom**: the flyer's orchid on what is chosen, current or primary, on links, the focus ring and one-series
   charts, as every accent's colour. A filled button and the application's mark take the flyer's gradient
@@ -26,9 +27,15 @@ A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a 
   `SelectionBasket` and `SmartComparison` keep the accent's fill.
 - **The gallery**: bloom in the picker, the Themes, Colours and Chart colours pages; the contrast of the text on
   the gradient in every look.
+- **`Checkbox` is EasyUI's draw-checkbox**: its mark draws itself and the box settles with a small pop, a soft
+  box in the design's grey when checked (the accent's colour under an accent). The same props, and
+  `indeterminate`, a bar, which screen readers hear as partly checked. The focus ring shows on it (the box it
+  replaces hid it), and its label alone names it, its description read after. The boxes of `AdvancedDataTable`
+  (rows, cards, header, column list) are the same box, no longer the browser's. A Check box demo in the gallery.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
-`Accent` have one more value, which a `switch` naming every accent must handle.
+`Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
+its props: the new box comes with the update.
 
 ## [0.2.1] - 2026-10-27
 

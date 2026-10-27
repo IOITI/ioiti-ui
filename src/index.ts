@@ -179,10 +179,11 @@ export type {
   DragConfirmVariant,
   DragToConfirmProps,
 } from './components/ui/drag-to-confirm.js'
+export { DrawCheckbox as Checkbox } from './components/ui/draw-checkbox.js'
+export type { DrawCheckboxProps as CheckboxProps } from './components/ui/draw-checkbox.js'
 export { DynamicIsland } from './components/ui/dynamic-island.js'
 export type { DynamicIslandProps, DynamicIslandState } from './components/ui/dynamic-island.js'
 export {
-  Checkbox,
   Form,
   FormControl,
   FormDescription,
@@ -197,7 +198,6 @@ export {
   Textarea,
 } from './components/ui/form.js'
 export type {
-  CheckboxProps,
   FormItemProps,
   FormLabelProps,
   FormMessageProps,

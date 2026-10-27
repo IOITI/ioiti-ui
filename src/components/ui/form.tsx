@@ -2,7 +2,7 @@
 
 import React, { forwardRef, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { ChevronDown, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -289,92 +289,8 @@ Select.displayName = 'Select';
    5. Checkbox Component
    ========================================================================== */
 
-export interface CheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
-  label?: React.ReactNode;
-  description?: string;
-}
-
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, label, description, checked, defaultChecked, disabled, id, onChange, ...props }, ref) => {
-    const generatedId = useId();
-    const inputId = id || generatedId;
-    const [isChecked, setIsChecked] = React.useState(defaultChecked || false);
-
-    const isControlled = checked !== undefined;
-    const currentChecked = isControlled ? checked : isChecked;
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!isControlled) {
-        setIsChecked(e.target.checked);
-      }
-      if (onChange) {
-        onChange(e);
-      }
-    };
-
-    return (
-      <div className={cn('flex items-start gap-2.5 select-none', disabled && 'opacity-30 cursor-not-allowed', className)}>
-        <div className="relative flex items-center justify-center mt-0.5">
-          <input
-            ref={ref}
-            id={inputId}
-            type="checkbox"
-            checked={currentChecked}
-            disabled={disabled}
-            onChange={handleChange}
-            className="peer sr-only"
-            {...props}
-          />
-          <div
-            onClick={(e) => {
-              if (!disabled) {
-                const input = document.getElementById(inputId) as HTMLInputElement;
-                if (input) input.click();
-              }
-              e.preventDefault();
-            }}
-            className={cn(
-              'w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-150 cursor-pointer focus-ring',
-              currentChecked
-                ? // ioiti-ui: checked, in the accent under a theme that has one (accent:); so are the radio and the switch.
-                  'bg-neutral-900 dark:bg-[#FAFAFA] border-neutral-900 dark:border-[#FAFAFA] text-white dark:text-[#050505] accent:bg-brand accent:border-brand accent:text-brand-foreground'
-                : 'bg-white dark:bg-[#141414] border-neutral-300 dark:border-[#1F1F1F] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
-              disabled && 'cursor-not-allowed'
-            )}
-          >
-            {currentChecked && (
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={motionTransitions.springSnappy}
-              >
-                <Check className="w-3 h-3 stroke-[3]" />
-              </motion.div>
-            )}
-          </div>
-        </div>
-
-        {(label || description) && (
-          <label htmlFor={inputId} className="cursor-pointer text-left">
-            {label && (
-              <div className="text-xs font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
-                {label}
-              </div>
-            )}
-            {description && (
-              <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                {description}
-              </div>
-            )}
-          </label>
-        )}
-      </div>
-    );
-  }
-);
-Checkbox.displayName = 'Checkbox';
+// ioiti-ui: the checkbox is EasyUI's draw-checkbox (draw-checkbox.tsx), which the package exports as
+// `Checkbox`, with the same props and an `indeterminate` one.
 
 /* ==========================================================================
    6. RadioGroup & RadioGroupItem

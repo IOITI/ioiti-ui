@@ -22,6 +22,8 @@ import {
 import { cn } from '../../lib/utils.js';
 import { SelectionBasket } from './selection-basket.js';
 import type { SelectionActionItem } from './selection-basket.js';
+// ioiti-ui: every box of the table is the package's checkbox, EasyUI's draw-checkbox.
+import { DrawCheckbox } from './draw-checkbox.js';
 
 // =============================================================================
 // DESIGN SYSTEM CONSTANTS & SPRING TOKENS
@@ -238,11 +240,9 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                         key={col.id}
                         className="flex items-center gap-2 px-2 py-1.5 text-xs text-foreground/80 hover:text-foreground hover:bg-surface-hover/50 rounded-md cursor-pointer select-none font-normal"
                       >
-                        <input
-                          type="checkbox"
+                        <DrawCheckbox
                           checked={isVisible}
                           onChange={() => toggleColumnVisibility(col.id)}
-                          className="rounded border-border accent-foreground accent:accent-brand cursor-pointer"
                         />
                         <span className="truncate">{col.header}</span>
                       </label>
@@ -507,12 +507,11 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                   {selectable && isRowSelectable(row) && (
-                    <input
-                      type="checkbox"
+                    <DrawCheckbox
                       checked={isSelected}
                       onChange={() => toggleRowSelection(rowId)}
                       aria-label={selectLabel(row, rowId)}
-                      className="rounded border-border accent-foreground accent:accent-brand cursor-pointer w-4 h-4 shrink-0"
+                      className="shrink-0"
                     />
                   )}
                   <span className="font-medium text-xs text-foreground truncate">
@@ -586,16 +585,12 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
             {/* Checkbox Column */}
             {selectable && (
               <th className="w-10 sm:w-12 px-3.5 sm:px-6 py-3 sm:py-3.5">
-                <input
-                  type="checkbox"
+                <DrawCheckbox
                   checked={isAllSelected}
-                  ref={(el) => {
-                    if (el) el.indeterminate = isIndeterminate;
-                  }}
+                  indeterminate={isIndeterminate}
                   onChange={toggleSelectAll}
                   disabled={!canSelectPage}
                   aria-label="Select all rows"
-                  className="rounded border-border accent-foreground accent:accent-brand cursor-pointer w-4 h-4 disabled:cursor-not-allowed disabled:opacity-40"
                 />
               </th>
             )}
@@ -663,12 +658,10 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                   {selectable && (
                     <td className="w-10 sm:w-12 px-3.5 sm:px-6 py-3 sm:py-3.5">
                       {isRowSelectable(row) && (
-                        <input
-                          type="checkbox"
+                        <DrawCheckbox
                           checked={isSelected}
                           onChange={() => toggleRowSelection(rowId)}
                           aria-label={selectLabel(row, rowId)}
-                          className="rounded border-border accent-foreground accent:accent-brand cursor-pointer w-4 h-4"
                         />
                       )}
                     </td>

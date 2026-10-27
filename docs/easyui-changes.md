@@ -84,7 +84,8 @@ otherwise).
   arrow stays for the keyboard), `singleExpand` (one row open at a time) and `rowLabel` (each arrow named
   "Open …" after its row, instead of all "Expand row details"); a search goes back to the first page, where
   what it found starts; from a tablet up, a filter with more options than the bar is wide wraps onto a second
-  line.
+  line; its boxes (rows, cards, header, column list) are `draw-checkbox`, not the browser's, the header's
+  partly checked state its bar.
 - `breadcrumb`: its text in `text-muted-foreground` and `text-foreground` (`neutral-500` was 4.54:1 on the
   light background, a hair from the limit); `wrap={false}` keeps a trail on one line, each step cut short with
   an ellipsis, the last one first.
@@ -110,6 +111,16 @@ otherwise).
   `aria-describedby`): a screen reader said only "switch, on".
 - `form`, `animated-tabs`, `smooth-accordion`: the literal grey `#6B6B6B` (3.6:1 on the dark surface)
   replaced by `text-muted-foreground`; hints at 12 px instead of 11.
+- `draw-checkbox`: the package's `Checkbox` (`src/index.ts` exports it under that name, with its props as
+  `CheckboxProps`); `form`'s own box is gone. The input lies over the box, transparent, and takes its clicks
+  and the design's focus ring: EasyUI's was `sr-only`, which clipped the ring, and the box passed its clicks on
+  through `document.getElementById`, which a table row took for a click on itself. The input is `indeterminate`
+  when the box is (EasyUI drew the bar only), which screen readers say. Named by its label and described by its
+  description (`aria-labelledby`, `aria-describedby`), as `stretch-switch`: the `<label>` holding both made one
+  name of them. The colours are classes, EasyUI's tokens and the accent's after them (framer animated them as
+  inline styles, which no class outranks), framer animating only the pop; the box is level with its label's
+  first line only beside a label (alone in a table's cell, nothing above it); the description a hint of the
+  form (12 px, `text-muted-foreground`); drawn at once, without the pop, where motion is reduced.
 - `not-found` (EasyUI's 404): a `<section>` named by its heading, not a `<main>` (the shell has one), drawn in
   the page's area rather than filling the screen; no `<title>` or `<meta name="robots">` (the page names its
   tab as every page does); light values for the text, the heading's gradient, the address chip, the buttons
