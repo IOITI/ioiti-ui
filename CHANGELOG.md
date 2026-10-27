@@ -139,6 +139,13 @@ the data tables' filters as Elastic UI's filter group.
   the window has room and following it as the page scrolls; the focus goes in, and Escape, a Tab past its end or
   a press elsewhere closes it and gives the focus back. Not modal; inside a dialog or a sheet, Escape and Tab stay
   its own. Every layer placed beside its trigger from now on is placed by the same code (`src/lib/anchor.ts`).
+- **`DropdownMenu`** and **`ContextMenu`**: the actions on a thing, behind a button or at the pointer (a right
+  click, a long press, Shift+F10, the menu key). An item acts, leads somewhere (a link, opened elsewhere with ⌘
+  or Ctrl), is ticked, or is one of a few; groups under their names, separators, shortcuts shown with `Kbd`, the
+  one that removes in the negative colour; more in a sub-menu, which takes the menu's place with a row going
+  back, on a phone as on a computer (Elastic UI's context menu panels). The arrows move, a letter jumps to the
+  next item that starts with it, Escape closes, Tab leaves; the focus is back on the button before an action
+  runs, so that a dialog it opens gives it back there.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

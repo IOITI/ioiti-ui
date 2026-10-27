@@ -91,6 +91,17 @@ export { DateRangeFilter } from './components/DateRangeFilter.js'
 export { DescriptionList } from './components/DescriptionList.js'
 export type { DescriptionItem } from './components/DescriptionList.js'
 export { Disclosure } from './components/Disclosure.js'
+export { ContextMenu, DropdownMenu } from './components/DropdownMenu.js'
+export type {
+  DropdownMenuAction,
+  DropdownMenuCheckbox,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLink,
+  DropdownMenuRadioGroup,
+  DropdownMenuSeparator,
+  DropdownMenuSubmenu,
+} from './components/DropdownMenu.js'
 export { ExportButton } from './components/ExportButton.js'
 export { EmptyText, ErrorText } from './components/messages.js'
 export { Field } from './components/Field.js'

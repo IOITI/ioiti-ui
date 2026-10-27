@@ -2,8 +2,10 @@ import {
   Button,
   buttonClassName,
   Checkbox,
+  ContextMenu,
   DescriptionList,
   DirectionalTooltip,
+  DropdownMenu,
   DynamicIsland,
   Flysheet,
   FlysheetBody,
@@ -26,9 +28,10 @@ import {
   SignedValue,
   SpotlightSearch,
   Textarea,
+  useToast,
 } from 'ioiti-ui'
 import type { Notification } from 'ioiti-ui'
-import { Columns3 } from 'lucide-react'
+import { Archive, Columns3, Copy, Ellipsis, Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -232,6 +235,53 @@ function Popovers() {
   )
 }
 
+/** A menu of actions on an order: a link, a sub-menu, boxes ticked, the one that removes last. */
+function Menus() {
+  const toast = useToast()
+  const [compact, setCompact] = useState(false)
+  const [sort, setSort] = useState('newest')
+  const said = (title: string) => () => toast({ title })
+  const items = [
+    { label: 'Edit', icon: <Pencil />, shortcut: 'e', onSelect: said('Editing IT-1042') },
+    { label: 'Duplicate', icon: <Copy />, shortcut: 'mod+d', onSelect: said('IT-1042 duplicated') },
+    { type: 'link' as const, label: 'Open the customer', href: '/components/data' },
+    {
+      type: 'submenu' as const,
+      label: 'Export',
+      icon: <Archive />,
+      items: [
+        { label: 'As CSV', onSelect: said('Exported as CSV') },
+        { label: 'As PDF', description: 'One page per order', onSelect: said('Exported as PDF') },
+      ],
+    },
+    { type: 'separator' as const },
+    { type: 'checkbox' as const, label: 'Compact rows', checked: compact, onCheckedChange: setCompact },
+    {
+      type: 'radio' as const,
+      label: 'Sort',
+      value: sort,
+      onValueChange: setSort,
+      options: [
+        { value: 'newest', label: 'Newest first' },
+        { value: 'oldest', label: 'Oldest first' },
+      ],
+    },
+    { type: 'separator' as const },
+    { label: 'Delete', icon: <Trash2 />, tone: 'danger' as const, onSelect: said('IT-1042 deleted') },
+  ]
+  return (
+    <>
+      <DropdownMenu label="Actions on order IT-1042" trigger={<Button variant="outline" size="sm">Actions</Button>} items={items} />
+      <DropdownMenu label="More actions" align="end" trigger={<IconButton label="More actions" icon={<Ellipsis />} hint="More actions" />} items={items} />
+      <ContextMenu label="Actions on order IT-1042" items={items}>
+        <div tabIndex={0} className="rounded-xl border border-dashed border-border px-4 py-6 text-sm text-muted-foreground">
+          Right-click here, press and hold, or Shift+F10 once it has the focus
+        </div>
+      </ContextMenu>
+    </>
+  )
+}
+
 function Bell() {
   const [items, setItems] = useState<Notification[]>(() => [
     { id: '1', message: 'Export ready', detail: 'orders-2026-10-26.csv', timestamp: new Date(Date.now() - 2 * MINUTE), read: false, href: '/components/data', tone: 'success' },
@@ -315,6 +365,15 @@ export function Overlays() {
         names={['Popover']}
       >
         <Popovers />
+      </Demo>
+
+      <Demo
+        id="menu"
+        title="DropdownMenu and ContextMenu"
+        description="The actions on a thing, behind a button or at the pointer: each acts, leads somewhere or is ticked; more in a sub-menu, which takes the menu's place, a row going back. The arrows move, a letter jumps, Escape closes, Tab leaves; what an action opens gives the focus back to the button."
+        names={['DropdownMenu', 'ContextMenu']}
+      >
+        <Menus />
       </Demo>
 
       <Demo id="dialog" title="SettleModal" description="A dialog, in four widths (and a full one, for two things side by side)." names={['SettleModal']}>
