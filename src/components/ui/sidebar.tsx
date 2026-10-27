@@ -176,7 +176,8 @@ export function SidebarTrigger({ className, ...props }: React.ComponentProps<"bu
       type="button"
       aria-label="Open navigation"
       className={cn(
-        "grid size-9 place-items-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 md:hidden dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white",
+        // ioiti-ui: pressed, it gives, as the top bar's other buttons do (motion-safe:).
+        "grid size-9 place-items-center rounded-lg text-neutral-500 transition motion-safe:active:scale-95 hover:bg-neutral-100 hover:text-neutral-900 md:hidden dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white",
         className
       )}
       {...props}

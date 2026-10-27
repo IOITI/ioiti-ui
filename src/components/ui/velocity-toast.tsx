@@ -28,6 +28,8 @@ export interface VelocityToastProps {
   className?: string;
   /** ioiti-ui: classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom. */
   wrapperClassName?: string;
+  /** ioiti-ui: once it has left, its exit played: a queue shows the next one then (ToastProvider). */
+  onExitComplete?: () => void;
 }
 
 const positionClasses: Record<VelocityToastPosition, string> = {
@@ -77,6 +79,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
   icon,
   className,
   wrapperClassName,
+  onExitComplete,
 }) => {
   const [isVisible, setIsVisible] = useState(open);
   const [isPaused, setIsPaused] = useState(false);
@@ -153,13 +156,14 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
         wrapperClassName
       )}
     >
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={onExitComplete}>
         {isVisible && (
           <motion.div
             // Entry: starts further out for a higher perceived velocity, then settles
             initial={{ opacity: 0, y: isTop ? -22 : 22, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96, y: isTop ? -12 : 12 }}
+            // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
+            exit={{ opacity: 0, scale: 0.96, y: isTop ? -12 : 12, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}

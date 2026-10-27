@@ -31,6 +31,24 @@ async function advance(ms: number) {
   })
 }
 
+// framer-motion draws on the window's own frames, which it took before the clock was faked and which
+// keep real time, and reads the faked clock: an animation (a toast leaving) starts on one of its
+// frames, at the time it reads then, and moves on as the clock is advanced, on its next frames.
+const realTimeout = globalThis.setTimeout
+
+async function nextFrame() {
+  await act(async () => {
+    await new Promise((resolve) => realTimeout(resolve, 50))
+  })
+}
+
+/** A toast dismissed leaves: its exit starts, plays (easeExit's 150 ms, and more) and ends. */
+async function leave() {
+  await nextFrame()
+  await advance(400)
+  await nextFrame()
+}
+
 describe('ToastProvider', () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance'] })
@@ -54,7 +72,29 @@ describe('ToastProvider', () => {
     // With another one waiting, the first stays 2.5 seconds.
     await advance(2000)
     expect(screen.getByText('Export requested')).toBeInTheDocument()
+    // Then it leaves, its exit played, and the second one comes.
     await advance(1000)
+    await leave()
+    expect(screen.getByText('Export ready')).toBeInTheDocument()
+  })
+
+  it('lets a toast leave, its exit played, before the next one comes', async () => {
+    renderProvider()
+
+    act(() => {
+      show({ title: 'Export requested' })
+      show({ title: 'Export ready' })
+    })
+
+    // Its 2.5 seconds over, it is leaving: still drawn, the next one not yet.
+    await advance(2520)
+    await nextFrame()
+    expect(screen.getByText('Export requested')).toBeInTheDocument()
+    expect(screen.queryByText('Export ready')).not.toBeInTheDocument()
+
+    await advance(400)
+    await nextFrame()
+    expect(screen.queryByText('Export requested')).not.toBeInTheDocument()
     expect(screen.getByText('Export ready')).toBeInTheDocument()
   })
 

@@ -46,6 +46,8 @@ interface ToastProviderProps {
  */
 export function ToastProvider({ wrapperClassName, children }: ToastProviderProps) {
   const [queue, setQueue] = useState<QueuedToast[]>([])
+  // The toast shown, once dismissed: it leaves, its exit played, before the next one comes.
+  const [leaving, setLeaving] = useState<number | null>(null)
   const nextId = useRef(0)
 
   const show = useCallback<ShowToast>((message) => {
@@ -62,8 +64,12 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
       {current && (
         <VelocityToast
           key={current.id}
-          open
-          onDismiss={() => setQueue((waiting) => waiting.filter((toast) => toast.id !== current.id))}
+          open={leaving !== current.id}
+          onDismiss={() => setLeaving(current.id)}
+          onExitComplete={() => {
+            setQueue((waiting) => waiting.filter((toast) => toast.id !== current.id))
+            setLeaving(null)
+          }}
           title={current.title}
           description={current.description}
           variant={current.variant ?? 'default'}

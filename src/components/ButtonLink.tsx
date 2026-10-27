@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react'
 
+import { cn } from '../lib/utils.js'
 import { useLinkComponent } from './link-context.js'
 import { Button, buttonClassName } from './ui/button.js'
 import type { ButtonSize, ButtonVariant } from './ui/button.js'
@@ -29,9 +30,10 @@ export function ButtonLink({ to, variant = 'primary', size = 'md', leftIcon, rig
     )
   }
   return (
+    // Pressed, it gives as a Button does (its whileTap): the same scale, in CSS.
     // The application's link, held in context (LinkProvider): the same component at every render.
     // oxlint-disable-next-line react/static-components
-    <Link href={to} className={buttonClassName({ variant, size, className })} {...props}>
+    <Link href={to} className={buttonClassName({ variant, size, className: cn('transition motion-safe:active:scale-[0.97]', className) })} {...props}>
       {leftIcon && <span className="shrink-0">{leftIcon}</span>}
       {children && <span>{children}</span>}
       {rightIcon && <span className="shrink-0">{rightIcon}</span>}
