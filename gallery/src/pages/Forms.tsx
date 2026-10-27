@@ -1,5 +1,6 @@
 import {
   AnimatedFileUpload,
+  AutoRefresh,
   Button,
   Calendar,
   Checkbox,
@@ -31,8 +32,12 @@ import {
   StretchSwitch,
   Switch,
   Textarea,
+  TimeRangePicker,
+  formatDateTime,
+  resolveTimeRange,
+  useToast,
 } from 'ioiti-ui'
-import type { DateRange } from 'ioiti-ui'
+import type { DateRange, RefreshSettings, TimeRange } from 'ioiti-ui'
 import { ChartLine, LayoutGrid, Rows3, Search } from 'lucide-react'
 import { useState } from 'react'
 
@@ -107,6 +112,32 @@ function Editable() {
         }}
       />
       <InlineEdit label="Note" value={note} onSave={setNote} placeholder="Add a note" />
+    </div>
+  )
+}
+
+/** A time range and what it stands for now; refreshed on a press or on a timer. */
+function Times() {
+  const toast = useToast()
+  const [range, setRange] = useState<TimeRange>({ from: 'now-24h', to: 'now' })
+  const [refresh, setRefresh] = useState<RefreshSettings>({ interval: 30_000, paused: true })
+  const [loading, setLoading] = useState(false)
+  const [standalone, setStandalone] = useState<RefreshSettings>({ interval: 60_000, paused: true })
+  const resolved = resolveTimeRange(range)
+  const load = () => {
+    setLoading(true)
+    window.setTimeout(() => setLoading(false), 700)
+  }
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <TimeRangePicker value={range} onChange={setRange} onRefresh={load} isLoading={loading} refresh={refresh} onRefreshChange={setRefresh} />
+      <p className="text-xs text-muted-foreground">
+        Now: from {formatDateTime(resolved.from?.toISOString(), 'Europe/Paris', false)} to {formatDateTime(resolved.to?.toISOString(), 'Europe/Paris', false)} (Paris
+        time).
+      </p>
+      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+        Alone, beside a page's title: <AutoRefresh value={standalone} onChange={setStandalone} onRefresh={() => toast({ title: 'Refreshed' })} />
+      </div>
     </div>
   )
 }
@@ -373,6 +404,16 @@ export function Forms() {
             { value: 'phone', label: 'Phone' },
           ]}
         />
+      </Demo>
+
+      <Demo
+        id="time-range"
+        title="TimeRangePicker and AutoRefresh"
+        description="A range of time as people say it, which stays true as time goes by: chosen in two clicks (quick select, the ranges commonly used, those recently used) or its ends set one by one (a moment, a time from now, now) and applied with Update. Refreshed by a press or on a timer, which waits while the page's tab is hidden."
+        names={['TimeRangePicker', 'AutoRefresh']}
+        className="block w-full max-w-2xl"
+      >
+        <Times />
       </Demo>
 
       <Demo id="otp" title="OTPInput" description="A one-time code: a password manager's or a phone's autofill fills every box, as a paste does." names={['OTPInput']}>

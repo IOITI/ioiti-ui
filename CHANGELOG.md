@@ -166,6 +166,14 @@ the data tables' filters as Elastic UI's filter group.
   it into a field, Enter saves and Escape gives up (inside a dialog, its Escape is its own). A save that takes its
   time shows it; one refused says why and keeps the field; the focus comes back to the value. As Elastic UI's
   inline edit does.
+- **`TimeRangePicker`** and **`AutoRefresh`**: a range of time as people say it ("Last 15 minutes", "Today"), which
+  stays true as time goes by, each end `now`, `now` moved and rounded (`now-15m`, `now/d`) or a moment: chosen in
+  two clicks (a quick select, the ranges commonly used, those recently used), or its ends set one by one (a moment
+  on the calendar, a time from now, now) and applied with Update; refreshed by a press or on a timer (`refresh`,
+  `onRefreshChange`), which waits while the page's tab is hidden. `AutoRefresh` is the timer alone. As Elastic
+  UI's super date picker does.
+- **`resolveTimeRange`** gives a range's two moments now (for `rangeParams` and a query), **`formatTimeRange`** says
+  it in words; type **`TimeRange`**.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
