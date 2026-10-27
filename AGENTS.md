@@ -78,7 +78,8 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   the variants' order and every block of the design). A gallery page reading one gets an empty string.
 - jsdom has no `matchMedia`, `ResizeObserver` or `IntersectionObserver`: the components guard their use;
   `src/test/systemTheme.ts` stands in for the system's theme.
-- The gallery's tests render every page through its router: a page that throws fails them.
+- The gallery's tests render every page through its router: a page that throws fails them, and so does a link
+  that leaves `/ioiti-ui/`, the path CI publishes `main`'s gallery at on GitHub Pages (`vite build --base`).
 - `check:package` installs the packed package into a copy of the template (network for npm), `--keep` keeps
   it to look at.
 

@@ -8,8 +8,8 @@ import { describe, expect, it } from 'vitest'
 import { routes } from './router'
 import { PAGES } from './routes'
 
-function renderAt(path: string) {
-  const router = createMemoryRouter(routes, { initialEntries: [path] })
+function renderAt(path: string, basename = '/') {
+  const router = createMemoryRouter(routes, { basename, initialEntries: [`${basename}${path.slice(1)}`] })
   render(
     <IoitiProvider appName="ioiti-ui">
       <RouterProvider router={router} />
@@ -48,5 +48,19 @@ describe('the gallery', () => {
     }
     const missing = [...components(core), ...components(adapter)].filter((name) => !seen.has(name))
     expect(missing, 'components with no demo in the gallery').toEqual([])
+  })
+
+  it('keeps every link under the path it is published at (/ioiti-ui/ on GitHub Pages)', async () => {
+    const outside: string[] = []
+    for (const page of PAGES) {
+      renderAt(page.path, '/ioiti-ui/')
+      await screen.findAllByRole('heading', { level: 1 })
+      for (const link of document.querySelectorAll('a[href]')) {
+        const href = link.getAttribute('href') ?? ''
+        if (!/^(\/ioiti-ui\/|#|https?:|mailto:)/.test(href)) outside.push(`${page.path}: ${href}`)
+      }
+      cleanup()
+    }
+    expect(outside, 'links that leave the published gallery').toEqual([])
   })
 })

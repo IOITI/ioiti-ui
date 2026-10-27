@@ -13,7 +13,8 @@ interface, as a package any application can install. React 19, Tailwind CSS 4, f
 - **Checked**: every text colour is 4.5:1 on every surface of every look (16), one focus ring everywhere, links
   that open in another tab, nothing loaded from another origin (a strict Content-Security-Policy holds).
 
-The gallery shows all of it, in every look: `npm run gallery` (http://localhost:5180).
+The gallery shows all of it, in every look: https://ioiti.github.io/ioiti-ui/ (`main`'s, published by CI once every
+check passes), or `npm run gallery` (http://localhost:5180).
 
 ## Start a new application
 

@@ -31,4 +31,5 @@ export const routes: RouteObject[] = [
   },
 ]
 
-export const router = createBrowserRouter(routes)
+/** Under the site's path when published (`vite build --base`: `/ioiti-ui/` on GitHub Pages), `/` in development. */
+export const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL })

@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # By hand (Actions > CI > Run workflow): the checks again and, on main, the gallery published again.
+  workflow_dispatch:
 
 jobs:
   checks:
@@ -23,3 +25,52 @@ jobs:
       - run: npm run build
       - run: npm run build:gallery
       - run: npm run check:package
+
+  # main's gallery on GitHub Pages (https://ioiti.github.io/ioiti-ui/), once every check has passed.
+  # Pages publishes what this workflow gives it: Settings > Pages > Source is GitHub Actions.
+  gallery:
+    name: The gallery, built under the site's path
+    needs: checks
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: The site's address
+        id: pages
+        uses: actions/configure-pages@v6
+      - run: npm ci
+      - run: npm run build
+      - name: The gallery on dist/, under the site's path (/ioiti-ui/)
+        run: npm run build:gallery -- --base "$BASE_PATH/"
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+      - name: Any page's address opens the gallery (Pages answers 404.html where it has no file)
+        run: cp gallery/dist/index.html gallery/dist/404.html
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: gallery/dist
+
+  publish:
+    name: The gallery, on GitHub Pages
+    needs: gallery
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # One publication at a time, none stopped half-way: the latest one waiting goes next.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
