@@ -90,6 +90,9 @@ the data tables' filters as Elastic UI's filter group.
   or the tabs of panels (`role="tablist"`).
 - **`useNow`**: the time now, read again every interval; the components asking for the same interval share one
   timer, which stops when none is left.
+- **The charts' small text** (StatCard, FunnelChart, ActivityHeatmap, LiveLineChart) is the design's muted text,
+  4.5:1 on every surface of every look: it was 3.6:1 on the dark card. Their tooltips follow the pointer as what
+  floats moves, and jump to it where motion is reduced; the focus on a chart is the global ring.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and

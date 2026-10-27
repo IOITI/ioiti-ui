@@ -9,7 +9,9 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { motion, useSpring } from "framer-motion";
+import { motion, useReducedMotionConfig, useSpring } from "framer-motion";
+
+import { motionTransitions } from "./motion-tokens.js";
 
 /* -------------------------------------------------------------------------- */
 /*  Shared chart primitives                                                    */
@@ -32,9 +34,13 @@ export const defaultFormat = (n: number) => fullFmt.format(n);
 export const defaultTick = (n: number) => compactFmt.format(n);
 
 export const ring = "ring-1 ring-black/[0.07] dark:ring-white/[0.07]";
-export const muted = "text-neutral-500";
-export const focus =
-  "outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/70 dark:focus-visible:ring-white/40";
+// ioiti-ui: the design's muted text, 4.5:1 on every surface of every look (neutral-500 was 3.6:1 on the dark card).
+export const muted = "text-muted-foreground";
+// ioiti-ui: the focus is the global ring of design.css, the same everywhere: no ring of a chart's own.
+export const focus = "outline-none";
+
+// ioiti-ui: what follows the pointer moves as what floats does (springSnappy).
+const FOLLOW = motionTransitions.springSnappy as { stiffness: number; damping: number; mass: number };
 
 // "Nice" step so that step × 4 covers `raw × 4`
 export function niceStep(raw: number) {
@@ -88,8 +94,10 @@ export function Tooltip({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const seen = useRef(false);
-  const x = useSpring(0, { stiffness: 520, damping: 42, mass: 0.6 });
-  const y = useSpring(0, { stiffness: 520, damping: 42, mass: 0.6 });
+  const x = useSpring(0, { stiffness: FOLLOW.stiffness, damping: FOLLOW.damping, mass: FOLLOW.mass });
+  const y = useSpring(0, { stiffness: FOLLOW.stiffness, damping: FOLLOW.damping, mass: FOLLOW.mass });
+  // ioiti-ui: where motion is reduced (the system, or IoitiProvider's reducedMotion), it jumps to the pointer.
+  const reduce = useReducedMotionConfig();
 
   useLayoutEffect(() => {
     if (!pos) {
@@ -101,7 +109,7 @@ export function Tooltip({
     const tx = clamp(pos.x - w / 2, 0, Math.max(0, boundsWidth - w));
     let ty = pos.y - h - 12;
     if (ty < 0) ty = pos.y + 18;
-    if (!seen.current) {
+    if (!seen.current || reduce) {
       x.jump(tx);
       y.jump(ty);
       seen.current = true;
@@ -109,7 +117,7 @@ export function Tooltip({
       x.set(tx);
       y.set(ty);
     }
-  }, [pos, boundsWidth, x, y]);
+  }, [pos, boundsWidth, x, y, reduce]);
 
   return (
     <motion.div
@@ -120,7 +128,8 @@ export function Tooltip({
       style={{ x, y }}
       initial={false}
       animate={{ opacity: pos ? 1 : 0 }}
-      transition={{ duration: 0.14, ease: EASE_OUT }}
+      // ioiti-ui: it fades in as what floats arrives, and out quicker (easeFast, easeExit).
+      transition={pos ? motionTransitions.easeFast : motionTransitions.easeExit}
     >
       {children}
     </motion.div>
