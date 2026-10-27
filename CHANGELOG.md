@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [0.2.0] - Unreleased
+## [0.2.0] - 2026-10-27
 
 Two more choices beside light and dark, each person's own: an accent and a material. Neutral and flat are
 the design as it was: an application that gives neither looks as it did.
