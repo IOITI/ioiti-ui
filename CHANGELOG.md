@@ -190,6 +190,11 @@ the data tables' filters as Elastic UI's filter group.
   without ⌘ or Ctrl wait while text is typed, every key while a dialog is open. Those given a description are
   listed by group, with their keys, in `ShortcutsDialog`, which `AppShell` draws and `?` opens once there is one
   to list (`shortcutsDialog={false}` for none). Each application has its own registry (`IoitiProvider`).
+- **`ResizablePanels`**, **`ResizablePanel`** and **`ResizableHandle`**: panels side by side or one over the other,
+  each sized by the handle between them, dragged or moved with the arrow keys once it has the focus (Shift for
+  more, Home and End to the panels' bounds, Enter to fold a collapsible panel away and back, a double click back
+  to the first sizes); a separator with its value to a screen reader; one under the other under `stackBelow`. As
+  Elastic UI's resizable container does.
 
 An application changes nothing. `ioiti({ accent: 'bloom' })` makes bloom its own; `ACCENTS` and the type
 `Accent` have one more value, which a `switch` naming every accent must handle. `Checkbox` keeps its name and
