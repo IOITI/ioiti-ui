@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [0.3.0] - Unreleased
+## [0.3.0] - 2026-10-27
 
 A fifth accent, `bloom`: the colours of a printed flyer, a soft gradient with a grain. A check box whose mark
 draws itself, and a sheet that can push the page aside. And motion, calm and the same everywhere: a page and a
