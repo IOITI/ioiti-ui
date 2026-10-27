@@ -1,0 +1,17 @@
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
+import { cn } from '../lib/utils.js';
+function Swatch({ color, shape = 'square' }) {
+    const style = shape === 'dashed' ? { borderColor: color } : { background: color };
+    return (_jsx("span", { "aria-hidden": true, style: style, className: cn('inline-block shrink-0', shape === 'square' && 'size-2.5 rounded-[3px]', shape === 'dot' && 'size-2 rounded-full', shape === 'line' && 'h-0.5 w-3.5 rounded-full', shape === 'dashed' && 'w-3.5 border-t-2 border-dashed') }));
+}
+/**
+ * What the colours of a chart stand for, each with its swatch drawn as the chart draws it, and a figure
+ * where there is one. With `onToggle`, each shows or hides its series. Also for an application's own charts.
+ */
+export function ChartLegend({ items, onToggle, label = 'Legend', className }) {
+    return (_jsx("ul", { "aria-label": label, className: cn('flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs', className), children: items.map((item, index) => {
+            const shown = item.shown !== false;
+            const content = (_jsxs(_Fragment, { children: [_jsx(Swatch, { color: item.color, shape: item.shape }), _jsx("span", { className: cn(shown ? 'text-text-secondary' : 'text-text-muted line-through'), children: item.label }), item.value !== undefined && (_jsxs(_Fragment, { children: [' ', _jsx("span", { className: "tabular-nums text-text-primary", children: item.value })] }))] }));
+            return (_jsx("li", { className: "inline-flex", children: onToggle ? (_jsx("button", { type: "button", "aria-pressed": shown, onClick: () => onToggle(index), className: cn('inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 -mx-1.5 transition-colors hover:bg-surface-hover', !shown && '[&>[aria-hidden]]:opacity-40'), children: content })) : (_jsx("span", { className: "inline-flex items-center gap-1.5", children: content })) }, index));
+        }) }));
+}
