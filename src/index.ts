@@ -126,6 +126,7 @@ export type { MultiSelectOption } from './components/MultiSelect.js'
 export { NumberInput } from './components/NumberInput.js'
 export { PeekLink } from './components/PeekLink.js'
 export { Popover } from './components/Popover.js'
+export { PromptComposer } from './components/PromptComposer.js'
 export { BarList, ProgressBar } from './components/ProgressBar.js'
 export { RelativeTime } from './components/RelativeTime.js'
 export type { BarListItem } from './components/ProgressBar.js'
@@ -187,6 +188,27 @@ export type {
   AgentActivityTimelineProps,
   AIAgentActivityProps,
 } from './components/ui/ai-agent-activity.js'
+export {
+  AIResponse,
+  AIResponseActions,
+  AIResponseContent,
+  AIResponseHeader,
+  AIResponseSources,
+  AIResponseToolsSummary,
+  safeHref,
+  useAIResponseContext,
+} from './components/ui/ai-response.js'
+export type {
+  AIResponseActionsProps,
+  AIResponseContentProps,
+  AIResponseContextValue,
+  AIResponseHeaderProps,
+  AIResponseProps,
+  AIResponseSource,
+  AIResponseSourcesProps,
+  AIResponseStatus,
+  AIResponseToolsSummaryProps,
+} from './components/ui/ai-response.js'
 export { AirportMatrixClock } from './components/ui/airport-matrix-clock.js'
 export type { AirportMatrixCity, AirportMatrixClockProps } from './components/ui/airport-matrix-clock.js'
 export { Alert, AlertDescription, AlertTitle } from './components/ui/alert.js'

@@ -10,7 +10,7 @@ interface, as a package any application can install. React 19, Tailwind CSS 4, f
 - **Motion**: calm and the same everywhere, framer-motion's springs and the stylesheets' curves alike. A page
   changes in one cross-fade, the shell still; a look in one cross-fade of the whole page; what floats arrives and
   leaves the same way. Reduced where the system asks.
-- **164 components** (counting their parts): 49 of EasyUI's, reworked for the keyboard, screen readers,
+- **171 components** (counting their parts): 50 of EasyUI's, reworked for the keyboard, screen readers,
   phones and a light theme; the blocks pages are made of (panels, tiles, tables, fields, charts, menus, inputs,
   a range of time, a tour); and the shell (sidebar, top bar, the trail of where a page is, keyboard shortcuts).
 - **Checked**: every text colour is 4.5:1 on every surface of every look (20), one focus ring everywhere, links

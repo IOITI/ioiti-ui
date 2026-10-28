@@ -19,7 +19,7 @@ come from EasyUI. They were copied by hand from these commits of its repository:
   combobox, directional-tooltip, interactive-timeline, not-found, notification-bell,
   recovery-ledger, scroll-progress-nav, selection-basket, smart-comparison, spotlight-search;
   `chart-primitives.tsx`.
-- `7c106d4a195f9ce566ffbbc672fc48bed68d30bd` (2026-10-23): ai-agent-activity,
+- `7c106d4a195f9ce566ffbbc672fc48bed68d30bd` (2026-10-23): ai-agent-activity, ai-response,
   airport-matrix-clock, animated-file-upload, bar-chart, dependency-trace, donut-chart,
   draw-checkbox, dynamic-island, funnel-chart, live-line-chart, payment-status
   (`request-status.tsx` here), peek-card, product-tour, sheet (`flysheet.tsx` here), split-button,

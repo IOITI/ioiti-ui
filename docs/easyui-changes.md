@@ -58,7 +58,7 @@ otherwise).
   `selection-basket` and `smart-comparison`, whose hover is the fill's own colour.
 - **Glass.** Under the glass material (`data-material="glass"` on `<html>`, src/styles/glass.css), a surface
   turns to glass through a utility that does nothing otherwise, after EasyUI's classes, which stay: `glass-bar`
-  for the sidebar and a `flysheet` pushing the page; `glass-card` for `stat-card`, the frames of `advanced-data-table` and `ai-agent-activity`,
+  for the sidebar and a `flysheet` pushing the page; `glass-card` for `stat-card`, the frames of `advanced-data-table`, `ai-agent-activity` and `ai-response`,
   `smooth-accordion`, `request-status`, `airport-matrix-clock` and `recovery-ledger`; `glass-float`, the only
   one blurred, for what floats: the sidebar's drawer, `settle-modal`, `flysheet` (its children are drawn beside
   its panel, not in it), `spotlight-search`, `directional-tooltip`,
@@ -306,6 +306,19 @@ otherwise).
   alone); its `statusLabel` in words and its `timestamp` (EasyUI's item had one and never showed it) beside its
   duration; the header's `summary`, and `inputLabel` / `outputLabel` (EasyUI's "Parameters" and "Output
   Result"); arguments as JSON with their lines kept.
+- `ai-response` (from `7c106d4`, taken by ioiti-ui itself): on the design's tokens (its surface, text, borders and
+  washes; the tones for its dots and its error; the orb in the colours of things compared, the accent's under a
+  look with one) in place of EasyUI's neutrals and `#0b0b0c`, so the light theme reads it; `accentColor` is gone,
+  the look gives the accent; a fence drawn by the package's `CodeBlock`, so EasyUI's `CodeBlock`, which would have
+  shadowed it among the exports, is gone; a same-site link (a run's address in an answer) drawn by the
+  application's link, an outside one in a new tab as before, a blocked one in words (`safeHref` unchanged); its
+  eight titles are hints (a blocked link's, a link's address, a source's, a blocked source's, Copy, Regenerate,
+  Good, Poor), Regenerate's on its wrapper while it is disabled; feedback shown only with `onFeedback`, and
+  `feedback` given back by the application kept pressed; no model's name unless given (EasyUI's said "EasyAI
+  2.0"); copied with `copyToClipboard`; motion on the design's curves, reduced as IoitiProvider says
+  (`useReducedMotionConfig`), a list that opened by its height only appearing then; its tables scroll in their
+  own positioned frame, and nothing of it is wider than its place; its own focus rings gone. Its demo and its
+  default export are gone, as `product-tour`'s.
 - `dependency-trace` (a map of services): a node's health as a ring, an icon and a word, never colour alone
   (`status`, `statusLabel`, `detail`); its whole name under it (EasyUI cut names to seven letters inside the
   circle); an arrow from what calls to what is called, and each link's name while traced; nodes the keyboard

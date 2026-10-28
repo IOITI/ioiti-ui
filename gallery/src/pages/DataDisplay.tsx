@@ -4,6 +4,12 @@ import {
   AgentActivityItem,
   AgentActivityTimeline,
   AIAgentActivity,
+  AIResponse,
+  AIResponseActions,
+  AIResponseContent,
+  AIResponseHeader,
+  AIResponseSources,
+  AIResponseToolsSummary,
   AirportMatrixClock,
   AnimatedNumber,
   Avatar,
@@ -28,6 +34,7 @@ import {
   LiveValue,
   Meter,
   PageHeader,
+  PromptComposer,
   RecoveryLedger,
   RelativeTime,
   SignedValue,
@@ -110,6 +117,73 @@ const ACTIVITY: AgentActivityItemData[] = [
   { id: 'a2', type: 'database_query', title: 'Orders of October', status: 'success', statusLabel: 'Done', duration: '1.2 s', timestamp: '09:31:03', details: { input: { month: '2026-10' }, output: '42 orders' } },
   { id: 'a3', type: 'writing', title: 'The summary', status: 'running', statusLabel: 'Running', timestamp: '09:31:05' },
 ]
+
+const ANSWER = `## Believable, on few days
+
+The run made **42 trades on 21 days** and beat 97 % of random entries; see [the guide](#agent) and [the
+reference](https://example.com/guide).
+
+| Check | Result |
+| --- | --- |
+| Trades | 42 |
+| Random entries beaten | 97 % |
+
+- Stress it before keeping it
+- Try \`fast = 14\` on the same days
+
+\`\`\`json
+{"fast": 14, "slow": 40}
+\`\`\``
+
+const SOURCES = [
+  { id: 1, title: 'The October summary', url: '#agent', snippet: 'Its figures, step by step' },
+  { id: 2, title: 'A guide', url: 'https://example.com/guide' },
+]
+
+function Streamed() {
+  const [shown, setShown] = useState(ANSWER.length)
+  const streaming = shown < ANSWER.length
+  return (
+    <div className="space-y-3">
+      <Button size="sm" variant="outline" onClick={() => {
+        setShown(0)
+        const timer = window.setInterval(() => setShown((length) => {
+          if (length >= ANSWER.length) window.clearInterval(timer)
+          return Math.min(ANSWER.length, length + 9)
+        }), 40)
+      }}>
+        Stream it again
+      </Button>
+      <AIResponse content={ANSWER.slice(0, shown)} status={streaming ? 'streaming' : 'complete'} modelName="Model 2"
+        sources={SOURCES} onRegenerate={() => setShown(0)} onFeedback={() => {}} />
+    </div>
+  )
+}
+
+function Composer() {
+  const [value, setValue] = useState('')
+  const [busy, setBusy] = useState(false)
+  return (
+    <PromptComposer
+      label="Ask the assistant"
+      value={value}
+      onValueChange={setValue}
+      onSubmit={() => {
+        setBusy(true)
+        setValue('')
+        window.setTimeout(() => setBusy(false), 2500)
+      }}
+      onStop={() => setBusy(false)}
+      busy={busy}
+      maxLength={2000}
+      footer="Model 2 · about 2 cents a question"
+      suggestions={[
+        { label: 'Summarise', prompt: 'Summarise October in three lines.' },
+        { label: 'Compare', prompt: 'Compare October with September.' },
+      ]}
+    />
+  )
+}
 
 function Rolling() {
   const [value, setValue] = useState(12.4)
@@ -610,6 +684,46 @@ export function DataDisplay() {
             <AgentActivityItem activity={ACTIVITY[0]} isLast />
           </AIAgentActivity>
         </div>
+      </Demo>
+
+      <Demo
+        id="response"
+        title="AIResponse"
+        description="An assistant's answer: Markdown read as it streams (never as HTML), its sources, the tools it used, copy, regenerate and feedback. A same-site link is the application's; any other opens a new tab, and a dangerous one is no link at all."
+        names={['AIResponse']}
+        className="block w-full"
+      >
+        <Streamed />
+      </Demo>
+
+      <Demo
+        id="response-parts"
+        title="AIResponse, from its parts"
+        description="Its header, its content, the tools it used, its sources and its actions, in the order an application needs."
+        names={['AIResponseHeader', 'AIResponseContent', 'AIResponseToolsSummary', 'AIResponseSources', 'AIResponseActions']}
+        className="block w-full"
+      >
+        <AIResponse content="It **holds**: see [the summary](#agent)." sources={SOURCES} onFeedback={() => {}}>
+          <AIResponseHeader title="Assistant" modelBadge="Model 2" timestamp="09:31" />
+          <AIResponseContent />
+          <AIResponseToolsSummary toolCount={3} tools={[
+            { name: 'orders_of', status: 'success', duration: '1.2 s' },
+            { name: 'summary', status: 'running' },
+            { name: 'refunds_of', status: 'error' },
+          ]} />
+          <AIResponseSources defaultExpanded />
+          <AIResponseActions />
+        </AIResponse>
+      </Demo>
+
+      <Demo
+        id="composer"
+        title="PromptComposer"
+        description="A request to an assistant: it grows with its text, sends with Enter (Shift+Enter breaks a line, and so does Enter on a touch screen), is stopped while answered, and offers requests to start from."
+        names={['PromptComposer']}
+        className="block w-full"
+      >
+        <Composer />
       </Demo>
 
       <Demo id="clock" title="AirportMatrixClock" description="The time of a few cities, as a departures board: two of them fit beside a page's title." names={['AirportMatrixClock']}>

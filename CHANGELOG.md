@@ -3,6 +3,20 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.5.0] - 2026-10-28
+
+- **`AIResponse`, EasyUI's `ai-response`** (from `7c106d4`), and its parts `AIResponseHeader`, `AIResponseContent`,
+  `AIResponseSources`, `AIResponseToolsSummary` and `AIResponseActions`, with `safeHref` and
+  `useAIResponseContext`: an assistant's answer, its Markdown read as it streams and never as HTML. A same-site
+  link in it is the application's (`LinkProvider`), any other opens a new tab, and a dangerous one is no link at
+  all. On the design's tokens, its code in the package's `CodeBlock` (EasyUI's own `CodeBlock`, which would have
+  shadowed it, is not exported), hints in place of titles: `docs/easyui-changes.md` lists the changes.
+- **`PromptComposer`**, ioiti-ui's own: a request typed to an assistant, which grows with its text, is sent with
+  Enter (Shift+Enter breaks a line; on a touch screen Enter is a new line and the button sends), stopped while it
+  is answered (`busy`, `onStop`), and offers requests to start from (`suggestions`); why nothing can be sent in a
+  hint (`disabledReason`).
+- `AIAgentActivity` has its tests (it had none). Nothing to change in an application.
+
 ## [0.4.6] - 2026-10-28
 
 - **`UndoToast`'s bar moves.** It stood full while the time went: its width, set at each frame, went through a

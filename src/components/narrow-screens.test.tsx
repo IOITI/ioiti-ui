@@ -7,6 +7,7 @@ import { Panel } from './Panel.js'
 import { SignedValue } from './status.js'
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './Table.js'
 import { ActivityHeatmap } from './ui/activity-heatmap.js'
+import { AIResponse } from './ui/ai-response.js'
 import { AdvancedDataTable } from './ui/advanced-data-table.js'
 import type { ColumnDef } from './ui/advanced-data-table.js'
 import { AnimatedTabs } from './ui/animated-tabs.js'
@@ -128,6 +129,13 @@ describe('on a narrow screen, no part is wider than its place', () => {
 
     expect(screen.getByRole('table').parentElement).toHaveClass('relative', 'overflow-x-auto')
     expect(screen.getByRole('group', { name: 'Filters' }).parentElement).toHaveClass('relative', 'overflow-x-auto')
+  })
+
+  it("an assistant's answer is never wider than its place: its tables scroll in their own frame", () => {
+    render(<AIResponse content={'| A | B |\n| --- | --- |\n| 1 | 2 |'} />)
+
+    expect(screen.getByRole('article', { name: 'AI response' })).toHaveClass('min-w-0')
+    expect(screen.getByRole('table').parentElement).toHaveClass('relative', 'overflow-x-auto')
   })
 
   it('a row of tabs that does not fit scrolls in itself, each name on one line', () => {
