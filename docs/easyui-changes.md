@@ -30,7 +30,7 @@ otherwise).
   a darker step. Nothing dark was changed by this.
 - **One focus ring.** The keyboard's focus is the global rule of `design.css`, outside any layer so that it
   wins over the components' `outline-none`. The components' own rings (white ones, made for a dark page)
-  are gone where they hid it.
+  are gone where they hid it. A field that takes text has none: its caret and its border show its focus.
 - **Links are links.** A component that leads somewhere draws a real link, which a ⌘-click, a middle click
   or a right click opens in another tab (`isPlainClick` leaves such a click to the browser). The link is
   drawn by a component the caller gives (`linkComponent`, `as` for the breadcrumb, `LinkComponent` for the
@@ -243,7 +243,8 @@ otherwise).
   grid had three); a plan's `href` (its name a link) and `accent` (a colour before its name: its colour on a
   chart); a feature's `keys`, its values as text for "differences only" (React nodes cannot be compared);
   `label`, `matrixTitle`, `countLabel`, `searchPlaceholder`, `diffLabel`, `emptyText`; a plan's button only
-  when it does something; `aria-pressed` and `aria-expanded` on the toggles.
+  when it does something; `aria-pressed` and `aria-expanded` on the toggles; its search's focus shown by its
+  border, as `form`'s input shows it (only the ring showed it).
 - `activity-heatmap` (a calendar of results, a weekday × hour grid): `diverging`, signed values on two scales
   (`--chart-gain-*`, `--chart-loss-*`), the steps of size counted on gains and losses together, the best and
   the worst said above it, the legend from the largest loss to the largest gain; `format`, `summary`,
@@ -416,4 +417,6 @@ What the package changed in the copies, beyond the original interface:
   it, and EasyUI's indigo and emerald belong to no palette of the design.
 - **`selection-basket` in `inline` mode** keeps to its container's width, its bar scrolling inside it on a
   phone, as the `sticky` mode does.
+- **No focus ring on a field that takes text** (`design.css`, 0.5.3), which a browser marks as reached by the
+  keyboard at a click too: its caret and its border show its focus, the ring only under forced colours.
 - **Gone:** `NotFoundDemo` (it led to EasyUI's site); `payment-status`'s name (above).

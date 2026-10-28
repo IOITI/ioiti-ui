@@ -173,13 +173,14 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
           {enableSearch && (
             <div className="relative flex-1 sm:w-64">
               <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+              {/* ioiti-ui: its focus as the form's Input shows it, a field that takes text having no ring. */}
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder:text-muted-foreground focus-visible:outline-none dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#FAFAFA]"
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder:text-muted-foreground focus-visible:outline-none dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#FAFAFA] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
               />
             </div>
           )}

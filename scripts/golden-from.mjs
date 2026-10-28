@@ -3,10 +3,11 @@
 //
 //   node scripts/golden-from.mjs <built.css> "<where it comes from>"
 //
-// The design's tokens (:root, .dark, :root:not(.dark)), the scrollbar, the focus ring, the base
-// layer (Tailwind's preflight and the design's base rules) and the fonts' @font-face rules, each
-// exactly as the built CSS writes it. The utilities, the theme layer and the @property rules are
-// left out: an application has the ones its own pages use.
+// The design's tokens (:root, .dark, :root:not(.dark)), the scrollbar, the focus ring and the
+// rule that leaves it off a field that takes text (unless colours are forced), the base layer
+// (Tailwind's preflight and the design's base rules) and the fonts' @font-face rules, each exactly
+// as the built CSS writes it. The utilities, the theme layer and the @property rules are left out:
+// an application has the ones its own pages use.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -18,6 +19,7 @@ const KEPT = [
   /^::-webkit-scrollbar/,
   /^\.focus-ring$/,
   /^:focus-visible/,
+  /^@media not all and \(forced-colors:active\)$/,
   /^@layer base$/,
   /^@font-face$/,
 ]

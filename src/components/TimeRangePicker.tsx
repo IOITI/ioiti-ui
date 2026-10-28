@@ -343,7 +343,8 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
                 next.setHours(hours, minutes, 0, 0)
                 onChange(localIso(next))
               }}
-              className="h-8 rounded-md border border-border bg-surface px-2 text-xs tabular-nums text-text-primary"
+              // Its focus as the form's Input shows it: a field that takes text has no ring.
+              className="h-8 rounded-md border border-border bg-surface px-2 text-xs tabular-nums text-text-primary focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
             />
           </label>
         </div>

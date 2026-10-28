@@ -71,7 +71,7 @@ const GROUPS: { title: string; description: string; text?: boolean; tokens: Toke
       { name: '--negative', utility: 'text-negative', use: 'A loss, an error, down.' },
       { name: '--warning', utility: 'text-warning', use: 'Something to look at.' },
       { name: '--info', utility: 'text-info', use: 'A neutral note.' },
-      { name: '--focus-ring', utility: ':focus-visible', use: 'The keyboard\'s focus, the same everywhere.' },
+      { name: '--focus-ring', utility: ':focus-visible', use: 'The keyboard\'s focus, the same everywhere but on a field that takes text.' },
     ],
   },
 ]

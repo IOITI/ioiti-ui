@@ -207,6 +207,22 @@
   outline-offset: 2px;
 }
 
+/* ioiti-ui's own: no ring on a field that takes text, which a browser counts as
+   focused from the keyboard at every focus, a click's too. Its caret and its own
+   border show where the focus is (the field's `focus:` border, or its frame's
+   `focus-within:`). None, not transparent: a field's `transition-colors` would
+   fade it out from the base layer's grey. Not under forced colours (Windows'
+   contrast themes), where a border no longer changes. */
+@media not (forced-colors: active) {
+  :focus-visible:is(
+      input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="button"], [type="submit"], [type="reset"], [type="image"]),
+      textarea,
+      [contenteditable]:not([contenteditable="false"])
+    ) {
+    outline: none;
+  }
+}
+
 /* The package's own components, for Tailwind to find their classes: dist/ once
    built (an application's node_modules, which Tailwind does not scan by itself),
    src/ in the gallery. Not the Vite plugin, not the type declarations. */

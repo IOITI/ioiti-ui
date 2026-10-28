@@ -74,7 +74,9 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 - **What MotionConfig does not reduce** (a value animated by hand: `pathLength`, `d`, a size, `useSpring`) is
   reduced through `useReducedMotionConfig()`, which follows IoitiProvider as well as the system; framer's
   `useReducedMotion` follows the system only.
-- **One focus ring**, the global rule of `design.css`; no component draws its own.
+- **One focus ring**, the global rule of `design.css`; no component draws its own. A field that takes text has
+  none, a browser marking it at a click too: its caret and its own border show its focus, as the form's `Input`
+  (`focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand`), or its frame's.
 - **What leads somewhere is a link**, drawn by `useLinkComponent()` (the application's, from `LinkProvider`),
   or by the component's own `linkComponent` prop when given; a plain click is left to the router, a click with
   a modifier to the browser (`isPlainClick`). Never import a router outside `src/react-router/`. A part of the

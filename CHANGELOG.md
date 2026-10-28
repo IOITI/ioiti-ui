@@ -3,6 +3,20 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.5.3] - 2026-10-28
+
+- **A field that takes text has no focus ring.** A browser marks a text field as reached by the keyboard at a
+  click too, so the ring was drawn around every field clicked into, a rectangle inside a rounded frame where the
+  field is bare (`PromptComposer`'s text, `SpotlightSearch`'s query). The field's caret and its border show its
+  focus now; the ring stays on everything else the keyboard reaches (a button, a link, a box, a slider), and on
+  a field too under forced colours (Windows' contrast themes), where a border no longer changes.
+- `TimeRangePicker`'s time and `SmartComparison`'s search, whose focus only the ring showed, take the border of
+  the form's `Input` in focus.
+- A change of the design on purpose: `check:package`'s reference was taken again, the 25 blocks as they were
+  and the new rule's (`docs/fidelity.md`).
+
+Nothing to change in an application.
+
 ## [0.5.2] - 2026-10-28
 
 - **`PromptComposer`'s controls wrap where they do not fit beside the send button.** They were kept on one line

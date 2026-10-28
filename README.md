@@ -188,7 +188,8 @@ view-transition name at rest would take the blur of its glass away.
 - **The accent after the neutral classes, glass by role**: what is chosen or primary keeps its classes and adds
   `accent:` ones; a surface adds `glass-bar`, `glass-card` or `glass-float`. With neutral and flat, nothing
   changes.
-- **One focus ring**, the stylesheet's, on everything that takes the keyboard's focus.
+- **One focus ring**, the stylesheet's, on everything that takes the keyboard's focus but a field that takes text,
+  whose caret and border show it.
 - **What leads somewhere is a link** (`ButtonLink`, `TextLink`, `href` on menu entries, tabs and actions);
   only actions are buttons.
 - **A `Hint`, not a `title`**, for what a control means or why it is disabled: shown on hover, on keyboard

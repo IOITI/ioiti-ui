@@ -6,9 +6,10 @@ ioiti-ui is the design of WATA's admin interface (WATA v0.50.1, `admin_ui/` at I
 ## 1. The built CSS, block by block (automated)
 
 `npm run check:package` builds the starter template on the package as a release packs it, and checks that
-its CSS holds, character for character, the 25 blocks of `test/golden/reference-blocks.json`: the
+its CSS holds, character for character, the 26 blocks of `test/golden/reference-blocks.json`: the
 tokens of both themes (`:root`, `.dark`, `:root:not(.dark)`), Tailwind's base layer with the design's
-base rules, the scrollbar, the focus ring, and the 11 `@font-face` rules of Geist and JetBrains Mono.
+base rules, the scrollbar, the focus ring and the rule that leaves it off a field that takes text
+(ioiti-ui's own: below), and the 11 `@font-face` rules of Geist and JetBrains Mono.
 Those blocks do not depend on which classes the pages use, so any application's build has them.
 
 The reference was taken from WATA's own build:
@@ -97,9 +98,18 @@ leaves out; its rules are blocks of their own after the glass's (`::view-transit
 holds that it only adds, as the accents and the glass do. Compare styles at rest: a change of page or of look
 is a picture over the page while it plays, and a change of look holds the components' own transitions still.
 
+## The focus ring of a field that takes text
+
+A change of the design made on purpose, in 0.5.3. A browser marks a field that takes text as reached by the
+keyboard at a click too, so the original's ring was drawn around every field clicked into, a bare one inside a
+frame of its own included (`PromptComposer`'s text, `SpotlightSearch`'s query). `design.css` takes the ring
+off there, in a block of its own after the ring's; the field's caret and its border show its focus. Not under
+forced colours (Windows' contrast themes), where a border no longer changes: the ring stays there. The
+reference was taken again from the starter template's build: the 25 blocks as WATA built them, and this one.
+
 ## What the package changed, and why
 
-Nothing of the design's values. The differences an application can see are listed in
-`docs/easyui-changes.md` under "ioiti-ui's own changes": defaults that were WATA's usage (the series
-blue of the one-series charts), a selection basket that no longer runs off a phone's screen in `inline`
-mode, and the like.
+Nothing of the design's values but the focus ring of a field that takes text (above). The differences an
+application can see are listed in `docs/easyui-changes.md` under "ioiti-ui's own changes": defaults that were
+WATA's usage (the series blue of the one-series charts), a selection basket that no longer runs off a phone's
+screen in `inline` mode, and the like.
