@@ -1,0 +1,5 @@
+/* ioiti-ui, whole: Tailwind CSS 4 and the design system. An application's
+   stylesheet imports this file in place of "tailwindcss", never both: the
+   second copy of Tailwind's theme and base would be written out twice. */
+@import "tailwindcss";
+@import "./design.css";
