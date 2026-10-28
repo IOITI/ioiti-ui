@@ -108,6 +108,11 @@ export function Popover({
             {shown && (
               <motion.div
                 ref={layerRef}
+                // Moved as the page scrolls, it takes what animates its layout in it (a SegmentedControl's
+                // fill) along at once: measured from it, not from the window, where it trailed after it. A
+                // root goes to its own new place at once.
+                layout
+                layoutRoot
                 id={id}
                 role="dialog"
                 aria-label={label}

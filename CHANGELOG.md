@@ -3,6 +3,15 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.4.5] - 2026-10-28
+
+- **What animates its layout in a `Popover` follows it at once as the page scrolls.** A `SegmentedControl`'s fill
+  in it (as in a `TimeRangePicker`'s start and end), an `AnimatedTabs`' indicator, was measured from the window:
+  the popover moved with its button, and the fill, seeing itself moved, slid after it for half a second, out of
+  its place. The popover is the root of its content's layout animations now (framer-motion's `layout` and
+  `layoutRoot`): the fill keeps its place in it, and still slides from one segment to the next. Nothing to change
+  in an application.
+
 ## [0.4.4] - 2026-10-28
 
 Three components could bring their page down, rendered again and again until React gave up ("Too many
