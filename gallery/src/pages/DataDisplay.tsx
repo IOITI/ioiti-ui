@@ -49,7 +49,7 @@ import {
   TableRow,
 } from 'ioiti-ui'
 import type { AgentActivityItemData, ColumnDef } from 'ioiti-ui'
-import { ChevronDown, GitCompare } from 'lucide-react'
+import { ChevronDown, Gauge, GitCompare } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { Demo } from '../parts'
@@ -178,9 +178,18 @@ function Composer() {
       maxLength={2000}
       footer="about 2 cents a question"
       controls={
-        <Button size="sm" variant="ghost" rightIcon={<ChevronDown className="size-3.5" />}>
-          Model 2
-        </Button>
+        // Three of them, as an assistant's composer has: on a phone they wrap rather than run under the button.
+        <>
+          <Button size="sm" variant="ghost" rightIcon={<ChevronDown className="size-3.5" />}>
+            Model 2
+          </Button>
+          <Button size="sm" variant="ghost" rightIcon={<ChevronDown className="size-3.5" />}>
+            high
+          </Button>
+          <Button size="sm" variant="ghost" leftIcon={<Gauge className="size-3.5" />} aria-label="Context: 12,200 tokens">
+            <span className="tabular-nums">12.2k · 1%</span>
+          </Button>
+        </>
       }
       suggestions={[
         { label: 'Summarise', prompt: 'Summarise October in three lines.' },

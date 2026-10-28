@@ -3,6 +3,15 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.5.2] - 2026-10-28
+
+- **`PromptComposer`'s controls wrap where they do not fit beside the send button.** They were kept on one line
+  that never shrank, so on a phone a third control (a model's menu, an effort's, a meter) ran under the send
+  button. Each is still kept whole: what does not fit goes onto another line, and the footer onto its own, cut
+  short there. Nothing changes where they fit.
+
+Nothing to change in an application.
+
 ## [0.5.1] - 2026-10-28
 
 - **`PromptComposer` takes `controls`**: what a request goes with (a model's menu, a meter of what it holds), under

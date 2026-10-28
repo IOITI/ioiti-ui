@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { CopyChip } from './CopyChip.js'
 import { LineChart } from './LineChart.js'
 import { Panel } from './Panel.js'
+import { PromptComposer } from './PromptComposer.js'
 import { SignedValue } from './status.js'
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './Table.js'
 import { ActivityHeatmap } from './ui/activity-heatmap.js'
@@ -98,6 +99,22 @@ describe('on a narrow screen, no part is wider than its place', () => {
     )
 
     expect(screen.getByRole('heading', { name: 'Services' }).closest('section')).toHaveClass('min-w-0')
+  })
+
+  it("an assistant's composer wraps its controls, each whole, rather than run them under its send button", () => {
+    render(
+      <PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} maxLength={8000}
+        footer="up to $5.00 a request · $0.43 of $50.00 this month"
+        controls={<><button type="button">Opus 5.5</button><button type="button">high</button><button type="button">12.2k · 1%</button></>} />,
+    )
+
+    const controls = screen.getByRole('button', { name: 'Opus 5.5' }).parentElement!
+    expect(controls).toHaveClass('flex-wrap', 'min-w-0')
+    expect(controls).not.toHaveClass('shrink-0')
+    // The part beside the send button takes what is left of the row, and wraps what does not fit in it.
+    expect(controls.parentElement).toHaveClass('flex-1', 'flex-wrap', 'min-w-0')
+    expect(screen.getByRole('button', { name: 'Send' }).parentElement).toBe(controls.parentElement!.parentElement)
+    expect(screen.getByText(/this month/).closest('.truncate')).toHaveClass('max-w-full')
   })
 
   it('a table scrolls sideways in its own frame, which holds its text for screen readers', () => {

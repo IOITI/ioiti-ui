@@ -31,7 +31,10 @@ interface PromptComposerProps {
   suggestions?: PromptSuggestion[]
   /** Under the field: what a request costs, the model it goes to. */
   footer?: ReactNode
-  /** Under the field, before the footer and kept whole: what the request goes with (a model's menu, a meter). */
+  /**
+   * Under the field, before the footer: what the request goes with (a model's menu, a meter). Each is kept
+   * whole; where they do not all fit beside the send button (a phone), they wrap onto another line.
+   */
   controls?: ReactNode
   maxLength?: number
   minRows?: number
@@ -152,9 +155,11 @@ export function PromptComposer({
           className="block w-full resize-none overflow-y-auto bg-transparent px-3.5 pt-3 text-sm leading-normal text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-60"
         />
         <div className="flex items-center justify-between gap-3 px-3 pb-2.5 pt-1">
-          <div className="flex min-w-0 items-center gap-2">
-            {controls && <div className="-ml-1 flex shrink-0 items-center gap-1">{controls}</div>}
-            <div className="min-w-0 truncate text-xs text-muted-foreground">
+          {/* What does not fit beside the send button wraps under itself, never under the button: the controls
+              onto another line, each whole, and the footer onto its own, cut short there. */}
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+            {controls && <div className="-ml-1 flex min-w-0 flex-wrap items-center gap-1">{controls}</div>}
+            <div className="min-w-0 max-w-full truncate text-xs text-muted-foreground">
               {maxLength !== undefined && (
                 <span className={cn('tabular-nums', over && 'text-negative')}>
                   {value.length.toLocaleString()} / {maxLength.toLocaleString()}
