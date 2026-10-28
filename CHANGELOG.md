@@ -3,6 +3,17 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.5.4] - 2026-10-28
+
+- **What `QueryState` fades in is no layer of its own once it has arrived.** Its fade (`animate-reveal`) was
+  kept to its end (`both`), and an animation of opacity kept so stays in effect: each block it revealed stayed
+  a stacking context and the root of its glass's backdrop. A layer opened in one without a portal, as
+  `LookPicker`'s choices are, went under the blocks after it, and under the glass material blurred nothing of
+  them. The fade is filled backwards now, and leaves nothing once it has run; it looks the same.
+- So a `LookPicker` can sit in a page's panel as well as in the top bar.
+
+Nothing to change in an application.
+
 ## [0.5.3] - 2026-10-28
 
 - **A field that takes text has no focus ring.** A browser marks a text field as reached by the keyboard at a

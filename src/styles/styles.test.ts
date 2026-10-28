@@ -133,7 +133,18 @@ describe('the motion, as an application builds it', () => {
     expect(css).toContain(`--default-transition-timing-function: ${curve(motionTransitions.easeFast)};`)
     // Their length stays Tailwind's.
     expect(css).toContain('--default-transition-duration: 150ms;')
-    expect(css).toContain(`--animate-reveal: ioiti-reveal 200ms ${curve(motionTransitions.easeSoft)} both;`)
+    expect(css).toContain(`--animate-reveal: ioiti-reveal 200ms ${curve(motionTransitions.easeSoft)} backwards;`)
+  })
+
+  it('leaves nothing of a reveal once it has run: what arrived is no layer of its own, nor the root of a backdrop', async () => {
+    const css = await build(['animate-reveal'])
+
+    expect(rule(css, '.animate-reveal')).toContain('animation: var(--animate-reveal)')
+    // Kept to its end (both, forwards), an animation of opacity stays in effect: a block it revealed held a
+    // layer opened in it without a portal (LookPicker's choices) under the blocks after it, its glass
+    // blurring nothing of them.
+    expect(css).toMatch(/--animate-reveal: ioiti-reveal [^;]* backwards;/)
+    expect(css).not.toMatch(/--animate-reveal:[^;]*\b(both|forwards)\b/)
   })
 
   it('is reduced where the system asks or IoitiProvider says so: motion-safe: and motion-reduce: follow both', async () => {
