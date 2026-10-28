@@ -85,6 +85,10 @@ export const UndoToast: React.FC<UndoToastProps> = ({
     setIsVisible(open);
     if (open) {
       setIsRestored(false);
+      // ioiti-ui: nothing stops it as it opens. A pause from its last time outlived it (its Close or Undo pressed with
+      // the mouse took the focus, and was gone with the toast before the focus could leave it): its bar stood still,
+      // and it stayed open.
+      setIsPaused(false);
       setProgress(100);
       remainingTimeRef.current = duration;
     }
@@ -174,9 +178,9 @@ export const UndoToast: React.FC<UndoToastProps> = ({
             // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
             exit={{ opacity: 0, scale: 0.94, y: position.startsWith('top') ? -10 : 10, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            // ioiti-ui: paused while the keyboard is in it too, as under the pointer.
+            // ioiti-ui: the time runs on under the pointer (EasyUI's stopped there); it stops only while the keyboard
+            // is in it, the time to reach Undo for who cannot see the bar or point at it. A pointer moves the focus in
+            // only by pressing Undo or Close, which end it.
             onFocus={() => setIsPaused(true)}
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsPaused(false);
@@ -245,10 +249,12 @@ export const UndoToast: React.FC<UndoToastProps> = ({
             {/* Live Progress Bar countdown indicator */}
             {showProgress && !isRestored && (
               <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-neutral-100 dark:bg-[#050505]">
-                {/* ioiti-ui: the time left in the accent, where the theme has one (accent:). */}
+                {/* ioiti-ui: the time left in the accent, where the theme has one (accent:). Its width set at each frame,
+                    with no transition: EasyUI's (50 ms), started again at each frame, never left its start, and the bar
+                    stood full. */}
                 <div
-                  className="h-full bg-neutral-900 transition-all dark:bg-[#FAFAFA] accent:bg-brand"
-                  style={{ width: `${progress}%`, transition: isPaused ? 'none' : 'width 50ms linear' }}
+                  className="h-full bg-neutral-900 dark:bg-[#FAFAFA] accent:bg-brand"
+                  style={{ width: `${progress}%` }}
                 />
               </div>
             )}

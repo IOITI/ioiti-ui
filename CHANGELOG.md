@@ -3,6 +3,19 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.4.6] - 2026-10-28
+
+- **`UndoToast`'s bar moves.** It stood full while the time went: its width, set at each frame, went through a
+  transition (EasyUI's 50 ms) started again at each frame, which never left its start. It jumped to the time left
+  only while the pointer was on it, where the pause took the transition away. It has none now.
+- **It counts down each time it opens.** A pause from its last time outlived it: its Close or Undo pressed with the
+  mouse took the focus, which stops the time, and was gone with the toast before the focus could leave it (as the
+  pointer was, still on it); opened again, it stayed still, and open, until the pointer went over it and out. It
+  starts afresh now.
+- **Its time runs on under the pointer** (EasyUI's stopped there). It still stops while the keyboard is in it, the
+  time to reach Undo for who cannot see the bar or point at it; a pointer moves the focus in only by pressing Undo
+  or Close, which end it. Nothing to change in an application.
+
 ## [0.4.5] - 2026-10-28
 
 - **What animates its layout in a `Popover` follows it at once as the page scrolls.** A `SegmentedControl`'s fill

@@ -286,8 +286,11 @@ otherwise).
   (emerald-600 on its pale pill was 3.6:1).
 - `undo-toast`: the time left kept at each frame, so that a pause takes up where it stopped and the bar shows
   what is left of the whole (after a pause, EasyUI's went back to full); the caller's `onDismiss` through a
-  ref (a new one at each render of the caller restarted the countdown); paused while the keyboard is in it, as
-  under the pointer.
+  ref (a new one at each render of the caller restarted the countdown); the time runs on under the pointer
+  (EasyUI's stopped there), and stops only while the keyboard is in it; nothing stops it as it opens (a pause
+  from its last time outlived it: its button pressed and gone with the focus, or the pointer still on it); the
+  bar's width set at each frame with no transition (EasyUI's 50 ms one, started again at each frame, never left
+  its start: the bar stood full).
 - `split-button`: the primary action and an option may have an `href` (a link; an option chosen from the
   keyboard is followed as a click would follow it); an option's `description` (a line under it) and
   `tone: 'danger'`; `icon` and `menuLabel` (EasyUI named the chevron "More <label> options"); the option the

@@ -193,7 +193,7 @@ export function Feedback() {
         <Toasts />
       </Demo>
 
-      <Demo id="undo" title="UndoToast" description="A removal with an Undo instead of a question: nothing is sent before the time runs out, and a pause stops the clock." names={['UndoToast']}>
+      <Demo id="undo" title="UndoToast" description="A removal with an Undo instead of a question: nothing is sent before the time runs out. The time runs on under the pointer; it stops while the keyboard is in the toast, the time to reach Undo." names={['UndoToast']}>
         <Undo />
       </Demo>
 
