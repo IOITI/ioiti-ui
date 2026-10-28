@@ -38,7 +38,11 @@ function subscribe(interval: number, listener: () => void): () => void {
   }
 }
 
-function snapshot(interval: number): number {
+/**
+ * The time the clock of this interval says now, as `useNow(interval)` gives it, without listening to it:
+ * read up to `interval` milliseconds ago while something keeps it going.
+ */
+export function nowOf(interval: number): number {
   const clock = clockOf(interval)
   // Nothing has kept it going: the time it last read is old, or ahead of a clock set back since.
   if (clock.timer === undefined && Math.abs(Date.now() - clock.now) >= interval) clock.now = Date.now()
@@ -52,6 +56,6 @@ function snapshot(interval: number): number {
 export function useNow(interval = 1000): number {
   // The same functions from one render to the next: React subscribes once, not at each render.
   const listen = useCallback((listener: () => void) => subscribe(interval, listener), [interval])
-  const read = useCallback(() => snapshot(interval), [interval])
+  const read = useCallback(() => nowOf(interval), [interval])
   return useSyncExternalStore(listen, read, read)
 }

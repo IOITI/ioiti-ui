@@ -94,4 +94,17 @@ describe('NumberInput', () => {
     await user.type(field, '4')
     expect(field).toHaveValue('4')
   })
+
+  it('takes a value that is not a number for none', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    render(<NumberInput label="Amount" value={Number.NaN} onChange={changed} />)
+    const field = screen.getByRole('spinbutton', { name: 'Amount' })
+    expect(field).toHaveValue('')
+    expect(field).not.toHaveAttribute('aria-valuenow')
+
+    field.focus()
+    await user.keyboard('{ArrowUp}')
+    expect(changed).toHaveBeenLastCalledWith(1)
+  })
 })

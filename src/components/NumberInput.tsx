@@ -7,6 +7,7 @@ import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 
 interface NumberInputProps {
+  /** The value; `null` (or `NaN`) for none, an empty field. */
   value?: number | null
   defaultValue?: number | null
   /** Each value it holds: `null` once emptied. A value being typed ("1.", "-") is not one yet. */
@@ -70,7 +71,10 @@ export function NumberInput({
   steppers = true,
   className,
 }: NumberInputProps) {
-  const [current, setCurrent] = useControllableState<number | null>(value, defaultValue, onChange)
+  const [held, setCurrent] = useControllableState<number | null>(value, defaultValue, onChange)
+  // NaN is none, as null: stepped from its minimum, or 0. Never equal to itself, it would be a new value at
+  // every render, each asking for another.
+  const current = Number.isNaN(held) ? null : held
   const digits = integer ? 0 : (precision ?? Math.max(decimalsOf(step), 0))
   const toText = (number: number | null) => (number === null ? '' : precision === undefined ? String(number) : number.toFixed(precision))
   const [text, setText] = useState(() => toText(current))

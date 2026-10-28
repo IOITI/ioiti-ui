@@ -38,4 +38,16 @@ describe('LiveValue', () => {
     expect(figure).toHaveClass('text-text-muted')
     expect(figure).toHaveTextContent('42 (stale)')
   })
+
+  it('takes a figure that is not a number for none', () => {
+    const format = (value: number) => value.toFixed(2)
+    const { rerender } = render(<LiveValue value={Number.NaN} format={format} />)
+    expect(screen.getByText('—')).toBeInTheDocument()
+
+    // A figure after none is no change to show.
+    rerender(<LiveValue value={42} format={format} />)
+    const figure = screen.getByText('42.00')
+    expect(figure).not.toHaveClass('text-positive')
+    expect(figure).not.toHaveClass('text-negative')
+  })
 })

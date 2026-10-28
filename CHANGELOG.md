@@ -3,6 +3,20 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.4.4] - 2026-10-28
+
+Three components could bring their page down, rendered again and again until React gave up ("Too many
+re-renders", its error #301). Nothing to change in an application.
+
+- **`RelativeTime` never brings its page down as its moment turns a minute, or two days, old.** It goes on to
+  the clock read less often (each minute, each hour) once that clock too says the moment old enough, and is said
+  each second (each minute) until then. It went on as soon as the clock it was on said so, while the other, read
+  longer ago, still said the moment younger and sent it back: the two sent it to each other without end, wherever
+  a time older kept the other clock going. The gallery's Data display page fell so 40 s after it was opened.
+- **`LiveValue` and `NumberInput` take a value that is not a number (`NaN`) for none, as `null`**: a dash, an
+  empty field (stepped from its minimum, or 0). Never equal to itself, it was a new value at every render, each
+  asking for another, from the first.
+
 ## [0.4.3] - 2026-10-28
 
 Nothing is wider than the screen on a phone any more, where pages scrolled sideways, onto nothing or onto a

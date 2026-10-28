@@ -4,7 +4,7 @@ import { formatNumber } from '../lib/format.js'
 import { cn } from '../lib/utils.js'
 
 interface LiveValueProps {
-  /** The figure now; `null` while there is none. */
+  /** The figure now; `null` (or `NaN`) while there is none. */
   value: number | null
   format?: (value: number) => string
   /** The figure is old: what sends it stopped. It is muted, and a screen reader hears that it is stale. */
@@ -28,7 +28,7 @@ const FADE = 500
  * signed amount, `SignedValue`; for a count that rolls, `AnimatedNumber`.
  */
 export function LiveValue({
-  value,
+  value: given,
   format = (number) => formatNumber(number, Number.isInteger(number) ? 0 : 2),
   stale = false,
   flash = true,
@@ -36,6 +36,9 @@ export function LiveValue({
   staleLabel = 'stale',
   className,
 }: LiveValueProps) {
+  // NaN is no figure, as null: never equal to itself, it would be a new figure at every render, each asking
+  // for another.
+  const value = Number.isNaN(given) ? null : given
   const [previous, setPrevious] = useState(value)
   const [change, setChange] = useState<{ up: boolean; at: number } | null>(null)
   const [fading, setFading] = useState(false)
