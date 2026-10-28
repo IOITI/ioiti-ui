@@ -47,11 +47,16 @@ function Mover({ name }: { name: keyof typeof motionTransitions }) {
         {name}
       </Button>
       <div className="relative h-8 flex-1 rounded-lg bg-surface-raised/50">
-        <motion.div
-          className="absolute top-1 left-1 size-6 rounded-md bg-foreground"
-          animate={{ left: far ? 'calc(100% - 1.75rem)' : '0.25rem' }}
-          transition={motionTransitions[name]}
-        />
+        {/* Its way, the track less the square and its margins: from 0% to 100% of it, which framer-motion mixes.
+            From 0.25rem to calc(100% - 1.75rem), it jumped there and came back from 100rem. */}
+        <div className="absolute inset-y-1 left-1 right-7">
+          <motion.div
+            className="absolute top-0 size-6 rounded-md bg-foreground"
+            initial={false}
+            animate={{ left: far ? '100%' : '0%' }}
+            transition={motionTransitions[name]}
+          />
+        </div>
       </div>
       <p className="hidden w-80 shrink-0 text-xs text-muted-foreground lg:block">{USES[name]}</p>
     </div>
