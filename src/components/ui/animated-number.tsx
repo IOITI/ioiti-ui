@@ -122,9 +122,10 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   }
 
   // ioiti-ui: read as the value it shows (an aria-label on a span is not), its rolling digits hidden from screen
-  // readers; colours inherited (EasyUI's text was white whatever the theme).
+  // readers; colours inherited (EasyUI's text was white whatever the theme). Positioned, so that the text read
+  // (sr-only) stays with it: in a table's frame that scrolls, it stood out of the frame, beyond the page.
   return (
-    <span className={cn('inline-flex items-baseline tabular-nums', className)}>
+    <span className={cn('relative inline-flex items-baseline tabular-nums', className)}>
       <span className="sr-only">{label}</span>
       <span aria-hidden="true" className="inline-flex items-baseline select-none">
         {!text && prefix && <span className="mr-0.5">{prefix}</span>}

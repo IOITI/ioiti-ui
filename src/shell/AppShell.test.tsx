@@ -314,6 +314,16 @@ describe('scrolling', () => {
     await screen.findByRole('heading', { name: 'Orders' })
     expect(main.scrollTop).toBe(0)
   })
+
+  it('never slides a page sideways: what stands beyond its edges is cut', async () => {
+    renderShell()
+
+    // Clipped, not a frame of its own that scrolls: what sticks to the top of the page still does.
+    const page = (await screen.findByRole('main')).firstElementChild
+    expect(page).toHaveClass('relative', 'overflow-x-clip')
+    expect(page).not.toHaveClass('overflow-x-hidden')
+    expect(page).not.toHaveClass('overflow-x-auto')
+  })
 })
 
 describe('without a router', () => {

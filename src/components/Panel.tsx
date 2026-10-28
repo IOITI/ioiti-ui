@@ -17,13 +17,17 @@ interface PanelProps {
   children: ReactNode
 }
 
-/** The card every section of a page sits in. Same surface as the EasyUI data table. */
+/**
+ * The card every section of a page sits in. Same surface as the EasyUI data table. Never wider than the
+ * place it is given: in a grid's column or a row, what it holds (a line that does not wrap, a wide table)
+ * is laid out in its width, cut short or scrolled in its own frame, rather than widening the column.
+ */
 export function Panel({ id, title, description, action, className, bodyClassName, dense = false, children }: PanelProps) {
   return (
     <section
       id={id}
       className={cn(
-        'rounded-2xl border border-border/70 bg-surface/50 text-foreground dark:bg-surface/25 glass-card',
+        'min-w-0 rounded-2xl border border-border/70 bg-surface/50 text-foreground dark:bg-surface/25 glass-card',
         className,
       )}
     >

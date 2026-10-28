@@ -20,11 +20,13 @@ interface TableProps extends ComponentProps<'table'> {
 
 /**
  * A plain table of records or figures, as the pages write them: it scrolls sideways inside its own
- * frame when the screen is narrower than it (give it a `min-w-[40rem]` then).
+ * frame when the screen is narrower than it (give it a `min-w-[40rem]` then). The frame holds all it
+ * scrolls, the text of its cells for screen readers too (`sr-only`, placed absolutely): out of a frame
+ * that is not positioned, that text stood beyond the page, which then scrolled sideways onto nothing.
  */
 export function Table({ density = 'compact', wrapperClassName, className, children, ...props }: TableProps) {
   return (
-    <div className={cn('min-w-0 overflow-x-auto', wrapperClassName)}>
+    <div className={cn('relative min-w-0 overflow-x-auto', wrapperClassName)}>
       <table
         className={cn(density === 'compact' ? 'w-full text-left text-xs' : 'w-full whitespace-nowrap text-sm', className)}
         {...props}

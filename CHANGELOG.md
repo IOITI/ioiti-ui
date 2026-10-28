@@ -3,6 +3,35 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.4.3] - 2026-10-28
+
+Nothing is wider than the screen on a phone any more, where pages scrolled sideways, onto nothing or onto a
+chart drawn past its card. Nothing to change in an application.
+
+- **The shell's page never scrolls sideways.** What would stand beyond its edges is cut there (`overflow-x:
+  clip`, the page positioned), where the page slid sideways onto nothing; what sticks to its top still does.
+  What is wider than the screen scrolls in a frame of its own (`Table`).
+- **A chart takes its width from its container alone** (`LineChart`, `BarChart`, `DonutChart`, `FunnelChart`,
+  `ActivityHeatmap`, `LiveLineChart`, `StatCard`'s line: `contain-inline-size`). Drawn 640 px wide before it
+  was measured, a chart in a grid's single column (every grid on a phone) held the column open at that width,
+  was measured so, and stayed wider than the screen.
+- **A chart's table for screen readers is in a box of its own** (`LineChart`, `BarChart`, `DonutChart`,
+  `FunnelChart`), read as before: a table is never narrower than its rows, and one made 1 px wide (`sr-only`)
+  stood as wide as its text, beyond the page, which then scrolled sideways onto nothing.
+- **A `Panel` is never wider than its place** (`min-w-0`). In a grid's single column, a line that does not wrap
+  (`truncate`) held the column, and every card in it, wider than the screen; it is cut short now, as it was meant
+  to be.
+- **What scrolls sideways holds what it scrolls** (positioned): `Table`'s frame, the data table's table and its
+  filters. The words of a cell for screen readers (`sr-only`, placed absolutely) stood out of a frame that was
+  not, past the page. `SignedValue`'s rolling digits (`animate`) keep their words with them the same way.
+- **`AnimatedTabs`' row is never wider than its container.** Where its tabs do not all fit (a phone), it scrolls
+  in itself, without a bar, each name on one line; the names broke over two lines and the row stood past the
+  page. `tabsContainerClassName` still adds to it.
+- **`CopyChip`'s `truncate="end"` cuts the value to its chip**: the hint around it (`Hint`'s `wrap`) gives way
+  where it is let to (`className="min-w-0"`, which no other use of the package gives), where the value was never
+  cut and the chip stood as wide as the whole of it.
+- Each is held by a test (`narrow-screens.test.tsx`, the shell's scrolling).
+
 ## [0.4.2] - 2026-10-28
 
 - **The top bar's trail never runs under what stands beside it.** On a wide screen the whole trail is shown as

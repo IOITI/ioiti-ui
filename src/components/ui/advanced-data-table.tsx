@@ -637,7 +637,9 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className })
   if (filterableColumns.length === 0) return null;
 
   return (
-    <div className={cn('px-4 py-2 sm:px-7 sm:py-2.5 border-b border-border/50 bg-surface-raised/15 flex items-center gap-2 sm:gap-3 text-xs overflow-x-auto scrollbar-none font-sans select-none', className)}>
+    // ioiti-ui: positioned, so that the filters' words for screen readers (sr-only) stay in the bar that scrolls
+    // them: out of it, a filter's beyond the screen stood beyond the page, which then scrolled sideways onto nothing.
+    <div className={cn('relative px-4 py-2 sm:px-7 sm:py-2.5 border-b border-border/50 bg-surface-raised/15 flex items-center gap-2 sm:gap-3 text-xs overflow-x-auto scrollbar-none font-sans select-none', className)}>
       <div role="group" aria-label="Filters" className="flex shrink-0 items-stretch divide-x divide-border/60 rounded-lg border border-border/60 bg-surface-raised/20">
         {filterableColumns.map((col) =>
           drawnAsToggles(col) ? <FilterToggles key={col.id} column={col} /> : <FilterList key={col.id} column={col} />
@@ -878,7 +880,8 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
 
   // DESKTOP TABLE VIEW
   return (
-    <div className={cn('overflow-x-auto scrollbar-none font-sans', className)}>
+    // ioiti-ui: positioned, so that the cells' words for screen readers (sr-only) stay in the frame that scrolls them.
+    <div className={cn('relative overflow-x-auto scrollbar-none font-sans', className)}>
       <table className="w-full border-collapse text-left font-sans text-xs min-w-[500px] sm:min-w-full">
         <thead>
           <tr className="border-b border-border/50 bg-surface-raised/20 text-xs text-muted-foreground select-none">

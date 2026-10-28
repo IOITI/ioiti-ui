@@ -221,7 +221,8 @@ export function LineChart({
       : Math.min(...visible.map((each) => valueOf(data[active], each.key)).filter((value): value is number => value !== null).map(y), base)
 
   return (
-    <div ref={rootRef} className={cn('w-full', className)}>
+    // As wide as its container, never as what it drew (contain-inline-size, see useElementWidth).
+    <div ref={rootRef} className={cn('w-full contain-inline-size', className)}>
       <div ref={wrapRef} className="relative" style={{ height }}>
         <svg
           width={width}
@@ -399,32 +400,36 @@ export function LineChart({
         />
       )}
 
-      <table className="sr-only">
-        <caption>{ariaLabel ?? 'Chart data'}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Time</th>
-            {series.map((each) => (
-              <th key={each.key} scope="col">
-                {each.label}
-              </th>
-            ))}
-            {details && <th scope="col">Details</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((point, index) => (
-            <tr key={times[index]}>
-              <th scope="row">{timeText(times[index])}</th>
-              {series.map((each) => {
-                const value = valueOf(point, each.key)
-                return <td key={each.key}>{value === null ? '—' : formatValue(value)}</td>
-              })}
-              {details && <td>{detailsText(detailsOf(index))}</td>}
+      {/* The table in a box of its own: a table is never narrower than its rows, and one made 1 px wide
+          (sr-only) stood as wide as its text, beyond the page, which then scrolled sideways onto nothing. */}
+      <div className="sr-only">
+        <table>
+          <caption>{ariaLabel ?? 'Chart data'}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Time</th>
+              {series.map((each) => (
+                <th key={each.key} scope="col">
+                  {each.label}
+                </th>
+              ))}
+              {details && <th scope="col">Details</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((point, index) => (
+              <tr key={times[index]}>
+                <th scope="row">{timeText(times[index])}</th>
+                {series.map((each) => {
+                  const value = valueOf(point, each.key)
+                  return <td key={each.key}>{value === null ? '—' : formatValue(value)}</td>
+                })}
+                {details && <td>{detailsText(detailsOf(index))}</td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

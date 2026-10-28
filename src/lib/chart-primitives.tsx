@@ -51,7 +51,14 @@ export function niceStep(raw: number) {
   return nice * 10 ** exp;
 }
 
-/** Container width via ResizeObserver (initial value keeps SSR output sensible) */
+/**
+ * Container width via ResizeObserver (initial value keeps SSR output sensible)
+ *
+ * ioiti-ui: the box measured takes its width from its container alone (`contain-inline-size`, which every
+ * chart here gives it), never from what is drawn in it at the width measured before. In a column as wide as
+ * its content (a grid's single column, on a phone), a chart first drawn 640 px wide held the column open at
+ * 640 px, was measured so, and stayed wider than the screen.
+ */
 export function useElementWidth<T extends HTMLElement>(initial: number) {
   const ref = useRef<T>(null);
   const [width, setWidth] = useState(initial);

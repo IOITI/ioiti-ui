@@ -339,7 +339,8 @@ export function LiveLineChart({
   const change = formatChange && latest !== null && windowStart !== null ? latest - windowStart : null;
 
   return (
-    <div ref={rootRef} className={cx("w-full", className)}>
+    // ioiti-ui: as wide as its container, never as what it drew (contain-inline-size, see useElementWidth).
+    <div ref={rootRef} className={cx("w-full contain-inline-size", className)}>
       {showReadout && (
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
           <div className="min-w-0">

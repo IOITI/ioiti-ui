@@ -100,7 +100,11 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
         aria-label={label}
         onKeyDown={onTabKeyDown}
         className={cn(
-          'flex items-center gap-1 self-start select-none',
+          // ioiti-ui: never wider than its container: where the tabs do not all fit (a phone), the row scrolls
+          // sideways in itself, each name on one line, without a bar (the tab cut at its end says there is
+          // more), and holds what it scrolls (positioned). It made the page wider than the screen, the names
+          // of its tabs broken over two lines.
+          'relative flex max-w-full items-center gap-1 self-start overflow-x-auto whitespace-nowrap select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
           isGlass
             ? 'p-1 rounded-full bg-surface-raised backdrop-blur-xl border border-border dark:bg-[#0E0E0E] dark:border-[#1F1F1F]'
             : 'p-1 rounded-lg bg-surface-raised border border-border dark:bg-[#0E0E0E] dark:border-[#1F1F1F]',

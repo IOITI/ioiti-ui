@@ -142,7 +142,11 @@ function Shell<S extends string>({
             transition takes it whole, cut to what it shows. */}
         <ViewTransition default="none" update={pageChanged ? 'ioiti-page' : 'none'}>
           <main ref={main} id={mainId} className="relative flex-1 overflow-y-auto">
-            <div className={cn('mx-auto flex w-full flex-col gap-6 p-4 sm:p-6', wide ? 'max-w-none' : 'max-w-7xl')}>
+            {/* The page never scrolls sideways: what is wider than the screen scrolls in a frame of its
+                own (Table), and what would still stand beyond the page (text for screen readers placed
+                out of a frame) is cut at its edge, where on a phone the page slid sideways onto nothing.
+                Clipped, not scrolled: what sticks to the top of the page still does. */}
+            <div className={cn('relative mx-auto flex w-full flex-col gap-6 overflow-x-clip p-4 sm:p-6', wide ? 'max-w-none' : 'max-w-7xl')}>
               <MainScrollContext.Provider value={main}>{children}</MainScrollContext.Provider>
             </div>
           </main>

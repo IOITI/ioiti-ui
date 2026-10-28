@@ -299,7 +299,8 @@ export function ActivityHeatmap({
   const said = (x: HeatCell) => (x.has ? [write(x.v), x.detail].filter(Boolean).join(", ") : emptyText ?? write(0));
 
   return (
-    <div ref={rootRef} className={cx("w-full", className)}>
+    // ioiti-ui: as wide as its container, never as what it drew (contain-inline-size, see useElementWidth).
+    <div ref={rootRef} className={cx("w-full contain-inline-size", className)}>
       <style
         dangerouslySetInnerHTML={{
           __html:

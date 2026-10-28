@@ -81,6 +81,17 @@ otherwise).
   transitions while one plays, and only then, as a name at rest would make the layer the root of its glass's
   backdrop, which would then blur nothing of the page. The sidebar's trigger gives when pressed (`motion-safe:`). What a component does of
   its own (a box drawing its mark, a switch stretching, the island growing) keeps EasyUI's motion.
+- **Narrow screens** (0.4.3). Nothing of a copy is wider than its place, where on a phone the page scrolled
+  sideways. The charts measured to their width (`bar-chart`, `donut-chart`, `funnel-chart`, `activity-heatmap`,
+  `live-line-chart`, `stat-card`'s line) take it from their container alone (`contain-inline-size` on the box
+  `chart-primitives`' `useElementWidth` measures), never from what they drew at the width measured before: drawn
+  640 px wide at first, a chart in a grid's single column held the column open at that width and stayed so. A
+  chart's table for screen readers (`bar-chart`, `donut-chart`, `funnel-chart`) is in a box of its own made 1 px
+  wide (`sr-only`): a table is never narrower than its rows, and the table itself stood as wide as its text. What
+  scrolls sideways holds what it scrolls (positioned), the words of its cells for screen readers included:
+  `advanced-data-table`'s table and filters. `animated-tabs`' row is never wider than its container, scrolling in
+  itself without a bar where its tabs do not all fit, each name on one line. `animated-number` keeps its text for
+  screen readers with it (positioned).
 
 ## Component by component
 

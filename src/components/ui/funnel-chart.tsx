@@ -108,7 +108,8 @@ export function FunnelChart({
   const cur = active !== null ? stages[active] : null;
 
   return (
-    <div ref={rootRef} className={cx("w-full", className)}>
+    // ioiti-ui: as wide as its container, never as what it drew (contain-inline-size, see useElementWidth).
+    <div ref={rootRef} className={cx("w-full contain-inline-size", className)}>
       {showSummary && summary && (
         <div className="mb-4 flex flex-wrap items-baseline gap-x-5 gap-y-1">
           <p className="text-[13px] text-neutral-900 dark:text-neutral-100">
@@ -258,25 +259,29 @@ export function FunnelChart({
         </Tooltip>
       </div>
 
-      <table className="sr-only">
-        <caption>{ariaLabel ?? "Funnel data"}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Stage</th>
-            <th scope="col">{noun}</th>
-            <th scope="col">% of first stage</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stages.map((s, i) => (
-            <tr key={i}>
-              <th scope="row">{s.label}</th>
-              <td>{formatValue(s.value)}</td>
-              <td>{pctText(pct(i))}</td>
+      {/* ioiti-ui: the table in a box of its own: a table is never narrower than its rows, and one made 1 px
+          wide (sr-only) stood as wide as its text, beyond the page, which then scrolled sideways onto nothing. */}
+      <div className="sr-only">
+        <table>
+          <caption>{ariaLabel ?? "Funnel data"}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Stage</th>
+              <th scope="col">{noun}</th>
+              <th scope="col">% of first stage</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {stages.map((s, i) => (
+              <tr key={i}>
+                <th scope="row">{s.label}</th>
+                <td>{formatValue(s.value)}</td>
+                <td>{pctText(pct(i))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

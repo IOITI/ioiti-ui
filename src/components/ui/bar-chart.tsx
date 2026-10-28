@@ -257,7 +257,8 @@ export function BarChart({
         : { ...motionTransitions.easeSoft, delay: Math.min(i * STAGGER + si * STAGGER * 0.6, STAGGER_CAP) };
 
   return (
-    <div ref={rootRef} className={cx("w-full", className)}>
+    // ioiti-ui: as wide as its container, never as what it drew (contain-inline-size, see useElementWidth).
+    <div ref={rootRef} className={cx("w-full contain-inline-size", className)}>
       <div ref={wrapRef} className="relative" style={{ height }}>
         <svg
           width={width}
@@ -422,29 +423,33 @@ export function BarChart({
         />
       )}
 
-      <table className="sr-only">
-        <caption>{ariaLabel ?? "Chart data"}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Category</th>
-            {series.map((s) => (
-              <th key={s.key} scope="col">{s.label}</th>
-            ))}
-            {details && <th scope="col">Details</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((d, i) => (
-            <tr key={i}>
-              <th scope="row">{titleOf(i)}</th>
+      {/* ioiti-ui: the table in a box of its own: a table is never narrower than its rows, and one made 1 px
+          wide (sr-only) stood as wide as its text, beyond the page, which then scrolled sideways onto nothing. */}
+      <div className="sr-only">
+        <table>
+          <caption>{ariaLabel ?? "Chart data"}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
               {series.map((s) => (
-                <td key={s.key}>{said(d, s.key)}</td>
+                <th key={s.key} scope="col">{s.label}</th>
               ))}
-              {details && <td>{detailsText(detailsOf(i))}</td>}
+              {details && <th scope="col">Details</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((d, i) => (
+              <tr key={i}>
+                <th scope="row">{titleOf(i)}</th>
+                {series.map((s) => (
+                  <td key={s.key}>{said(d, s.key)}</td>
+                ))}
+                {details && <td>{detailsText(detailsOf(i))}</td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

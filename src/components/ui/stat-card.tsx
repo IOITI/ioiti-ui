@@ -205,7 +205,8 @@ export function StatCard({
       </p>
       <p className={`mt-1 truncate px-4 text-xs sm:px-5 ${MUTED}`}>{sub}</p>
 
-      <div ref={boxRef} className="mt-auto pt-3" style={{ height: H + 12 }}>
+      {/* ioiti-ui: as wide as the card, never as the line it drew (contain-inline-size, see useElementWidth). */}
+      <div ref={boxRef} className="mt-auto pt-3 contain-inline-size" style={{ height: H + 12 }}>
         {n > 1 && (
           <svg
             ref={svgRef}

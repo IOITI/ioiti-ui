@@ -209,7 +209,8 @@ export function DonutChart({
   if (!data.length) return <p className={`py-10 text-center text-[13px] ${muted}`}>No data</p>;
 
   return (
-    <div ref={rootRef} className={cx("w-full", side ? "flex items-center gap-8" : "flex flex-col items-center gap-5", className)}>
+    // ioiti-ui: as wide as its container, never as what it drew (contain-inline-size, see useElementWidth).
+    <div ref={rootRef} className={cx("w-full contain-inline-size", side ? "flex items-center gap-8" : "flex flex-col items-center gap-5", className)}>
       <div ref={wrapRef} className="relative shrink-0" style={{ width: D, height: H }}>
         <svg
           width={D}
@@ -296,26 +297,30 @@ export function DonutChart({
         </ul>
       )}
 
-      {/* ioiti-ui: the figures for screen readers, every segment (those grouped as one included). */}
-      <table className="sr-only">
-        <caption>{ariaLabel ?? "Chart data"}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Segment</th>
-            <th scope="col">Value</th>
-            <th scope="col">Share</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((d, i) => (
-            <tr key={i}>
-              <th scope="row">{d.label}</th>
-              <td>{formatValue(d.value)}</td>
-              <td>{allTotal > 0 ? `${Math.round((Math.max(0, d.value) / allTotal) * 100)}%` : "—"}</td>
+      {/* ioiti-ui: the figures for screen readers, every segment (those grouped as one included), the table in
+          a box of its own: a table is never narrower than its rows, and one made 1 px wide (sr-only) stood as
+          wide as its text, beyond the page, which then scrolled sideways onto nothing. */}
+      <div className="sr-only">
+        <table>
+          <caption>{ariaLabel ?? "Chart data"}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Segment</th>
+              <th scope="col">Value</th>
+              <th scope="col">Share</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((d, i) => (
+              <tr key={i}>
+                <th scope="row">{d.label}</th>
+                <td>{formatValue(d.value)}</td>
+                <td>{allTotal > 0 ? `${Math.round((Math.max(0, d.value) / allTotal) * 100)}%` : "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
