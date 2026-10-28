@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "framer-motion": "^13.5.1",
-    "ioiti-ui": "github:IOITI/ioiti-ui#v0.4.4",
+    "ioiti-ui": "github:IOITI/ioiti-ui#v0.4.5",
     "lucide-react": "^1.55.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
