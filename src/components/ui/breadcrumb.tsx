@@ -106,7 +106,8 @@ export function Breadcrumb({
           const body = (
             <span className={cn("relative flex items-center gap-1.5 [&>svg]:size-4 [&>svg]:shrink-0", !wrap && "min-w-0")}>
               {item.icon}
-              <span className={cn(!wrap && "truncate")}>{item.label}</span>
+              {/* ioiti-ui: the name, which the top bar measures whole (TopBarTrail) */}
+              <span data-crumb-name="" className={cn(!wrap && "truncate")}>{item.label}</span>
             </span>
           );
 

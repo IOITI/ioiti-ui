@@ -3,6 +3,18 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.4.2] - 2026-10-28
+
+- **The top bar's trail never runs under what stands beside it.** On a wide screen the whole trail is shown as
+  long as it fits the room the top bar leaves it (the chips and the controls at its end take theirs first): the
+  page's own name may be cut short, down to 8rem, the steps before it never. Where it does not fit, its last two
+  steps take its place, as on a narrower screen; it comes back once there is room. The steps before the page kept
+  their width whatever the room, so at 1,024 px a chip ("Restart needed") was drawn over them, and without one they
+  ran under the controls. The whole trail that gives way stays laid out, out of sight, of the keyboard's reach and
+  of screen readers (`inert`, `aria-hidden`), to be measured again; where there is no `ResizeObserver` it is shown,
+  as before.
+- `Breadcrumb`'s names carry `data-crumb-name`.
+
 ## [0.4.1] - 2026-10-27
 
 - **`LineChart` writes a day as the rest of the design does**: "07 Oct" on its time axis and "07 Oct 2026" at

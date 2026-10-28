@@ -1,9 +1,9 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LogOut, TriangleAlert } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { IoitiProvider } from '../components/IoitiProvider.js'
 import { PageHeader } from '../components/Panel.js'
@@ -110,6 +110,63 @@ const trails = () => screen.getAllByRole('navigation', { name: 'Breadcrumb' })
 const wholeTrail = () => within(trails()[0])
 const shortTrail = () => within(trails()[1])
 const isCurrent = (element: HTMLElement) => element.closest('[aria-current="page"]') !== null
+
+describe('a whole trail the top bar has no room for', () => {
+  // jsdom lays nothing out: the room the top bar leaves the trail, each step and each name are given a width here,
+  // and the ResizeObserver is one the test calls.
+  let room = 1000
+  let observers: (() => void)[] = []
+  beforeEach(() => {
+    room = 1000
+    observers = []
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          observers.push(callback)
+        }
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      },
+    )
+    // Each step 80 px wide, each name whole (120 px); the room as the test sets it.
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({ width: 80 } as DOMRect)
+    vi.spyOn(Element.prototype, 'scrollWidth', 'get').mockReturnValue(120)
+    vi.spyOn(Element.prototype, 'clientWidth', 'get').mockImplementation(function (this: Element) {
+      return this.hasAttribute('data-crumb-name') ? 120 : room
+    })
+  })
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  const resized = (width: number) => {
+    room = width
+    act(() => {
+      for (const observer of observers) observer()
+    })
+  }
+
+  it('gives way to its last two steps, out of sight and of reach, and comes back once there is room again', async () => {
+    renderShell()
+    // Home and Work before the page (80 px each), the page's step: 240 px are needed.
+    expect(await screen.findAllByRole('navigation', { name: 'Breadcrumb' })).toHaveLength(2)
+
+    resized(200)
+    const shown = screen.getAllByRole('navigation', { name: 'Breadcrumb' })
+    expect(shown).toHaveLength(1)
+    expect(within(shown[0]).getByText('Work')).toBeInTheDocument()
+    expect(within(shown[0]).queryByText('Home')).not.toBeInTheDocument()
+    const whole = screen.getByRole('link', { name: 'Home', hidden: true }).closest('[inert]')
+    expect(whole).toHaveAttribute('aria-hidden', 'true')
+
+    resized(240)
+    expect(screen.getAllByRole('navigation', { name: 'Breadcrumb' })).toHaveLength(2)
+    expect(document.querySelector('[inert]')).toBeNull()
+  })
+})
 
 describe('where the page is, in the top bar', () => {
   it('is said on every page: the section, which is no link, then the page, from Home', async () => {

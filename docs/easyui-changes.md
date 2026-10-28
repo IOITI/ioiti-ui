@@ -113,7 +113,8 @@ otherwise).
   rules are shared with those counts; `useDataTable` gives `setFilter` and `countOptions`.
 - `breadcrumb`: its text in `text-muted-foreground` and `text-foreground` (`neutral-500` was 4.54:1 on the
   light background, a hair from the limit); `wrap={false}` keeps a trail on one line, each step cut short with
-  an ellipsis, the last one first.
+  an ellipsis, the last one first. Each step's name carries `data-crumb-name` (0.4.2), which the top bar's trail
+  measures whole to know whether it fits.
 - `settle-modal`: drawn in `document.body` (a dialog opened from a table cell took the cell's alignment and
   wrapping); the focus moves into the dialog, stays in it and returns to what opened it; an `xl` size
   (`max-w-2xl`) and a `full` one (`max-w-[110rem]`, two versions of something side by side); a panel no
