@@ -4,7 +4,8 @@ import type { CSSProperties, KeyboardEvent, RefObject } from 'react'
 // A layer placed beside what opened it (a popover, a menu, a list): drawn in document.body at fixed
 // coordinates, out of every parent that would cut it, placed where the window has room and kept in it,
 // following what opened it as the page scrolls or the window changes size (a phone's keyboard does both),
-// never closed by that. Its keys are its own: Escape and Tab do not reach a dialog or a sheet around it.
+// and as what it holds changes size (a list that arrives), never closed by that. Its keys are its own:
+// Escape and Tab do not reach a dialog or a sheet around it.
 
 export type AnchorSide = 'top' | 'bottom' | 'left' | 'right'
 export type AnchorAlign = 'start' | 'center' | 'end'
@@ -133,7 +134,11 @@ export function useAnchoredLayer({
     const anchor = anchorRect()
     const layer = layerRef.current
     if (!anchor || !layer) return
-    setPlace(placeBeside(anchor, { width: layer.offsetWidth, height: layer.scrollHeight }, side, align, offset))
+    const next = placeBeside(anchor, { width: layer.offsetWidth, height: layer.scrollHeight }, side, align, offset)
+    // The same place kept as it is: a new size from it is not measured again, and again.
+    setPlace((current) =>
+      current && current.top === next.top && current.left === next.left && current.side === next.side &&
+      current.maxHeight === next.maxHeight ? current : next)
   }, [anchorRect, layerRef, side, align, offset])
 
   // Placed before the browser paints it, once it is drawn to be measured. Closed, it keeps its place:
@@ -141,6 +146,16 @@ export function useAnchoredLayer({
   useLayoutEffect(() => {
     if (open) measure()
   }, [open, measure])
+
+  // What it holds grows or shrinks (what it waited for arrives): placed again at its new size, so that it
+  // stays on its side, above its trigger as below, and in the window.
+  useEffect(() => {
+    const layer = layerRef.current
+    if (!open || !layer || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(() => measure())
+    observer.observe(layer)
+    return () => observer.disconnect()
+  }, [open, measure, layerRef])
 
   // The focus goes in once it is placed.
   const placed = place !== null

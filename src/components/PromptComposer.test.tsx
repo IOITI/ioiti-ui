@@ -60,4 +60,15 @@ describe('PromptComposer', () => {
     fireEvent.focus(screen.getByRole('button', { name: 'Send' }).parentElement!)
     expect(screen.getAllByText('No key is set').length).toBeGreaterThan(0)
   })
+
+  it('keeps its controls whole beside the footer, which alone is cut short', () => {
+    const chosen = vi.fn()
+    render(<Composer footer="up to $5.00 a request" controls={<button type="button" onClick={chosen}>Model 2</button>} />)
+
+    const control = screen.getByRole('button', { name: 'Model 2' })
+    fireEvent.click(control)
+    expect(chosen).toHaveBeenCalledOnce()
+    expect(control.closest('.truncate')).toBeNull()
+    expect(screen.getByText('up to $5.00 a request').closest('.truncate')).not.toBeNull()
+  })
 })

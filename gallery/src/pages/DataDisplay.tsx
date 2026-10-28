@@ -49,7 +49,7 @@ import {
   TableRow,
 } from 'ioiti-ui'
 import type { AgentActivityItemData, ColumnDef } from 'ioiti-ui'
-import { GitCompare } from 'lucide-react'
+import { ChevronDown, GitCompare } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { Demo } from '../parts'
@@ -176,7 +176,12 @@ function Composer() {
       onStop={() => setBusy(false)}
       busy={busy}
       maxLength={2000}
-      footer="Model 2 · about 2 cents a question"
+      footer="about 2 cents a question"
+      controls={
+        <Button size="sm" variant="ghost" rightIcon={<ChevronDown className="size-3.5" />}>
+          Model 2
+        </Button>
+      }
       suggestions={[
         { label: 'Summarise', prompt: 'Summarise October in three lines.' },
         { label: 'Compare', prompt: 'Compare October with September.' },

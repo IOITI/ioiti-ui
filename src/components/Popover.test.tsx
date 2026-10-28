@@ -98,6 +98,41 @@ describe('Popover', () => {
     expect(screen.getByRole('dialog', { name: 'Edit the order' })).toBeInTheDocument()
   })
 
+  it('is placed again as what it holds grows, still above its button near the bottom of the window', async () => {
+    const user = userEvent.setup()
+    // No layout in jsdom: the button near the bottom of an 800 px window, the popover as tall as it holds.
+    let tall = 40
+    let resized: () => void = () => {}
+    vi.stubGlobal('ResizeObserver', class {
+      constructor(callback: () => void) {
+        resized = callback
+      }
+      observe() {}
+      disconnect() {}
+    })
+    vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(800)
+    vi.spyOn(Element.prototype, 'scrollHeight', 'get').mockImplementation(function (this: Element) {
+      return this.getAttribute('role') === 'dialog' ? tall : 0
+    })
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(
+      () => ({ top: 700, bottom: 732, left: 40, right: 140, width: 100, height: 32, x: 40, y: 700, toJSON: () => ({}) }) as DOMRect,
+    )
+    render(
+      <Popover label="Context" side="top" trigger={<Button>Context</Button>}>
+        <p>Counting…</p>
+      </Popover>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Context' }))
+    const dialog = screen.getByRole('dialog', { name: 'Context' })
+    expect(dialog).toHaveStyle({ top: '654px' })
+
+    // What it waited for arrives: ten times as tall, it rises, its bottom still above the button.
+    tall = 400
+    act(() => resized())
+    expect(dialog).toHaveStyle({ top: '294px' })
+    vi.unstubAllGlobals()
+  })
+
   it('takes what animates its layout in it along at once as the page scrolls', async () => {
     const user = userEvent.setup()
     // No layout in jsdom: its button is 120 px higher once the page has scrolled, what is in the popover

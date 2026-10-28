@@ -3,6 +3,16 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.5.1] - 2026-10-28
+
+- **`PromptComposer` takes `controls`**: what a request goes with (a model's menu, a meter of what it holds), under
+  the field before the footer, kept whole while the footer's text alone is cut short on a narrow screen.
+- **A popover, a menu or a list is placed again as what it holds changes size** (`useAnchoredLayer`, a
+  `ResizeObserver` while it is open). Opened above its button with what it waited for still loading, it grew down
+  over its button and past the window once that arrived; it rises now, and stays in the window.
+
+Nothing to change in an application.
+
 ## [0.5.0] - 2026-10-28
 
 - **`AIResponse`, EasyUI's `ai-response`** (from `7c106d4`), and its parts `AIResponseHeader`, `AIResponseContent`,
