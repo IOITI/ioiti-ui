@@ -174,6 +174,7 @@ export type {
 export {
   AgentActivityHeader,
   AgentActivityItem,
+  AgentActivityNotes,
   AgentActivityTimeline,
   AIAgentActivity,
   useAgentActivity,
@@ -185,6 +186,7 @@ export type {
   AgentActivityHeaderProps,
   AgentActivityItemData,
   AgentActivityItemProps,
+  AgentActivityNotesProps,
   AgentActivityTimelineProps,
   AIAgentActivityProps,
 } from './components/ui/ai-agent-activity.js'
@@ -194,6 +196,7 @@ export {
   AIResponseContent,
   AIResponseHeader,
   AIResponseSources,
+  AIResponseThinking,
   AIResponseToolsSummary,
   safeHref,
   useAIResponseContext,
@@ -207,6 +210,7 @@ export type {
   AIResponseSource,
   AIResponseSourcesProps,
   AIResponseStatus,
+  AIResponseThinkingProps,
   AIResponseToolsSummaryProps,
 } from './components/ui/ai-response.js'
 export { AirportMatrixClock } from './components/ui/airport-matrix-clock.js'

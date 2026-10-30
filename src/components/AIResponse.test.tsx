@@ -1,9 +1,9 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import type { AnchorHTMLAttributes } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { LinkProvider } from './LinkProvider.js'
-import { AIResponse, AIResponseContent, safeHref } from './ui/ai-response.js'
+import { AIResponse, AIResponseContent, AIResponseThinking, safeHref } from './ui/ai-response.js'
 
 /** The application's link, as a router's would be: it says it drew the link. */
 function AppLink(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
@@ -150,3 +150,77 @@ describe('AIResponse', () => {
     expect(screen.queryByRole('button', { name: 'Copy response' })).toBeNull()
   })
 })
+
+describe('AIResponseThinking', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('says what it does and for how long in place of a skeleton, the word said once, and nothing to copy yet', () => {
+    vi.useFakeTimers({ now: Date.parse('2026-10-30T15:40:00Z') })
+    render(
+      <AIResponse status="generating" thinking={{ label: 'Waiting for 3 runs', since: '2026-10-30T15:33:48Z',
+        lines: ['r1: done', 'r2: signals, 288 of 356'] }} />,
+    )
+
+    // Only what it does is read out as it changes.
+    expect(screen.getByText('Waiting for 3 runs').closest('[role="status"]')).toHaveTextContent(/^Waiting for 3 runs$/)
+    expect(screen.getByText('6 min 12 s')).toBeInTheDocument()
+    expect(screen.getByText('r1: done')).toBeInTheDocument()
+    expect(screen.queryByText('Thinking')).toBeNull()
+    expect(screen.queryByRole('status', { name: 'Generating response' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Copy response' })).toBeNull()
+
+    act(() => {
+      vi.advanceTimersByTime(60_000)
+    })
+    expect(screen.getByText('7 min 12 s')).toBeInTheDocument()
+  })
+
+  it('keeps its skeleton and its word without anything said of what it does', () => {
+    render(<AIResponse status="generating" />)
+
+    expect(screen.getByRole('status', { name: 'Generating response' })).toBeInTheDocument()
+    expect(screen.getByText('Thinking')).toBeInTheDocument()
+  })
+
+  it('turns its lines, holds them while the pointer is on them, and keeps a line that grows in its place', () => {
+    vi.useFakeTimers()
+    const { rerender } = render(<AIResponseThinking label="Thinking" lines={['One.', 'Two.', 'Three.']} interval={4} />)
+    expect(screen.getByText('One.')).toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(4_000)
+    })
+    expect(screen.getByText('Two.')).toBeInTheDocument()
+
+    fireEvent.pointerEnter(screen.getByText('Two.').parentElement!)
+    act(() => {
+      vi.advanceTimersByTime(12_000)
+    })
+    expect(screen.queryByText('Three.')).toBeNull()
+
+    // Rewritten as it streams, the line shown stays in its place.
+    rerender(<AIResponseThinking label="Thinking" lines={['One.', 'Two, and more.', 'Three.']} interval={4} />)
+    expect(screen.getByText('Two, and more.')).toBeInTheDocument()
+
+    fireEvent.pointerLeave(screen.getByText('Two, and more.').parentElement!)
+    act(() => {
+      vi.advanceTimersByTime(4_000)
+    })
+    expect(screen.getByText('Three.')).toBeInTheDocument()
+  })
+
+  it('says a single line without turning it, and none without lines', () => {
+    vi.useFakeTimers()
+    const { container, rerender } = render(<AIResponseThinking label="Thinking" lines={['Only this.']} />)
+    act(() => {
+      vi.advanceTimersByTime(20_000)
+    })
+    expect(screen.getByText('Only this.')).toBeInTheDocument()
+
+    rerender(<AIResponseThinking label="Thinking" />)
+    expect(container.querySelector('p')).toBeNull()
+  })
+})
+

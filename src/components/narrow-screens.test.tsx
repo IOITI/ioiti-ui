@@ -8,7 +8,8 @@ import { PromptComposer } from './PromptComposer.js'
 import { SignedValue } from './status.js'
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './Table.js'
 import { ActivityHeatmap } from './ui/activity-heatmap.js'
-import { AIResponse } from './ui/ai-response.js'
+import { AIAgentActivity } from './ui/ai-agent-activity.js'
+import { AIResponse, AIResponseThinking } from './ui/ai-response.js'
 import { AdvancedDataTable } from './ui/advanced-data-table.js'
 import type { ColumnDef } from './ui/advanced-data-table.js'
 import { AnimatedTabs } from './ui/animated-tabs.js'
@@ -146,6 +147,18 @@ describe('on a narrow screen, no part is wider than its place', () => {
 
     expect(screen.getByRole('table').parentElement).toHaveClass('relative', 'overflow-x-auto')
     expect(screen.getByRole('group', { name: 'Filters' }).parentElement).toHaveClass('relative', 'overflow-x-auto')
+  })
+
+  it("an assistant's notes and what it is doing wrap, never widening the page", () => {
+    const note = 'reading-the-days-of-run-20261030-144009-7a4c79-and-its-paper-days-before-touching-anything'.repeat(3)
+    const line = '20261030-144009-7a4c79:signals,288-of-356-and-20261030-143952-371baf:done'.repeat(3)
+    render(<AIAgentActivity activities={[{ id: 'n', kind: 'note', type: 'thinking', title: note, status: 'success' }]} />)
+    render(<AIResponseThinking label="Waiting for 3 runs" lines={[line]} />)
+
+    expect(screen.getByText(note)).toHaveClass('break-words')
+    expect(screen.getByText(note).parentElement).toHaveClass('min-w-0')
+    expect(screen.getByText(line)).toHaveClass('break-words', 'line-clamp-2')
+    expect(screen.getByText('Waiting for 3 runs').closest('[role="status"]')).toHaveClass('min-w-0', 'truncate')
   })
 
   it("an assistant's answer is never wider than its place: its tables scroll in their own frame", () => {

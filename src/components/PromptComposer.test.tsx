@@ -71,4 +71,15 @@ describe('PromptComposer', () => {
     expect(control.closest('.truncate')).toBeNull()
     expect(screen.getByText('up to $5.00 a request').closest('.truncate')).not.toBeNull()
   })
+
+  it("floats at a page's foot: its frame lifted, glass under the glass material, its focus said over the glass's edge", () => {
+    const { rerender } = render(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} floating />)
+
+    const frame = screen.getByRole('textbox').parentElement!
+    expect(frame).toHaveClass('glass-float', 'shadow-[var(--shadow-elevated)]', 'glass:focus-within:border-border-hover')
+
+    rerender(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} />)
+    expect(screen.getByRole('textbox').parentElement).not.toHaveClass('glass-float')
+  })
 })
+

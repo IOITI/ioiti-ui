@@ -306,7 +306,12 @@ otherwise).
 - `ai-agent-activity`: an item that opens is a button (`aria-expanded`; EasyUI's was a div taking clicks
   alone); its `statusLabel` in words and its `timestamp` (EasyUI's item had one and never showed it) beside its
   duration; the header's `summary`, and `inputLabel` / `outputLabel` (EasyUI's "Parameters" and "Output
-  Result"); arguments as JSON with their lines kept.
+  Result"); arguments as JSON with their lines kept. An item may be a note (`kind: 'note'`): the agent's words
+  between its steps, drawn together by `AgentActivityNotes` as paragraphs, whole, with no mark, state or line,
+  the one still written ending with a caret; the timeline is cut where notes come, each stretch of steps a
+  timeline of its own, and only steps are counted. It folds when `collapsible` (`open`, `defaultOpen`,
+  `onOpenChange`): the header's line a button in its heading, the body opening on the design's spring (fading
+  where motion is reduced), "Expand all / Collapse all" only while open.
 - `ai-response` (from `7c106d4`, taken by ioiti-ui itself): on the design's tokens (its surface, text, borders and
   washes; the tones for its dots and its error; the orb in the colours of things compared, the accent's under a
   look with one) in place of EasyUI's neutrals and `#0b0b0c`, so the light theme reads it; `accentColor` is gone,
@@ -319,7 +324,9 @@ otherwise).
   2.0"); copied with `copyToClipboard`; motion on the design's curves, reduced as IoitiProvider says
   (`useReducedMotionConfig`), a list that opened by its height only appearing then; its tables scroll in their
   own positioned frame, and nothing of it is wider than its place; its own focus rings gone. Its demo and its
-  default export are gone, as `product-tour`'s.
+  default export are gone, as `product-tour`'s. What it is doing (`thinking`, `AIResponseThinking`, ioiti-ui's
+  own) is said in place of its skeleton while nothing is written, its header's "Thinking" then left out; its
+  actions wait for its first word.
 - `dependency-trace` (a map of services): a node's health as a ring, an icon and a word, never colour alone
   (`status`, `statusLabel`, `detail`); its whole name under it (EasyUI cut names to seven letters inside the
   circle); an arrow from what calls to what is called, and each link's name while traced; nodes the keyboard

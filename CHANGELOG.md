@@ -3,6 +3,25 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.6.0] - 2026-10-30
+
+- **`AIAgentActivity` draws an agent's notes as its words, not as steps.** An item of `kind: 'note'` (what the
+  agent thought, what it does next) is drawn with the notes beside it as paragraphs (`AgentActivityNotes`), whole,
+  without a mark, a state or the timeline's line; the timeline is cut where they come, and a step after them begins
+  a stretch of its own. The one still being written ends with a caret. A group is named for screen readers by
+  `notesLabel` ("Notes"), and only steps are counted in "N of M completed".
+- **`AIAgentActivity` folds under its heading** when `collapsible` (`open`, `defaultOpen`, `onOpenChange`): its
+  header's line is the button that opens and folds its steps, and "Expand all / Collapse all" show while it is open.
+- **`AIResponseThinking` says what an assistant is doing while nothing of its answer is written**: dots rising in
+  turn, what it does under a shimmer and for how long, then what it is about, a line at a time (held under the
+  pointer). Given to `AIResponse` as `thinking`, it takes the place of the skeleton, and the header leaves out its
+  own "Thinking". Only what it does is read out as it changes.
+- `AIResponseActions` draw nothing while an answer has not begun: there is nothing to copy, regenerate or judge.
+- **`PromptComposer` can float** (`floating`) at the foot of what scrolls under it, with no band behind it: its
+  frame lifted by a shadow, blurred glass under the glass material.
+
+Nothing to change in an application.
+
 ## [0.5.4] - 2026-10-28
 
 - **What `QueryState` fades in is no layer of its own once it has arrived.** Its fade (`animate-reveal`) was

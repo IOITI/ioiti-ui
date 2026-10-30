@@ -40,6 +40,11 @@ interface PromptComposerProps {
   minRows?: number
   /** Longer, the field scrolls. */
   maxRows?: number
+  /**
+   * It floats over what scrolls under it, at a page's foot, with no band behind it: its frame lifted by a shadow,
+   * blurred glass under the glass material.
+   */
+  floating?: boolean
   className?: string
 }
 
@@ -68,6 +73,7 @@ export function PromptComposer({
   maxLength,
   minRows = 2,
   maxRows = 10,
+  floating = false,
   className,
 }: PromptComposerProps) {
   const id = useId()
@@ -141,7 +147,13 @@ export function PromptComposer({
           ))}
         </div>
       )}
-      <div className="rounded-2xl border border-border bg-surface transition-colors duration-150 focus-within:border-border-hover">
+      <div
+        className={cn(
+          'rounded-2xl border border-border bg-surface transition-colors duration-150 focus-within:border-border-hover',
+          // Glass's edge would hide the border that shows its focus: the focus is said over it.
+          floating && 'shadow-[var(--shadow-elevated)] glass-float glass:focus-within:border-border-hover',
+        )}
+      >
         <textarea
           ref={field}
           id={id}

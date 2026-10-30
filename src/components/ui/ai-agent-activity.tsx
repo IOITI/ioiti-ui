@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, createContext, useContext, useId } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+// ioiti-ui: useReducedMotionConfig for what MotionConfig does not reduce (a height, a caret's blink).
+import { motion, AnimatePresence, useReducedMotion, useReducedMotionConfig } from 'framer-motion';
 import {
   Check,
   RotateCw,
@@ -9,6 +10,8 @@ import {
   Pause,
   ChevronDown,
 } from 'lucide-react';
+import { useControllableState } from '../../lib/controllable.js';
+import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
 
 // =============================================================================
@@ -43,6 +46,11 @@ export type ActivityStatus = 'pending' | 'running' | 'success' | 'error' | 'canc
 
 export interface AgentActivityItemData {
   id: string;
+  /**
+   * ioiti-ui: a note is the agent's words between its steps (what it thought, what it does next): drawn as text
+   * under the steps before it, never as a step of the timeline. A step unless said.
+   */
+  kind?: 'step' | 'note';
   type: ActivityType;
   title: string;
   description?: string;
@@ -69,6 +77,13 @@ export interface AgentActivityContextValue {
   outputLabel: string;
   /** ioiti-ui: in the header, in place of "N of M completed". */
   summary?: string;
+  /** ioiti-ui: the name of a group of notes, said to screen readers. */
+  notesLabel: string;
+  /** ioiti-ui: whether its steps fold under its header, whether they are shown, and where. */
+  collapsible: boolean;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  bodyId: string;
   expandedIds: Set<string>;
   toggleExpand: (id: string) => void;
   expandAll: () => void;
@@ -125,45 +140,78 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
   showControls = true,
   className,
 }) => {
-  const { activities, isRunning, expandAll, collapseAll, summary } = useAgentActivity();
-  const completedCount = activities.filter((a) => a.status === 'success').length;
+  const { activities, isRunning, expandAll, collapseAll, summary, collapsible, open, setOpen, bodyId } = useAgentActivity();
+  // ioiti-ui: the steps alone are counted: a note is no step.
+  const steps = activities.filter((a) => (a.kind ?? 'step') === 'step');
+  const completedCount = steps.filter((a) => a.status === 'success').length;
+  const shown = !collapsible || open;
+  // ioiti-ui: what folds is opened by its header (in its heading, as a disclosure is): spans, a button's content.
+  const Title = collapsible ? 'span' : 'h3';
+
+  const said = (
+    <>
+      <span className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+        <Title className="text-sm font-medium text-foreground tracking-tight truncate">
+          {title}
+        </Title>
+        {agentName && (
+          <span className="text-xs text-muted-foreground font-normal truncate">
+            — {agentName}
+          </span>
+        )}
+      </span>
+
+      <span className="w-1 h-1 rounded-full bg-border shrink-0 hidden sm:inline-block" />
+
+      <span className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
+        {isRunning ? (
+          <span className="flex items-center gap-1.5 text-foreground">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Running
+          </span>
+        ) : (
+          <span>
+            {summary ?? `${completedCount} of ${steps.length} completed`}
+          </span>
+        )}
+      </span>
+    </>
+  );
+  const line = 'flex items-center gap-2 sm:gap-3 min-w-0 flex-wrap sm:flex-nowrap';
 
   return (
     <div
       className={cn(
         'px-4 py-3.5 sm:px-8 sm:py-5 border-b border-border/60 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 sm:gap-4 select-none',
+        // ioiti-ui: folded, nothing under it to set apart (the line kept, so that nothing moves).
+        !shown && 'border-b-transparent',
         className
       )}
     >
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-wrap sm:flex-nowrap">
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <h3 className="text-sm font-medium text-foreground tracking-tight truncate">
-            {title}
-          </h3>
-          {agentName && (
-            <span className="text-xs text-muted-foreground font-normal truncate">
-              — {agentName}
-            </span>
-          )}
-        </div>
+      {collapsible ? (
+        <h3 className="min-w-0">
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            aria-controls={open ? bodyId : undefined}
+            className={cn(line, 'group/fold max-w-full rounded-md text-left cursor-pointer')}
+          >
+            <motion.span
+              animate={{ rotate: open ? 0 : -90 }}
+              transition={motionTransitions.springSnappy}
+              className="shrink-0 text-muted-foreground/70 group-hover/fold:text-foreground transition-colors"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+            </motion.span>
+            {said}
+          </button>
+        </h3>
+      ) : (
+        <div className={line}>{said}</div>
+      )}
 
-        <span className="w-1 h-1 rounded-full bg-border shrink-0 hidden sm:inline-block" />
-
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
-          {isRunning ? (
-            <span className="flex items-center gap-1.5 text-foreground">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Running
-            </span>
-          ) : (
-            <span>
-              {summary ?? `${completedCount} of ${activities.length} completed`}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {showControls && (
+      {showControls && shown && (
         <div className="flex items-center gap-2.5 sm:gap-3 text-xs text-muted-foreground font-normal shrink-0 ml-auto sm:ml-0">
           <button
             type="button"
@@ -354,31 +402,123 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
   );
 };
 
+// ioiti-ui: the caret at the end of a note still being written, still where motion is reduced (as AIResponse's).
+function NoteCaret() {
+  const reduce = useReducedMotionConfig();
+  return (
+    <motion.span
+      aria-hidden
+      data-caret=""
+      className="ml-[3px] inline-block h-[1.05em] w-[2px] translate-y-[0.2em] rounded-full bg-current"
+      animate={reduce ? { opacity: 0.7 } : { opacity: [1, 0.15, 1] }}
+      transition={reduce ? undefined : { repeat: Infinity, duration: 1.1, ease: 'easeInOut' }}
+    />
+  );
+}
+
+export interface AgentActivityNotesProps {
+  notes: AgentActivityItemData[];
+  className?: string;
+}
+
+/**
+ * ioiti-ui: notes in a row, drawn together as the agent's words between two stretches of its steps: whole, from
+ * the timeline's edge, with no mark, state or line; the first one's time where a step's is; the one still being
+ * written (`status: 'running'`) ending with a caret.
+ */
+export const AgentActivityNotes: React.FC<AgentActivityNotesProps> = ({ notes, className }) => {
+  const { notesLabel } = useAgentActivity();
+  const time = notes[0]?.timestamp;
+
+  return (
+    <div
+      role="group"
+      aria-label={notesLabel}
+      aria-busy={notes.some((note) => note.status === 'running') || undefined}
+      className={cn('flex items-start justify-between gap-2.5 sm:gap-3 pb-4 sm:pb-5', className)}
+    >
+      <div className="min-w-0 flex-1 space-y-2">
+        {notes.map((note) => (
+          <p
+            key={note.id}
+            className="text-xs sm:text-sm leading-relaxed tracking-tight text-muted-foreground whitespace-pre-line break-words"
+          >
+            {note.title}
+            {note.status === 'running' && <NoteCaret />}
+          </p>
+        ))}
+      </div>
+      {time && (
+        <span className="hidden sm:inline shrink-0 pt-px text-xs text-muted-foreground tabular-nums">{time}</span>
+      )}
+    </div>
+  );
+};
+
+// ioiti-ui: the items in stretches of one kind, in their order: a timeline of steps, a group of notes.
+function stretchesOf(activities: AgentActivityItemData[]) {
+  const stretches: { kind: 'step' | 'note'; items: AgentActivityItemData[] }[] = [];
+  for (const activity of activities) {
+    const kind = activity.kind ?? 'step';
+    const last = stretches[stretches.length - 1];
+    if (last?.kind === kind) last.items.push(activity);
+    else stretches.push({ kind, items: [activity] });
+  }
+  return stretches;
+}
+
 export interface AgentActivityTimelineProps {
   className?: string;
 }
 
 export const AgentActivityTimeline: React.FC<AgentActivityTimelineProps> = ({ className }) => {
-  const { activities } = useAgentActivity();
+  const { activities, collapsible, open, bodyId } = useAgentActivity();
+  const reduce = useReducedMotionConfig();
 
-  if (activities.length === 0) {
-    return (
+  // ioiti-ui: each stretch of steps a timeline of its own, its line cut where notes come between them.
+  const body =
+    activities.length === 0 ? (
       <div className="py-12 text-center text-xs text-muted-foreground font-normal">
         No activity recorded
       </div>
+    ) : (
+      <div className={cn('px-4 sm:px-8 py-4 sm:py-7 space-y-2', className)}>
+        {stretchesOf(activities).map((stretch) =>
+          stretch.kind === 'note' ? (
+            <AgentActivityNotes key={stretch.items[0].id} notes={stretch.items} />
+          ) : (
+            <div key={stretch.items[0].id} className="space-y-2">
+              {stretch.items.map((activity, index) => (
+                <AgentActivityItem
+                  key={activity.id}
+                  activity={activity}
+                  isLast={index === stretch.items.length - 1}
+                />
+              ))}
+            </div>
+          )
+        )}
+      </div>
     );
-  }
 
+  if (!collapsible) return body;
+  // ioiti-ui: folded under its header; a height is not reduced by MotionConfig: reduced, it fades.
   return (
-    <div className={cn('px-4 sm:px-8 py-4 sm:py-7 space-y-2', className)}>
-      {activities.map((activity, index) => (
-        <AgentActivityItem
-          key={activity.id}
-          activity={activity}
-          isLast={index === activities.length - 1}
-        />
-      ))}
-    </div>
+    <AnimatePresence initial={false}>
+      {open && (
+        <motion.div
+          key="body"
+          id={bodyId}
+          initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+          animate={reduce ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
+          exit={reduce ? { opacity: 0, transition: motionTransitions.easeExit } : { height: 0, opacity: 0, transition: motionTransitions.easeExit }}
+          transition={motionTransitions.springGentle}
+          className="overflow-hidden"
+        >
+          {body}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
@@ -393,6 +533,16 @@ export interface AIAgentActivityProps {
   inputLabel?: string;
   outputLabel?: string;
   summary?: string;
+  /** ioiti-ui: the name of a group of notes, said to screen readers ("Notes"). */
+  notesLabel?: string;
+  /**
+   * ioiti-ui: its steps fold under its header, which opens them again: `open` held by the caller (told by
+   * `onOpenChange`), or left to it from `defaultOpen` (open).
+   */
+  collapsible?: boolean;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   title?: string;
   agentName?: string;
   accentColor?: string;
@@ -407,6 +557,11 @@ export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
   inputLabel = 'Parameters',
   outputLabel = 'Output Result',
   summary,
+  notesLabel = 'Notes',
+  collapsible = false,
+  open: given,
+  defaultOpen = true,
+  onOpenChange,
   title,
   agentName,
   accentColor,
@@ -415,6 +570,8 @@ export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
   children,
 }) => {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(defaultExpandedIds));
+  const [open, setOpen] = useControllableState(given, defaultOpen, onOpenChange);
+  const bodyId = useId();
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {
@@ -439,6 +596,11 @@ export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
     inputLabel,
     outputLabel,
     summary,
+    notesLabel,
+    collapsible,
+    open,
+    setOpen,
+    bodyId,
     expandedIds,
     toggleExpand,
     expandAll,

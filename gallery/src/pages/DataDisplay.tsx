@@ -9,6 +9,7 @@ import {
   AIResponseContent,
   AIResponseHeader,
   AIResponseSources,
+  AIResponseThinking,
   AIResponseToolsSummary,
   AirportMatrixClock,
   AnimatedNumber,
@@ -118,6 +119,35 @@ const ACTIVITY: AgentActivityItemData[] = [
   { id: 'a3', type: 'writing', title: 'The summary', status: 'running', statusLabel: 'Running', timestamp: '09:31:05' },
 ]
 
+// What the assistant said between its steps: its notes cut the timeline, a stretch of steps after each.
+const TALK: AgentActivityItemData[] = [
+  { id: 'n1', kind: 'note', type: 'thinking', title: 'I read the question, then the orders it names, before I write anything.', status: 'success', timestamp: '09:31:01' },
+  ACTIVITY[0],
+  ACTIVITY[1],
+  { id: 'n2', kind: 'note', type: 'thinking', title: 'October has 42 orders, three of them late, all from the same shop.', status: 'success', timestamp: '09:31:04' },
+  { id: 'n3', kind: 'note', type: 'thinking', title: 'I put the late ones first, then the rest in three lines', status: 'running' },
+  ACTIVITY[2],
+]
+
+const WORKING_LINES = [
+  'October: 42 orders read',
+  'September: 31 of 38 read',
+  'October has three late orders, all from the same shop.',
+  '4 tool calls so far',
+]
+
+function Working() {
+  // As if asked six minutes ago.
+  const [since] = useState(() => Date.now() - 372_000)
+  return (
+    <AIResponse status="generating" thinking={{ label: 'Comparing October with September', lines: WORKING_LINES, since }}>
+      <AIResponseHeader title="Assistant" modelBadge="Model 2" />
+      <AIResponseContent />
+      <AIResponseActions />
+    </AIResponse>
+  )
+}
+
 const ANSWER = `## Believable, on few days
 
 The run made **42 trades on 21 days** and beat 97 % of random entries; see [the guide](#agent) and [the
@@ -156,6 +186,27 @@ function Streamed() {
       </Button>
       <AIResponse content={ANSWER.slice(0, shown)} status={streaming ? 'streaming' : 'complete'} modelName="Model 2"
         sources={SOURCES} onRegenerate={() => setShown(0)} onFeedback={() => {}} />
+    </div>
+  )
+}
+
+// It floats at the foot of what scrolls under it, with no band behind it.
+function FloatingComposer() {
+  const [value, setValue] = useState('')
+  return (
+    <div className="relative h-72 overflow-y-auto rounded-2xl border border-border/70 px-4 pt-4">
+      <div className="space-y-3 text-sm text-muted-foreground">
+        {Array.from({ length: 9 }, (_, index) => (
+          <p key={index}>
+            Line {index + 1} of the conversation: what was asked, what the assistant did and what it answered, scrolling
+            under the field that floats over it.
+          </p>
+        ))}
+      </div>
+      <div className="sticky bottom-3 mt-4">
+        <PromptComposer label="Ask again" hideLabel value={value} onValueChange={setValue} onSubmit={() => setValue('')}
+          placeholder="Ask again…" floating />
+      </div>
     </div>
   )
 }
@@ -685,14 +736,16 @@ export function DataDisplay() {
       <Demo
         id="agent"
         title="AIAgentActivity"
-        description="What an assistant did, step by step: each step's state in words beside its time, its input and output on demand. Composed from its parts, or whole."
-        names={['AIAgentActivity', 'AgentActivityHeader', 'AgentActivityTimeline', 'AgentActivityItem']}
+        description="What an assistant did, step by step: each step's state in words beside its time, its input and output on demand; its notes between stretches of steps, as its words; folded under its heading when asked. Composed from its parts, or whole."
+        names={['AIAgentActivity', 'AgentActivityHeader', 'AgentActivityTimeline', 'AgentActivityItem', 'AgentActivityNotes']}
         className="block w-full"
       >
-        <AIAgentActivity activities={ACTIVITY} isRunning summary="2 of 3 done" inputLabel="Asked" outputLabel="Answer">
+        <AIAgentActivity activities={TALK} isRunning summary="2 of 3 done" inputLabel="Asked" outputLabel="Answer" notesLabel="Its notes">
           <AgentActivityHeader title="The October summary" agentName="Assistant" />
           <AgentActivityTimeline />
         </AIAgentActivity>
+        <AIAgentActivity className="mt-4" activities={TALK.slice(0, 4)} collapsible defaultOpen={false} title="An earlier question"
+          agentName="Assistant" summary="2 tool calls · 2 notes · 4 s" />
         <div className="mt-4 rounded-2xl border border-border/70">
           <AIAgentActivity activities={ACTIVITY.slice(0, 1)}>
             <AgentActivityItem activity={ACTIVITY[0]} isLast />
@@ -708,6 +761,19 @@ export function DataDisplay() {
         className="block w-full"
       >
         <Streamed />
+      </Demo>
+
+      <Demo
+        id="thinking"
+        title="AIResponseThinking"
+        description="What an assistant does while nothing of its answer is written, in place of a skeleton: what it does now and for how long, then what it is about, a line at a time (held under the pointer). Only what it does is read out as it changes."
+        names={['AIResponseThinking']}
+        className="block w-full"
+      >
+        <Working />
+        <div className="mt-4 rounded-2xl border border-border/70 px-4">
+          <AIResponseThinking label="Thinking" lines={['Reading the question', 'Planning its first steps']} />
+        </div>
       </Demo>
 
       <Demo
@@ -733,11 +799,14 @@ export function DataDisplay() {
       <Demo
         id="composer"
         title="PromptComposer"
-        description="A request to an assistant: it grows with its text, sends with Enter (Shift+Enter breaks a line, and so does Enter on a touch screen), is stopped while answered, and offers requests to start from."
+        description="A request to an assistant: it grows with its text, sends with Enter (Shift+Enter breaks a line, and so does Enter on a touch screen), is stopped while answered, and offers requests to start from. Floating, it stays at the foot of what scrolls under it, with no band behind it."
         names={['PromptComposer']}
         className="block w-full"
       >
         <Composer />
+        <div className="mt-4">
+          <FloatingComposer />
+        </div>
       </Demo>
 
       <Demo id="clock" title="AirportMatrixClock" description="The time of a few cities, as a departures board: two of them fit beside a page's title." names={['AirportMatrixClock']}>

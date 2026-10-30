@@ -11,7 +11,9 @@ import React, {
 } from "react";
 // ioiti-ui: reduced motion as IoitiProvider says it too (useReducedMotionConfig), not the system's alone.
 import { AnimatePresence, motion, useReducedMotionConfig } from "framer-motion";
+import { formatSpan } from "../../lib/format.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+import { useNow } from "../../lib/now.js";
 import { cn, copyToClipboard } from "../../lib/utils.js";
 import { CodeBlock } from "../CodeBlock.js";
 import { Hint } from "../Hint.js";
@@ -108,6 +110,21 @@ export interface AIResponseContextValue {
   onFeedback?: (type: "like" | "dislike") => void;
   feedback?: "like" | "dislike" | null;
   // ioiti-ui: the accent's colour comes from the look (accents.css), not from a prop: accentColor is gone.
+  /** ioiti-ui: what it is doing while nothing of its answer is written, said in place of a skeleton. */
+  thinking?: AIResponseThinkingProps;
+}
+
+/** ioiti-ui: what an assistant is doing while nothing of its answer is written. */
+export interface AIResponseThinkingProps {
+  /** What it does now, under a shimmer ("Thinking", "Waiting for 3 runs"): the one part read out as it changes. */
+  label: string;
+  /** What it is about, shown one after the other under the label, round and round. */
+  lines?: string[];
+  /** When it began: the time it has taken is said beside the label. */
+  since?: string | number | Date;
+  /** Seconds each line is shown. */
+  interval?: number;
+  className?: string;
 }
 
 const AIResponseContext = createContext<AIResponseContextValue | null>(null);
@@ -416,7 +433,7 @@ export const AIResponseHeader: React.FC<AIResponseHeaderProps> = ({
   icon,
   className,
 }) => {
-  const { status, modelName } = useAIResponseContext();
+  const { status, modelName, thinking } = useAIResponseContext();
   const badge = modelBadge || modelName;
   const busy = status === "streaming" || status === "generating";
 
@@ -435,11 +452,113 @@ export const AIResponseHeader: React.FC<AIResponseHeaderProps> = ({
             Streaming
           </span>
         )}
-        {status === "generating" && <Shimmer>Thinking</Shimmer>}
+        {/* ioiti-ui: said once: under the header, when what it is doing is given. */}
+        {status === "generating" && !thinking && <Shimmer>Thinking</Shimmer>}
         {status === "cancelled" && <span>Stopped</span>}
         {timestamp && <span className="hidden tabular-nums sm:inline">{timestamp}</span>}
       </div>
     </header>
+  );
+};
+
+/* ========================================================================== */
+/*  Thinking (ioiti-ui's own)                                                 */
+/* ========================================================================== */
+
+// Three dots rising and fading in turn while it works; reduced, they only fade.
+function Dots() {
+  const reduce = useReducedMotionConfig();
+  return (
+    <span aria-hidden className="flex h-5 items-center gap-[3px] text-muted-foreground accent:text-brand">
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="block h-[5px] w-[5px] rounded-full bg-current"
+          animate={reduce ? { opacity: [0.35, 1, 0.35] } : { opacity: [0.35, 1, 0.35], y: [0, -3, 0] }}
+          transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.16, ease: "easeInOut" }}
+        />
+      ))}
+    </span>
+  );
+}
+
+function millisOf(value: string | number | Date | undefined): number | null {
+  if (value === undefined) return null;
+  const time = value instanceof Date ? value.getTime() : typeof value === "number" ? value : Date.parse(value);
+  return Number.isFinite(time) ? time : null;
+}
+
+// The line shown: the same text where it still is, else the same place (a sentence growing as it streams).
+function placeOf(shown: { index: number; text: string | null }, lines: string[]): number {
+  const found = shown.text === null ? -1 : lines.indexOf(shown.text);
+  return found >= 0 ? found : Math.min(shown.index, Math.max(0, lines.length - 1));
+}
+
+/**
+ * What an assistant is doing while nothing of its answer is written: dots rising in turn, what it does now under
+ * a shimmer, the time it has taken, and under them what it is about, a line at a time (held while the pointer is
+ * on it). Only what it does is read out as it changes, never a line turning or a second passing.
+ */
+export const AIResponseThinking: React.FC<AIResponseThinkingProps> = ({ label, lines = [], since, interval = 4, className }) => {
+  const reduce = useReducedMotionConfig();
+  const now = useNow(1000);
+  const started = millisOf(since);
+  const [shown, setShown] = useState<{ index: number; text: string | null }>({ index: 0, text: null });
+  const [held, setHeld] = useState(false);
+  const latest = useRef(lines);
+  useEffect(() => {
+    latest.current = lines;
+  });
+  const turns = lines.length > 1 && !held;
+
+  // The next line every `interval`, read from the lines then: lines rewritten as they stream do not hold it back.
+  useEffect(() => {
+    if (!turns) return;
+    const timer = setInterval(() => {
+      setShown((before) => {
+        const all = latest.current;
+        if (all.length === 0) return before;
+        const index = (placeOf(before, all) + 1) % all.length;
+        return { index, text: all[index] };
+      });
+    }, interval * 1000);
+    return () => clearInterval(timer);
+  }, [turns, interval]);
+
+  const place = placeOf(shown, lines);
+  const line = lines[place];
+
+  return (
+    <div className={cx("grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 gap-y-1 pt-5 pb-2", className)}>
+      <Dots />
+      <div className="flex min-w-0 items-baseline gap-2 text-[13.5px] tracking-[-0.01em]">
+        <span role="status" className="min-w-0 truncate font-medium">
+          <Shimmer>{label}</Shimmer>
+        </span>
+        {started !== null && (
+          <span className={`shrink-0 text-[12px] tabular-nums ${muted}`}>{formatSpan((now - started) / 1000)}</span>
+        )}
+      </div>
+      {line !== undefined && (
+        <div
+          className="relative col-start-2 h-[3em] text-[12.5px] leading-[1.5]"
+          onPointerEnter={() => setHeld(true)}
+          onPointerLeave={() => setHeld(false)}
+        >
+          <AnimatePresence initial={false}>
+            <motion.p
+              key={place}
+              className={`absolute inset-x-0 top-0 line-clamp-2 break-words ${muted}`}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0, transition: motionTransitions.easeSoft }}
+              exit={reduce ? { opacity: 0, transition: motionTransitions.easeExit } : { opacity: 0, y: -4, transition: motionTransitions.easeExit }}
+            >
+              {line}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -452,12 +571,14 @@ export interface AIResponseContentProps {
 }
 
 export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className }) => {
-  const { content, status, onRegenerate } = useAIResponseContext();
+  const { content, status, onRegenerate, thinking } = useAIResponseContext();
   const reduce = useReducedMotionConfig();
   const blocks = useMemo(() => parseMarkdown(content), [content]);
   const streaming = status === "streaming";
 
   if (status === "generating" && !content) {
+    // ioiti-ui: what it is doing, when given, in place of a skeleton.
+    if (thinking) return <AIResponseThinking {...thinking} />;
     return (
       <div className="space-y-2.5 py-5" role="status" aria-label="Generating response">
         {["w-3/4", "w-11/12", "w-1/2"].map((w, i) => (
@@ -752,9 +873,11 @@ export interface AIResponseActionsProps {
 }
 
 export const AIResponseActions: React.FC<AIResponseActionsProps> = ({ className }) => {
-  const { copied, copyContent, onRegenerate, onFeedback, feedback, status } = useAIResponseContext();
+  const { copied, copyContent, onRegenerate, onFeedback, feedback, status, content } = useAIResponseContext();
   const busy = status === "streaming" || status === "generating";
   const chosen = "bg-surface-hover !text-foreground";
+  // ioiti-ui: nothing to copy, regenerate or judge before its first word.
+  if (status === "generating" && !content) return null;
 
   // ioiti-ui: each title a hint (a disabled button's on its focusable wrapper); feedback only when it goes somewhere.
   return (
@@ -820,6 +943,8 @@ export interface AIResponseProps {
   onFeedback?: (type: "like" | "dislike") => void;
   /** ioiti-ui: the feedback given before (kept by the application), shown pressed. */
   feedback?: "like" | "dislike" | null;
+  /** ioiti-ui: what it is doing while nothing of its answer is written (`AIResponseThinking`), in place of a skeleton. */
+  thinking?: AIResponseThinkingProps;
   className?: string;
   /** Custom composition using the compound parts. Defaults to header + content + sources + actions */
   children?: React.ReactNode;
@@ -833,6 +958,7 @@ export const AIResponse: React.FC<AIResponseProps> = ({
   onRegenerate,
   onFeedback,
   feedback: given = null,
+  thinking,
   className,
   children,
 }) => {
@@ -855,6 +981,7 @@ export const AIResponse: React.FC<AIResponseProps> = ({
         }
       : undefined,
     feedback,
+    thinking,
   };
 
   return (
