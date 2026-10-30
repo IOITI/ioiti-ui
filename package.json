@@ -1,6 +1,6 @@
 {
   "name": "ioiti-ui",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "private": true,
   "description": "IOITI's design system: React components, design tokens and an application shell for Tailwind CSS 4, made from WATA's admin interface and EasyUI.",
   "license": "MIT",
