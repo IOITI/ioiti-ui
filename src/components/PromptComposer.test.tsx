@@ -83,3 +83,61 @@ describe('PromptComposer', () => {
   })
 })
 
+describe('PromptComposer with attachments', () => {
+  function files(...names: string[]) {
+    return names.map((name) => new File(['x'], name, { type: name.endsWith('.png') ? 'image/png' : 'text/csv' }))
+  }
+
+  it('shows what the request goes with above its field, inside its frame', () => {
+    render(<Composer attachments={<span>chart.png</span>} />)
+
+    const group = screen.getByRole('group', { name: 'Attached' })
+    expect(group).toHaveTextContent('chart.png')
+    expect(group.nextElementSibling).toBe(screen.getByRole('textbox'))
+  })
+
+  it('hands over files dropped on its frame, shown while they are dragged over it', () => {
+    const given = vi.fn()
+    render(<Composer onFiles={given} />)
+    const frame = screen.getByRole('textbox').parentElement!
+    const dropped = files('chart.png', 'export.csv')
+    const transfer = { types: ['Files'], files: dropped, dropEffect: 'none' }
+
+    fireEvent.dragEnter(frame, { dataTransfer: transfer })
+    expect(frame).toHaveAttribute('data-dropping', 'true')
+    fireEvent.dragOver(frame, { dataTransfer: transfer })
+    fireEvent.drop(frame, { dataTransfer: transfer })
+
+    expect(given).toHaveBeenCalledWith(dropped)
+    expect(frame).not.toHaveAttribute('data-dropping')
+  })
+
+  it('takes no drag of text for files, and nothing while disabled', () => {
+    const given = vi.fn()
+    const { rerender } = render(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} onFiles={given} />)
+    const frame = screen.getByRole('textbox').parentElement!
+
+    fireEvent.dragEnter(frame, { dataTransfer: { types: ['text/plain'], files: [] } })
+    expect(frame).not.toHaveAttribute('data-dropping')
+
+    rerender(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} onFiles={given} disabled />)
+    fireEvent.drop(frame, { dataTransfer: { types: ['Files'], files: files('chart.png') } })
+    expect(given).not.toHaveBeenCalled()
+  })
+
+  it('hands over a pasted screenshot, and leaves a paste of text as it is', () => {
+    const given = vi.fn()
+    render(<Composer onFiles={given} />)
+    const field = screen.getByRole('textbox')
+    const shot = files('chart.png')
+
+    const pastedFiles = fireEvent.paste(field, { clipboardData: { files: shot, getData: () => '' } })
+    const pastedText = fireEvent.paste(field, { clipboardData: { files: [], getData: () => 'Analyse' } })
+
+    expect(given).toHaveBeenCalledOnce()
+    expect(given).toHaveBeenCalledWith(shot)
+    // fireEvent says false when the default was prevented: the screenshot is not pasted as text.
+    expect(pastedFiles).toBe(false)
+    expect(pastedText).toBe(true)
+  })
+})

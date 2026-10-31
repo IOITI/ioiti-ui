@@ -13,6 +13,7 @@ import {
   AIResponseToolsSummary,
   AirportMatrixClock,
   AnimatedNumber,
+  AttachmentChip,
   Avatar,
   AvatarGroup,
   Badge,
@@ -50,7 +51,7 @@ import {
   TableRow,
 } from 'ioiti-ui'
 import type { AgentActivityItemData, ColumnDef } from 'ioiti-ui'
-import { ChevronDown, Gauge, GitCompare } from 'lucide-react'
+import { ChevronDown, FileText, FlaskConical, Gauge, GitCompare, Paperclip } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { Demo } from '../parts'
@@ -214,11 +215,18 @@ function FloatingComposer() {
 function Composer() {
   const [value, setValue] = useState('')
   const [busy, setBusy] = useState(false)
+  // What the request goes with: a file dropped on the frame or pasted into the field joins them.
+  const [attached, setAttached] = useState<string[]>(['October.csv'])
   return (
     <PromptComposer
       label="Ask the assistant"
       value={value}
       onValueChange={setValue}
+      attachments={attached.length > 0 ? attached.map((name) => (
+        <AttachmentChip key={name} label={name} detail="12 kB" icon={<FileText />}
+          onRemove={() => setAttached(attached.filter((other) => other !== name))} />
+      )) : undefined}
+      onFiles={(files) => setAttached([...attached, ...files.map((file) => file.name).filter((name) => !attached.includes(name))])}
       onSubmit={() => {
         setBusy(true)
         setValue('')
@@ -231,6 +239,8 @@ function Composer() {
       controls={
         // Three of them, as an assistant's composer has: on a phone they wrap rather than run under the button.
         <>
+          <Button size="sm" variant="ghost" leftIcon={<Paperclip className="size-3.5" />} aria-label="Attach"
+            onClick={() => setAttached([...attached, `Note ${attached.length + 1}.txt`])} />
           <Button size="sm" variant="ghost" rightIcon={<ChevronDown className="size-3.5" />}>
             Model 2
           </Button>
@@ -799,13 +809,27 @@ export function DataDisplay() {
       <Demo
         id="composer"
         title="PromptComposer"
-        description="A request to an assistant: it grows with its text, sends with Enter (Shift+Enter breaks a line, and so does Enter on a touch screen), is stopped while answered, and offers requests to start from. Floating, it stays at the foot of what scrolls under it, with no band behind it."
+        description="A request to an assistant: it grows with its text, sends with Enter (Shift+Enter breaks a line, and so does Enter on a touch screen), is stopped while answered, and offers requests to start from. What it goes with is above its field: drop a file on it, or paste one. Floating, it stays at the foot of what scrolls under it, with no band behind it."
         names={['PromptComposer']}
         className="block w-full"
       >
         <Composer />
         <div className="mt-4">
           <FloatingComposer />
+        </div>
+      </Demo>
+
+      <Demo
+        id="attachment-chip"
+        title="AttachmentChip"
+        description="Something attached to a request or a message: a file, a record. Its label is cut where room ends; it may lead somewhere, be taken away, be made ready, or say why it could not be taken."
+        names={['AttachmentChip']}
+      >
+        <div className="flex flex-wrap gap-2">
+          <AttachmentChip label="October.csv" detail="12 kB" icon={<FileText />} onRemove={() => {}} />
+          <AttachmentChip label="Run of the slower line" icon={<FlaskConical />} href="#attachment-chip" />
+          <AttachmentChip label="chart-2026-10-30.png" detail="Uploading…" busy onRemove={() => {}} />
+          <AttachmentChip label="statement.pdf" detail="Larger than 5 MB" tone="danger" onRemove={() => {}} />
         </div>
       </Demo>
 

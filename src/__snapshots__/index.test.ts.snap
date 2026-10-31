@@ -27,6 +27,7 @@ exports[`the package's interface > is the list of names it was 1`] = `
   "AnimatedTabs",
   "AppBrand",
   "AppShell",
+  "AttachmentChip",
   "AuthLayout",
   "AutoRefresh",
   "Avatar",

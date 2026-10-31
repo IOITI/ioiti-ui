@@ -1,5 +1,5 @@
-import { useId, useLayoutEffect, useRef } from 'react'
-import type { KeyboardEvent, ReactNode } from 'react'
+import { useId, useLayoutEffect, useRef, useState } from 'react'
+import type { ClipboardEvent, DragEvent, KeyboardEvent, ReactNode } from 'react'
 import { ArrowUp, Square } from 'lucide-react'
 
 import { cn } from '../lib/utils.js'
@@ -45,7 +45,19 @@ interface PromptComposerProps {
    * blurred glass under the glass material.
    */
   floating?: boolean
+  /** Above the field, inside its frame: what the request goes with (`AttachmentChip`s). Each wraps whole. */
+  attachments?: ReactNode
+  /**
+   * Files dropped on its frame (shown while one is dragged over it) or pasted into its field (a screenshot):
+   * given here, what to do with them the application's. A paste of text stays a paste. Not while `disabled`.
+   */
+  onFiles?: (files: File[]) => void
   className?: string
+}
+
+/** Whether a drag carries files (a selection of text does not). */
+function carriesFiles(event: DragEvent<HTMLElement>): boolean {
+  return Array.from(event.dataTransfer?.types ?? []).includes('Files')
 }
 
 // A line of the field when the browser says none (jsdom): its text is 14 px on 1.5.
@@ -54,7 +66,8 @@ const FALLBACK_LINE_HEIGHT = 21
 /**
  * A request typed to an assistant: a field that grows with its text, sent with Enter (a new line with
  * Shift+Enter; on a touch screen, Enter is a new line and the button sends), stopped while it is
- * answered, and requests to start from.
+ * answered, and requests to start from. What it goes with is shown above the field (`attachments`), and
+ * files dropped on it or pasted into it are handed over (`onFiles`).
  */
 export function PromptComposer({
   value,
@@ -74,10 +87,15 @@ export function PromptComposer({
   minRows = 2,
   maxRows = 10,
   floating = false,
+  attachments,
+  onFiles,
   className,
 }: PromptComposerProps) {
   const id = useId()
   const field = useRef<HTMLTextAreaElement>(null)
+  // A drag of files over the frame: entered and left once for each element under it, so counted.
+  const [dragged, setDragged] = useState(0)
+  const takesFiles = !!onFiles && !disabled
   const over = maxLength !== undefined && value.length > maxLength
   const canSend = !disabled && !busy && value.trim() !== '' && !over
 
@@ -104,6 +122,39 @@ export function PromptComposer({
     event.preventDefault()
     send()
   }
+
+  function onPaste(event: ClipboardEvent<HTMLTextAreaElement>) {
+    const files = Array.from(event.clipboardData?.files ?? [])
+    if (!takesFiles || files.length === 0) return
+    event.preventDefault()
+    onFiles?.(files)
+  }
+
+  const dropping = takesFiles && dragged > 0
+  const frameDrag = takesFiles
+    ? {
+        onDragEnter: (event: DragEvent<HTMLDivElement>) => {
+          if (!carriesFiles(event)) return
+          event.preventDefault()
+          setDragged((count) => count + 1)
+        },
+        onDragOver: (event: DragEvent<HTMLDivElement>) => {
+          if (!carriesFiles(event)) return
+          event.preventDefault()
+          event.dataTransfer.dropEffect = 'copy'
+        },
+        onDragLeave: (event: DragEvent<HTMLDivElement>) => {
+          if (carriesFiles(event)) setDragged((count) => Math.max(0, count - 1))
+        },
+        onDrop: (event: DragEvent<HTMLDivElement>) => {
+          const files = Array.from(event.dataTransfer?.files ?? [])
+          setDragged(0)
+          if (files.length === 0) return
+          event.preventDefault()
+          onFiles?.(files)
+        },
+      }
+    : {}
 
   function suggest(prompt: string) {
     onValueChange(prompt)
@@ -148,12 +199,21 @@ export function PromptComposer({
         </div>
       )}
       <div
+        {...frameDrag}
+        data-dropping={dropping || undefined}
         className={cn(
           'rounded-2xl border border-border bg-surface transition-colors duration-150 focus-within:border-border-hover',
           // Glass's edge would hide the border that shows its focus: the focus is said over it.
           floating && 'shadow-[var(--shadow-elevated)] glass-float glass:focus-within:border-border-hover',
+          // Files dragged over it: where they would go.
+          dropping && 'border-dashed border-neutral-500 bg-surface-hover dark:border-neutral-400 accent:border-brand',
         )}
       >
+        {attachments && (
+          <div className="flex flex-wrap gap-1.5 px-3 pt-2.5" role="group" aria-label="Attached">
+            {attachments}
+          </div>
+        )}
         <textarea
           ref={field}
           id={id}
@@ -164,6 +224,7 @@ export function PromptComposer({
           aria-invalid={over || undefined}
           onChange={(event) => onValueChange(event.target.value)}
           onKeyDown={onKeyDown}
+          onPaste={onPaste}
           className="block w-full resize-none overflow-y-auto bg-transparent px-3.5 pt-3 text-sm leading-normal text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-60"
         />
         <div className="flex items-center justify-between gap-3 px-3 pb-2.5 pt-1">

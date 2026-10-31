@@ -3,6 +3,20 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.7.0] - 2026-10-31
+
+- **`PromptComposer` shows what a request goes with, and takes files.** `attachments` is a row above the field,
+  inside its frame, each item kept whole and wrapping on a phone. `onFiles` is given the files dropped on the frame
+  (it is marked while files are dragged over it) or pasted into the field, a screenshot for one; a paste of text
+  stays a paste, and nothing is taken while the composer is disabled. What to do with them is the application's.
+- **`AttachmentChip`**, new: something attached to a request or a message, a file or a record. An icon or a small
+  picture, its label cut where room ends, a detail beside it (a size, "Uploading…", why it could not be taken, in the
+  loss's tone with `tone="danger"`), a spinner while `busy`. It may lead somewhere (`href`, drawn by the
+  application's link, or by its own `linkComponent`: `'a'` for a file the browser opens itself) and be taken away
+  (`onRemove`, a button named "Remove <label>").
+
+Nothing to change in an application.
+
 ## [0.6.0] - 2026-10-30
 
 - **`AIAgentActivity` draws an agent's notes as its words, not as steps.** An item of `kind: 'note'` (what the
