@@ -49,6 +49,61 @@ describe('the code colours', () => {
     ])
   })
 
+  it('keep every character, in order, in every language', () => {
+    const samples: [Parameters<typeof highlightCode>[1], string][] = [
+      ['toml', '[rule]\nname = "a # not a comment" # a comment\nrisk = 47\ntags = ["x", \'y\']\n[[rule.threat]]\nnote = """\nline\n"""\n'],
+      ['yaml', '---\nkey: value # c\nlist:\n  - &a 1\n  - *a\nblock: |\n  kept\n  as text\nquoted: "x: y"\n'],
+      ['diff', 'diff --git a/x b/x\n--- a/x\n+++ b/x\n@@ -1,2 +1,2 @@ ctx\n-old\n+new\n same\n\\ No newline at end of file'],
+    ]
+    for (const [language, code] of samples) {
+      expect(highlightCode(code, language).map((token) => token.text).join(''), language).toBe(code)
+    }
+  })
+
+  it('read toml: tables, keys, strings, numbers, booleans and comments', () => {
+    expect(kinds('[rule]\nname = "Admin" # why\nrisk_score = 47\nenabled = true\n[[rule.threat]]', 'toml')).toEqual([
+      'namespace:[rule]',
+      'type:name',
+      'operator:=',
+      'string:"Admin"',
+      'comment:# why',
+      'type:risk_score',
+      'operator:=',
+      'number:47',
+      'type:enabled',
+      'operator:=',
+      'keyword:true',
+      'namespace:[[rule.threat]]',
+    ])
+  })
+
+  it('read yaml: keys, values, anchors, comments and a block scalar', () => {
+    const tokens = kinds('name: Admin login # why\ncount: 3\nenabled: true\nitems:\n  - &first one\n  - *first\nnote: |\n  any: text\n', 'yaml')
+    expect(tokens).toContain('namespace:name')
+    expect(tokens).toContain('string:Admin login')
+    expect(tokens).toContain('comment:# why')
+    expect(tokens).toContain('number:3')
+    expect(tokens).toContain('keyword:true')
+    expect(tokens).toContain('builtin:&first')
+    expect(tokens).toContain('builtin:*first')
+    // A block scalar's lines are text, whatever they look like.
+    expect(tokens).toContain('string:  any: text')
+    expect(tokens).not.toContain('namespace:any')
+  })
+
+  it('read a diff: its files, its hunks, what was added and removed', () => {
+    const tokens = highlightCode('--- a/rule.toml\n+++ b/rule.toml\n@@ -3 +3 @@ [rule]\n-risk_score = 47\n+risk_score = 73\n context', 'diff')
+    expect(tokens.filter((token) => token.text.trim()).map((token) => `${token.kind}:${token.text.trim()}`)).toEqual([
+      'keyword:--- a/rule.toml',
+      'keyword:+++ b/rule.toml',
+      'namespace:@@ -3 +3 @@',
+      'plain:[rule]',
+      'deleted:-risk_score = 47',
+      'inserted:+risk_score = 73',
+      'plain:context',
+    ])
+  })
+
   it('read css: at-rules, properties, custom properties and values', () => {
     const tokens = kinds('@import "ioiti-ui/styles.css";\n.card { color: var(--text-primary); padding: 12px; }', 'css')
     expect(tokens).toContain('keyword:@import')
@@ -76,6 +131,15 @@ describe('CodeBlock', () => {
     render(<CodeBlock language="json" code='{"paid": true}' copyable={false} />)
     expect(screen.getByText('true')).toHaveClass('text-(--code-keyword)')
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('marks a diff\'s added and removed lines at their edge, as well as in their tone', () => {
+    const { container } = render(<CodeBlock language="diff" code={'@@ -1 +1 @@\n-old\n+new\n same'} copyable={false} />)
+    const lines = Array.from(container.querySelectorAll('code > span'))
+    expect(lines[1]).toHaveClass('shadow-[inset_2px_0_0_var(--negative)]')
+    expect(lines[2]).toHaveClass('shadow-[inset_2px_0_0_var(--positive)]')
+    expect(lines[3].className).not.toContain('shadow-')
+    expect(screen.getByText('+new')).toHaveClass('text-(--positive)')
   })
 
   it('has an inline form for a sentence', () => {

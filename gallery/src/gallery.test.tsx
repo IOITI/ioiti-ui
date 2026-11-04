@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import * as core from 'ioiti-ui'
 import { IoitiProvider } from 'ioiti-ui'
+import * as code from 'ioiti-ui/code'
 import * as adapter from 'ioiti-ui/react-router'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
@@ -50,7 +51,7 @@ describe('the gallery', () => {
       for (const name of shown()) seen.add(name)
       cleanup()
     }
-    const missing = [...components(core), ...components(adapter)].filter((name) => !seen.has(name))
+    const missing = [...components(core), ...components(adapter), ...components(code)].filter((name) => !seen.has(name))
     expect(missing, 'components with no demo in the gallery').toEqual([])
   }, EVERY_PAGE)
 

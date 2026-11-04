@@ -15,6 +15,7 @@ export function packageAliases(from: 'src' | 'dist'): Alias[] {
   return [
     { find: /^ioiti-ui\/(styles|design|tokens|theme|accents|glass)\.css(\?.*)?$/, replacement: `${at('styles')}/$1.css$2` },
     { find: /^ioiti-ui\/react-router$/, replacement: at(`react-router/index.${script}`) },
+    { find: /^ioiti-ui\/code$/, replacement: at(`code/index.${script}`) },
     { find: /^ioiti-ui$/, replacement: at(`index.${script}`) },
   ]
 }

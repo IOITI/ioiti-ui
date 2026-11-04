@@ -3,6 +3,33 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.9.0] - Unreleased
+
+- **`ioiti-ui/code`**, a new entry: code editors on CodeMirror 6, in the design's code colours and surface, every
+  colour a token, so that a theme, an accent and a material change them as they change the page. Its packages
+  are optional peers: an application that does not import the entry neither installs nor bundles CodeMirror
+  (README.md, "Code editors").
+  - **`CodeEditor`**: `value` and `onChange`, `language` (`toml`, `yaml`, `json`, `markdown`, `text`, each loaded
+    when first shown), `readOnly`, `wrap`, `lineNumbers`, `placeholder`, `minHeight` and `maxHeight`,
+    `autoFocus`. `diagnostics` marks a server's parse errors where they are (`{ line, column?, message,
+    severity? }`, under the text and in the gutter, the message on hover); `onSave` is called on ⌘S / Ctrl+S.
+    Named by `label` for a screen reader; its frame shows the focus as a field's does, and Tab moves on.
+  - **`DiffEditor`**: `original` against `modified` (edited unless `readOnly`, each change to `onChange`), side
+    by side or in one column (`layout`), long unchanged stretches folded (`collapseUnchanged`), what was
+    removed in the loss's tone and what was added in the gain's; its header counts the changes and moves from
+    one to the next. `originalLabel`, `modifiedLabel`, `wrap`, `maxHeight`, `actions`.
+  - Types: `CodeEditorProps`, `DiffEditorProps`, `CodeDiagnostic`, `CodeEditorLanguage`.
+- **`CodeBlock` reads `toml`, `yaml` and `diff`.** A diff's added and removed lines are in the tones of a gain
+  and a loss, and marked at their edge. `CodeTokenKind` gains `inserted` and `deleted`: a `Record` over it
+  in an application needs the two.
+- **`LogViewer`**, new: a process's output as it is written (`lines`, or `text`). Numbered lines, errors and
+  warnings in their tones and marked at their edge (`LogLevel`), the newest kept in sight until the reader
+  scrolls up (`follow`, "Jump to the end"), a search going from one line found to the next, wrapping, copying,
+  downloading (`downloadName`), the earlier lines dropped past `maxLines` and said so (`droppedLines` for those a
+  server already dropped). Only the lines in sight are drawn: a hundred thousand lines scroll as a hundred.
+
+Nothing to change in an application, but a `Record<CodeTokenKind, …>` of its own.
+
 ## [0.8.0] - 2026-11-04
 
 - **A link to an address the server answers** (`reloadDocument`, on `ButtonLink`, `TextLink` and a `DropdownMenu`'s

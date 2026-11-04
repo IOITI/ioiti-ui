@@ -4,6 +4,8 @@
 //   may run the package with, does not guess extensions (scripts/fix-imports.mjs adds them);
 // - nothing in src/ imports react-router but its adapter (src/react-router/) and the tests: the
 //   core works without a router, or with another one;
+// - nothing in src/ imports CodeMirror but the code editors' entry (src/code/): an application that
+//   never edits code never bundles it, nor installs its packages;
 // - nothing of the gallery imports the package's source: it imports `ioiti-ui`, as an application;
 // - no name of the application ioiti-ui was made from (WATA, its broker) in the code an
 //   application ships or starts from (src/, the gallery, the template): the docs say where it
@@ -36,6 +38,7 @@ function filesUnder(folder) {
 const problems = []
 const IMPORT = /(?:\bfrom\s*|\bimport\s*\(?\s*)(['"])(\.{1,2}\/[^'"]*)\1/g
 const ROUTER = /(?:\bfrom\s*|\bimport\s*\(?\s*)['"]react-router(?:\/[^'"]*)?['"]/
+const CODEMIRROR = /(?:\bfrom\s*|\bimport\s*\(?\s*)['"]@(?:codemirror|lezer)\/[^'"]*['"]/
 const ORIGIN = /\b(wata|saxo)\b/i
 
 for (const file of filesUnder('src')) {
@@ -47,6 +50,9 @@ for (const file of filesUnder('src')) {
   const isTest = /\.test\.(ts|tsx)$/.test(file) || file.startsWith(join('src', 'test'))
   if (ROUTER.test(text) && !file.startsWith(join('src', 'react-router')) && !isTest) {
     problems.push(`${file}: imports react-router, which only src/react-router/ may`)
+  }
+  if (CODEMIRROR.test(text) && !file.startsWith(join('src', 'code'))) {
+    problems.push(`${file}: imports CodeMirror, which only src/code/ may`)
   }
 }
 
@@ -71,4 +77,4 @@ if (problems.length) {
   console.error(`\ncheck-source: ${problems.length} problem${problems.length === 1 ? '' : 's'}`)
   process.exit(1)
 }
-console.log('check-source: imports end in .js, react-router only in its adapter, no name of the original application')
+console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, no name of the original application')

@@ -84,6 +84,8 @@ const FILES = [
   'dist/vite/index.d.ts',
   'dist/react-router/index.js',
   'dist/react-router/index.d.ts',
+  'dist/code/index.js',
+  'dist/code/index.d.ts',
 ]
 
 if (!existsSync(join(root, 'dist/index.js'))) {
@@ -138,6 +140,7 @@ try {
     check(named, `${grain}.png is written as a file, and the CSS names it there${file ? ` (${file})` : ''}`)
   }
   check(!/url\(\s*["']?data:/.test(css) && !`${css}${js}`.includes('data:font'), 'nothing is inlined as a data: URI (font-src and img-src stay at self)')
+  check(!js.includes('cm-editor') && !js.includes('@codemirror'), 'CodeMirror stays out of an application that does not import ioiti-ui/code')
 
   const html = readFileSync(join(dist, 'index.html'), 'utf8')
   const key = readFileSync(join(root, 'templates/app/vite.config.ts'), 'utf8').match(/themeStorageKey:\s*'([^']+)'/)?.[1]

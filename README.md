@@ -126,6 +126,29 @@ export function OrdersPage() {
 Without React Router, give `AppShell` the address (`pathname`) and `LinkProvider` your router's link
 (`component`, a link that takes `href`) and navigation (`navigate`).
 
+## Code editors
+
+`ioiti-ui/code` is an entry of its own: `CodeEditor` and `DiffEditor`, on CodeMirror 6, in the design's code
+colours. An application that never imports it never bundles CodeMirror, nor installs it: its packages are
+optional peers of ioiti-ui, installed by the application that uses the entry:
+
+```bash
+npm install @codemirror/state @codemirror/view @codemirror/commands @codemirror/language @codemirror/lint \
+  @codemirror/search @codemirror/merge @codemirror/legacy-modes @codemirror/lang-yaml @codemirror/lang-json \
+  @codemirror/lang-markdown @lezer/highlight
+```
+
+```tsx
+import { CodeEditor, DiffEditor } from 'ioiti-ui/code'
+
+<CodeEditor label="Rule file" language="toml" value={toml} onChange={setToml} onSave={save} diagnostics={problems} />
+<DiffEditor label="Rule file" language="toml" original={saved} modified={toml} onChange={setToml} layout="split" />
+```
+
+Each language (`toml`, `yaml`, `json`, `markdown`) is loaded the first time an editor shows it: a chunk of
+its own. Load the entry itself lazily (`React.lazy`) to keep it out of the first page. Code to read only
+stays a `CodeBlock` (toml, yaml and diffs too); a process's output, a `LogViewer`.
+
 ## Themes
 
 Three choices, each with the others: light or dark, an accent, a material. Neutral and flat are the design as
@@ -208,7 +231,8 @@ application made with it:
 default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'
 ```
 
-`style-src` needs `'unsafe-inline'`: the animations set inline styles.
+`style-src` needs `'unsafe-inline'`: the animations set inline styles, and the code editors (`ioiti-ui/code`)
+write their own style sheet when they appear. They draw no mark as a `data:` image.
 
 ## Working on it
 

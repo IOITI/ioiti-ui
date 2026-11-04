@@ -17,7 +17,16 @@ const COLOUR: Record<CodeTokenKind, string> = {
   type: 'text-(--code-type)',
   builtin: 'text-(--code-builtin)',
   operator: 'text-(--code-operator)',
+  // A diff's lines, in the tones of a gain and a loss (held at 4.5:1 on every surface, as text).
+  inserted: 'text-(--positive)',
+  deleted: 'text-(--negative)',
   plain: '',
+}
+
+// A diff's added or removed line, also marked at its edge: the colour is not the only sign of it.
+const CHANGED_LINE: Partial<Record<CodeTokenKind, string>> = {
+  inserted: 'shadow-[inset_2px_0_0_var(--positive)]',
+  deleted: 'shadow-[inset_2px_0_0_var(--negative)]',
 }
 
 interface CodeBlockProps {
@@ -42,9 +51,9 @@ interface CodeBlockProps {
 }
 
 /**
- * Code to read and copy: a payload, a configuration, a command. Coloured in the design's code colours
- * (json, js and ts with jsx, css, shell), on a surface every one of them is read on at 4.5:1. As Elastic
- * UI's code block does.
+ * Code to read and copy: a payload, a configuration, a command, a diff. Coloured in the design's code colours
+ * (json, js and ts with jsx, css, shell, toml, yaml; a unified diff's lines in the tones of a gain and a loss),
+ * on a surface every one of them is read on at 4.5:1. As Elastic UI's code block does.
  */
 export function CodeBlock({
   code,
@@ -108,10 +117,15 @@ export function CodeBlock({
         <code className="block min-w-fit">
           {lines.map((tokens, index) => {
             const number = first + index
+            const change = tokens.length > 0 ? CHANGED_LINE[tokens[0].kind] : undefined
             return (
               <span
                 key={index}
-                className={cn('block px-3', marked.has(number) && 'bg-surface-hover shadow-[inset_2px_0_0_var(--chart-series)]')}
+                className={cn(
+                  'block px-3',
+                  change,
+                  marked.has(number) && 'bg-surface-hover shadow-[inset_2px_0_0_var(--chart-series)]',
+                )}
               >
                 {numbered && (
                   <span aria-hidden className="mr-4 inline-block w-6 select-none text-right text-text-muted">

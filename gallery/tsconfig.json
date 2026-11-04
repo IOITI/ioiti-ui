@@ -14,6 +14,9 @@
       ],
       "ioiti-ui/react-router": [
         "../src/react-router/index.ts"
+      ],
+      "ioiti-ui/code": [
+        "../src/code/index.ts"
       ]
     },
     "resolveJsonModule": true

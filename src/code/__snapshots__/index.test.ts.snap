@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`the code editors' interface (ioiti-ui/code) > is the list of names it was 1`] = `
+[
+  "CodeEditor",
+  "DiffEditor",
+]
+`;

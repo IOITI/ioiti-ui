@@ -10,7 +10,7 @@ interface DemoProps {
   /** What it shows of the package, as an application imports it (the gallery's test reads these). */
   names: string[]
   /** The entry it is imported from. */
-  from?: 'ioiti-ui' | 'ioiti-ui/react-router'
+  from?: 'ioiti-ui' | 'ioiti-ui/react-router' | 'ioiti-ui/code'
   /** The demo's own layout (a column, a grid), in place of a row that wraps. */
   className?: string
   children: ReactNode

@@ -5,6 +5,7 @@ import {
   BookOpen,
   ChartLine,
   ChartPie,
+  CodeXml,
   Compass,
   Inbox,
   Layers,
@@ -26,6 +27,7 @@ import type { ReactNode } from 'react'
 
 import { Actions } from './pages/Actions'
 import { ChartColours } from './pages/ChartColours'
+import { Code } from './pages/Code'
 import { Charts } from './pages/Charts'
 import { Colours } from './pages/Colours'
 import { DashboardPattern } from './pages/DashboardPattern'
@@ -71,6 +73,7 @@ export const PAGES: GalleryPage[] = [
   { id: 'navigation', path: '/components/navigation', label: 'Navigation', section: 'Components', icon: <Compass />, element: <Navigation /> },
   { id: 'data', path: '/components/data', label: 'Data display', section: 'Components', icon: <Sheet />, element: <DataDisplay /> },
   { id: 'charts', path: '/components/charts', label: 'Charts', section: 'Components', icon: <ChartLine />, element: <Charts /> },
+  { id: 'code', path: '/components/code', label: 'Code', section: 'Components', icon: <CodeXml />, element: <Code /> },
   { id: 'dashboard', path: '/patterns/dashboard', label: 'Dashboard', section: 'Patterns', icon: <LayoutDashboard />, element: <DashboardPattern /> },
   { id: 'states', path: '/patterns/states', label: 'Empty, loading, failed', section: 'Patterns', icon: <Inbox />, element: <States /> },
   { id: 'settings', path: '/patterns/settings', label: 'Settings page', section: 'Patterns', icon: <Settings />, element: <SettingsPattern /> },
