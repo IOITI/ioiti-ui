@@ -121,7 +121,11 @@ otherwise).
   then closed it under the finger typing in its search); the focus goes in, on its first option when a finger
   opened it (not its search, whose keyboard would cover it), and Escape or a Tab past its ends gives it back to
   its button. The search's and the filters'
-  rules are shared with those counts; `useDataTable` gives `setFilter` and `countOptions`.
+  rules are shared with those counts; `useDataTable` gives `setFilter` and `countOptions`. A column whose value
+  is an array (a rule's tags) is filtered by any of its values, each option counting the rows that have it
+  (0.9.0). A sortable column's header says how it sorts (`aria-sort`). The search, the filters, the sort and
+  the page can be held by the page (`state`, told of each change by `onStateChange`), for an address that
+  keeps them (0.9.0).
 - `breadcrumb`: its text in `text-muted-foreground` and `text-foreground` (`neutral-500` was 4.54:1 on the
   light background, a hair from the limit); `wrap={false}` keeps a trail on one line, each step cut short with
   an ellipsis, the last one first. Each step's name carries `data-crumb-name` (0.4.2), which the top bar's trail

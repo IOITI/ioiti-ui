@@ -319,11 +319,16 @@ export interface DataTableFiltersProps {
   className?: string;
 }
 
-// ioiti-ui: what the filters compare a row by in a column (its value as text), and whether the search finds a
-// row: one rule for the rows shown and for the counts of the filters' options.
-function filterValue<T>(row: T, column: ColumnDef<T>): string {
+// ioiti-ui: what the filters compare a row by in a column (its values as text: one, or each of an array's, a row
+// with tags matching an option that any of its tags is), and whether the search finds a row: one rule for the
+// rows shown and for the counts of the filters' options.
+function filterValues<T>(row: T, column: ColumnDef<T>): string[] {
   const value = column.accessorKey ? row[column.accessorKey] : column.accessorFn ? column.accessorFn(row) : '';
-  return String(value);
+  return Array.isArray(value) ? [...new Set(value.map(String))] : [String(value)];
+}
+
+function filterMatches<T>(row: T, column: ColumnDef<T>, chosen: readonly string[]): boolean {
+  return filterValues(row, column).some((value) => chosen.includes(value));
 }
 
 function searchFinds(row: unknown, query: string): boolean {
@@ -908,6 +913,8 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                 <th
                   key={col.id}
                   style={{ width: col.width }}
+                  // ioiti-ui: how a sortable column sorts the rows, for a screen reader.
+                  aria-sort={col.sortable ? (isSorted && sortDirection ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none') : undefined}
                   className={cn(
                     'px-3.5 sm:px-5 py-3 sm:py-3.5 font-medium whitespace-nowrap',
                     col.align === 'right' && 'text-right',
@@ -1160,6 +1167,14 @@ export interface DataTableSelectionBasket {
   linkComponent?: React.ElementType;
 }
 
+/** ioiti-ui: what the reader chose in a table: its search, its filters, its sort and its page. */
+export interface DataTableState {
+  search: string;
+  filters: Record<string, string[]>;
+  sort: { column: string; direction: 'asc' | 'desc' } | null;
+  page: number;
+}
+
 export interface DataTableProps<T = any> {
   data: T[];
   columns: ColumnDef<T>[];
@@ -1183,6 +1198,13 @@ export interface DataTableProps<T = any> {
   initialExpandedRowIds?: string[];
   /** ioiti-ui: the filters chosen when the table appears (a link to some of the rows), by column id. */
   initialFilters?: Record<string, string[]>;
+  /**
+   * ioiti-ui: the search, the filters, the sort and the page as the page holds them (in its address, for a link
+   * or a reload to show the same rows), told of each change by `onStateChange`; without it the table keeps its own.
+   */
+  state?: DataTableState;
+  /** ioiti-ui: told of each change of the search, the filters, the sort or the page. */
+  onStateChange?: (state: DataTableState) => void;
   /** ioiti-ui: a click anywhere on a row opens it, not only its arrow. */
   expandOnRowClick?: boolean;
   /** ioiti-ui: one row open at a time: opening another closes it. */
@@ -1211,6 +1233,8 @@ export function DataTable<T = any>({
   initialSearch = '',
   initialExpandedRowIds,
   initialFilters,
+  state: heldState,
+  onStateChange,
   expandOnRowClick = false,
   singleExpand = false,
   rowLabel,
@@ -1242,10 +1266,24 @@ export function DataTable<T = any>({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [defaultViewMode]);
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-  const [searchTerm, setSearchTermState] = useState(initialSearch);
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(() => initialFilters ?? {});
+  // ioiti-ui: the search, filters, sort and page the page holds when it does, the table's own otherwise; each change
+  // told to the page either way.
+  const [ownState, setOwnState] = useState<DataTableState>(() => ({
+    search: initialSearch,
+    filters: initialFilters ?? {},
+    sort: null,
+    page: 1,
+  }));
+  const tableState = heldState ?? ownState;
+  const changeState = (change: Partial<DataTableState>) => {
+    const next = { ...tableState, ...change };
+    if (!heldState) setOwnState(next);
+    onStateChange?.(next);
+  };
+  const sortColumn = tableState.sort?.column ?? null;
+  const sortDirection: SortDirection = tableState.sort?.direction ?? null;
+  const searchTerm = tableState.search;
+  const activeFilters = tableState.filters;
   const [ownSelection, setOwnSelection] = useState<ReadonlySet<string>>(new Set());
   // ioiti-ui: the page's selection when it holds one, the table's own otherwise.
   const selectedRowIds: ReadonlySet<string> = heldSelection ?? ownSelection;
@@ -1257,49 +1295,29 @@ export function DataTable<T = any>({
   const [hiddenColumnIds, setHiddenColumnIds] = useState<Set<string>>(
     () => new Set(columns.filter((column) => column.defaultHidden).map((column) => column.id))
   );
-  const [currentPage, setCurrentPage] = useState(1);
+  const currentPage = tableState.page;
+  const setCurrentPage = (page: number) => changeState({ page });
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
   // ioiti-ui: what is found is shown from its first page, wherever the reader was.
-  const setSearchTerm = (term: string) => {
-    setSearchTermState(term);
-    setCurrentPage(1);
-  };
+  const setSearchTerm = (term: string) => changeState({ search: term, page: 1 });
 
   const handleSort = (columnId: string) => {
-    if (sortColumn !== columnId) {
-      setSortColumn(columnId);
-      setSortDirection('asc');
-    } else if (sortDirection === 'asc') {
-      setSortDirection('desc');
-    } else {
-      setSortColumn(null);
-      setSortDirection(null);
-    }
+    if (sortColumn !== columnId) changeState({ sort: { column: columnId, direction: 'asc' } });
+    else if (sortDirection === 'asc') changeState({ sort: { column: columnId, direction: 'desc' } });
+    else changeState({ sort: null });
   };
 
   const toggleFilter = (columnId: string, value: string) => {
-    setActiveFilters((prev) => {
-      const existing = prev[columnId] || [];
-      const updated = existing.includes(value)
-        ? existing.filter((v) => v !== value)
-        : [...existing, value];
-      return { ...prev, [columnId]: updated };
-    });
-    setCurrentPage(1);
+    const existing = activeFilters[columnId] || [];
+    const updated = existing.includes(value) ? existing.filter((v) => v !== value) : [...existing, value];
+    changeState({ filters: { ...activeFilters, [columnId]: updated }, page: 1 });
   };
 
-  const clearFilters = () => {
-    setActiveFilters({});
-    setSearchTermState('');
-    setCurrentPage(1);
-  };
+  const clearFilters = () => changeState({ filters: {}, search: '', page: 1 });
 
   // ioiti-ui: a column's filter set at once: an option of a pair pressed, the other let go; a list cleared.
-  const setFilter = (columnId: string, values: string[]) => {
-    setActiveFilters((prev) => ({ ...prev, [columnId]: values }));
-    setCurrentPage(1);
-  };
+  const setFilter = (columnId: string, values: string[]) => changeState({ filters: { ...activeFilters, [columnId]: values }, page: 1 });
 
   // ioiti-ui: the rows each option of a column's filter would leave: the search and the other columns'
   // filters as they are, this column's own left out, its options being alternatives to one another.
@@ -1314,9 +1332,8 @@ export function DataTable<T = any>({
     });
     for (const row of data) {
       if (searchTerm.trim() && !searchFinds(row, query)) continue;
-      if (!others.every((other) => other.values.includes(filterValue(row, other.column)))) continue;
-      const value = filterValue(row, column);
-      counts[value] = (counts[value] ?? 0) + 1;
+      if (!others.every((other) => filterMatches(row, other.column, other.values))) continue;
+      for (const value of filterValues(row, column)) counts[value] = (counts[value] ?? 0) + 1;
     }
     return counts;
   };
@@ -1363,7 +1380,7 @@ export function DataTable<T = any>({
       const col = columns.find((c) => c.id === colId);
       if (!col) return;
 
-      result = result.filter((row) => filterVals.includes(filterValue(row, col)));
+      result = result.filter((row) => filterMatches(row, col, filterVals));
     });
 
     if (sortColumn && sortDirection) {

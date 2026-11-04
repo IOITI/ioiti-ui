@@ -174,6 +174,7 @@ export type {
   DataTablePaginationProps,
   DataTableProps,
   DataTableSelectionBasket,
+  DataTableState,
   DataTableToolbarProps,
   DataTableViewMode,
   SortDirection,

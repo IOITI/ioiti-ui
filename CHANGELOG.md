@@ -27,6 +27,10 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   scrolls up (`follow`, "Jump to the end"), a search going from one line found to the next, wrapping, copying,
   downloading (`downloadName`), the earlier lines dropped past `maxLines` and said so (`droppedLines` for those a
   server already dropped). Only the lines in sight are drawn: a hundred thousand lines scroll as a hundred.
+- **`DataTable`**: a column whose value is an array (tags) is filtered by any of its values, each option
+  counting the rows that have it; a sortable column's header says how it sorts (`aria-sort`); the search, the
+  filters, the sort and the page can be held by the page (`state`, `onStateChange`, the type `DataTableState`),
+  for an address that keeps them.
 
 Nothing to change in an application, but a `Record<CodeTokenKind, …>` of its own.
 

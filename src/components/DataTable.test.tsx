@@ -312,3 +312,78 @@ describe('the filters, as one group of buttons', () => {
     expect(search).toHaveFocus()
   })
 })
+
+describe('the table state a page holds, arrays and sorting (0.9.0)', () => {
+  interface Tagged {
+    id: string
+    name: string
+    tags: string[]
+  }
+  const TAGGED: Tagged[] = [
+    { id: 't1', name: 'Row A', tags: ['windows', 'identity'] },
+    { id: 't2', name: 'Row B', tags: ['linux'] },
+    { id: 't3', name: 'Row C', tags: ['windows'] },
+  ]
+  const TAG_COLUMNS: ColumnDef<Tagged>[] = [
+    { id: 'name', header: 'Name', accessorKey: 'name', sortable: true },
+    {
+      id: 'tags',
+      header: 'Tags',
+      accessorKey: 'tags',
+      filterable: true,
+      filterDisplay: 'list',
+      filterOptions: ['identity', 'linux', 'windows'].map((tag) => ({ label: tag, value: tag })),
+    },
+  ]
+
+  it('filters a column of arrays by any of their values, and counts the rows each option leaves', async () => {
+    const user = userEvent.setup()
+    render(<AdvancedDataTable<Tagged> data={TAGGED} columns={TAG_COLUMNS} getRowId={(row) => row.id} selectable={false} />)
+    await user.click(screen.getByRole('button', { name: /Tags/ }))
+    const windows = await screen.findByRole('checkbox', { name: /windows/ })
+    expect(windows.closest('label') ?? windows.parentElement).toHaveTextContent('2')
+    await user.click(windows)
+    expect(shown()).toEqual([expect.stringMatching(/^Row A/), expect.stringMatching(/^Row C/)])
+  })
+
+  it('says how a sortable column sorts', async () => {
+    const user = userEvent.setup()
+    render(<AdvancedDataTable<Tagged> data={TAGGED} columns={TAG_COLUMNS} getRowId={(row) => row.id} selectable={false} />)
+    const header = screen.getByRole('columnheader', { name: /Name/ })
+    expect(header).toHaveAttribute('aria-sort', 'none')
+    await user.click(within(header).getByRole('button'))
+    expect(header).toHaveAttribute('aria-sort', 'ascending')
+    await user.click(within(header).getByRole('button'))
+    expect(header).toHaveAttribute('aria-sort', 'descending')
+    expect(screen.getByRole('columnheader', { name: /Tags/ })).not.toHaveAttribute('aria-sort')
+  })
+
+  it('shows the search, filters, sort and page the page holds, and tells it of each change', async () => {
+    const user = userEvent.setup()
+    const changes: unknown[] = []
+    function Held() {
+      const [state, setState] = useState({ search: '', filters: { kind: ['odd'] }, sort: { column: 'name', direction: 'desc' as const }, page: 1 })
+      return (
+        <AdvancedDataTable<Row>
+          data={ROWS}
+          columns={[{ ...COLUMNS[0], sortable: true }, COLUMNS[1]]}
+          getRowId={(row) => row.id}
+          selectable={false}
+          defaultPageSize={20}
+          state={state}
+          onStateChange={(next) => {
+            changes.push(next)
+            setState(next as typeof state)
+          }}
+        />
+      )
+    }
+    render(<Held />)
+    // Odd rows (2, 4, …, 12), the name sorted down: "Row 8" before "Row 6", "Row 12" last.
+    expect(shown()[0]).toMatch(/^Row 8/)
+    expect(shown()).toHaveLength(6)
+    await user.type(screen.getByPlaceholderText('Search...'), '1')
+    expect(changes.at(-1)).toEqual({ search: '1', filters: { kind: ['odd'] }, sort: { column: 'name', direction: 'desc' }, page: 1 })
+    expect(shown()).toEqual([expect.stringMatching(/^Row 12/), expect.stringMatching(/^Row 10/)])
+  })
+})
