@@ -1,4 +1,26 @@
-import { Alert, AlertDescription, AlertTitle, Button, EmptyText, ErrorText, KpiGrid, PageHeader, Panel, QueryState, SegmentedControl, Skeleton } from 'ioiti-ui'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  ButtonLink,
+  EmptyState,
+  EmptyText,
+  ErrorText,
+  KpiGrid,
+  PageHeader,
+  Panel,
+  QueryState,
+  SegmentedControl,
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from 'ioiti-ui'
+import { FileCode, Plus, SearchX } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -65,6 +87,63 @@ export function States() {
       <Demo id="empty" title="EmptyText" description="What a list says when it has nothing: one quiet line, which says what would be there." names={['EmptyText']} className="block w-full">
         <EmptyText>No order yet today: they appear here as they are placed.</EmptyText>
       </Demo>
+
+      <Demo
+        id="empty-state"
+        title="EmptyState"
+        description="What a page, a panel or a table says when it has nothing to show, and the way to something: what there is not under a heading, why, and what to do about it. Compact inside a panel or across a table's columns (below), its heading one level under what holds it. For one quiet line, EmptyText."
+        names={['EmptyState']}
+        className="block w-full"
+      >
+        <EmptyState
+          headingLevel={3}
+          icon={<FileCode />}
+          title="No detection rule yet"
+          description="Rules pushed to the repository appear here, with what they detect and where they run."
+          actions={
+            <>
+              <ButtonLink to="/components/forms" leftIcon={<Plus className="size-4" />}>
+                Write a rule
+              </ButtonLink>
+              <Button variant="outline">Import from Sigma</Button>
+            </>
+          }
+        />
+      </Demo>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Panel title="Alerts of the day" description="High severity, the last 24 hours.">
+          <EmptyState
+            compact
+            icon={<SearchX />}
+            title="No alert matches these filters"
+            description="Nothing of high severity came in during the last 24 hours."
+            actions={
+              <Button size="sm" variant="outline">
+                Clear the filters
+              </Button>
+            }
+          />
+        </Panel>
+        <Panel title="Runs" description="The last runs of the rule." dense>
+          <Table aria-label="Runs">
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell>Started</TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
+                <TableHeaderCell numeric>Hits</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={3}>
+                  <EmptyState compact title="No run yet" description="A rule runs once it is deployed." />
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Panel>
+      </div>
 
       <Demo
         id="error"

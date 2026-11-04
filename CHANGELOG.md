@@ -19,6 +19,15 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   saying "or" between them (`divider`), the list named "Single sign-on" for screen readers (`label`). The one chosen
   is busy and the others are disabled while the browser leaves (`pending`, `onPendingChange`: any other id, the
   form's while it is sent, disables them all); back from the browser's history, they are as they were.
+- **`UserMenu`**, new: who is signed in, at the end of the top bar (`topBarEnd`). Their avatar (`avatarSrc`, or their
+  initials) and their name, a second line under it (`detail`: a role), the avatar alone below 640 px, the name still
+  the button's for a screen reader. It opens the menu of their account, `DropdownMenu`'s, with the items given
+  (`items`) and signing out last: an action (`onSignOut`), or an address the server answers (`signOutHref`). Its
+  words are the application's (`label`, `signOutLabel`).
+- **`EmptyState`**, new: what a page, a panel or a table says when it has nothing to show, and the way to something.
+  An icon, what there is not under a heading (`headingLevel`: 2, or 3 when `compact`), why, and what to do about it
+  (`actions`: buttons, `ButtonLink`s). `compact` inside a `Panel` or across a table's columns, its words wrapping
+  where the table's cells do not.
 - The template's sign-in page has single sign-on beside its password, to a placeholder address; the gallery's, a
   password and Gitea, on its way and back with an account not linked.
 

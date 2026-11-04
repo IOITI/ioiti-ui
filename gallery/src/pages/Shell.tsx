@@ -14,15 +14,36 @@ import {
   ShortcutsDialog,
   SidebarFooterButton,
   StateChip,
+  ThemeToggle,
+  UserMenu,
   useNavigateTo,
   useShortcut,
   useToast,
 } from 'ioiti-ui'
 import { RouterLeaveGuard } from 'ioiti-ui/react-router'
-import { KeyRound, LogOut, RotateCw } from 'lucide-react'
+import { KeyRound, LogOut, Palette, RotateCw, UserRound } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
+
+/** The top bar's end, as an application's: the theme, then who is signed in. Signing out leads to the sign-in page. */
+function TopBarEnd() {
+  const navigate = useNavigateTo()
+  return (
+    <div className="flex h-14 w-full items-center justify-end gap-2 rounded-xl border border-border px-4 glass-bar">
+      <ThemeToggle />
+      <UserMenu
+        name="Ana María Ortiz"
+        detail="Analyst"
+        items={[
+          { type: 'link', label: 'Profile', href: '/patterns/settings', icon: <UserRound /> },
+          { type: 'link', label: 'Themes', description: 'The look of every page', href: '/foundations/themes', icon: <Palette /> },
+        ]}
+        onSignOut={() => navigate('/patterns/sign-in')}
+      />
+    </div>
+  )
+}
 
 /** A setting changed and not saved: the bar comes, and leaving the page asks first. */
 function Unsaved({ guard = false }: { guard?: boolean }) {
@@ -145,6 +166,30 @@ export function Shell() {
             <SidebarFooterButton icon={<LogOut />} label="Sign out" />
           </div>
         </div>
+      </Demo>
+
+      <Demo
+        id="user-menu"
+        title="UserMenu"
+        description="Who is signed in, at the end of the top bar (topBarEnd): their avatar (their picture, or their initials) and their name, a role under it; the avatar alone on a narrow screen. It opens the menu of their account, DropdownMenu's: links through the router, actions, and signing out last, an action (onSignOut) or an address the server answers (signOutHref, its page loaded from the server)."
+        names={['UserMenu']}
+        className="flex flex-col items-stretch gap-3"
+      >
+        <TopBarEnd />
+        <CodeBlock language="tsx" code={`<AppShell …
+  topBarEnd={
+    <>
+      <ThemeToggle />
+      <UserMenu
+        name={me.name}
+        detail={me.role}
+        avatarSrc="/api/v1/me/avatar"
+        items={[{ type: 'link', label: 'Profile', href: '/profile', icon: <UserRound /> }]}
+        signOutHref="/api/v1/auth/logout"
+      />
+    </>
+  }
+/>`} />
       </Demo>
 
       <Demo
