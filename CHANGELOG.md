@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [0.8.0] - Unreleased
+## [0.8.0] - 2026-11-04
 
 - **A link to an address the server answers** (`reloadDocument`, on `ButtonLink`, `TextLink` and a `DropdownMenu`'s
   link): a plain `<a>`, its page loaded from the server, never the application's link, whose router would look for
