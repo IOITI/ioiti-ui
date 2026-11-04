@@ -40,6 +40,11 @@ export interface DropdownMenuLink extends ItemBase {
   type: 'link'
   href: string
   shortcut?: string
+  /**
+   * Its page is loaded from the server: a plain `<a>`, not the application's link, as `ButtonLink`'s. For an
+   * address the server answers and the router does not know (a sign-out, a file); followed as written.
+   */
+  reloadDocument?: boolean
 }
 
 /** On or off: the menu stays open. */
@@ -327,10 +332,12 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
         )
       }
       if (item.type === 'link') {
+        // An address the server answers is no route: a plain `<a>`, its page loaded from the server.
+        const ItemLink = item.reloadDocument ? 'a' : Link
         return (
-          // The application's link, held in context (LinkProvider): the same component at every render.
+          // The application's link, held in context (LinkProvider), or `a`: the same component at every render.
           // oxlint-disable-next-line react/static-components
-          <Link
+          <ItemLink
             key={k}
             href={item.disabled ? undefined : item.href}
             role="menuitem"
@@ -343,7 +350,8 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
                 event.preventDefault()
                 return
               }
-              // A plain click is the router's, a click with a modifier the browser's: the menu closes either way.
+              // A plain click is the router's (the server's, for a page it answers), a click with a modifier the
+              // browser's: the menu closes either way.
               close(isPlainClick(event) ? false : true)
             }}
             className={ROW}
@@ -351,7 +359,7 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
             {item.icon}
             <Content label={item.label} description={item.description} />
             {item.shortcut && <Kbd keys={item.shortcut} className="ml-auto pl-3" />}
-          </Link>
+          </ItemLink>
         )
       }
       return (

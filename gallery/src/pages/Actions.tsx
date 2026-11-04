@@ -97,7 +97,7 @@ export function Actions() {
       <Demo
         id="button-link"
         title="ButtonLink"
-        description="A link drawn as a button: it opens in another tab with ⌘ or Ctrl, and goes through the router. Given nowhere to go, it is a button that cannot be pressed."
+        description="A link drawn as a button: it opens in another tab with ⌘ or Ctrl, and goes through the router. Given nowhere to go, it is a button that cannot be pressed. To an address the server answers and the router does not know (a sign-in through an identity provider, a file), reloadDocument draws a plain link, its page loaded from the server."
         names={['ButtonLink']}
       >
         <ButtonLink to="/components/forms">Go to the forms</ButtonLink>

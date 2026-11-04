@@ -3,6 +3,15 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.8.0] - Unreleased
+
+- **A link to an address the server answers** (`reloadDocument`, on `ButtonLink`, `TextLink` and a `DropdownMenu`'s
+  link): a plain `<a>`, its page loaded from the server, never the application's link, whose router would look for
+  the address among its own pages: a sign-in through an identity provider, a sign-out, a file. The address is
+  followed as it is written, without the router's base path.
+
+Nothing to change in an application.
+
 ## [0.7.0] - 2026-10-31
 
 - **`PromptComposer` shows what a request goes with, and takes files.** `attachments` is a row above the field,

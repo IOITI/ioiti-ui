@@ -15,14 +15,22 @@ const LOOK = {
 interface TextLinkProps extends Omit<ComponentProps<'a'>, 'href'> {
   /** Where it leads. */
   to: string
+  /**
+   * Its page is loaded from the server: a plain `<a>`, not the application's link, as `ButtonLink`'s. For an
+   * address the server answers and the router does not know (a sign-out, a file); followed as written.
+   */
+  reloadDocument?: boolean
   variant?: keyof typeof LOOK
 }
 
-/** A link made of words, drawn by the application's link (LinkProvider): opened in another tab with ⌘ or Ctrl. */
-export function TextLink({ to, variant = 'inline', className, ...props }: TextLinkProps) {
-  const Link = useLinkComponent()
+/**
+ * A link made of words, drawn by the application's link (LinkProvider), or by a plain `<a>` for a page the
+ * server answers (`reloadDocument`): opened in another tab with ⌘ or Ctrl.
+ */
+export function TextLink({ to, reloadDocument = false, variant = 'inline', className, ...props }: TextLinkProps) {
+  const Link = useLinkComponent(reloadDocument ? 'a' : undefined)
   return (
-    // The application's link, held in context (LinkProvider): the same component at every render.
+    // The application's link, held in context (LinkProvider), or `a`: the same component at every render.
     // oxlint-disable-next-line react/static-components
     <Link href={to} className={cn(LOOK[variant], className)} {...props} />
   )

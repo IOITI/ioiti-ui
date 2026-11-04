@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event'
 import type { ComponentProps, ReactElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
+import { ButtonLink } from './ButtonLink.js'
 import { LinkProvider } from './LinkProvider.js'
+import { TextLink } from './TextLink.js'
 import { AnimatedTabs } from './ui/animated-tabs.js'
 import { Breadcrumb } from './ui/breadcrumb.js'
 import { NotFound } from './ui/not-found.js'
@@ -31,6 +33,8 @@ const drawnBy = (link: HTMLElement) => link.getAttribute('data-link') ?? 'a'
 
 // Each component that draws a link, as it shows one without being touched.
 const LINKS: { name: string; element: ReactElement; link: string }[] = [
+  { name: 'ButtonLink', element: <ButtonLink to="/orders/new">New order</ButtonLink>, link: 'New order' },
+  { name: 'TextLink', element: <TextLink to="/terms">the terms</TextLink>, link: 'the terms' },
   { name: 'Sidebar', element: <Sidebar sections={[{ items: [{ id: 'orders', label: 'Orders', href: '/orders' }] }]} activeId="" />, link: 'Orders' },
   { name: 'AnimatedTabs', element: <AnimatedTabs tabs={[{ id: 'open', label: 'Open', href: '?status=open' }, { id: 'all', label: 'All', href: '?status=all' }]} />, link: 'All' },
   { name: 'Breadcrumb', element: <Breadcrumb items={[{ label: 'Library', href: '/library' }, { label: 'Here' }]} />, link: 'Library' },
@@ -93,6 +97,48 @@ describe('a component that draws a link', () => {
     expect(drawnBy(screen.getByRole('link', { name: 'Orders' }))).toBe('own')
     expect(drawnBy(screen.getByRole('link', { name: 'Library' }))).toBe('own')
     expect(drawnBy(screen.getByRole('link', { name: /Files/ }))).toBe('own')
+  })
+
+  it('draws a plain link to an address the server answers, which the router would not know (reloadDocument)', () => {
+    const address = '/api/v1/auth/oidc/gitea/login?next=/w/main'
+    withApp(
+      <>
+        <ButtonLink to={address} reloadDocument>
+          Sign in with Gitea
+        </ButtonLink>
+        <TextLink to="/api/v1/auth/logout" reloadDocument>
+          Sign out
+        </TextLink>
+      </>,
+    )
+
+    // A native anchor, never the application's: the browser loads the page from the server.
+    const signIn = screen.getByRole('link', { name: 'Sign in with Gitea' })
+    expect(signIn.tagName).toBe('A')
+    expect(drawnBy(signIn)).toBe('a')
+    expect(signIn).toHaveAttribute('href', address)
+    const signOut = screen.getByRole('link', { name: 'Sign out' })
+    expect(drawnBy(signOut)).toBe('a')
+    expect(signOut).toHaveAttribute('href', '/api/v1/auth/logout')
+  })
+
+  it('looks the same drawn plain, and is a button that cannot be pressed with nowhere to go', () => {
+    withApp(
+      <>
+        <ButtonLink to="/orders" variant="outline" size="sm">
+          Orders
+        </ButtonLink>
+        <ButtonLink to="/api/v1/exports/orders.csv" reloadDocument variant="outline" size="sm">
+          Orders as CSV
+        </ButtonLink>
+        <ButtonLink to={null} reloadDocument>
+          Nowhere
+        </ButtonLink>
+      </>,
+    )
+
+    expect(screen.getByRole('link', { name: 'Orders as CSV' }).className).toBe(screen.getByRole('link', { name: 'Orders' }).className)
+    expect(screen.getByRole('button', { name: 'Nowhere' })).toBeDisabled()
   })
 
   it('draws a plain link without an application around it', () => {

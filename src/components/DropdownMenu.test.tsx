@@ -1,10 +1,12 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
+import type { ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import { ContextMenu, DropdownMenu } from './DropdownMenu.js'
 import type { DropdownMenuItem } from './DropdownMenu.js'
+import { LinkProvider } from './LinkProvider.js'
 import { Button } from './ui/button.js'
 
 function Actions({ onSelect = () => {}, items }: { onSelect?: (what: string) => void; items?: DropdownMenuItem[] }) {
@@ -122,6 +124,30 @@ describe('DropdownMenu', () => {
     await user.tab()
     await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument())
     expect(button).toHaveFocus()
+  })
+
+  it("draws a link with the application's link, and one to a page the server answers plain (reloadDocument)", async () => {
+    const user = userEvent.setup()
+    function AppLink(props: ComponentProps<'a'>) {
+      return <a data-link="app" {...props} />
+    }
+    render(
+      <LinkProvider component={AppLink}>
+        <Actions
+          items={[
+            { type: 'link', label: 'Profile', href: '/profile' },
+            { type: 'link', label: 'Download the log', href: '/api/v1/audit.log', reloadDocument: true },
+          ]}
+        />
+      </LinkProvider>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+
+    expect(screen.getByRole('menuitem', { name: 'Profile' })).toHaveAttribute('data-link', 'app')
+    const download = screen.getByRole('menuitem', { name: 'Download the log' })
+    expect(download.tagName).toBe('A')
+    expect(download).not.toHaveAttribute('data-link')
+    expect(download).toHaveAttribute('href', '/api/v1/audit.log')
   })
 })
 
