@@ -9,6 +9,18 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   link): a plain `<a>`, its page loaded from the server, never the application's link, whose router would look for
   the address among its own pages: a sign-in through an identity provider, a sign-out, a file. The address is
   followed as it is written, without the router's base path.
+- **`AuthLayout` takes the application's mark, a notice and a footer.** `logo` stands above the heading in place of
+  the tile and its icon; `notice` above the form, for what the last attempt came to (an `Alert`: a Gitea account the
+  application does not know); `footer` at the card's foot, under a line, for help ("Need an account? Ask an
+  administrator."). Without them, it is as it was.
+- **`SignInProviders`**, new, and its type `SignInProvider`: single sign-on beside the form of a password. A button
+  the whole width for each identity provider (`id`, `label`, `href`, `icon`, `disabled`, `hint`), a plain link to the
+  server's address that sends the browser on to it; the providers before the form or after it (`placement`), a line
+  saying "or" between them (`divider`), the list named "Single sign-on" for screen readers (`label`). The one chosen
+  is busy and the others are disabled while the browser leaves (`pending`, `onPendingChange`: any other id, the
+  form's while it is sent, disables them all); back from the browser's history, they are as they were.
+- The template's sign-in page has single sign-on beside its password, to a placeholder address; the gallery's, a
+  password and Gitea, on its way and back with an account not linked.
 
 Nothing to change in an application.
 

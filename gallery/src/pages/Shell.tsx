@@ -249,13 +249,42 @@ export function Shell() {
 
       <Demo
         id="auth"
-        title="AuthLayout"
-        description="A sign-in page, outside the shell: one card in the middle of the screen, the theme button in its corner."
-        names={['AuthLayout']}
+        title="AuthLayout and SignInProviders"
+        description="A sign-in page, outside the shell: one card in the middle of the screen, the theme button in its corner; the application's mark above its name, a notice above the form (what the last attempt came to), help at the card's foot. SignInProviders puts single sign-on beside the form of a password, a button the whole width for each provider: a plain link to the server's address for it, which sends the browser on to the provider. Chosen, it is busy and the others wait until the browser has left."
+        names={['AuthLayout', 'SignInProviders']}
+        className="flex flex-col items-stretch gap-3"
       >
-        <ButtonLink to="/patterns/sign-in" size="sm" variant="outline">
-          See the sign-in page
-        </ButtonLink>
+        <div className="flex flex-wrap items-center gap-3">
+          <ButtonLink to="/patterns/sign-in" size="sm" variant="outline">
+            See the sign-in page
+          </ButtonLink>
+          <ButtonLink to="/patterns/sign-in?show=signing-in" size="sm" variant="outline">
+            On its way to Gitea
+          </ButtonLink>
+          <ButtonLink to="/patterns/sign-in?show=not-linked" size="sm" variant="outline">
+            Back with an account not linked
+          </ButtonLink>
+        </div>
+        <CodeBlock language="tsx" code={`<AuthLayout
+  title="My App"
+  logo={<img src="/logo.svg" alt="" className="h-10" />}
+  notice={error === 'not-linked' && (
+    <Alert tone="warning">
+      <AlertTitle>This Gitea account is not linked to an account here</AlertTitle>
+      <AlertDescription>Sign in with your password, then link Gitea from your profile.</AlertDescription>
+    </Alert>
+  )}
+  footer="Need an account? Ask an administrator."
+>
+  <SignInProviders
+    providers={[{ id: 'gitea', label: 'Sign in with Gitea', icon: <GitBranch className="size-4" />,
+      href: '/api/v1/auth/oidc/gitea/login?next=/w/main' }]}
+    pending={pending}
+    onPendingChange={setPending}
+  >
+    <Form onSubmit={signIn}>…</Form>
+  </SignInProviders>
+</AuthLayout>`} />
       </Demo>
     </>
   )

@@ -29,7 +29,9 @@ npm run preview    # serves dist/
 - **The menu**: `src/menu.tsx`. Each entry is a page; a page deeper than the menu (`/items/42`)
   stands under the entry its address starts with, and names itself with `PageHeader`.
 - **The pages**: `src/pages/`, routed in `src/router.tsx`. The data of `src/data.ts` are examples.
-- **The sign-in**: `src/pages/LoginPage.tsx` checks nothing yet.
+- **The sign-in**: `src/pages/LoginPage.tsx` checks nothing yet. Its single sign-on button leads to a
+  placeholder address (`/api/auth/sso/login`): give it your server's, which sends the browser on to the
+  identity provider, or take `PROVIDERS` out for the password alone.
 
 ## ioiti-ui
 

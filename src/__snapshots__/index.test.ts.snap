@@ -144,6 +144,7 @@ exports[`the package's interface > is the list of names it was 1`] = `
   "Sidebar",
   "SidebarFooterButton",
   "SidebarTrigger",
+  "SignInProviders",
   "SignedValue",
   "Skeleton",
   "SkeletonAvatar",
