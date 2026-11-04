@@ -30,6 +30,10 @@ function shown(): string[] {
   return [...document.querySelectorAll('[data-names]')].flatMap((element) => (element.getAttribute('data-names') ?? '').split(' '))
 }
 
+// The two tests that go through every page take the time every page takes: a few seconds alone, more
+// while the whole suite runs in parallel. Each page is held to the default on its own just above.
+const EVERY_PAGE = 30_000
+
 describe('the gallery', () => {
   for (const page of PAGES) {
     it(`draws ${page.label} (${page.path}) without an error`, async () => {
@@ -48,7 +52,7 @@ describe('the gallery', () => {
     }
     const missing = [...components(core), ...components(adapter)].filter((name) => !seen.has(name))
     expect(missing, 'components with no demo in the gallery').toEqual([])
-  })
+  }, EVERY_PAGE)
 
   it('keeps every link under the path it is published at (/ioiti-ui/ on GitHub Pages)', async () => {
     const outside: string[] = []
@@ -62,5 +66,5 @@ describe('the gallery', () => {
       cleanup()
     }
     expect(outside, 'links that leave the published gallery').toEqual([])
-  })
+  }, EVERY_PAGE)
 })
