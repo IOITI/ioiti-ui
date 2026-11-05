@@ -1,0 +1,201 @@
+/* -----------------------------------------------------------------------------
+   The motion, for the stylesheets: the curves framer-motion moves with
+   (motionTransitions, src/lib/motion-tokens.ts), a change of page and of
+   look, and motion reduced here as framer-motion reduces its own. ioiti-ui's
+   own, not the design it was taken from.
+
+   - ease-soft        easeSoft's curve: fades, what arrives
+   - ease-fast        easeFast's: a property changing quickly. Every transition-*
+                      class takes it (--default-transition-timing-function),
+                      its 150 ms kept
+   - ease-exit        easeExit's: what leaves, quicker than it arrived
+   - animate-reveal   content arriving where a skeleton was (QueryState)
+   - over-page        a layer fixed over the page, kept above it while it changes
+
+   A test holds the curves to motionTransitions' (src/styles/styles.test.ts).
+   They are Tailwind's theme layer, which the reference of the design leaves
+   out (an application has the variables its pages use): no block of the
+   design changes, and nothing is written in its base layer.
+
+   Motion is reduced where the system asks, or where IoitiProvider says so:
+   `data-reduced-motion` on <html>, `always`, or `never` to move whatever the
+   system says (src/lib/motion.ts). Movement goes and fades stay, as in
+   framer-motion, which MotionConfig reduces: here the loops stop (a spinner,
+   a ping, a pulse), a page arriving no longer rises, and Tailwind's
+   motion-safe: and motion-reduce: follow IoitiProvider as well as the system.
+   --------------------------------------------------------------------------- */
+
+@theme static {
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-fast: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  /* Filled backwards, never forwards: nothing of it is left once it has run. Kept to its end, an animation
+     of opacity stays in effect, and each block it revealed stayed a layer of its own and the root of its
+     glass's backdrop: a layer opened in one without a portal (LookPicker's choices) went under the blocks
+     after it, and its glass blurred nothing of them. */
+  --animate-reveal: ioiti-reveal 200ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+
+  @keyframes ioiti-reveal {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* Tailwind's own variants, written again: Tailwind takes them in place of its own, which keep their
+   place in the order of the variants. */
+@custom-variant motion-reduce {
+  @media (prefers-reduced-motion: reduce) {
+    &:not(:root[data-reduced-motion="never"] *) {
+      @slot;
+    }
+  }
+
+  &:is(:root[data-reduced-motion="always"] *) {
+    @slot;
+  }
+}
+
+@custom-variant motion-safe {
+  @media (prefers-reduced-motion: no-preference) {
+    &:not(:root[data-reduced-motion="always"] *) {
+      @slot;
+    }
+  }
+
+  &:is(:root[data-reduced-motion="never"] *) {
+    @slot;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   A change of page (AppShell): the page left fades out as the new one fades in
+   and rises 6 px, the shell staying as it is. React's view transition, which
+   the router's changes of page start: a change of the query alone, Back and
+   Forward, and a browser without view transitions change the page at once.
+   --------------------------------------------------------------------------- */
+
+/* The shell stays in use while a page arrives: a click goes through to it. */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(.ioiti-page) {
+  animation-duration: 240ms;
+  animation-timing-function: var(--ease-soft);
+}
+
+/* easeExit's length and curve: the page left goes first. Both start at once, so that the background
+   never shows between them. */
+::view-transition-old(.ioiti-page) {
+  animation: 150ms var(--ease-exit) both ioiti-fade-out;
+}
+
+::view-transition-new(.ioiti-page) {
+  animation: 240ms var(--ease-soft) both ioiti-rise-in;
+}
+
+@keyframes ioiti-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ioiti-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+@keyframes ioiti-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* The shell is never a picture. React leaves the document out when only the page changed, and takes
+   it in when something drawn elsewhere changed with it (a card of the page left, closing): it then
+   stays as it is, live, its own motion (the pill of the page shown) seen as it moves. */
+:root:not([data-look-change])::view-transition-old(root) {
+  display: none;
+}
+
+:root:not([data-look-change])::view-transition-new(root) {
+  animation: none;
+}
+
+/* A layer fixed over the page (a dialog, a sheet, the drawer, the toasts: over-page, on its
+   container, which does not move) stays above the page while it changes, live: the page's pictures are
+   drawn above the whole document, and would cover it. It is named while a transition plays, and only
+   then: a name makes an element the root of its children's backdrop, which would leave their blur
+   (glass-float, a scrim's) nothing of the page to blur. Each its own name (match-element), so that no
+   two layers ever share one. Not in a change of look, which takes the whole page in one picture. */
+@utility over-page {
+  &:is(:root:active-view-transition:not([data-look-change]) *) {
+    view-transition-name: match-element;
+    view-transition-class: ioiti-layer;
+  }
+}
+
+:root:not([data-look-change])::view-transition-group(.ioiti-layer) {
+  animation: none;
+}
+
+:root:not([data-look-change])::view-transition-old(.ioiti-layer) {
+  display: none;
+}
+
+:root:not([data-look-change])::view-transition-new(.ioiti-layer) {
+  animation: none;
+}
+
+/* -----------------------------------------------------------------------------
+   A change of look (ThemeProvider, changeLook() in src/lib/motion.ts): the
+   theme, the accent or the material chosen, the whole page in one cross-fade,
+   the layers over it with it. The components' own transitions hold still
+   meanwhile, or their colours would arrive a step after the rest. A fade,
+   which stays where motion is reduced.
+   --------------------------------------------------------------------------- */
+
+:root[data-look-change] *,
+:root[data-look-change] ::before,
+:root[data-look-change] ::after {
+  transition: none !important;
+}
+
+:root[data-look-change]::view-transition-old(*),
+:root[data-look-change]::view-transition-new(*) {
+  animation-duration: 260ms;
+  animation-timing-function: var(--ease-soft);
+}
+
+/* -----------------------------------------------------------------------------
+   Motion reduced: the loops stop (their utilities read these variables,
+   animate-spin, animate-ping…), and a page arriving fades in without rising.
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduced-motion="never"]) {
+    --animate-spin: none;
+    --animate-ping: none;
+    --animate-pulse: none;
+    --animate-bounce: none;
+  }
+
+  :root:not([data-reduced-motion="never"])::view-transition-new(.ioiti-page) {
+    animation-name: ioiti-fade-in;
+  }
+}
+
+:root[data-reduced-motion="always"] {
+  --animate-spin: none;
+  --animate-ping: none;
+  --animate-pulse: none;
+  --animate-bounce: none;
+}
+
+:root[data-reduced-motion="always"]::view-transition-new(.ioiti-page) {
+  animation-name: ioiti-fade-in;
+}
