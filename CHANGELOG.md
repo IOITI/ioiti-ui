@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [0.10.0] - unreleased
+## [0.10.0] - 2026-11-05
 
 - **`PageHeader`'s `name`**: what the trail of the top bar and the browser's tab call the page, where it is deeper
   than its heading says. A tab of a record, or a record of a tab, under the record's own header (a layout's):
