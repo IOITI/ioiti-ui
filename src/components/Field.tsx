@@ -3,6 +3,9 @@ import type { ReactNode } from 'react'
 
 import { cn } from '../lib/utils.js'
 
+/** The label: small, in the primary text and semibold, so that it stands out of a form; its description stays muted. */
+const LABEL = 'text-xs font-semibold text-text-primary'
+
 interface FieldProps {
   label: ReactNode
   /**
@@ -30,7 +33,7 @@ function described(control: ReactNode, ids: string): ReactNode {
   return cloneElement(control, { 'aria-describedby': own ? `${own} ${ids}` : ids })
 }
 
-/** A control under its label, the label in small secondary text; what it is for, and what is wrong, under it. */
+/** A control under its label, the label small and semibold; what it is for, and what is wrong, under it, muted. */
 export function Field({ label, description, error, htmlFor, className, children }: FieldProps) {
   const id = useId()
   const said = error ? <span className="text-xs text-negative">{error}</span> : null
@@ -56,14 +59,14 @@ export function Field({ label, description, error, htmlFor, className, children 
       <div className={cn('flex flex-col gap-1', className)}>
         {htmlFor ? (
           <>
-            <label htmlFor={htmlFor} className="text-xs text-text-secondary">
+            <label htmlFor={htmlFor} className={LABEL}>
               {label}
             </label>
             {control}
           </>
         ) : (
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-text-secondary">{label}</span>
+            <span className={LABEL}>{label}</span>
             {control}
           </label>
         )}
@@ -75,7 +78,7 @@ export function Field({ label, description, error, htmlFor, className, children 
   if (htmlFor) {
     return (
       <div className={cn('flex flex-col gap-1', className)}>
-        <label htmlFor={htmlFor} className="text-xs text-text-secondary">
+        <label htmlFor={htmlFor} className={LABEL}>
           {label}
         </label>
         {children}
@@ -85,7 +88,7 @@ export function Field({ label, description, error, htmlFor, className, children 
   }
   return (
     <label className={cn('flex flex-col gap-1', className)}>
-      <span className="text-xs text-text-secondary">{label}</span>
+      <span className={LABEL}>{label}</span>
       {children}
       {said}
     </label>

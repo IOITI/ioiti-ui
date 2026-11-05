@@ -33,6 +33,19 @@ describe('MultiSelect', () => {
     expect(field).toHaveFocus()
   })
 
+  it('says it opens a list, by an arrow a click goes through, beside its clear button once something is chosen', async () => {
+    const user = userEvent.setup()
+    const { container } = render(<MultiSelect label="Cities" options={CITIES} />)
+    const arrow = container.querySelector('svg.lucide-chevrons-up-down')
+    expect(arrow).toHaveAttribute('aria-hidden', 'true')
+    expect(arrow).toHaveClass('pointer-events-none')
+
+    await user.click(screen.getByRole('combobox', { name: 'Cities' }))
+    await user.click(within(screen.getByRole('listbox', { name: 'Cities' })).getByRole('option', { name: 'Lyon' }))
+    expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument()
+    expect(container.querySelector('svg.lucide-chevrons-up-down')).toBeInTheDocument()
+  })
+
   it('moves with the arrows past nothing, and removes the last chip with Backspace', async () => {
     const user = userEvent.setup()
     render(<MultiSelect label="Cities" options={CITIES} defaultValue={['lyon']} />)

@@ -17,7 +17,7 @@ export type ButtonVariant =
   | 'link'
   | 'gradient';
 
-export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'icon';
 
 export interface ButtonProps
   extends Omit<HTMLMotionProps<'button'>, 'children'> {
@@ -67,11 +67,36 @@ const variantStyles: Record<ButtonVariant, string> = {
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
+  // ioiti-ui: the smallest, for an action on a line of text or a row of a table (an "Edit" beside a value).
+  xs: 'h-6 px-2 text-xs rounded-md gap-1',
   sm: 'h-8 px-3 text-xs rounded-md gap-1.5',
   md: 'h-10 px-4.5 text-sm rounded-lg gap-2',
   lg: 'h-12 px-6 text-base rounded-lg gap-2.5',
   icon: 'h-10 w-10 p-0 rounded-lg justify-center shrink-0',
 };
+
+/**
+ * ioiti-ui: an icon as tall as its button's text, beside it (an icon with no size of its own: one given its own
+ * `size-*` keeps it). EasyUI left them at their own size, 24 px, twice the text of a small button.
+ */
+const iconSizeStyles: Record<ButtonSize, string> = {
+  xs: "[&>svg:not([class*='size-'])]:size-3",
+  sm: "[&>svg:not([class*='size-'])]:size-3.5",
+  md: "[&>svg:not([class*='size-'])]:size-4",
+  lg: "[&>svg:not([class*='size-'])]:size-5",
+  icon: "[&>svg:not([class*='size-'])]:size-4",
+};
+
+/** ioiti-ui: the box of a button's icon, before or after its words (Button, ButtonLink). */
+export function buttonIconClassName(size: ButtonSize = 'md'): string {
+  return cn('inline-flex shrink-0', iconSizeStyles[size]);
+}
+
+/**
+ * ioiti-ui: the box of a button's words: cut short with an ellipsis where the button is held narrower than them
+ * (a `max-w-*`), its icons kept whole; they pushed the icon after them out of the button.
+ */
+export const BUTTON_LABEL_CLASS = 'min-w-0 truncate';
 
 /**
  * ioiti-ui: the classes of a button of this variant and size, for a link that looks like one
@@ -138,20 +163,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
         {/* Loading Spinner or Left Icon */}
         {isLoading ? (
-          <Loader2 className={cn('animate-spin shrink-0', size === 'sm' ? 'w-3 h-3' : 'w-4 h-4')} />
+          <Loader2 className={cn('animate-spin shrink-0', size === 'xs' || size === 'sm' ? 'w-3 h-3' : 'w-4 h-4')} />
         ) : (
-          leftIcon && <span className="shrink-0">{leftIcon}</span>
+          leftIcon && <span className={buttonIconClassName(size)}>{leftIcon}</span>
         )}
 
         {/* Button Content */}
         {isLoading && loadingText ? (
-          <span>{loadingText}</span>
+          <span className={BUTTON_LABEL_CLASS}>{loadingText}</span>
         ) : (
-          children && <span>{children}</span>
+          children && <span className={BUTTON_LABEL_CLASS}>{children}</span>
         )}
 
         {/* Right Icon */}
-        {!isLoading && rightIcon && <span className="shrink-0">{rightIcon}</span>}
+        {!isLoading && rightIcon && <span className={buttonIconClassName(size)}>{rightIcon}</span>}
       </motion.button>
     );
   }

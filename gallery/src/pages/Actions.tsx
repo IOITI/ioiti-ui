@@ -1,5 +1,5 @@
 import { Button, ButtonLink, ConfirmAction, CopyButton, DragToConfirm, ExportButton, IconButton, Kbd, PageHeader, SplitButton, useToast } from 'ioiti-ui'
-import { Archive, Copy, Download, Pencil, Play, Plus, RefreshCw, Trash2 } from 'lucide-react'
+import { Archive, ChevronsUpDown, Copy, Download, Pencil, Play, Plus, RefreshCw, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -63,7 +63,7 @@ export function Actions() {
       <Demo
         id="button"
         title="Button"
-        description="Primary for the one action a page or a dialog is for; outline and ghost for the others; destructive for what removes. Pressed, it gives a little; busy, it says what it does."
+        description="Primary for the one action a page or a dialog is for; outline and ghost for the others; destructive for what removes. Pressed, it gives a little; busy, it says what it does. Its icon is as tall as its words, at every size; words longer than the room it is given end in an ellipsis."
         names={['Button']}
         className="flex flex-col items-start gap-4"
       >
@@ -91,6 +91,25 @@ export function Actions() {
             Save
           </Button>
           <Button disabled>Disabled</Button>
+        </div>
+        {/* An "Edit" at each size: on a line of text or a row of a table (xs), beside a section's heading (sm),
+            on its own (md). The icon follows the size. */}
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="inline-flex items-center gap-2 text-sm">
+            Maturity: production
+            <Button size="xs" variant="ghost" leftIcon={<Pencil />}>
+              Change
+            </Button>
+          </span>
+          <Button size="sm" variant="ghost" leftIcon={<Pencil />}>
+            Edit
+          </Button>
+          <Button size="md" variant="outline" leftIcon={<Pencil />}>
+            Edit
+          </Button>
+          <Button size="sm" variant="outline" className="max-w-40" rightIcon={<ChevronsUpDown />}>
+            A workspace with a very long name
+          </Button>
         </div>
       </Demo>
 

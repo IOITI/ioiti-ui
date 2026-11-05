@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from 'react'
 
 import { cn } from '../lib/utils.js'
 import { useLinkComponent } from './link-context.js'
-import { Button, buttonClassName } from './ui/button.js'
+import { Button, BUTTON_LABEL_CLASS, buttonClassName, buttonIconClassName } from './ui/button.js'
 import type { ButtonSize, ButtonVariant } from './ui/button.js'
 
 interface ButtonLinkProps extends Omit<ComponentProps<'a'>, 'href' | 'className'> {
@@ -51,9 +51,9 @@ export function ButtonLink({
     // The application's link, held in context (LinkProvider), or `a`: the same component at every render.
     // oxlint-disable-next-line react/static-components
     <Link href={to} className={buttonClassName({ variant, size, className: cn('transition motion-safe:active:scale-[0.97]', className) })} {...props}>
-      {leftIcon && <span className="shrink-0">{leftIcon}</span>}
-      {children && <span>{children}</span>}
-      {rightIcon && <span className="shrink-0">{rightIcon}</span>}
+      {leftIcon && <span className={buttonIconClassName(size)}>{leftIcon}</span>}
+      {children && <span className={BUTTON_LABEL_CLASS}>{children}</span>}
+      {rightIcon && <span className={buttonIconClassName(size)}>{rightIcon}</span>}
     </Link>
   )
 }

@@ -3,6 +3,20 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.13.0] - 2026-11-05
+
+- **A button's icon is as tall as its words**, at every size (12, 14, 16 and 20 px): an icon without a size of its
+  own was drawn at 24 px, twice the words of a small button. An icon given its own `size-*` keeps it.
+- **`Button`'s and `ButtonLink`'s `xs` size**, for an action on a line of text or a row of a table (an "Edit"
+  beside a value).
+- **A button's words are cut short where it is held narrower than them** (a `max-w-*`), with an ellipsis, its
+  icons kept whole: a long name pushed the icon after it out of the button.
+- **A sheet's title is as large as a page's** (`FlysheetTitle`, `text-2xl`, bold).
+- **`Field`'s label stands out**: semibold, in the primary text; its description and its error do not change.
+- **`MultiSelect` says it opens a list**, by the arrow a `Combobox` has, its clear button before it.
+
+Nothing to change in an application; an icon sized by hand in a button can lose its class.
+
 ## [0.12.0] - 2026-11-05
 
 - **A page moves once as it arrives**: an update of the page after its arrival (a redirect to its first tab, a

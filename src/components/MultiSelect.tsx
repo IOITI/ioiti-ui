@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Plus, X } from 'lucide-react'
+import { Check, ChevronsUpDown, Plus, X } from 'lucide-react'
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
@@ -155,8 +155,9 @@ export function MultiSelect({
         // The look of the form's Input, chips inside it.
         className={cn(
           'relative flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-lg border bg-white px-1.5 py-1 text-xs transition-colors dark:bg-[#141414]',
-          // Room for the clear button, which keeps to the first line's end however many lines the chips take.
-          chosen.length > 0 && !disabled && 'pr-9',
+          // Room for the arrow that says it opens a list, and the clear button before it, both keeping to the first
+          // line's end however many lines the chips take.
+          chosen.length > 0 && !disabled ? 'pr-16' : 'pr-8',
           'border-neutral-300 hover:border-neutral-500 dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A]',
           'focus-within:border-neutral-500 dark:focus-within:border-[#4A4A4A] accent:focus-within:border-brand',
           error && 'border-negative/60 focus-within:border-negative',
@@ -204,8 +205,10 @@ export function MultiSelect({
           onKeyDown={onKeyDown}
           className="h-7 min-w-24 flex-1 bg-transparent px-1.5 text-xs text-neutral-900 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed dark:text-[#FAFAFA]"
         />
+        {/* A list to choose from, as a Combobox says: its arrow, which a click goes through to the field. */}
+        <ChevronsUpDown aria-hidden className="pointer-events-none absolute right-2.5 top-3 size-4 shrink-0 text-neutral-400" />
         {chosen.length > 0 && !disabled && (
-          <span className="absolute right-1 top-1.5">
+          <span className="absolute right-7 top-1.5">
             <Hint content="Clear">
               <button
                 type="button"

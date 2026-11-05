@@ -14,7 +14,7 @@ import { TextLink } from './TextLink.js'
 // (docs/provenance.md): a change of one of them here is a change of the design, made on purpose.
 
 describe('a field', () => {
-  it('is its control under its label, in small secondary text, which names it', () => {
+  it('is its control under its label, small and semibold in the primary text, which names it', () => {
     render(
       <Field label="Seed" error="A whole number">
         <input defaultValue="x" />
@@ -23,7 +23,7 @@ describe('a field', () => {
 
     const input = screen.getByRole('textbox', { name: /Seed/ })
     expect(input.closest('label')).toHaveClass('flex', 'flex-col', 'gap-1')
-    expect(screen.getByText('Seed')).toHaveClass('text-xs', 'text-text-secondary')
+    expect(screen.getByText('Seed')).toHaveClass('text-xs', 'font-semibold', 'text-text-primary')
     expect(screen.getByText('A whole number')).toHaveClass('text-xs', 'text-negative')
   })
 

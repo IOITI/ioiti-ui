@@ -759,7 +759,8 @@ export function FlysheetTitle({ className, ...props }: React.ComponentProps<"h2"
     setHasTitle(true);
     return () => setHasTitle(false);
   }, [setHasTitle]);
-  return <h2 className={cn("text-base font-semibold tracking-tight", className)} {...props} id={titleId} />;
+  // ioiti-ui: as large as a page's title (PageHeader), which a sheet's is, over the page.
+  return <h2 className={cn("text-2xl font-bold tracking-tight", className)} {...props} id={titleId} />;
 }
 
 export function FlysheetDescription({ className, ...props }: React.ComponentProps<"p">) {

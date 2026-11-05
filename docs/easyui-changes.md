@@ -151,6 +151,9 @@ otherwise).
   a tab still goes through `onChange`, and a tab without `href` is `type="button"`. The sidebar's
   `onActiveChange` is optional.
 - `button`: `buttonClassName`, the classes of a variant and size, for a link drawn as a button (`ButtonLink`).
+  An `xs` size, for an action on a line of text or a row of a table; its icons as tall as its words at every
+  size (12, 14, 16 and 20 px; an icon given its own `size-*` keeps it), where EasyUI left them at 24 px; its
+  words cut short with an ellipsis where it is held narrower than them, its icons kept whole (0.13.0).
 - `drag-to-confirm`: the hidden fallback button is out of the Tab order (it was a stop nobody could see, on
   which Enter confirmed); ArrowRight no longer confirms, only Enter and Space.
 - `velocity-toast`, `undo-toast`: `wrapperClassName`, to lift a toast above a bar fixed at the bottom.
@@ -162,6 +165,7 @@ otherwise).
   `aria-describedby`): a screen reader said only "switch, on".
 - `form`, `animated-tabs`, `smooth-accordion`: the literal grey `#6B6B6B` (3.6:1 on the dark surface)
   replaced by `text-muted-foreground`; hints at 12 px instead of 11.
+- `flysheet`: its title as large as a page's (`text-2xl`, bold) (0.13.0).
 - `flysheet`: EasyUI's `sheet`, renamed, with what Elastic UI's flyout (`EuiFlyout`) does, written from its
   documentation (none of Elastic UI's code). A side sheet's `size` (`sm`, 22 rem; `md`, 26 rem, EasyUI's;
   `lg`, 40 rem; or pixels), `minWidth` (280 px) and `maxWidth`, within EasyUI's 88% of the window.
