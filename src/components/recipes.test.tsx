@@ -37,6 +37,31 @@ describe('a field', () => {
     expect(screen.getByRole('combobox', { name: 'Asset' })).toBeInTheDocument()
     expect(screen.getByText('Asset').tagName).toBe('LABEL')
   })
+
+  it('says what its value is for under the control, which it describes; the label alone names it', () => {
+    render(
+      <Field label="Space" description="The Kibana space the rules go to" error="Lower case only">
+        <input defaultValue="X" aria-describedby="own" />
+      </Field>,
+    )
+
+    const input = screen.getByRole('textbox', { name: 'Space' })
+    expect(input).toHaveAccessibleDescription('The Kibana space the rules go to Lower case only')
+    // The control's own description comes first.
+    expect(input.getAttribute('aria-describedby')?.split(' ')[0]).toBe('own')
+    expect(screen.getByText('The Kibana space the rules go to')).toHaveClass('text-xs', 'text-muted-foreground')
+    expect(screen.getByText('Lower case only')).toHaveClass('text-xs', 'text-negative')
+  })
+
+  it('describes a control beside its label the same way', () => {
+    render(
+      <Field label="Asset" htmlFor="asset2" description="Picked from the list">
+        <button type="button" id="asset2" role="combobox" aria-expanded="false" />
+      </Field>,
+    )
+
+    expect(screen.getByRole('combobox', { name: 'Asset' })).toHaveAccessibleDescription('Picked from the list')
+  })
 })
 
 describe('an icon button', () => {

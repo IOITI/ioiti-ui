@@ -8,11 +8,14 @@ import { cn } from '../lib/utils.js'
 const CHIP_TONE = {
   warning: 'bg-amber-500/15 text-amber-800 hover:bg-amber-500/25 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20',
   danger: 'bg-red-500/10 text-red-700 hover:bg-red-500/20 dark:text-red-400',
+  // Good news not to miss either (approved, merged): still a link to where it goes on.
+  success: 'bg-emerald-500/15 text-emerald-800 hover:bg-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20',
 }
 
 interface StateChipProps {
   /** The page where it is dealt with. */
   to: string
+  /** What it is: something to fix (danger), to watch (warning), or good news (success). */
   tone: keyof typeof CHIP_TONE
   icon: ReactNode
   label: string

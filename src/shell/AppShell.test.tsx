@@ -107,6 +107,16 @@ describe('the top bar', () => {
     // Named by what it is, described by what it means (its hint, on hover, focus and a tap).
     expect(chip).toHaveAccessibleDescription(/older configuration/)
   })
+
+  it('says good news not to miss in the success colour, still a link to where it goes on', () => {
+    renderShell({
+      chips: <StateChip to="/changes" tone="success" icon={<TriangleAlert className="size-3.5" aria-hidden />} label="Approved" hint="Your pull request was approved: it can be merged." />,
+    })
+
+    const chip = screen.getByRole('link', { name: 'Approved' })
+    expect(chip).toHaveAttribute('href', '/changes')
+    expect(chip).toHaveClass('text-emerald-800', 'dark:text-emerald-400')
+  })
 })
 
 /** Both forms of the trail are rendered here (no CSS): the whole one, then its last two steps. */

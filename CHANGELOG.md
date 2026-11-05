@@ -3,6 +3,25 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.11.0] - 2026-11-05
+
+- **A toast leads on**: `useToast()`'s message takes an `action`, a link to where its news is dealt with
+  (`{ label: 'Open the job', href }`, drawn by the application's link) or a button (`{ label: 'Retry', onClick }`),
+  beside its words; using it closes the toast. Such a toast stays 6 s, others waiting or not. A toast's time now
+  stops while the keyboard is in it, as under the pointer. `ToastAction` (and `VelocityToastAction`) are exported.
+- **`NotificationBell` says what is true before it has a list**: `loading`, rows to come where it said "No
+  notifications right now" before anything was read; `error` (`true` for "The notifications could not be read.")
+  and `onRetry`, a "Try again", in place of a list it does not have, above the last one read otherwise. `footer`
+  still says what the application tells of the list ("The 30 latest are shown.").
+- **`Field`'s `description`**: what the value is for, or how to write it, under the control in muted text, read
+  out with it (`aria-describedby`, after the control's own). The label alone names the control then, the error
+  describing it too.
+- **`StateChip`'s `success` tone**, for good news not to miss (approved, merged), still a link to where it goes on.
+- **`AnimatedFileUpload`'s `label`**, the name of its file input ("Upload files" on every one), and **`onRemove`**,
+  a file taken off the list.
+
+Nothing to change in an application.
+
 ## [0.10.0] - 2026-11-05
 
 - **`PageHeader`'s `name`**: what the trail of the top bar and the browser's tab call the page, where it is deeper

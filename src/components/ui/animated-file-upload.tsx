@@ -75,6 +75,10 @@ export interface AnimatedFileUploadProps {
   doneLabel?: string;
   /** ioiti-ui: what draws a done file's link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
+  /** ioiti-ui: the name of its file input, what a test or a script finds it by ("Upload files" in EasyUI). */
+  label?: string;
+  /** ioiti-ui: a file taken off the list by its Remove (the application forgets what it did with it). */
+  onRemove?: (file: UploadFileItem) => void;
   /** Custom class name */
   className?: string;
 }
@@ -128,6 +132,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
   workingLabel,
   doneLabel = 'Ready',
   linkComponent,
+  label = 'Upload files',
+  onRemove,
   className,
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
@@ -302,7 +308,10 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
   };
 
   const handleRemoveFile = (id: string) => {
+    // ioiti-ui: the application hears of it (onRemove).
+    const removed = files.find((f) => f.id === id);
     setFiles((prev) => prev.filter((f) => f.id !== id));
+    if (removed) onRemove?.(removed);
   };
 
   const handleRetryFile = (fileItem: UploadFileItem) => {
@@ -354,7 +363,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
         onChange={handleFileInputChange}
         disabled={disabled}
         className="hidden"
-        aria-label="Upload files"
+        aria-label={label}
       />
 
       {/* Drop Zone Box */}

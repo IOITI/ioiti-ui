@@ -20,7 +20,7 @@ import {
   useToast,
 } from 'ioiti-ui'
 import { RouterLeaveGuard } from 'ioiti-ui/react-router'
-import { KeyRound, LogOut, Palette, RotateCw, UserRound } from 'lucide-react'
+import { BadgeCheck, KeyRound, LogOut, Palette, RotateCw, UserRound } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -218,6 +218,13 @@ export function Shell() {
           icon={<KeyRound className="size-3.5" aria-hidden />}
           label="Sign in again"
           hint="The connection to the bank expired: nothing is sent until it is renewed."
+        />
+        <StateChip
+          to="/foundations/usable-by-all"
+          tone="success"
+          icon={<BadgeCheck className="size-3.5" aria-hidden />}
+          label="Approved"
+          hint="The refund was approved: it can be sent."
         />
       </Demo>
 

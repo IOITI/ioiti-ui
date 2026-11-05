@@ -412,6 +412,15 @@ otherwise).
 - `notification-bell` (0.3.0): its button takes the look of the top bar's icon buttons (`IconButton`), square and
   quiet until hovered, giving a little when pressed (`motion-safe:active:scale-95`), held as pressed while its panel
   is open, where EasyUI's was a bordered box that grew under the pointer (`whileHover`, `whileTap`).
+- `velocity-toast` (0.11.0): `action`, one thing to do from the toast beside its words: a link (`href`, the
+  application's, LinkProvider, or `linkComponent`) or a button (`onClick`), `UndoToast`'s Undo in its tokens; using
+  it closes the toast. Its time stops while the keyboard is in it, as under the pointer (EasyUI's), the time to
+  reach its action.
+- `notification-bell` (0.11.0): `loading`, rows to come in place of the list while there is none (named for screen
+  readers), and `error` (`true` for its own words) with `onRetry`, a "Try again": in place of the list while there
+  is none, above the last one read otherwise. EasyUI said "No notifications right now" before anything was read.
+- `animated-file-upload` (0.11.0): `label`, the name of its file input (EasyUI's was "Upload files" on every one),
+  and `onRemove`, a file taken off the list by its Remove.
 
 ## ioiti-ui's own changes
 

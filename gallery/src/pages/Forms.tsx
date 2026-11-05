@@ -183,7 +183,7 @@ export function Forms() {
       <Demo
         id="field"
         title="Field"
-        description="The way the pages put a control under its label. An Input may show its unit before or after the value, which a screen reader hears with the field. A Combobox takes its label beside it (htmlFor): a label around it would pass the clicks of its options on to it."
+        description="The way the pages put a control under its label. What the value is for goes under it (description), read out with the field, which the label alone names. An Input may show its unit before or after the value, which a screen reader hears with the field. A Combobox takes its label beside it (htmlFor): a label around it would pass the clicks of its options on to it."
         names={['Field', 'Input', 'Select', 'Textarea', 'Combobox']}
         className="grid w-full gap-4 sm:grid-cols-2"
       >
@@ -193,7 +193,7 @@ export function Forms() {
         <Field label="Quantity" error="A whole number, from 1 to 99">
           <Input type="number" defaultValue="0" error />
         </Field>
-        <Field label="Timeout">
+        <Field label="Timeout" description="How long a request may take before it is given up">
           <Input inputMode="numeric" defaultValue="250" suffix="ms" />
         </Field>
         <Field label="Website">
@@ -459,7 +459,13 @@ export function Forms() {
         names={['AnimatedFileUpload']}
         className="block w-full"
       >
-        <AnimatedFileUpload multiple sequential uploadHandler={pretendUpload} dropSubtitle="or choose files (made up: nothing leaves the page)" />
+        <AnimatedFileUpload
+          multiple
+          sequential
+          uploadHandler={pretendUpload}
+          label="Invoices to import"
+          dropSubtitle="or choose files (made up: nothing leaves the page)"
+        />
       </Demo>
     </>
   )
