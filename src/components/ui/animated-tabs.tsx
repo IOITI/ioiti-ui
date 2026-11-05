@@ -151,6 +151,8 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
               {isActive && (
                 <motion.div
                   layoutId={indicatorLayoutId}
+                  // ioiti-ui: slides when the tab changes, only; a resize moves it with its tab (a spring had it trail).
+                  layoutDependency={activeTab}
                   className={cn(
                     'absolute inset-0 shadow-xs',
                     isGlass

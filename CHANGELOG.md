@@ -3,6 +3,20 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.12.0] - 2026-11-05
+
+- **A page moves once as it arrives**: an update of the page after its arrival (a redirect to its first tab, a
+  part of it loading) moved the whole page again, a step after the first, two or three times in a row. The
+  page's frame is keyed by the page: it leaves and the next one enters, and nothing moves as it updates. A new
+  page opens at its top, its frame being new; a page keeps where it was scrolled while it changes in place.
+- **`AppShell`'s `pageOf`** (and `RouterAppShell`'s): which page an address shows. Addresses of one page change
+  it in place, without the page's motion: its tabs, a record's sheet over its list (`/rules/:id` is `/rules`), a
+  redirect to its first tab. Each address is a page of its own by default, as before.
+- **`SegmentedControl`'s and `AnimatedTabs`' pill slides only when the choice changes**: a resize (the sheet it
+  is in, dragged) had it trail behind its segment with a spring.
+
+Nothing to change in an application; `pageOf` for one whose sheets and tabs have addresses.
+
 ## [0.11.1] - 2026-11-05
 
 - **The top bar's shorter trail keeps the names it has room for**: when the whole trail does not fit, its last

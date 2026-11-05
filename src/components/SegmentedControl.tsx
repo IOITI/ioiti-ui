@@ -122,6 +122,9 @@ export function SegmentedControl<T extends string = string>({
             {on && (
               <motion.span
                 layoutId={pill}
+                // Slides when the choice changes, only: a resize (the sheet it is in, dragged) moves it with
+                // its segment, where a spring had it trail behind.
+                layoutDependency={chosen}
                 aria-hidden
                 className="absolute inset-0 rounded-md bg-[var(--text-primary)] shadow-xs accent:bg-brand accent:bg-(image:--brand-fill)"
                 transition={motionTransitions.springMorph}

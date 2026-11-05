@@ -1,7 +1,7 @@
 import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LogOut, TriangleAlert } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -337,7 +337,9 @@ describe('scrolling', () => {
 
     await user.click(screen.getByRole('link', { name: 'To the orders' }))
     await screen.findByRole('heading', { name: 'Orders' })
-    expect(main.scrollTop).toBe(0)
+    // Another page, another frame: at its top.
+    expect(screen.getByRole('main')).not.toBe(main)
+    expect(screen.getByRole('main').scrollTop).toBe(0)
   })
 
   it('never slides a page sideways: what stands beyond its edges is cut', async () => {
@@ -379,3 +381,32 @@ describe('without a router', () => {
     expect(screen.getByLabelText('address')).toHaveTextContent('/orders')
   })
 })
+
+describe("the page's frame", () => {
+  function Draft() {
+    const [text, setText] = useState('')
+    return <input aria-label="Draft" value={text} onChange={(event) => setText(event.target.value)} />
+  }
+  // `/orders/:id` is a sheet over the orders: the same page.
+  const pageOf = (pathname: string) => pathname.replace(/^\/orders\/.*/, '/orders')
+  const shell = (pathname: string) => (
+    <IoitiProvider appName="Test App">
+      <AppShell menu={MENU} pathname={pathname} pageOf={pageOf}>
+        <Draft />
+      </AppShell>
+    </IoitiProvider>
+  )
+
+  it('keeps the page as it is between two addresses of it, and starts another page afresh', async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(shell('/orders'))
+    await user.type(screen.getByRole('textbox', { name: 'Draft' }), 'kept')
+
+    rerender(shell('/orders/o-7'))
+    expect(screen.getByRole('textbox', { name: 'Draft' })).toHaveValue('kept')
+
+    rerender(shell('/settings'))
+    expect(screen.getByRole('textbox', { name: 'Draft' })).toHaveValue('')
+  })
+})
+

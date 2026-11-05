@@ -72,8 +72,10 @@
 /* -----------------------------------------------------------------------------
    A change of page (AppShell): the page left fades out as the new one fades in
    and rises 6 px, the shell staying as it is. React's view transition, which
-   the router's changes of page start: a change of the query alone, Back and
-   Forward, and a browser without view transitions change the page at once.
+   the router's changes of page start: the page's frame leaves (old) and the
+   next one enters (new), once; within one page (`pageOf`: a tab, a sheet, a
+   redirect) nothing moves. A change of the query alone, Back and Forward, and a
+   browser without view transitions change the page at once.
    --------------------------------------------------------------------------- */
 
 /* The shell stays in use while a page arrives: a click goes through to it. */

@@ -145,6 +145,8 @@ otherwise).
   keyframes only, and EasyUI's `[1, 1.25, 1]` threw at each digit in development. Given a `value`, the
   component lays the digits out from the first box, so a box left empty moves them: leave it uncontrolled,
   and make it again to empty it.
+- `animated-tabs`: the indicator slides when the tab changes, only (`layoutDependency`): a resize, of a sheet it
+  is in, dragged, moved it after its tab with a spring, trailing behind (0.12.0).
 - `sidebar`, `animated-tabs`: an entry or a tab with an `href` is a link (`linkComponent`); a plain click of
   a tab still goes through `onChange`, and a tab without `href` is `type="button"`. The sidebar's
   `onActiveChange` is optional.

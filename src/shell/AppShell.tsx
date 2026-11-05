@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useMemo, useRef, useState, ViewTransition } from 'react'
+import { useId, useMemo, useRef, useState, ViewTransition } from 'react'
 import type { ComponentProps, ElementType, MouseEvent, ReactNode } from 'react'
 
 import { useAppName } from '../components/app-context.js'
@@ -10,7 +10,6 @@ import { isPlainClick } from '../lib/links.js'
 import { cn } from '../lib/utils.js'
 import { menuEntry, sidebarSections } from './navigation.js'
 import type { Menu } from './navigation.js'
-import { usePageChanged } from './page-change.js'
 import { PageTrailProvider, TopBarTrail } from './PageTrail.js'
 
 export interface AppShellProps<S extends string = string> {
@@ -36,6 +35,12 @@ export interface AppShellProps<S extends string = string> {
   topBarEnd?: ReactNode
   /** The pages that take the whole width (an editor beside its preview, a chart); the others stop at 80rem. */
   isWide?: (pathname: string) => boolean
+  /**
+   * Which page an address shows: the page moves (fades out, the next rising in) only between two, and opens at
+   * its top. Addresses of one page change it in place, where it was scrolled: its tabs, a record's sheet over its
+   * list (`/rules/:id` is `/rules`), a redirect to its first tab. Each address is a page of its own by default.
+   */
+  pageOf?: (pathname: string) => string
   /** The first step of the trail. */
   home?: { label: string; href: string }
   /** What draws the menu's links; the application's (LinkProvider) by default. */
@@ -70,6 +75,7 @@ function Shell<S extends string>({
   topBarChips,
   topBarEnd,
   isWide,
+  pageOf,
   home,
   linkComponent,
   defaultCollapsed,
@@ -83,12 +89,12 @@ function Shell<S extends string>({
   // Another page opens at its top: where the one left was scrolled to means nothing there. A change
   // of the query alone leaves the page where it is. Before the browser paints: no frame of the new
   // page where the old one was.
-  useLayoutEffect(() => {
-    if (main.current) main.current.scrollTop = 0
-  }, [pathname])
-  // Another page fades in as the one left fades out, the shell staying as it is (motion.css): where
-  // the browser has view transitions and the page changes in a React transition, as the router's do.
-  const pageChanged = usePageChanged(pathname)
+  // Another page fades in as the one left fades out, the shell staying as it is (motion.css): where the browser
+  // has view transitions and the page changes in a React transition, as the router's do. The page's frame is
+  // keyed by the page, which enters and leaves, and never animates as it updates: an update of the page after
+  // it arrived (a part of it loading, a redirect to its first tab) moved the whole page again, a step after the
+  // first. A new frame also opens the page at its top.
+  const page = pageOf ? pageOf(pathname) : pathname
 
   const current = menuEntry(menu, pathname)
   const sections = useMemo(() => sidebarSections(menu), [menu])
@@ -140,7 +146,7 @@ function Shell<S extends string>({
         {/* Positioned, so that what it scrolls stays in it: text for screen readers placed
             against the page would otherwise make the window itself scroll, onto nothing. The
             transition takes it whole, cut to what it shows. */}
-        <ViewTransition default="none" update={pageChanged ? 'ioiti-page' : 'none'}>
+        <ViewTransition key={page} default="none" enter="ioiti-page" exit="ioiti-page">
           <main ref={main} id={mainId} className="relative flex-1 overflow-y-auto">
             {/* The page never scrolls sideways: what is wider than the screen scrolls in a frame of its
                 own (Table), and what would still stand beyond the page (text for screen readers placed
