@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { useBlocker } from 'react-router'
 
@@ -51,12 +51,18 @@ function Guard({ within, allowed, title, message, stayLabel, leaveLabel }: Guard
   })
   const blocked = blocker.state === 'blocked'
 
-  // Gone while a page was asked for (saved meanwhile): the page asked for is not left waiting.
+  // Gone while a page was asked for (saved meanwhile): the page asked for is not left waiting. Only when the guard
+  // goes: a blocker is a new object at each of its states, and resetting the blocked one as Leave turns it into
+  // `proceeding` would cancel the leaving (the browser's Back, which waits, asked again).
+  const latest = useRef(blocker)
+  useEffect(() => {
+    latest.current = blocker
+  }, [blocker])
   useEffect(
     () => () => {
-      if (blocker.state === 'blocked') blocker.reset()
+      if (latest.current.state === 'blocked') latest.current.reset()
     },
-    [blocker],
+    [],
   )
 
   return (

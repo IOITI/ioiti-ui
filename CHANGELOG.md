@@ -19,6 +19,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 - **`StateChip`'s `success` tone**, for good news not to miss (approved, merged), still a link to where it goes on.
 - **`AnimatedFileUpload`'s `label`**, the name of its file input ("Upload files" on every one), and **`onRemove`**,
   a file taken off the list.
+- **`RouterLeaveGuard` lets the browser's Back go once told to leave**: Leave on a Back asked again, and the page
+  stayed (a link was not concerned). The guard reset the question at each of its states, the leaving among them.
 
 Nothing to change in an application.
 

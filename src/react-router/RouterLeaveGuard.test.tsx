@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { createMemoryRouter, Link, RouterProvider, useLocation } from 'react-router'
@@ -31,7 +31,7 @@ function Settings({ within, allowed }: { within?: string; allowed?: (pathname: s
   )
 }
 
-function renderRouter(guard: { within?: string; allowed?: (pathname: string) => boolean } = {}) {
+function renderRouter(guard: { within?: string; allowed?: (pathname: string) => boolean } = {}, history = ['/settings']) {
   const router = createMemoryRouter(
     [
       // One route for the page and its views: the page and its draft stay mounted from one view to another.
@@ -39,9 +39,10 @@ function renderRouter(guard: { within?: string; allowed?: (pathname: string) => 
       { path: '/orders', element: <h1>Orders</h1> },
       { path: '/sign-in', element: <h1>Sign in</h1> },
     ],
-    { initialEntries: ['/settings'] },
+    { initialEntries: history, initialIndex: history.length - 1 },
   )
   render(<RouterProvider router={router} />)
+  return router
 }
 
 describe('RouterLeaveGuard', () => {
@@ -72,6 +73,16 @@ describe('RouterLeaveGuard', () => {
     await user.click(screen.getByRole('link', { name: 'Orders' }))
     await user.click(await screen.findByRole('button', { name: 'Leave' }))
     expect(await screen.findByRole('heading', { name: 'Orders' })).toBeInTheDocument()
+  })
+
+  it("asks before the browser's Back, and goes back once told to leave", async () => {
+    const user = userEvent.setup()
+    const router = renderRouter({}, ['/orders', '/settings'])
+    await user.click(screen.getByRole('button', { name: 'Change' }))
+    await act(() => router.navigate(-1))
+    await user.click(await screen.findByRole('button', { name: 'Leave' }))
+    expect(await screen.findByRole('heading', { name: 'Orders' })).toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('takes a change of the query for no leaving', async () => {
