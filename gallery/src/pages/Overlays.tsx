@@ -323,6 +323,29 @@ function Bell() {
   )
 }
 
+/** The bell before it has read anything, and when it could not: at the end of the row, as in a top bar. */
+function BellStates() {
+  const [failed, setFailed] = useState(true)
+  return (
+    <span className="ml-auto flex items-center gap-4">
+      <span className="flex items-center gap-2 text-xs text-muted-foreground">
+        Reading
+        <NotificationBell notifications={[]} onMarkAsRead={() => {}} loading />
+      </span>
+      <span className="flex items-center gap-2 text-xs text-muted-foreground">
+        Could not read them
+        <NotificationBell
+          notifications={[]}
+          onMarkAsRead={() => {}}
+          loading={!failed}
+          error={failed}
+          onRetry={() => setFailed(false)}
+        />
+      </span>
+    </span>
+  )
+}
+
 function Palette() {
   const [open, setOpen] = useState(false)
   return (
@@ -424,8 +447,9 @@ export function Overlays() {
         <Sheets />
       </Demo>
 
-      <Demo id="bell" title="NotificationBell" description="What happened while the page was open, newest first, each leading where it is dealt with; only what is urgent pulses." names={['NotificationBell']}>
+      <Demo id="bell" title="NotificationBell" description="What happened while the page was open, newest first, each leading where it is dealt with; only what is urgent pulses. While they are read it says so, and when they could not be, it says that, with a Try again: never “No notifications” before it knows." names={['NotificationBell']}>
         <Bell />
+        <BellStates />
       </Demo>
 
       <Demo

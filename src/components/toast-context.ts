@@ -2,10 +2,25 @@ import { createContext, useContext } from 'react'
 
 import type { VelocityToastVariant } from './ui/velocity-toast.js'
 
+/**
+ * The one thing a toast leads on to: where its news is dealt with (`href`, a link drawn by the application's,
+ * LinkProvider) or what is done about it (`onClick`, a button). Using it closes the toast.
+ */
+export interface ToastAction {
+  /** Its words: where it leads or what it does ("Open the job", "Retry"). */
+  label: string
+  /** Where it leads: the toast draws a link. */
+  href?: string
+  /** What it does: the toast draws a button (with `href`, it runs as the link is followed). */
+  onClick?: () => void
+}
+
 export interface ToastMessage {
   title: string
   description?: string
   variant?: VelocityToastVariant
+  /** One thing to do from the toast: a link or a button, beside its words. Such a toast stays longer (6 s). */
+  action?: ToastAction
 }
 
 export type ShowToast = (message: ToastMessage) => void

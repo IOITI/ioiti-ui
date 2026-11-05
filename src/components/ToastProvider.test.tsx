@@ -1,7 +1,9 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useEffect } from 'react'
+import type { ComponentProps } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { LinkProvider } from './LinkProvider.js'
 import { useToast } from './toast-context.js'
 import { ToastProvider } from './ToastProvider.js'
 
@@ -22,6 +24,11 @@ function renderProvider() {
       <Capture />
     </ToastProvider>,
   )
+}
+
+/** The application's link, as a router's would be: marked, to be told from a plain `<a>`. */
+function AppLink(props: ComponentProps<'a'>) {
+  return <a data-link="app" {...props} />
 }
 
 /** Let the toast's own clock (animation frames) run for `ms`. */
@@ -105,6 +112,63 @@ describe('ToastProvider', () => {
 
     await advance(6000)
     expect(screen.getByText('The mail server does not answer')).toBeInTheDocument()
+  })
+
+  it('leads on to where its news is dealt with: a link, the application\'s; followed, the toast leaves', async () => {
+    render(
+      <LinkProvider component={AppLink}>
+        <ToastProvider>
+          <Capture />
+        </ToastProvider>
+      </LinkProvider>,
+    )
+
+    act(() => show({ title: 'Deploy failed', variant: 'error', action: { label: 'Open the job', href: '/ops/jobs/7' } }))
+
+    const link = screen.getByRole('link', { name: 'Open the job' })
+    expect(link).toHaveAttribute('href', '/ops/jobs/7')
+    expect(link).toHaveAttribute('data-link', 'app')
+    fireEvent.click(link)
+    await leave()
+    expect(screen.queryByText('Deploy failed')).not.toBeInTheDocument()
+  })
+
+  it('does what its button says, and leaves', async () => {
+    const retry = vi.fn()
+    renderProvider()
+
+    act(() => show({ title: 'Could not save', action: { label: 'Retry', onClick: retry } }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+    expect(retry).toHaveBeenCalledOnce()
+    await leave()
+    expect(screen.queryByText('Could not save')).not.toBeInTheDocument()
+  })
+
+  it('gives a toast with something to do the time to reach it, even with others waiting', async () => {
+    renderProvider()
+
+    act(() => {
+      show({ title: 'Import ready', action: { label: 'Review it', href: '/imports/3' } })
+      show({ title: 'Next one' })
+    })
+
+    // Another waits: a plain one would have left at 2.5 s.
+    await advance(5000)
+    expect(screen.getByText('Import ready')).toBeInTheDocument()
+    await advance(1500)
+    await leave()
+    expect(screen.getByText('Next one')).toBeInTheDocument()
+  })
+
+  it('stops its time while the keyboard is in it', async () => {
+    renderProvider()
+
+    act(() => show({ title: 'Import ready', action: { label: 'Review it', onClick: () => {} } }))
+
+    act(() => screen.getByRole('button', { name: 'Review it' }).focus())
+    await advance(10_000)
+    expect(screen.getByText('Import ready')).toBeInTheDocument()
   })
 
   it('drops the oldest waiting toasts of a burst', () => {

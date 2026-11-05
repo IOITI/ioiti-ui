@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import { Check, X, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { useLinkComponent } from '../link-context.js';
 
 export type VelocityToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 export type VelocityToastPosition =
@@ -14,6 +15,13 @@ export type VelocityToastPosition =
   | 'bottom-left'
   | 'bottom-center'
   | 'bottom-right';
+
+/** ioiti-ui: what the toast leads on to: a link (`href`) or a button (`onClick`); using it closes the toast. */
+export interface VelocityToastAction {
+  label: string;
+  href?: string;
+  onClick?: () => void;
+}
 
 export interface VelocityToastProps {
   open: boolean;
@@ -32,6 +40,10 @@ export interface VelocityToastProps {
   wrapperStyle?: React.CSSProperties;
   /** ioiti-ui: once it has left, its exit played: a queue shows the next one then (ToastProvider). */
   onExitComplete?: () => void;
+  /** ioiti-ui: one thing to do from the toast, beside its words: a link or a button. Using it closes the toast. */
+  action?: VelocityToastAction;
+  /** ioiti-ui: what draws the action's link; the application's (LinkProvider) by default. */
+  linkComponent?: React.ElementType;
 }
 
 const positionClasses: Record<VelocityToastPosition, string> = {
@@ -42,6 +54,10 @@ const positionClasses: Record<VelocityToastPosition, string> = {
   'bottom-center': 'bottom-5 left-1/2 -translate-x-1/2 items-center',
   'bottom-right': 'bottom-5 right-5 items-end',
 };
+
+// ioiti-ui: the action's look, UndoToast's Undo in this toast's tokens.
+const ACTION_CLASS =
+  'inline-flex shrink-0 items-center px-2.5 py-1 rounded-md border border-[var(--border)] bg-[var(--surface-raised)] text-xs font-medium text-[var(--text-primary)] hover:border-[var(--text-subtle)] transition-colors focus-ring';
 
 const variantIcon = (variant: VelocityToastVariant, custom?: React.ReactNode) => {
   if (custom) return custom;
@@ -83,9 +99,17 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
   wrapperClassName,
   wrapperStyle,
   onExitComplete,
+  action,
+  linkComponent,
 }) => {
+  // ioiti-ui: the application's link (LinkProvider) unless one is given.
+  const LinkComponent = useLinkComponent(linkComponent);
   const [isVisible, setIsVisible] = useState(open);
-  const [isPaused, setIsPaused] = useState(false);
+  // ioiti-ui: the time stops under the pointer (EasyUI's) and while the keyboard is in the toast, the time to reach
+  // its action or Close for who cannot point at it.
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const isPaused = isHovered || isFocused;
 
   // Progress driven by a framer-motion motion value so we can drive it from
   // a single tween that is responsive to hover (paused) and dismissal.
@@ -169,8 +193,12 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
             // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
             exit={{ opacity: 0, scale: 0.96, y: isTop ? -12 : 12, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsFocused(false);
+            }}
             className={cn(
               // ioiti-ui: glass under the glass material (glass-float).
               'pointer-events-auto relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] p-3.5 sm:p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none glass-float',
@@ -190,6 +218,32 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
                   <p className="text-[11px] text-[var(--text-secondary)] truncate mt-0.5">{description}</p>
                 )}
               </div>
+
+              {/* ioiti-ui: what it leads on to, as UndoToast's Undo: a link where it leads somewhere, else a button. */}
+              {action &&
+                (action.href !== undefined ? (
+                  <LinkComponent
+                    href={action.href}
+                    onClick={() => {
+                      action.onClick?.();
+                      handleDismiss();
+                    }}
+                    className={ACTION_CLASS}
+                  >
+                    {action.label}
+                  </LinkComponent>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      action.onClick?.();
+                      handleDismiss();
+                    }}
+                    className={cn(ACTION_CLASS, 'cursor-pointer')}
+                  >
+                    {action.label}
+                  </button>
+                ))}
 
               <button
                 type="button"

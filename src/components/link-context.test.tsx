@@ -17,6 +17,7 @@ import { Sidebar } from './ui/sidebar.js'
 import { SmartComparison } from './ui/smart-comparison.js'
 import { SplitButton } from './ui/split-button.js'
 import { SpotlightSearch } from './ui/spotlight-search.js'
+import { VelocityToast } from './ui/velocity-toast.js'
 
 /** The application's link, as a router's would be: marked, to be told from a plain `<a>`. */
 function AppLink(props: ComponentProps<'a'>) {
@@ -71,6 +72,7 @@ const LINKS: { name: string; element: ReactElement; link: string }[] = [
     element: <SpotlightSearch open items={[{ id: 'orders', title: 'Orders', category: 'Pages', href: '/orders' }]} onOpenChange={() => {}} />,
     link: 'Orders',
   },
+  { name: 'VelocityToast', element: <VelocityToast open title="Export ready" action={{ label: 'Open the export', href: '/exports/1' }} />, link: 'Open the export' },
 ]
 
 describe('a component that draws a link', () => {

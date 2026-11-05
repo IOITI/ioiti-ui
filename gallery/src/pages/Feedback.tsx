@@ -58,6 +58,27 @@ function Toasts() {
       >
         Two at once (one after the other)
       </Button>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => toast({ title: 'Export ready', description: 'orders-2026-10-26.csv', variant: 'success', action: { label: 'Open it', href: '/components/data' } })}
+      >
+        One that leads on (a link)
+      </Button>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() =>
+          toast({
+            title: 'Could not send the invoice',
+            description: 'The mail server does not answer.',
+            variant: 'error',
+            action: { label: 'Retry', onClick: () => toast({ title: 'Invoice sent', variant: 'success' }) },
+          })
+        }
+      >
+        One with a button
+      </Button>
     </>
   )
 }
@@ -189,7 +210,7 @@ export function Feedback() {
         <StatusBadge status="disabled" />
       </Demo>
 
-      <Demo id="toasts" title="Toasts" description="One at a time, at the bottom centre, each for its whole time: an error stays 8 s; when others wait, the one shown moves along faster." names={['ToastProvider', 'useToast', 'VelocityToast']}>
+      <Demo id="toasts" title="Toasts" description="One at a time, at the bottom centre, each for its whole time: an error stays 8 s; when others wait, the one shown moves along faster. One may lead on, by a link or a button (its action, which closes it): it stays 6 s, and its time stops under the pointer or while the keyboard is in it." names={['ToastProvider', 'useToast', 'VelocityToast']}>
         <Toasts />
       </Demo>
 

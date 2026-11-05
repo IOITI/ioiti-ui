@@ -2,13 +2,14 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, CheckCheck, X } from 'lucide-react';
+import { AlertCircle, Bell, CheckCheck, X } from 'lucide-react';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent } from '../link-context.js';
 // ioiti-ui: a moment is said from now, its full date in a hint.
 import { RelativeTime } from '../RelativeTime.js';
+import { Skeleton } from './skeleton.js';
 
 /** ioiti-ui: what kind of news an entry is, for its dot. */
 export type NotificationTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
@@ -41,8 +42,20 @@ export interface NotificationBellProps {
   showCount?: boolean;
   /** ioiti-ui: what draws an entry's link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
-  /** ioiti-ui: under the list (a setting of the notifications). */
+  /** ioiti-ui: under the list (a setting of the notifications, that only the latest are shown). */
   footer?: React.ReactNode;
+  /**
+   * ioiti-ui: the notifications are still being read: said in place of the list while there is none (never "No
+   * notifications right now", which is not known yet).
+   */
+  loading?: boolean;
+  /**
+   * ioiti-ui: they could not be read: what went wrong (`true`: "The notifications could not be read."), in place of
+   * the list while there is none, above it otherwise (the list is then the last one read).
+   */
+  error?: React.ReactNode;
+  /** ioiti-ui: reads them again: a "Try again" beside the error. */
+  onRetry?: () => void;
   /** ioiti-ui: the trigger's own look, to sit with the buttons around it. */
   triggerClassName?: string;
   /** Custom CSS class names. */
@@ -67,6 +80,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   showCount = true,
   linkComponent,
   footer,
+  loading = false,
+  error,
+  onRetry,
   triggerClassName,
   className,
 }) => {
@@ -123,6 +139,19 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [isPanelOpen, setPanelOpen]);
+
+  // ioiti-ui: the notifications could not be read, and what to do about it.
+  const failed = error !== undefined && error !== null && error !== false && error !== '';
+  const failedSaid = error === true ? 'The notifications could not be read.' : error;
+  const retry = failed && onRetry && (
+    <button
+      type="button"
+      onClick={onRetry}
+      className="shrink-0 rounded-md px-1.5 py-0.5 text-xs font-medium text-neutral-900 underline-offset-2 hover:underline focus-ring cursor-pointer dark:text-[#FAFAFA]"
+    >
+      Try again
+    </button>
+  );
 
   return (
     <div ref={containerRef} className={cn('relative inline-block', className)}>
@@ -230,9 +259,37 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               </div>
             </div>
 
+            {/* ioiti-ui: the last list read stays under an error, which says it is not up to date. */}
+            {failed && notifications.length > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-neutral-200 px-4 py-2 text-xs text-negative dark:border-[#1F1F1F]">
+                <span className="min-w-0">{failedSaid}</span>
+                {retry}
+              </div>
+            )}
+
             {/* List */}
             <div className="max-h-80 overflow-y-auto divide-y divide-neutral-200 dark:divide-[#1F1F1F]">
-              {notifications.length === 0 ? (
+              {notifications.length === 0 && failed ? (
+                // ioiti-ui: what is true when nothing could be read: not "No notifications right now".
+                <div className="py-8 px-4 text-center">
+                  <AlertCircle aria-hidden="true" className="w-6 h-6 text-negative mx-auto mb-2" />
+                  <p className="text-xs text-negative">{failedSaid}</p>
+                  {retry && <div className="mt-3 flex justify-center">{retry}</div>}
+                </div>
+              ) : notifications.length === 0 && loading ? (
+                // ioiti-ui: entries to come, as high as they will be; named for screen readers.
+                <div role="status" aria-label="Loading the notifications" className="divide-y divide-neutral-200 dark:divide-[#1F1F1F]">
+                  {[0, 1, 2].map((row) => (
+                    <div key={row} className="p-3 flex items-start gap-3">
+                      <Skeleton className="w-2 h-2 rounded-full mt-1.5 shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-3 w-4/5" />
+                        <Skeleton className="h-2.5 w-1/4" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : notifications.length === 0 ? (
                 <div className="py-8 px-4 text-center">
                   <Bell className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
                   <p className="text-xs text-muted-foreground">No notifications right now</p>

@@ -17,6 +17,8 @@ interface QueuedToast extends ToastMessage {
 
 function displayTime(toast: QueuedToast, waiting: number): number {
   if (toast.variant === 'error') return 8000
+  // Something to do from it: the time to read it and reach its action, others waiting or not.
+  if (toast.action) return 6000
   // Others are waiting behind it: move along faster.
   return waiting > 0 ? 2500 : 4000
 }
@@ -74,6 +76,7 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
           }}
           title={current.title}
           description={current.description}
+          action={current.action}
           variant={current.variant ?? 'default'}
           position="bottom-center"
           // The frame stays above the page while a page changes, as every layer over it (over-page, motion.css).
