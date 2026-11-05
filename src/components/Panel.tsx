@@ -47,23 +47,30 @@ export function Panel({ id, title, description, action, className, bodyClassName
 
 interface PageHeaderProps {
   title: string
+  /**
+   * What the trail of the top bar and the browser's tab call the page, where it is deeper than its heading
+   * says: a tab of a record, or a record of a tab, under the record's own header ("Exceptions", then
+   * "List 42", under "Acme (1024)"). Its title by default.
+   */
+  name?: string
   description?: ReactNode
   actions?: ReactNode
   /**
    * For the trail of the top bar, on a page deeper than the menu: the pages
    * between its entry of the menu and itself (the order a line of it
-   * belongs to). The title is the page's own step.
+   * belongs to). Its name is the page's own step.
    */
   parents?: Crumb[]
 }
 
 /**
  * The title of a page and what it does. On a page deeper than the menu, its
- * title also ends the trail of the top bar, which every page has.
+ * name (its title, unless it is given one) also ends the trail of the top
+ * bar, which every page has, and names the browser's tab.
  */
-export function PageHeader({ title, description, actions, parents }: PageHeaderProps) {
-  usePageName(title, parents)
-  useTabTitle(title)
+export function PageHeader({ title, name, description, actions, parents }: PageHeaderProps) {
+  usePageName(name ?? title, parents)
+  useTabTitle(name ?? title)
 
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">

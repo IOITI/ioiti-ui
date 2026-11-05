@@ -61,6 +61,10 @@ function renderShell({ path = '/orders', chips, end, onSignOut }: Options = {}) 
                 path="reports/:id/days/:day"
                 element={<PageHeader title="9 Oct 2026" parents={[{ label: 'October report', href: '/reports/r1' }]} />}
               />
+              <Route
+                path="customers/:id/exceptions"
+                element={<PageHeader title="Acme (1024)" name="Exceptions" parents={[{ label: 'Acme (1024)', href: '/customers/1024' }]} />}
+              />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Route>
@@ -200,6 +204,17 @@ describe('where the page is, in the top bar', () => {
     expect(shortTrail().getByRole('link', { name: 'October report' })).toHaveAttribute('href', '/reports/r1')
     expect(isCurrent(shortTrail().getByText('9 Oct 2026'))).toBe(true)
     expect(document.title).toBe('9 Oct 2026 · Test App')
+  })
+
+  it('ends with the name a page is given for, under the record its heading names', async () => {
+    renderShell({ path: '/customers/1024/exceptions' })
+
+    expect(isCurrent(await wholeTrail().findByText('Exceptions'))).toBe(true)
+    expect(wholeTrail().getByRole('link', { name: 'Customers' })).toHaveAttribute('href', '/customers')
+    expect(wholeTrail().getByRole('link', { name: 'Acme (1024)' })).toHaveAttribute('href', '/customers/1024')
+    // The heading keeps the record; the trail and the tab say which of its pages is shown.
+    expect(screen.getByRole('heading', { level: 1, name: 'Acme (1024)' })).toBeInTheDocument()
+    expect(document.title).toBe('Exceptions · Test App')
   })
 
   it('forgets the name of a page left behind', async () => {

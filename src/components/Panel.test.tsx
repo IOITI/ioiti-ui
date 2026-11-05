@@ -28,6 +28,17 @@ describe('the header of a page', () => {
     expect(document.title).toBe('My App')
   })
 
+  it('names the tab after the page it is given for, its heading keeping the title', () => {
+    render(
+      <IoitiProvider appName="My App">
+        <PageHeader title="Acme (1024)" name="Exceptions" parents={[{ label: 'Acme (1024)', href: '/customers/1024' }]} />
+      </IoitiProvider>,
+    )
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Acme (1024)' })).toBeInTheDocument()
+    expect(document.title).toBe('Exceptions · My App')
+  })
+
   it('names the tab after the page alone when the application gave no name', () => {
     render(<PageHeader title="Settings" />)
 

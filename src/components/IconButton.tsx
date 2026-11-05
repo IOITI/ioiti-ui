@@ -8,7 +8,10 @@ interface IconButtonProps extends Omit<ComponentProps<'button'>, 'children' | 'a
   label: string
   /** An icon of lucide-react, as an element: `<Search />`. */
   icon: ReactNode
-  /** Shown on hover, keyboard focus and a tap (a Hint, under it). */
+  /**
+   * Shown on hover, keyboard focus and a tap (a Hint, under it). On a disabled button, why it is disabled:
+   * the hint is then carried by a wrapper the keyboard and the pointer still reach.
+   */
   hint?: ReactNode
 }
 
@@ -28,7 +31,8 @@ export function IconButton({ label, icon, hint, className, type = 'button', ...p
     </button>
   )
   return hint ? (
-    <Hint content={hint} side="bottom">
+    // A disabled button takes neither the focus nor the pointer: its hint would never show.
+    <Hint content={hint} side="bottom" wrap={Boolean(props.disabled)}>
       {button}
     </Hint>
   ) : (

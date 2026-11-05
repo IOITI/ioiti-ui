@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { Search } from 'lucide-react'
+import userEvent from '@testing-library/user-event'
+import { Search, Trash2 } from 'lucide-react'
 import { describe, expect, it } from 'vitest'
 
 import { Field } from './Field.js'
@@ -51,6 +52,16 @@ describe('an icon button', () => {
     render(<IconButton label="Search" icon={<Search />} hint="Search every page (⌘K)" />)
 
     expect(screen.getByRole('button', { name: 'Search' })).toHaveAccessibleDescription('Search every page (⌘K)')
+  })
+
+  it('says why it is disabled through a wrapper the keyboard reaches', async () => {
+    const user = userEvent.setup()
+    render(<IconButton label="Delete" icon={<Trash2 />} hint="Only its author deletes it" disabled />)
+
+    await user.tab()
+    const wrapper = screen.getByRole('button', { name: 'Delete' }).parentElement as HTMLElement
+    expect(wrapper).toHaveFocus()
+    expect(wrapper).toHaveAccessibleDescription('Only its author deletes it')
   })
 })
 
