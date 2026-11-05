@@ -5,34 +5,18 @@ import type { ReactNode } from 'react'
 
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { ACCENT_LABEL, ACCENTS, lookLabel, MATERIAL_LABEL, MATERIALS } from '../lib/theme.js'
-import type { Accent, Material } from '../lib/theme.js'
 import { cn } from '../lib/utils.js'
 
 import { Hint } from './Hint.js'
+import { ACCENT_SWATCH, MATERIAL_SWATCH } from './look-swatches.js'
 import { useTheme } from './theme-context.js'
-
-// Each accent's fill in both themes, as src/styles/accents.css gives it, and its gradient over it where it
-// has one (a test holds them to it). Neutral's is ink, the primary colour of the design as it was.
-const ACCENT_SWATCH: Record<Accent, string> = {
-  neutral: 'bg-[var(--text-primary)]',
-  violet: 'bg-[#7c3aed] dark:bg-[#a78bfa]',
-  indigo: 'bg-[#4f46e5] dark:bg-[#818cf8]',
-  blue: 'bg-[#2563eb] dark:bg-[#60a5fa]',
-  bloom:
-    'bg-[#c2398b] dark:bg-[#f39ac8] bg-linear-110/srgb from-[#d58ecf] via-[#e77ab5] to-[#fa8749] dark:from-[#f0b5e2] dark:via-[#f39ac8] dark:to-[#fca676]',
-}
-
-const MATERIAL_SWATCH: Record<Material, string> = {
-  flat: 'border border-border-hover bg-surface-raised',
-  glass:
-    'border border-white/70 bg-linear-to-br from-indigo-300/80 via-sky-300/80 to-pink-300/80 dark:border-white/20 dark:from-indigo-600/80 dark:via-cyan-700/80 dark:to-pink-800/80',
-}
 
 /**
  * The accent and the material, each person's own (kept in this browser, as the theme is): a button
  * for beside the theme's, `topBarEnd={<><LookPicker /><ThemeToggle /></>}`. Until one is picked, the
  * page shows the application's (`ioiti({ accent, material })`). A choice shows at once; Escape, a
- * click elsewhere or the focus leaving close it.
+ * click elsewhere or the focus leaving close it. In the menu of the account instead: `UserMenu`'s
+ * `appearance` (`useAppearanceItems`).
  */
 export function LookPicker({ className }: { className?: string }) {
   const { accent, material, setAccent, setMaterial } = useTheme()

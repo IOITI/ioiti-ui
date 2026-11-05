@@ -14,7 +14,6 @@ import {
   ShortcutsDialog,
   SidebarFooterButton,
   StateChip,
-  ThemeToggle,
   UserMenu,
   useNavigateTo,
   useShortcut,
@@ -26,19 +25,22 @@ import { useState } from 'react'
 
 import { Demo } from '../parts'
 
-/** The top bar's end, as an application's: the theme, then who is signed in. Signing out leads to the sign-in page. */
+/**
+ * The top bar's end, as an application's: who is signed in, the look of the interface in their menu (the theme, the
+ * accent and the material: this gallery's own, changed at once). Signing out leads to the sign-in page.
+ */
 function TopBarEnd() {
   const navigate = useNavigateTo()
   return (
     <div className="flex h-14 w-full items-center justify-end gap-2 rounded-xl border border-border px-4 glass-bar">
-      <ThemeToggle />
       <UserMenu
         name="Ana María Ortiz"
         detail="Analyst"
         items={[
           { type: 'link', label: 'Profile', href: '/patterns/settings', icon: <UserRound /> },
-          { type: 'link', label: 'Themes', description: 'The look of every page', href: '/foundations/themes', icon: <Palette /> },
+          { type: 'link', label: 'Themes', description: 'The looks, side by side', href: '/foundations/themes', icon: <Palette /> },
         ]}
+        appearance
         onSignOut={() => navigate('/patterns/sign-in')}
       />
     </div>
@@ -142,7 +144,7 @@ export function Shell() {
       <Demo
         id="page-header"
         title="PageHeader"
-        description="The title of a page and what it does, with its actions on the right. It names the tab and ends the trail of the top bar. One a page: this page's own heading is one."
+        description="The title of a page and what it does, with its actions on the right. It names the tab and ends the trail of the top bar. One a page: this page's own heading is one. Under a record's header (its tabs, its records), name says which of its pages is shown, for the trail and the tab, the heading keeping the record."
         names={['PageHeader', 'usePageName', 'useTabTitle']}
         className="flex flex-col items-stretch gap-3"
       >
@@ -151,6 +153,13 @@ export function Shell() {
   description="Sent to Acme on 12 Oct."
   parents={[{ label: 'October', href: '/invoices?month=10' }]}
   actions={<ButtonLink to="/invoices/2026-0042.pdf" size="sm">Download</ButtonLink>}
+/>
+
+// A customer's tab, under the customer's header: Customers › Acme (1024) › Exceptions
+<PageHeader
+  title="Acme (1024)"
+  name="Exceptions"
+  parents={[{ label: 'Acme (1024)', href: '/customers/1024' }]}
 />`} />
       </Demo>
 
@@ -171,23 +180,21 @@ export function Shell() {
       <Demo
         id="user-menu"
         title="UserMenu"
-        description="Who is signed in, at the end of the top bar (topBarEnd): their avatar (their picture, or their initials) and their name, a role under it; the avatar alone on a narrow screen. It opens the menu of their account, DropdownMenu's: links through the router, actions, and signing out last, an action (onSignOut) or an address the server answers (signOutHref, its page loaded from the server)."
-        names={['UserMenu']}
+        description="Who is signed in, at the end of the top bar (topBarEnd): their avatar (their picture, or their initials) and their name, a role under it; the avatar alone on a narrow screen. It opens the menu of their account, DropdownMenu's: links through the router, actions, with appearance the theme, the accent and the material (useAppearanceItems), and signing out last, an action (onSignOut) or an address the server answers (signOutHref, its page loaded from the server)."
+        names={['UserMenu', 'useAppearanceItems']}
         className="flex flex-col items-stretch gap-3"
       >
         <TopBarEnd />
         <CodeBlock language="tsx" code={`<AppShell …
   topBarEnd={
-    <>
-      <ThemeToggle />
-      <UserMenu
-        name={me.name}
-        detail={me.role}
-        avatarSrc="/api/v1/me/avatar"
-        items={[{ type: 'link', label: 'Profile', href: '/profile', icon: <UserRound /> }]}
-        signOutHref="/api/v1/auth/logout"
-      />
-    </>
+    <UserMenu
+      name={me.name}
+      detail={me.role}
+      avatarSrc="/api/v1/me/avatar"
+      items={[{ type: 'link', label: 'Profile', href: '/profile', icon: <UserRound /> }]}
+      appearance
+      signOutHref="/api/v1/auth/logout"
+    />
   }
 />`} />
       </Demo>

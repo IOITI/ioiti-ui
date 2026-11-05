@@ -2,10 +2,14 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Settings, User } from 'lucide-react'
 import type { ComponentProps } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { ACCENT_ATTRIBUTE, MATERIAL_ATTRIBUTE, THEME_KEY_ATTRIBUTE } from '../lib/theme.js'
+import { stubSystemTheme } from '../test/systemTheme.js'
 
 import type { DropdownMenuItem } from './DropdownMenu.js'
 import { LinkProvider } from './LinkProvider.js'
+import { ThemeProvider } from './ThemeProvider.js'
 import { UserMenu } from './UserMenu.js'
 
 /** The application's link, as a router's would be: marked, to be told from a plain `<a>`. */
@@ -113,5 +117,74 @@ describe('UserMenu', () => {
 
     await user.click(screen.getByRole('button', { name: 'Ana María Ortiz, Analyste' }))
     expect(within(screen.getByRole('menu', { name: 'Compte' })).getByRole('menuitem')).toHaveTextContent('Se déconnecter')
+  })
+})
+
+describe('UserMenu, with the look of the interface', () => {
+  const html = document.documentElement
+
+  beforeEach(() => {
+    window.localStorage.clear()
+    html.classList.remove('dark')
+    html.removeAttribute(THEME_KEY_ATTRIBUTE)
+    html.removeAttribute(ACCENT_ATTRIBUTE)
+    html.removeAttribute(MATERIAL_ATTRIBUTE)
+    stubSystemTheme(false)
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  function renderMenu() {
+    render(
+      <ThemeProvider storageKey="my-app.theme">
+        <UserMenu name="Ana María Ortiz" detail="Analyst" items={ITEMS} appearance onSignOut={() => {}} />
+      </ThemeProvider>,
+    )
+    return screen.getByRole('button', { name: 'Ana María Ortiz, Analyst' })
+  }
+
+  it('offers the theme after the items, then the accent and the material, signing out still last', async () => {
+    const user = userEvent.setup()
+    await user.click(renderMenu())
+
+    const menu = screen.getByRole('menu', { name: 'Account' })
+    expect(within(menu).getByRole('group', { name: 'Theme' })).toBeInTheDocument()
+    expect(within(menu).getByRole('menuitemradio', { name: /^System/ })).toHaveAttribute('aria-checked', 'true')
+    expect(within(menu).getByRole('menuitemradio', { name: 'Light' })).toHaveAttribute('aria-checked', 'false')
+    const rows = within(menu).getAllByRole('menuitem')
+    expect(rows.map((row) => row.textContent)).toEqual(['Profile', 'Settings', 'Accent and materialNeutral, flat', 'Sign out'])
+  })
+
+  it('changes the theme, kept in this browser', async () => {
+    const user = userEvent.setup()
+    await user.click(renderMenu())
+
+    await user.click(screen.getByRole('menuitemradio', { name: 'Dark' }))
+
+    await waitFor(() => expect(html).toHaveClass('dark'))
+    expect(window.localStorage.getItem('my-app.theme')).toBe('dark')
+  })
+
+  it('changes the accent and the material from their sub-menu, each a choice with its swatch', async () => {
+    const user = userEvent.setup()
+    const button = renderMenu()
+
+    await user.click(button)
+    await user.click(screen.getByRole('menuitem', { name: /^Accent and material/ }))
+    const violet = await screen.findByRole('menuitemradio', { name: 'Violet' })
+    expect(violet.querySelector('[data-swatch="violet"]')).toHaveAttribute('aria-hidden', 'true')
+    await user.click(violet)
+    await waitFor(() => expect(html.getAttribute(ACCENT_ATTRIBUTE)).toBe('violet'))
+    // A choice closes the menu, as any radio of a menu.
+    await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument())
+
+    await user.click(button)
+    await user.click(screen.getByRole('menuitem', { name: /^Accent and material/ }))
+    await user.click(await screen.findByRole('menuitemradio', { name: 'Glass' }))
+    await waitFor(() => expect(html.getAttribute(MATERIAL_ATTRIBUTE)).toBe('glass'))
+    expect(window.localStorage.getItem('my-app.theme.accent')).toBe('violet')
+    expect(window.localStorage.getItem('my-app.theme.material')).toBe('glass')
   })
 })

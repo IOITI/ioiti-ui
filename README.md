@@ -177,6 +177,13 @@ application's key; without it, every person sees the application's.
 <RouterAppShell menu={MENU} topBarEnd={<><LookPicker /><ThemeToggle /></>} />
 ```
 
+Or in the menu of the account, with the theme: `UserMenu`'s `appearance` (`useAppearanceItems()` for a menu of
+the application's own).
+
+```tsx
+<RouterAppShell menu={MENU} topBarEnd={<UserMenu name={me.name} appearance onSignOut={signOut} />} />
+```
+
 An application's own classes follow them the way the components do: `accent:` and `glass:` variants (on
 `data-accent` and `data-material` of `<html>`), the accent's tokens (`bg-brand`, `text-brand-foreground`,
 `bg-brand-soft`, `text-brand-text`; for a filled, primary control, `bg-(image:--brand-fill)` and

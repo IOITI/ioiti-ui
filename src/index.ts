@@ -7,8 +7,10 @@ export { cn, copyToClipboard, scrollToTop } from './lib/utils.js'
 export { isPlainClick } from './lib/links.js'
 export { motionTransitions } from './lib/motion-tokens.js'
 export {
+  ACCENT_LABEL,
   ACCENTS,
   DEFAULT_THEME_STORAGE_KEY,
+  MATERIAL_LABEL,
   MATERIALS,
   THEME_KEY_ATTRIBUTE,
   applyTheme,
@@ -62,6 +64,7 @@ export { ThemeToggle } from './components/ThemeToggle.js'
 export { useTheme } from './components/theme-context.js'
 export type { ThemeState } from './components/theme-context.js'
 export { UserMenu } from './components/UserMenu.js'
+export { useAppearanceItems } from './components/appearance.js'
 export { ToastProvider } from './components/ToastProvider.js'
 export { useToast } from './components/toast-context.js'
 export type { ShowToast, ToastMessage } from './components/toast-context.js'

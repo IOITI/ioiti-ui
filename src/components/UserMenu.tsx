@@ -2,6 +2,7 @@ import { ChevronDown, LogOut } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { cn } from '../lib/utils.js'
+import { useAppearanceItems } from './appearance.js'
 import { Avatar } from './Avatar.js'
 import { DropdownMenu } from './DropdownMenu.js'
 import type { DropdownMenuItem } from './DropdownMenu.js'
@@ -18,6 +19,12 @@ interface UserMenuProps {
    * application's link (a profile, the settings), an action does something.
    */
   items?: DropdownMenuItem[]
+  /**
+   * The look of the interface in the menu, after the items: the theme (system, light, dark), then a sub-menu
+   * of the accent and the material (`useAppearanceItems`), each person's own, kept in this browser. In place
+   * of `ThemeToggle` and `LookPicker` in the top bar.
+   */
+  appearance?: boolean
   /** Signs out in code (a request, then the sign-in page): an action, the menu's last item. */
   onSignOut?: () => void
   /**
@@ -34,14 +41,16 @@ interface UserMenuProps {
 
 /**
  * Who is signed in, at the end of the top bar (AppShell's `topBarEnd`): their avatar and their name, the avatar
- * alone on a narrow screen, a button that opens the menu of their account, signing out last. The menu is
- * `DropdownMenu`'s: the arrows move, a letter jumps, Escape closes, Tab leaves.
+ * alone on a narrow screen, a button that opens the menu of their account, signing out last; with
+ * `appearance`, the theme, the accent and the material before it. The menu is `DropdownMenu`'s: the arrows
+ * move, a letter jumps, Escape closes, Tab leaves.
  */
 export function UserMenu({
   name,
   detail,
   avatarSrc,
   items = [],
+  appearance = false,
   onSignOut,
   signOutHref,
   signOutLabel = 'Sign out',
@@ -53,7 +62,9 @@ export function UserMenu({
     : onSignOut
       ? { label: signOutLabel, icon: <LogOut />, onSelect: onSignOut }
       : null
-  const menu: DropdownMenuItem[] = signOut === null ? items : items.length > 0 ? [...items, { type: 'separator' }, signOut] : [signOut]
+  const look = useAppearanceItems()
+  const given: DropdownMenuItem[] = appearance ? (items.length > 0 ? [...items, { type: 'separator' }, ...look] : look) : items
+  const menu: DropdownMenuItem[] = signOut === null ? given : given.length > 0 ? [...given, { type: 'separator' }, signOut] : [signOut]
 
   return (
     <DropdownMenu
