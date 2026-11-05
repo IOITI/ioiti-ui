@@ -7,6 +7,8 @@ import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent } from '../link-context.js';
+// ioiti-ui: a moment is said from now, its full date in a hint.
+import { RelativeTime } from '../RelativeTime.js';
 
 /** ioiti-ui: what kind of news an entry is, for its dot. */
 export type NotificationTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
@@ -237,10 +239,6 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 </div>
               ) : (
                 notifications.map((item) => {
-                  const dateString =
-                    typeof item.timestamp === 'string'
-                      ? item.timestamp
-                      : item.timestamp.toLocaleDateString();
                   const messageClass = cn(
                     'text-xs leading-relaxed text-neutral-600 dark:text-[#A1A1A1]',
                     !item.read && 'font-medium text-neutral-900 dark:text-[#FAFAFA]'
@@ -283,8 +281,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                         {item.detail && (
                           <p className="text-xs text-muted-foreground leading-relaxed [overflow-wrap:anywhere]">{item.detail}</p>
                         )}
+                        {/* ioiti-ui: a Date is said from now ("3 min ago", the day it was only in EasyUI), a string as the application wrote it. */}
                         <span className="text-[10px] font-mono text-muted-foreground mt-1 block">
-                          {dateString}
+                          {typeof item.timestamp === 'string' ? item.timestamp : <RelativeTime value={item.timestamp} past />}
                         </span>
                       </div>
 

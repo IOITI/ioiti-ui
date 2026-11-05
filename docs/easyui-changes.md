@@ -216,6 +216,7 @@ otherwise).
   inner scroll cut the focus ring).
 - `notification-bell`: an entry's `detail` (a second line), `href` (a link: a plain click marks it read and
   closes the panel) and `tone` (its dot's colour; only `danger` pulses, EasyUI pulsed every unread one); a
+  `Date` timestamp said from now (`RelativeTime`, 0.10.0: EasyUI wrote its day only), a string as given; a
   `footer` and a `triggerClassName`; Escape closes the panel and gives the bell the focus again; the panel is a
   dialog named "Notifications", across the screen under the top bar on a phone (centred on the bell, it went
   past the edge).

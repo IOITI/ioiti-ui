@@ -3,6 +3,24 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.10.0] - unreleased
+
+- **`PageHeader`'s `name`**: what the trail of the top bar and the browser's tab call the page, where it is deeper
+  than its heading says. A tab of a record, or a record of a tab, under the record's own header (a layout's):
+  `<PageHeader title="Acme (1024)" name="Exceptions" parents={[{ label: 'Acme (1024)', href: '/customers/1024' }]} />`
+  reads "Customers › Acme (1024) › Exceptions", its heading still the customer. Its title by default.
+- **A disabled `IconButton` says why** with its `hint`: the hint is carried by a wrapper the keyboard and the
+  pointer reach, as `Hint`'s `wrap` does (a disabled button takes neither).
+- **The look of the interface in the menu of the account**: `UserMenu`'s `appearance` puts the theme (system,
+  light, dark), then a sub-menu of the accent and the material, each choice with its swatch, after the items and
+  before signing out. `useAppearanceItems()` gives the same items for a menu of the application's own
+  (`DropdownMenu`'s). `ACCENT_LABEL` and `MATERIAL_LABEL`, the words of each accent and material, are exported.
+  `LookPicker` and `ThemeToggle` stay, for a top bar that keeps them.
+- **`NotificationBell` says a `Date` from now** ("3 min ago", the full date in a hint: `RelativeTime`), where it
+  wrote the day alone; a string is still shown as the application wrote it.
+
+Nothing to change in an application.
+
 ## [0.9.0] - 2026-11-04
 
 - **`ioiti-ui/code`**, a new entry: code editors on CodeMirror 6, in the design's code colours and surface, every
