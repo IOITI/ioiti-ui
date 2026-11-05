@@ -886,7 +886,8 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
   // DESKTOP TABLE VIEW
   return (
     // ioiti-ui: positioned, so that the cells' words for screen readers (sr-only) stay in the frame that scrolls them.
-    <div className={cn('relative overflow-x-auto scrollbar-none font-sans', className)}>
+    // ioiti-ui: a thin scrollbar, not none: a table wider than its box says it goes on past the edge.
+    <div className={cn('relative overflow-x-auto [scrollbar-width:thin] font-sans', className)}>
       <table className="w-full border-collapse text-left font-sans text-xs min-w-[500px] sm:min-w-full">
         <thead>
           <tr className="border-b border-border/50 bg-surface-raised/20 text-xs text-muted-foreground select-none">
@@ -1094,7 +1095,8 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             aria-label="Rows per page"
             className="px-2 py-1 rounded-md border border-border/60 bg-surface-raised/20 text-foreground text-xs focus:outline-none focus:border-border cursor-pointer font-sans"
           >
-            {pageSizeOptions.map((opt) => (
+            {/* ioiti-ui: the page's size among them, given or not: a select shows its first option for a value it lacks. */}
+            {(pageSizeOptions.includes(pageSize) ? pageSizeOptions : [...pageSizeOptions, pageSize].sort((a, b) => a - b)).map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
               </option>

@@ -3,6 +3,18 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.11.1] - 2026-11-05
+
+- **The top bar's shorter trail keeps the names it has room for**: when the whole trail does not fit, its last
+  two steps show, the first up to 45% of the room; it took 45% of the two steps' own width, and cut a
+  customer's name short beside free space ("Alpha Industrie… › Exceptions").
+- **A table wider than its box shows a thin scrollbar**: it had none, and the columns past the edge could not be
+  found.
+- **The rows per page say the page's size** when it is not one of `pageSizeOptions` (a table given
+  `defaultPageSize={25}` said 5, and showed 25).
+
+Nothing to change in an application.
+
 ## [0.11.0] - 2026-11-05
 
 - **A toast leads on**: `useToast()`'s message takes an `action`, a link to where its news is dealt with

@@ -102,6 +102,13 @@ describe('the data table, as the pages use it', () => {
     expect(shown()[0]).toMatch(/^Row 1(?!\d)/)
   })
 
+  it('shows the page size it is given as chosen, even one its list of sizes does not offer', () => {
+    render(<AdvancedDataTable<Row> data={ROWS} columns={COLUMNS} getRowId={(row) => row.id} selectable={false} defaultPageSize={25} />)
+    const sizes = screen.getByRole('combobox', { name: 'Rows per page' })
+    expect(sizes).toHaveValue('25')
+    expect(within(sizes).getAllByRole('option').map((option) => option.textContent)).toEqual(['5', '10', '20', '25', '50'])
+  })
+
   it('opens on the filters it is given', () => {
     render(
       <AdvancedDataTable<Row>

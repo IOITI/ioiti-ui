@@ -98,7 +98,8 @@ export function TopBarTrail({ home = DEFAULT_HOME }: { home?: { label: string; h
       >
         <Breadcrumb items={items} wrap={false} maxItems={items.length} />
       </div>
-      <nav aria-label="Breadcrumb" className={cn('min-w-0', fits && 'lg:hidden')}>
+      {/* As wide as the room: the step before the page takes up to 45% of it, not of the two steps' own width. */}
+      <nav aria-label="Breadcrumb" className={cn('min-w-0 flex-1', fits && 'lg:hidden')}>
         <ol className="flex min-w-0 items-center gap-1 text-sm text-muted-foreground">
           {tail.map((item, index) => {
             const last = index === tail.length - 1
