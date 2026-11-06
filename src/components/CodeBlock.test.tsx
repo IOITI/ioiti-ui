@@ -49,8 +49,52 @@ describe('the code colours', () => {
     ])
   })
 
+  it('read python: keywords, decorators, definitions, calls, strings and comments', () => {
+    const code = [
+      '# An RTA of ours',
+      'from . import OSType, RuleMetadata, register_code_rta',
+      '',
+      '@register_code_rta(id="0ea9", platforms=[OSType.WINDOWS])',
+      'def main():',
+      '    """Emulate, never harm."""',
+      '    for host in hosts[:2]:',
+      "        print(f'{host}', 0x1F, 3.5e2)",
+      '    return None',
+    ].join('\n')
+    const tokens = kinds(code, 'python')
+    expect(tokens).toContain('comment:# An RTA of ours')
+    expect(tokens).toContain('keyword:from')
+    expect(tokens).toContain('keyword:import')
+    expect(tokens).toContain('type:OSType')
+    expect(tokens).toContain('builtin:@register_code_rta')
+    expect(tokens).toContain('string:"0ea9"')
+    expect(tokens).toContain('keyword:def')
+    expect(tokens).toContain('function:main')
+    expect(tokens).toContain('string:"""Emulate, never harm."""')
+    expect(tokens).toContain('keyword:for')
+    expect(tokens).toContain('keyword:in')
+    expect(tokens).toContain('builtin:print')
+    expect(tokens).toContain("string:f'{host}'")
+    expect(tokens).toContain('number:0x1F')
+    expect(tokens).toContain('number:3.5e2')
+    expect(tokens).toContain('keyword:None')
+    // A name after a dot is an attribute, not a builtin; a lone @ is an operator.
+    expect(kinds('obj.print(x)\na @ b', 'python')).toEqual([
+      'plain:obj',
+      'operator:.',
+      'function:print',
+      'operator:(',
+      'plain:x',
+      'operator:)',
+      'plain:a',
+      'operator:@',
+      'plain:b',
+    ])
+  })
+
   it('keep every character, in order, in every language', () => {
     const samples: [Parameters<typeof highlightCode>[1], string][] = [
+      ['python', '@deco\ndef f(a, *b, **c) -> "x":\n    \'\'\'doc\n    lines\'\'\'\n    return rb"\\x00" + f\'{a!r}\'  # c\n'],
       ['toml', '[rule]\nname = "a # not a comment" # a comment\nrisk = 47\ntags = ["x", \'y\']\n[[rule.threat]]\nnote = """\nline\n"""\n'],
       ['yaml', '---\nkey: value # c\nlist:\n  - &a 1\n  - *a\nblock: |\n  kept\n  as text\nquoted: "x: y"\n'],
       ['diff', 'diff --git a/x b/x\n--- a/x\n+++ b/x\n@@ -1,2 +1,2 @@ ctx\n-old\n+new\n same\n\\ No newline at end of file'],

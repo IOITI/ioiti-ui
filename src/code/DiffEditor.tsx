@@ -1,4 +1,5 @@
 import { history, historyKeymap, defaultKeymap } from '@codemirror/commands'
+import { lintGutter, setDiagnostics } from '@codemirror/lint'
 import { getChunks, goToNextChunk, goToPreviousChunk, MergeView, unifiedMergeView } from '@codemirror/merge'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { Annotation, Compartment, EditorState } from '@codemirror/state'
@@ -10,6 +11,8 @@ import type { ReactNode } from 'react'
 
 import { IconButton } from '../components/IconButton.js'
 import { cn } from '../lib/utils.js'
+import { placeDiagnostics } from './diagnostics.js'
+import type { CodeDiagnostic } from './diagnostics.js'
 import { loadLanguage } from './languages.js'
 import type { CodeEditorLanguage } from './languages.js'
 import { editorTheme } from './theme.js'
@@ -41,6 +44,10 @@ export interface DiffEditorProps {
   maxHeight?: number | string
   /** At the end of the header, after the buttons that move between changes: a toggle, an action. */
   actions?: ReactNode
+  /** Problems found in the changed version (a server's parse errors), marked as CodeEditor marks them. */
+  diagnostics?: readonly CodeDiagnostic[]
+  /** Called with the changed version on ⌘S / Ctrl+S in it, the browser's own save kept from the page. */
+  onSave?: (value: string) => void
   className?: string
 }
 
@@ -65,15 +72,17 @@ export function DiffEditor({
   wrap = false,
   maxHeight,
   actions,
+  diagnostics,
+  onSave,
   className,
 }: DiffEditorProps) {
   const host = useRef<HTMLDivElement>(null)
   // The editor that shows the changed version: the merge view's second, or the unified one.
   const changed = useRef<EditorView | null>(null)
   const parts = useRef<{ language: Compartment[]; readOnly: Compartment } | null>(null)
-  const handlers = useRef({ onChange })
+  const handlers = useRef({ onChange, onSave })
   useLayoutEffect(() => {
-    handlers.current = { onChange }
+    handlers.current = { onChange, onSave }
   })
   const [changes, setChanges] = useState(0)
   // The changed text when the view is made again (a new original, layout or option): the user's, kept.
@@ -107,7 +116,20 @@ export function DiffEditor({
     ]
     const editable: Extension = [
       history(),
-      keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+      lintGutter(),
+      keymap.of([
+        {
+          key: 'Mod-s',
+          preventDefault: true,
+          run: (target) => {
+            handlers.current.onSave?.(target.state.doc.toString())
+            return true
+          },
+        },
+        ...defaultKeymap,
+        ...historyKeymap,
+        ...searchKeymap,
+      ]),
       lock.of(EditorState.readOnly.of(locked)),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
@@ -191,6 +213,13 @@ export function DiffEditor({
     const editor = changed.current
     if (editor && parts.current) editor.dispatch({ effects: parts.current.readOnly.reconfigure(EditorState.readOnly.of(readOnly)) })
   }, [readOnly])
+
+  // Placed again when the view is made again: a new original or layout starts it afresh.
+  useEffect(() => {
+    const editor = changed.current
+    if (!editor) return
+    editor.dispatch(setDiagnostics(editor.state, placeDiagnostics(editor.state.doc, diagnostics ?? [])))
+  }, [diagnostics, original, layout, collapseKey, wrap, label, originalLabel, modifiedLabel])
 
   const move = (direction: 'next' | 'previous') => {
     const editor = changed.current

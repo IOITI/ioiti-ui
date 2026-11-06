@@ -53,6 +53,11 @@ describe('CodeEditor', () => {
     await waitFor(() => expect(editorOf('Rule file').state.facet(languageFacet)?.name).toBe('toml'))
   })
 
+  it('colours Python, loaded when first asked for', async () => {
+    render(<CodeEditor label="An RTA of ours" value={'def main():\n    return None\n'} language="python" />)
+    await waitFor(() => expect(editorOf('An RTA of ours').state.facet(languageFacet)?.name).toBe('python'))
+  })
+
   it('marks the problems a server found, where they are', async () => {
     const { container, rerender } = render(<CodeEditor label="Rule file" value={'a = 1\nb = \n'} />)
     rerender(

@@ -1,5 +1,5 @@
 import { EditorView } from '@codemirror/view'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -57,5 +57,23 @@ describe('DiffEditor', () => {
     render(<DiffEditor label="Rule file" original={ORIGINAL} modified={ORIGINAL} />)
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('No change'))
     expect(screen.getByRole('button', { name: 'Next change' })).toBeDisabled()
+  })
+
+  it('marks the problems a server found in the changed version, and places them again on a new original', async () => {
+    const problem = [{ line: 3, column: 14, message: 'A number between 0 and 100', severity: 'error' as const }]
+    const { container, rerender } = render(<DiffEditor label="Rule file" original={ORIGINAL} modified={MODIFIED} diagnostics={problem} />)
+    await waitFor(() => expect(container.querySelector('.cm-lintRange-error')).not.toBeNull())
+    expect(container.querySelector('.cm-lintRange-error')?.textContent).toBe('73')
+    rerender(<DiffEditor label="Rule file" original={`${ORIGINAL}\n`} modified={MODIFIED} diagnostics={problem} />)
+    await waitFor(() => expect(container.querySelector('.cm-lintRange-error')?.textContent).toBe('73'))
+    rerender(<DiffEditor label="Rule file" original={`${ORIGINAL}\n`} modified={MODIFIED} diagnostics={[]} />)
+    await waitFor(() => expect(container.querySelector('.cm-lintRange-error')).toBeNull())
+  })
+
+  it('saves the changed version on ⌘S / Ctrl+S', () => {
+    const onSave = vi.fn()
+    render(<DiffEditor label="Rule file" original={ORIGINAL} modified={MODIFIED} onSave={onSave} />)
+    fireEvent.keyDown(screen.getByRole('textbox', { name: 'Rule file: Modified' }), { key: 's', code: 'KeyS', ctrlKey: true })
+    expect(onSave).toHaveBeenCalledWith(MODIFIED)
   })
 })

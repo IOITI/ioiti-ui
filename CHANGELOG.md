@@ -3,6 +3,17 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.14.0] - 2026-11-06
+
+- **Python in the code editors and code blocks.** `CodeEditor` and `DiffEditor` take `language="python"` (loaded the
+  first time it is shown, as the others are), and `CodeBlock` colours it: keywords, decorators, definitions,
+  calls, builtins, strings (triple-quoted and prefixed ones too), numbers and comments.
+- **`DiffEditor` marks a server's problems and saves on ⌘S**, as `CodeEditor` does: `diagnostics` placed in the
+  changed version (again when the view is made again), and `onSave` with that version on ⌘S / Ctrl+S, the browser's
+  own save kept from the page.
+
+Nothing to change in an application.
+
 ## [0.13.1] - 2026-11-06
 
 - **What `QueryState` shows after its skeleton keeps the page's spacing.** It arrived in a box that has no box of

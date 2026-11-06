@@ -48,6 +48,22 @@ const DIFF = `diff --git a/rules/admin_login.toml b/rules/admin_login.toml
 +risk_score = 73
 +severity = "high"`
 
+const RTA = `# Test of our own: emulates a discovery, harms nothing.
+from . import OSType, RuleMetadata, _common, register_code_rta
+
+
+@register_code_rta(
+    id="0ea98fa0-6f1e-4a3b-9c51-0d1f6b2a7c11",
+    name="mssp_whoami_discovery",
+    platforms=[OSType.WINDOWS],
+    siem_rules=[RuleMetadata(id="36349ded-25fd-4f5e-a7b5-1b3c8a2e7d40", name="Whoami discovery")],
+    techniques=["T1033"],
+)
+def main():
+    """Run whoami once, as an operator would."""
+    _common.execute(["whoami.exe", "/all"], timeout=10)
+`
+
 const OUTPUT = [
   'INFO  Loading rules and configurations …',
   'INFO  Parsed 4133 TOML files in 3.17s',
@@ -102,6 +118,12 @@ function EditorDemo() {
 function DiffDemo() {
   const [layout, setLayout] = useState<'split' | 'unified'>('split')
   const [mine, setMine] = useState(EDITED)
+  const [saved, setSaved] = useState<string | null>(null)
+  const score = mine.split('\n').findIndex((line) => line.startsWith('risk_score'))
+  const problems: CodeDiagnostic[] =
+    score >= 0 && !/^risk_score = (?:100|\d{1,2})\s*$/.test(mine.split('\n')[score])
+      ? [{ line: score + 1, column: 14, message: 'A number between 0 and 100' }]
+      : []
   return (
     <div className="flex w-full flex-col gap-3">
       <SegmentedControl
@@ -124,7 +146,12 @@ function DiffDemo() {
         originalLabel="Saved"
         modifiedLabel="Yours"
         maxHeight={360}
+        diagnostics={problems}
+        onSave={() => setSaved(new Date().toLocaleTimeString('en-GB'))}
       />
+      <span className="text-xs text-muted-foreground">
+        {saved ? `Saved with ⌘S at ${saved}` : 'A risk score past 100 is marked; ⌘S / Ctrl+S saves yours.'}
+      </span>
     </div>
   )
 }
@@ -168,8 +195,8 @@ export function Code() {
 
       <Demo
         id="code-languages"
-        title="CodeBlock: TOML, YAML and diffs"
-        description="A configuration in TOML or YAML, and a unified diff: what was removed in the loss's tone, what was added in the gain's, each line also marked at its edge."
+        title="CodeBlock: TOML, YAML, Python and diffs"
+        description="A configuration in TOML or YAML, a Python module, and a unified diff: what was removed in the loss's tone, what was added in the gain's, each line also marked at its edge."
         names={['CodeBlock']}
         className="grid w-full gap-4 lg:grid-cols-2"
       >
@@ -178,6 +205,7 @@ export function Code() {
           <CodeBlock label="customers_dac/1024/_config.yaml" language="yaml" code={YAML} />
           <CodeBlock label="What changed" language="diff" code={DIFF} />
         </div>
+        <CodeBlock label="rtas/internal/mssp_whoami_discovery.py" language="python" lineNumbers code={RTA} className="lg:col-span-2" />
       </Demo>
 
       <Demo
@@ -193,7 +221,7 @@ export function Code() {
       <Demo
         id="diff-editor"
         title="DiffEditor"
-        description="Two versions of a text, side by side or in one column: unchanged stretches folded, the header's arrows going from one change to the next, the second version editable."
+        description="Two versions of a text, side by side or in one column: unchanged stretches folded, the header's arrows going from one change to the next, the second version editable, its problems marked as the editor marks them, ⌘S saving it."
         names={['DiffEditor']}
         from="ioiti-ui/code"
       >

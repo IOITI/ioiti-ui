@@ -52,7 +52,7 @@ interface CodeBlockProps {
 
 /**
  * Code to read and copy: a payload, a configuration, a command, a diff. Coloured in the design's code colours
- * (json, js and ts with jsx, css, shell, toml, yaml; a unified diff's lines in the tones of a gain and a loss),
+ * (json, js and ts with jsx, css, shell, toml, yaml, python; a unified diff's lines in the tones of a gain and a loss),
  * on a surface every one of them is read on at 4.5:1. As Elastic UI's code block does.
  */
 export function CodeBlock({

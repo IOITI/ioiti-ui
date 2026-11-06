@@ -2,7 +2,7 @@ import { StreamLanguage } from '@codemirror/language'
 import type { Extension } from '@codemirror/state'
 
 /** The languages the editors read. `text` is not coloured. */
-export type CodeEditorLanguage = 'toml' | 'yaml' | 'json' | 'markdown' | 'text'
+export type CodeEditorLanguage = 'toml' | 'yaml' | 'json' | 'markdown' | 'python' | 'text'
 
 /**
  * A language's support, loaded when first asked for: each is a chunk of its own, so that an editor of
@@ -25,6 +25,10 @@ export async function loadLanguage(language: CodeEditorLanguage): Promise<Extens
     case 'markdown': {
       const { markdown } = await import('@codemirror/lang-markdown')
       return markdown()
+    }
+    case 'python': {
+      const { python } = await import('@codemirror/legacy-modes/mode/python')
+      return StreamLanguage.define(python)
     }
     default:
       return []

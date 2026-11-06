@@ -142,12 +142,12 @@ npm install @codemirror/state @codemirror/view @codemirror/commands @codemirror/
 import { CodeEditor, DiffEditor } from 'ioiti-ui/code'
 
 <CodeEditor label="Rule file" language="toml" value={toml} onChange={setToml} onSave={save} diagnostics={problems} />
-<DiffEditor label="Rule file" language="toml" original={saved} modified={toml} onChange={setToml} layout="split" />
+<DiffEditor label="Rule file" language="toml" original={saved} modified={toml} onChange={setToml} onSave={save} diagnostics={problems} />
 ```
 
-Each language (`toml`, `yaml`, `json`, `markdown`) is loaded the first time an editor shows it: a chunk of
-its own. Load the entry itself lazily (`React.lazy`) to keep it out of the first page. Code to read only
-stays a `CodeBlock` (toml, yaml and diffs too); a process's output, a `LogViewer`.
+Each language (`toml`, `yaml`, `json`, `markdown`, `python`) is loaded the first time an editor shows it: a
+chunk of its own. Load the entry itself lazily (`React.lazy`) to keep it out of the first page. Code to read
+only stays a `CodeBlock` (toml, yaml, python and diffs too); a process's output, a `LogViewer`.
 
 ## Themes
 

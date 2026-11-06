@@ -23,7 +23,7 @@ export interface CodeToken {
   text: string
 }
 
-export type CodeLanguage = 'json' | 'js' | 'jsx' | 'ts' | 'tsx' | 'css' | 'shell' | 'toml' | 'yaml' | 'diff' | 'text'
+export type CodeLanguage = 'json' | 'js' | 'jsx' | 'ts' | 'tsx' | 'css' | 'shell' | 'toml' | 'yaml' | 'diff' | 'python' | 'text'
 
 type Rule = [CodeTokenKind | 'word', RegExp]
 
@@ -69,6 +69,32 @@ const SHELL_RULES: Rule[] = [
   ['keyword', /(?<=\s|^)--?[\w-]+(?:=\S*)?/y],
   ['word', /[\w./@:+-]+/y],
   ['operator', /&&|\|\||[|;&<>()]/y],
+]
+
+// `match` and `case` are soft keywords: names as often as not, left plain.
+const PY_KEYWORDS = new Set(
+  (
+    'False None True and as assert async await break class continue def del elif else except finally for from global if ' +
+    'import in is lambda nonlocal not or pass raise return try while with yield'
+  ).split(' '),
+)
+
+const PY_BUILTINS = new Set(
+  (
+    'abs all any bool bytes callable dict dir enumerate filter float format getattr hasattr hash int isinstance issubclass iter len ' +
+    'list map max min next object open ord print range repr reversed round set setattr sorted str sum super tuple type zip'
+  ).split(' '),
+)
+
+const PY_RULES: Rule[] = [
+  ['comment', /#[^\n]*/y],
+  // A prefix (r, b, f, rb, …) then triple quotes, which hold lines, or single ones, which end at the line's end.
+  ['string', /(?:[rRbBuUfF]{1,2})?(?:"""[\s\S]*?(?:"""|$)|'''[\s\S]*?(?:'''|$)|"(?:\\.|[^"\\\n])*"?|'(?:\\.|[^'\\\n])*'?)/y],
+  // A decorator: its name, dotted, after the @ that starts it (a lone @ is the matrix product).
+  ['builtin', /@[A-Za-z_][\w.]*/y],
+  ['number', /\b(?:0[xXoObB][\da-fA-F_]+|\d[\d_]*(?:\.\d[\d_]*)?(?:[eE][+-]?\d+)?j?)\b/y],
+  ['word', /[A-Za-z_]\w*/y],
+  ['operator', /\*\*=?|\/\/=?|->|:=|[=!<>]=?|[-+*/%&|^~@]=?|[(){}[\]:;,.]/y],
 ]
 
 function scan(code: string, rules: Rule[]): { kind: CodeTokenKind | 'word'; text: string }[] {
@@ -119,6 +145,24 @@ function javascript(code: string): CodeToken[] {
     if (before === '<' || before === '</') return { kind: /^[A-Z]/.test(word) ? 'type' : 'keyword', text: word }
     if (after === '(') return { kind: before === '.' ? 'builtin' : 'function', text: word }
     if (JS_NAMESPACES.has(word) && after === '.') return { kind: 'namespace', text: word }
+    if (/^[A-Z]/.test(word)) return { kind: 'type', text: word }
+    return { kind: 'plain', text: word }
+  })
+}
+
+function python(code: string): CodeToken[] {
+  const tokens = scan(code, PY_RULES)
+  return tokens.map((token, index) => {
+    if (token.kind !== 'word') return token as CodeToken
+    const word = token.text
+    const before = previous(tokens, index)
+    const after = next(tokens, index)
+    // An attribute's dot touches it (`obj.print`); `from . import` has a space after its dot.
+    const attribute = tokens[index - 1]?.text === '.'
+    if (PY_KEYWORDS.has(word) && !attribute) return { kind: 'keyword', text: word }
+    if (before === 'def') return { kind: 'function', text: word }
+    if (before === 'class') return { kind: 'type', text: word }
+    if (after === '(') return { kind: PY_BUILTINS.has(word) && !attribute ? 'builtin' : 'function', text: word }
     if (/^[A-Z]/.test(word)) return { kind: 'type', text: word }
     return { kind: 'plain', text: word }
   })
@@ -442,6 +486,8 @@ export function highlightCode(code: string, language: CodeLanguage): CodeToken[]
       return yaml(code)
     case 'diff':
       return diff(code)
+    case 'python':
+      return python(code)
     default:
       return [{ kind: 'plain', text: code }]
   }
