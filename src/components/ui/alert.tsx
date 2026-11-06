@@ -101,6 +101,7 @@ export function AlertTitle({ className, ...props }: React.ComponentProps<"p">) {
   return <p className={cn("font-medium text-neutral-900 dark:text-neutral-100", className)} {...props} />;
 }
 
-export function AlertDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return <p className={cn("mt-0.5 text-neutral-600 dark:text-neutral-400", className)} {...props} />;
+// ioiti-ui: a div, not a p: a description may hold a list, paragraphs, a Disclosure (in a p, invalid HTML).
+export function AlertDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return <div className={cn("mt-0.5 text-neutral-600 dark:text-neutral-400", className)} {...props} />;
 }

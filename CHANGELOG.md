@@ -3,6 +3,19 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.13.1] - 2026-11-06
+
+- **What `QueryState` shows after its skeleton keeps the page's spacing.** It arrived in a box that has no box of
+  its own (`display: contents`): a column's gaps and a grid's cells reached its parts, a `space-y-*` column's
+  margins did not, and they touched what came next until the page was opened again from the cache. Its parts are
+  now the page's own as they arrive, each fading in as before, then keeping no trace of it.
+- **`CodeBlock`'s `wrap` breaks a word longer than the line** (a link, a hash): the code kept the width of its
+  longest word, cut at the block's edge.
+- **`AlertDescription` is a `div`**: a list, paragraphs or a `Disclosure` may go in it (in a `p`, invalid HTML that
+  React reported).
+
+Nothing to change in an application.
+
 ## [0.13.0] - 2026-11-05
 
 - **A button's icon is as tall as its words**, at every size (12, 14, 16 and 20 px): an icon without a size of its

@@ -110,11 +110,13 @@ export function CodeBlock({
         style={scroll}
         className={cn(
           'overflow-auto py-3 font-mono text-[12.5px] leading-relaxed text-text-primary',
-          wrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre',
+          // Wrapped, a word longer than the line (a URL, a hash) breaks too: `break-words` kept the code as wide.
+          wrap ? 'whitespace-pre-wrap wrap-anywhere' : 'whitespace-pre',
           !label && copyable && 'pr-10',
         )}
       >
-        <code className="block min-w-fit">
+        {/* Scrolled sideways, as wide as its longest line: a marked line's colour runs under the whole of it. */}
+        <code className={cn('block', !wrap && 'min-w-fit')}>
           {lines.map((tokens, index) => {
             const number = first + index
             const change = tokens.length > 0 ? CHANGED_LINE[tokens[0].kind] : undefined

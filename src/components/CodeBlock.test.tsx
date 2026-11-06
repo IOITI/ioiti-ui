@@ -142,6 +142,19 @@ describe('CodeBlock', () => {
     expect(screen.getByText('+new')).toHaveClass('text-(--positive)')
   })
 
+  it('scrolls a long line sideways, or wraps it, a word longer than the line breaking too', () => {
+    const url = 'https://dac.example.test/api/v1/rta/packages/linux-' + 'a'.repeat(64) + '/download?expires=1&signature=' + 'f'.repeat(64)
+    const { container, rerender } = render(<CodeBlock language="shell" code={`curl --fail ${url}`} copyable={false} />)
+    expect(container.querySelector('pre')).toHaveClass('whitespace-pre')
+    expect(container.querySelector('code')).toHaveClass('min-w-fit')
+
+    rerender(<CodeBlock language="shell" code={`curl --fail ${url}`} copyable={false} wrap />)
+    expect(container.querySelector('pre')).toHaveClass('whitespace-pre-wrap', 'wrap-anywhere')
+    expect(container.querySelector('pre')).not.toHaveClass('break-words')
+    // Not as wide as its longest word, which would push it past its box.
+    expect(container.querySelector('code')).not.toHaveClass('min-w-fit')
+  })
+
   it('has an inline form for a sentence', () => {
     render(<Code>useToast</Code>)
     expect(screen.getByText('useToast').tagName).toBe('CODE')

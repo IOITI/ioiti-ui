@@ -428,6 +428,8 @@ otherwise).
   is none, above the last one read otherwise. EasyUI said "No notifications right now" before anything was read.
 - `animated-file-upload` (0.11.0): `label`, the name of its file input (EasyUI's was "Upload files" on every one),
   and `onRemove`, a file taken off the list by its Remove.
+- `alert` (0.13.1): `AlertDescription` is a `div`, so that it may hold a list, paragraphs or a `Disclosure` (in
+  EasyUI's `p`, invalid HTML that React reported).
 
 ## ioiti-ui's own changes
 
