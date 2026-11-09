@@ -3,6 +3,18 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.14.1] - 2026-11-09
+
+- **A toast is drawn above an open sheet or dialog.** It shared their layer (`z-50`) and came before them in the
+  page, so their scrim covered it: seen dimmed, its action and its Close out of the pointer's reach. A toast's
+  frame (`VelocityToast`, `UndoToast`, and so `ToastProvider`'s) is one layer up (`z-[55]`): above the sheets, the
+  dialogs, the palette, the drawer and the tour, under the hints (`z-[60]`).
+- **The form's `Switch` is named by its label and described by its description** (`aria-labelledby`,
+  `aria-describedby`), as `StretchSwitch` is: a screen reader said only "switch, on", and a test could not find it
+  by its name (`getByRole('switch', { name })`).
+
+Nothing to change in an application.
+
 ## [0.14.0] - 2026-11-06
 
 - **Python in the code editors and code blocks.** `CodeEditor` and `DiffEditor` take `language="python"` (loaded the

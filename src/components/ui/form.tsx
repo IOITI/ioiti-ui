@@ -498,6 +498,9 @@ export const Switch: React.FC<SwitchProps> = ({
   className,
 }) => {
   const [isOn, setIsOn] = React.useState(defaultChecked);
+  // ioiti-ui: named by its label and described by its description, as StretchSwitch: a screen reader said only
+  // "switch, on".
+  const id = useId();
   const isControlled = checked !== undefined;
   const current = isControlled ? checked : isOn;
 
@@ -517,12 +520,12 @@ export const Switch: React.FC<SwitchProps> = ({
       {(label || description) && (
         <div className="text-left cursor-pointer" onClick={handleToggle}>
           {label && (
-            <div className="text-xs font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
+            <div id={`${id}-label`} className="text-xs font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
               {label}
             </div>
           )}
           {description && (
-            <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+            <div id={`${id}-description`} className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
               {description}
             </div>
           )}
@@ -533,6 +536,8 @@ export const Switch: React.FC<SwitchProps> = ({
         type="button"
         role="switch"
         aria-checked={current}
+        aria-labelledby={label ? `${id}-label` : undefined}
+        aria-describedby={description ? `${id}-description` : undefined}
         disabled={disabled}
         onClick={handleToggle}
         className={cn(

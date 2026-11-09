@@ -430,6 +430,11 @@ otherwise).
   and `onRemove`, a file taken off the list by its Remove.
 - `alert` (0.13.1): `AlertDescription` is a `div`, so that it may hold a list, paragraphs or a `Disclosure` (in
   EasyUI's `p`, invalid HTML that React reported).
+- `form` (0.14.1): `Switch` named by its label and described by its description (`aria-labelledby`,
+  `aria-describedby`), as `stretch-switch`: a screen reader said only "switch, on".
+- `velocity-toast`, `undo-toast` (0.14.1): their frame one layer above the others over the page (`z-[55]`, where it
+  was `z-50`, theirs): a sheet or a dialog, put in `document.body` after the page the toast is in, covered it with
+  its scrim, its action out of reach. Still under the hints (`z-[60]`).
 
 ## ioiti-ui's own changes
 

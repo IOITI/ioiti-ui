@@ -164,7 +164,9 @@ export const UndoToast: React.FC<UndoToastProps> = ({
   return (
     <div
       className={cn(
-        'fixed z-50 pointer-events-none flex flex-col',
+        // ioiti-ui: above the sheets, the dialogs and the drawer (z-50), put in document.body after the page it is
+        // in: on their layer, their scrim covered it, its action out of reach. Under the hints (z-[60]).
+        'fixed z-[55] pointer-events-none flex flex-col',
         positionClasses[position],
         wrapperClassName
       )}
