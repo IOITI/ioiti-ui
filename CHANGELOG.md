@@ -3,6 +3,22 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.15.0] - 2026-11-11
+
+- **A menu's sections can fold, or go without a heading.** A section of `Menu.sections` is a name, as before, or a
+  `MenuSection`: `{ id, title?, foldable? }`. `title: false` draws it without a heading (a menu's everyday pages,
+  often); `foldable: true` folds it under its heading, a button with a chevron (`aria-expanded`), until the reader
+  unfolds it or opens a page in it. Each reader's choice is kept by the browser (`ioiti-ui.sidebar.folded`; where
+  the browser keeps nothing, the sidebar forgets it and works the same). Folded, a dot after its heading says that an
+  entry under it has a count. The icon rail is unchanged: every icon, a line between sections. `Sidebar` takes the
+  same on its `SidebarSection` (`id`, `foldable`).
+- **A trail without sections.** `Menu.trailSections: false` leaves the section out of the top bar's trail:
+  "Home › Orders" instead of "Home › Work › Orders", for a menu whose sections only group its entries. A section
+  without a heading has no step in the trail either, and a section's `title` names its step.
+- `menuSections(menu)`: the sections of a menu, each said in full.
+
+Nothing to change in an application.
+
 ## [0.14.1] - 2026-11-09
 
 - **A toast is drawn above an open sheet or dialog.** It shared their layer (`z-50`) and came before them in the

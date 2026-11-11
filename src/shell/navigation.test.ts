@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { MENU } from '../test/menu.js'
-import { menuEntry, PAGE_NOT_FOUND, sidebarSections, trailFor, UNNAMED } from './navigation.js'
+import { menuEntry, menuSections, PAGE_NOT_FOUND, sidebarSections, trailFor, UNNAMED, type Menu } from './navigation.js'
 
 const entry = (pathname: string) => menuEntry(MENU, pathname)
 const trail = (pathname: string, page?: Parameters<typeof trailFor>[2]) => trailFor(MENU, pathname, page)
@@ -79,5 +79,55 @@ describe('where a page is', () => {
 
   it('reads the name a page of the menu gives itself nowhere: the menu names it', () => {
     expect(trail('/timing', { title: 'Timing of deliveries' })).toEqual([{ label: 'Reports' }, { label: 'Delivery times' }])
+  })
+})
+
+/** The test menu, its sections said more of: Work without heading, Reports named otherwise, Library folding. */
+const SAID: Menu = {
+  ...MENU,
+  sections: [{ id: 'Work', title: false }, { id: 'Reports', title: 'Figures' }, { id: 'Library', foldable: true }, 'Settings'],
+}
+
+describe('sections said more of than their names', () => {
+  it('are each said in full, a name alone being a section with its heading', () => {
+    expect(menuSections(SAID)).toEqual([
+      { id: 'Work', title: false },
+      { id: 'Reports', title: 'Figures' },
+      { id: 'Library', foldable: true },
+      { id: 'Settings' },
+    ])
+  })
+
+  it('reach the sidebar with their headings, none for a section without, and whether they fold', () => {
+    const sections = sidebarSections(SAID)
+    expect(sections.map(({ id, title, foldable }) => ({ id, title, foldable }))).toEqual([
+      { id: 'Work', title: undefined, foldable: undefined },
+      { id: 'Reports', title: 'Figures', foldable: undefined },
+      { id: 'Library', title: 'Library', foldable: true },
+      { id: 'Settings', title: 'Settings', foldable: undefined },
+    ])
+    expect(sections[2].items.map((item) => item.id)).toEqual(['files', 'assets', 'archive'])
+  })
+
+  it('are said in the trail by their headings, a section without one by nothing', () => {
+    expect(trailFor(SAID, '/orders')).toEqual([{ label: 'Orders' }])
+    expect(trailFor(SAID, '/timing')).toEqual([{ label: 'Figures' }, { label: 'Delivery times' }])
+    expect(trailFor(SAID, '/library/assets/blue-logo', { title: 'Blue logo' })).toEqual([
+      { label: 'Library' },
+      { label: 'Assets', href: '/library/assets' },
+      { label: 'Blue logo' },
+    ])
+  })
+
+  it('are left out of the trail of a menu that says none', () => {
+    const plain: Menu = { ...MENU, trailSections: false }
+    expect(trailFor(plain, '/')).toEqual([])
+    expect(trailFor(plain, '/orders')).toEqual([{ label: 'Orders' }])
+    expect(trailFor(plain, '/reports/r1/days/2026-10-09', { title: '9 Oct 2026', parents: [{ label: 'October report', href: '/reports/r1' }] })).toEqual([
+      { label: 'Reports', href: '/reports' },
+      { label: 'October report', href: '/reports/r1' },
+      { label: '9 Oct 2026' },
+    ])
+    expect(trailFor(plain, '/nothing')).toEqual([{ label: PAGE_NOT_FOUND }])
   })
 })

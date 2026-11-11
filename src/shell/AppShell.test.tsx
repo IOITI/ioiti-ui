@@ -11,6 +11,7 @@ import { RouterAppShell } from '../react-router/RouterAppShell.js'
 import { RouterRoot } from '../react-router/RouterRoot.js'
 import { MENU } from '../test/menu.js'
 import { AppShell, SidebarFooterButton } from './AppShell.js'
+import type { Menu } from './navigation.js'
 import { NotFoundPage } from './NotFoundState.js'
 import { StateChip } from './StateChip.js'
 
@@ -25,11 +26,12 @@ interface Options {
   chips?: ReactNode
   end?: ReactNode
   onSignOut?: () => void
+  menu?: Menu
 }
 
 /** An application on React Router, as the starter template builds one. */
-function renderShell({ path = '/orders', chips, end, onSignOut }: Options = {}) {
-  render(
+function renderShell({ path = '/orders', chips, end, onSignOut, menu = MENU }: Options = {}) {
+  return render(
     <IoitiProvider appName="Test App">
       <MemoryRouter initialEntries={[path]}>
         <Routes>
@@ -37,7 +39,7 @@ function renderShell({ path = '/orders', chips, end, onSignOut }: Options = {}) 
             <Route
               element={
                 <RouterAppShell
-                  menu={MENU}
+                  menu={menu}
                   appDetail="v1.2.0"
                   topBarChips={chips}
                   topBarEnd={end}
@@ -321,6 +323,86 @@ describe('the sidebar', () => {
     await user.click(screen.getByRole('button', { name: 'Sign out' }))
 
     expect(onSignOut).toHaveBeenCalledOnce()
+  })
+})
+
+/** A menu whose first and last sections have no heading, its tools folded under theirs, its trail without sections. */
+const FOLDING: Menu = {
+  sections: [{ id: 'Main', title: false }, { id: 'Tools', foldable: true }, { id: 'Admin', title: false }],
+  trailSections: false,
+  entries: [
+    { id: 'dashboard', path: '/', label: 'Dashboard', section: 'Main' },
+    { id: 'orders', path: '/orders', label: 'Orders', section: 'Main' },
+    { id: 'reports', path: '/reports', label: 'Reports', section: 'Tools', badge: 3 },
+    { id: 'assets', path: '/library/assets', label: 'Assets', section: 'Tools' },
+    { id: 'settings', path: '/settings', label: 'Settings', section: 'Admin' },
+  ],
+}
+const FOLDS_KEY = 'ioiti-ui.sidebar.folded'
+
+describe('a sidebar whose sections say more than their names', () => {
+  beforeEach(() => window.localStorage.clear())
+
+  it('draws a section without heading, and folds a foldable one until the reader unfolds it, then remembers it', async () => {
+    const user = userEvent.setup()
+    const { unmount } = renderShell({ menu: FOLDING })
+    const menu = within(await screen.findByRole('navigation', { name: 'Main' }))
+
+    expect(menu.queryByText('Main')).not.toBeInTheDocument()
+    expect(menu.queryByText('Admin')).not.toBeInTheDocument()
+    expect(menu.getByRole('link', { name: 'Settings' })).toHaveAttribute('href', '/settings')
+    // Folded, its heading says that an entry under it has a count.
+    const tools = menu.getByRole('button', { name: 'Tools, with counts' })
+    expect(tools).toHaveAttribute('aria-expanded', 'false')
+    expect(menu.queryByRole('link', { name: /Reports/ })).not.toBeInTheDocument()
+
+    await user.click(tools)
+    expect(menu.getByRole('button', { name: 'Tools' })).toHaveAttribute('aria-expanded', 'true')
+    expect(menu.getByRole('link', { name: /Reports/ })).toHaveAttribute('href', '/reports')
+    expect(JSON.parse(window.localStorage.getItem(FOLDS_KEY) ?? '{}')).toEqual({ Tools: false })
+
+    // The next visit finds it as it was left.
+    unmount()
+    renderShell({ menu: FOLDING })
+    expect(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Tools' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+  })
+
+  it('unfolds by itself the section of the page shown, the reader\'s choice kept as it was', async () => {
+    window.localStorage.setItem(FOLDS_KEY, JSON.stringify({ Tools: true }))
+    renderShell({ menu: FOLDING, path: '/library/assets/blue-logo' })
+    const menu = within(await screen.findByRole('navigation', { name: 'Main' }))
+
+    expect(menu.getByRole('button', { name: 'Tools' })).toHaveAttribute('aria-expanded', 'true')
+    expect(menu.getByRole('link', { name: 'Assets' })).toHaveAttribute('aria-current', 'page')
+    expect(JSON.parse(window.localStorage.getItem(FOLDS_KEY) ?? '{}')).toEqual({ Tools: true })
+  })
+
+  it('works the same where the browser keeps nothing', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('denied')
+    })
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('denied')
+    })
+    const user = userEvent.setup()
+    renderShell({ menu: FOLDING })
+    const menu = within(await screen.findByRole('navigation', { name: 'Main' }))
+
+    await user.click(menu.getByRole('button', { name: 'Tools, with counts' }))
+    expect(menu.getByRole('link', { name: 'Assets' })).toBeInTheDocument()
+    vi.restoreAllMocks()
+  })
+
+  it('leads from Home to the page without the section of its entry, when the menu says so', async () => {
+    renderShell({ menu: FOLDING, path: '/library/assets/blue-logo' })
+
+    expect(isCurrent(await wholeTrail().findByText('Blue logo'))).toBe(true)
+    expect(wholeTrail().getByRole('link', { name: 'Assets' })).toHaveAttribute('href', '/library/assets')
+    expect(wholeTrail().queryByText('Tools')).not.toBeInTheDocument()
+    expect(wholeTrail().getAllByRole('listitem')).toHaveLength(3)
   })
 })
 

@@ -18,10 +18,39 @@ export interface MenuEntry<S extends string = string> {
   badge?: string | number
 }
 
+/**
+ * A section of the menu, said more of than its name: drawn without a heading (`title: false`, a menu's first
+ * section often), or folded by the reader (`foldable`: folded until it is unfolded, or until the page shown is in
+ * it; each reader's choice is kept by the browser).
+ */
+export interface MenuSection<S extends string = string> {
+  id: S
+  /** Its heading in the sidebar and its step in the trail: its id by default; `false`, none. */
+  title?: string | false
+  foldable?: boolean
+}
+
 /** The sections, in the order the sidebar shows them, and the pages under them. */
 export interface Menu<S extends string = string> {
-  sections: readonly S[]
+  /** Each a name (its heading), or said more of (`MenuSection`). */
+  sections: readonly (S | MenuSection<S>)[]
   entries: readonly MenuEntry<S>[]
+  /**
+   * Whether the trail says the section of a page ("Home › Work › Orders"): yes by default. A menu whose sections
+   * only group its entries in the sidebar says no ("Home › Orders").
+   */
+  trailSections?: boolean
+}
+
+/** The sections of a menu, each said in full. */
+export function menuSections<S extends string>(menu: Menu<S>): MenuSection<S>[] {
+  return menu.sections.map((section) => (typeof section === 'string' ? { id: section } : section))
+}
+
+/** The heading of a section, or nothing for a section drawn without one. */
+function headingOf(section: MenuSection | undefined, id: string): string | undefined {
+  if (section?.title === false) return undefined
+  return section?.title ?? id
 }
 
 /** A step of a trail: a link unless it is the page shown, or a section, which has no page. */
@@ -72,15 +101,22 @@ export function menuEntry<S extends string>(menu: Menu<S>, pathname: string): Me
  * Where a page is, after Home: the section of its entry of the menu (not a
  * link: a section has no page of its own), then the entry; for a page deeper
  * than the menu, the entry becomes a link and the page adds its parents and
- * its name. The page at `/` is Home itself: nothing comes after it.
+ * its name. The page at `/` is Home itself: nothing comes after it. No section
+ * step for a section without a heading, nor in a menu whose trail says none
+ * (`trailSections: false`).
  */
 export function trailFor(menu: Menu, pathname: string, page?: PageName | null): Crumb[] {
   const entry = menuEntry(menu, pathname)
   if (!entry) return [{ label: page?.title ?? PAGE_NOT_FOUND }]
   if (entry.path === '/') return []
-  if (withoutTrailingSlash(pathname) === entry.path) return [{ label: entry.section }, { label: entry.label }]
+  const heading =
+    menu.trailSections === false
+      ? undefined
+      : headingOf(menuSections(menu).find((section) => section.id === entry.section), entry.section)
+  const section: Crumb[] = heading ? [{ label: heading }] : []
+  if (withoutTrailingSlash(pathname) === entry.path) return [...section, { label: entry.label }]
   return [
-    { label: entry.section },
+    ...section,
     { label: entry.label, href: entry.path },
     ...(page?.parents ?? []),
     { label: page?.title ?? UNNAMED },
@@ -89,10 +125,12 @@ export function trailFor(menu: Menu, pathname: string, page?: PageName | null): 
 
 /** The menu as the sidebar draws it: each entry a link, which can be opened in another tab as well as followed. */
 export function sidebarSections(menu: Menu): SidebarSection[] {
-  return menu.sections.map((title) => ({
-    title,
+  return menuSections(menu).map((section) => ({
+    id: section.id,
+    title: headingOf(section, section.id),
+    ...(section.foldable ? { foldable: true } : {}),
     items: menu.entries
-      .filter((entry) => entry.section === title)
+      .filter((entry) => entry.section === section.id)
       .map(({ id, label, icon, badge, path }) => ({ id, label, icon, badge, href: path })),
   }))
 }

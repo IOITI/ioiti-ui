@@ -108,6 +108,8 @@ export const MENU: Menu = {
     { id: 'settings', path: '/settings', label: 'Settings', section: 'Settings', icon: <Settings /> },
   ],
 }
+// A section can be said more of: { id: 'Main', title: false } (no heading), { id: 'Tools', foldable: true }
+// (folded under its heading until the reader unfolds it); trailSections: false leaves sections out of the trail.
 
 // a page
 export function OrdersPage() {

@@ -53,7 +53,45 @@ export type SidebarItem = {
   children?: SidebarChild[];
   href?: string;
 };
-export type SidebarSection = { title?: string; items: SidebarItem[] };
+// ioiti-ui: `foldable`, a section the reader folds under its heading (folded until then, or until the page shown is
+// in it): each reader's choice is kept by the browser, by the section's `id` (else its title).
+export type SidebarSection = { id?: string; title?: string; foldable?: boolean; items: SidebarItem[] };
+
+// ioiti-ui: the sections each reader folded (true) or unfolded (false), by key. The browser may refuse to keep them
+// (a private window, blocked storage): the sidebar then forgets them, and works the same.
+const FOLDS_KEY = "ioiti-ui.sidebar.folded";
+
+function readFolds(): Record<string, boolean> {
+  try {
+    const raw = window.localStorage.getItem(FOLDS_KEY);
+    const value: unknown = raw ? JSON.parse(raw) : {};
+    return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, boolean>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function keepFold(key: string, folded: boolean) {
+  try {
+    window.localStorage.setItem(FOLDS_KEY, JSON.stringify({ ...readFolds(), [key]: folded }));
+  } catch {
+    // Not kept: the choice lasts as long as the page.
+  }
+}
+
+const sectionKey = (section: SidebarSection, index: number) => section.id ?? section.title ?? String(index);
+
+/** The foldable sections shown unfolded: the reader's choice, else folded; the one holding the page shown, unfolded. */
+function unfoldedOf(sections: SidebarSection[], activeId: string, folds: Record<string, boolean>, previous?: Set<string>) {
+  const unfolded = new Set<string>();
+  sections.forEach((section, index) => {
+    if (!section.foldable) return;
+    const key = sectionKey(section, index);
+    const holdsPage = section.items.some((item) => item.id === activeId || item.children?.some((c) => c.id === activeId));
+    if (holdsPage || (previous ? previous.has(key) : folds[key] === false)) unfolded.add(key);
+  });
+  return unfolded;
+}
 
 const SidebarContext = React.createContext({ collapsed: false });
 /** Use inside `header` / `footer` to adapt to the icon-only state. */
@@ -224,6 +262,24 @@ function Panel({
           .map((i) => i.id)
       )
   );
+  // ioiti-ui: the foldable sections unfolded; another page shown unfolds the one it is in (for this visit: the
+  // reader's own choice stays as it was kept).
+  const [unfolded, setUnfolded] = React.useState<Set<string>>(() => unfoldedOf(sections, activeId, readFolds()));
+  const [unfoldedFor, setUnfoldedFor] = React.useState(activeId);
+  if (unfoldedFor !== activeId) {
+    setUnfoldedFor(activeId);
+    setUnfolded(unfoldedOf(sections, activeId, {}, unfolded));
+  }
+  const toggleSection = (key: string) => {
+    const folding = unfolded.has(key);
+    keepFold(key, folding);
+    setUnfolded((current) => {
+      const next = new Set(current);
+      if (folding) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const enter = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>, label: string) => {
     const el = e.currentTarget;
@@ -403,19 +459,65 @@ function Panel({
             />
           )}
 
-          {sections.map((section, i) => (
-            <div key={i} className="space-y-0.5">
-              {section.title &&
-                (collapsed ? (
-                  <div className="mx-2.5 my-2 h-px bg-neutral-200 dark:bg-neutral-800" />
+          {sections.map((section, i) => {
+            const key = sectionKey(section, i);
+            // ioiti-ui: the rail shows every icon; folding is for the open sidebar.
+            const foldable = !!section.foldable && !collapsed;
+            const folded = foldable && !unfolded.has(key);
+            const counted = section.items.some((item) => item.badge !== undefined);
+            const listId = `${uid}-section-${i}`;
+            return (
+              <div key={key} className="space-y-0.5">
+                {section.title &&
+                  (collapsed ? (
+                    <div className="mx-2.5 my-2 h-px bg-neutral-200 dark:bg-neutral-800" />
+                  ) : foldable ? (
+                    <button
+                      type="button"
+                      onClick={() => toggleSection(key)}
+                      aria-expanded={!folded}
+                      aria-controls={folded ? undefined : listId}
+                      className="flex w-full items-center gap-1.5 rounded-md px-2.5 pb-1 pt-4 text-left text-xs text-neutral-500 outline-none transition-colors hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:text-neutral-400 dark:hover:text-white dark:focus-visible:ring-neutral-600/60"
+                    >
+                      <span className="truncate">{section.title}</span>
+                      <ChevronRight
+                        aria-hidden
+                        className={cn("size-3 shrink-0 transition-transform duration-200", !folded && "rotate-90")}
+                      />
+                      {/* ioiti-ui: folded, it says that an entry under it has a count to read. */}
+                      {folded && counted && (
+                        <>
+                          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-neutral-500 dark:bg-neutral-400 accent:bg-brand" />
+                          <span className="sr-only">, with counts</span>
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <p className="truncate px-2.5 pb-1 pt-4 text-xs text-neutral-500">
+                      {section.title}
+                    </p>
+                  ))}
+                {foldable ? (
+                  <AnimatePresence initial={false}>
+                    {!folded && (
+                      <motion.div
+                        id={listId}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+                        className="space-y-0.5 overflow-hidden"
+                      >
+                        {section.items.map(renderItem)}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 ) : (
-                  <p className="truncate px-2.5 pb-1 pt-4 text-xs text-neutral-500">
-                    {section.title}
-                  </p>
-                ))}
-              {section.items.map(renderItem)}
-            </div>
-          ))}
+                  section.items.map(renderItem)
+                )}
+              </div>
+            );
+          })}
         </nav>
 
         {(footer || onToggle) && (

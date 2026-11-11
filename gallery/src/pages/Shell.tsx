@@ -12,15 +12,18 @@ import {
   ResizablePanels,
   SaveBar,
   ShortcutsDialog,
+  Sidebar,
   SidebarFooterButton,
   StateChip,
   UserMenu,
   useNavigateTo,
   useShortcut,
+  sidebarSections,
   useToast,
+  type Menu,
 } from 'ioiti-ui'
 import { RouterLeaveGuard } from 'ioiti-ui/react-router'
-import { BadgeCheck, KeyRound, LogOut, Palette, RotateCw, UserRound } from 'lucide-react'
+import { BadgeCheck, ChartColumn, Folder, KeyRound, LayoutDashboard, LogOut, Palette, Receipt, RotateCw, Settings, UserRound } from 'lucide-react'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
@@ -105,6 +108,19 @@ function Shortcuts() {
   )
 }
 
+/** The menu of the sections' demo: its links stay on this page. */
+const SECTIONED: Menu = {
+  sections: [{ id: 'Main', title: false }, { id: 'Tools', foldable: true }, { id: 'Admin', title: false }],
+  trailSections: false,
+  entries: [
+    { id: 'home', path: '#menu-sections', label: 'Dashboard', section: 'Main', icon: <LayoutDashboard /> },
+    { id: 'orders', path: '#menu-sections', label: 'Orders', section: 'Main', icon: <Receipt /> },
+    { id: 'reports', path: '#menu-sections', label: 'Reports', section: 'Tools', icon: <ChartColumn />, badge: 3 },
+    { id: 'files', path: '#menu-sections', label: 'Files', section: 'Tools', icon: <Folder /> },
+    { id: 'settings', path: '#menu-sections', label: 'Settings', section: 'Admin', icon: <Settings /> },
+  ],
+}
+
 export function Shell() {
   return (
     <>
@@ -139,6 +155,34 @@ export function Shell() {
           A page deeper than the menu (/orders/42) stands under the entry its address starts with; its PageHeader gives
           the trail its name, and the pages between (parents).
         </p>
+      </Demo>
+
+      <Demo
+        id="menu-sections"
+        title="Sections that fold, or have no heading"
+        description="A section said more of than its name: without a heading (title: false), as a menu's everyday pages often are; or folded under its heading (foldable), until the reader unfolds it or opens a page in it, each reader's choice kept by the browser; folded, a dot says an entry under it has a count. A menu whose sections only group its entries leaves them out of the trail (trailSections: false): Home › Reports, not Home › Tools › Reports."
+        names={['MenuSection', 'menuSections', 'sidebarSections']}
+        className="flex flex-wrap items-start gap-6"
+      >
+        <div className="h-[24rem] w-62 overflow-hidden rounded-xl border border-border">
+          {/* Its own width, always open: ⌘B folds the gallery's sidebar, not this one. */}
+          <Sidebar sections={sidebarSections(SECTIONED)} activeId="orders" collapsed={false} />
+        </div>
+        <CodeBlock language="tsx" code={`const MENU: Menu = {
+  sections: [
+    { id: 'Main', title: false },
+    { id: 'Tools', foldable: true },
+    { id: 'Admin', title: false },
+  ],
+  trailSections: false,
+  entries: [
+    { id: 'home', path: '/', label: 'Dashboard', section: 'Main', icon: <LayoutDashboard /> },
+    { id: 'orders', path: '/orders', label: 'Orders', section: 'Main', icon: <Receipt /> },
+    { id: 'reports', path: '/reports', label: 'Reports', section: 'Tools', icon: <ChartColumn />, badge: 3 },
+    { id: 'files', path: '/files', label: 'Files', section: 'Tools', icon: <Folder /> },
+    { id: 'settings', path: '/settings', label: 'Settings', section: 'Admin', icon: <Settings /> },
+  ],
+}`} />
       </Demo>
 
       <Demo
