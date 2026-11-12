@@ -3,10 +3,13 @@
 import * as React from "react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronRight, PanelLeft } from "lucide-react";
+import { ariaKeyShortcuts, keysText } from "../../lib/keys.js";
 import { isPlainClick } from "../../lib/links.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
+import { Kbd } from "../Kbd.js";
 import { useLinkComponent } from "../link-context.js";
+import { useShortcut } from "../shortcuts-context.js";
 
 function useControllableState<T>(
   value: T | undefined,
@@ -39,6 +42,9 @@ const spring = motionTransitions.springSheet;
 
 // ioiti-ui: the sidebar stays beside the page from md up; below, it is a drawer. Asked only where
 // the browser can answer (jsdom has no matchMedia).
+/** ioiti-ui: the keys that collapse and expand it, as useShortcut and Kbd take them. */
+const TOGGLE_KEYS = "mod+b";
+
 const isWide = () => typeof window.matchMedia === "function" && window.matchMedia("(min-width: 768px)").matches;
 const EXPANDED = 248;
 const COLLAPSED = 56;
@@ -129,18 +135,15 @@ export function Sidebar({
   const [collapsed, setCollapsed] = useControllableState(collapsedProp, defaultCollapsed, onCollapsedChange);
   const [mobileOpen, setMobileOpen] = useControllableState(mobileProp, false, onMobileOpenChange);
 
-  // ⌘B / Ctrl+B
-  React.useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
-        e.preventDefault();
-        if (isWide()) setCollapsed(!collapsed);
-        else setMobileOpen(!mobileOpen);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [collapsed, mobileOpen, setCollapsed, setMobileOpen]);
+  // ioiti-ui: ⌘B on an Apple computer, Ctrl B elsewhere (useShortcut), listed by ShortcutsDialog.
+  useShortcut(
+    TOGGLE_KEYS,
+    () => {
+      if (isWide()) setCollapsed(!collapsed);
+      else setMobileOpen(!mobileOpen);
+    },
+    { description: "Collapse or expand the sidebar", group: "Navigation" }
+  );
 
   // drawer: Esc to close + scroll lock
   React.useEffect(() => {
@@ -252,7 +255,7 @@ function Panel({
   const uid = React.useId();
   const [hoverBox, setHoverBox] = React.useState<{ y: number; h: number } | null>(null);
   const [hovering, setHovering] = React.useState(false);
-  const [tip, setTip] = React.useState<{ label: string; x: number; y: number } | null>(null);
+  const [tip, setTip] = React.useState<{ label: string; keys?: string; x: number; y: number } | null>(null);
   const [open, setOpen] = React.useState<Set<string>>(
     () =>
       new Set(
@@ -530,10 +533,11 @@ function Panel({
                 onMouseEnter={(e) => {
                   if (!collapsed) return;
                   const r = e.currentTarget.getBoundingClientRect();
-                  setTip({ label: "Expand", x: r.right + 10, y: r.top + r.height / 2 });
+                  setTip({ label: "Expand", keys: keysText(TOGGLE_KEYS), x: r.right + 10, y: r.top + r.height / 2 });
                 }}
                 onMouseLeave={() => setTip(null)}
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                aria-keyshortcuts={ariaKeyShortcuts(TOGGLE_KEYS)}
                 className="flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-500 outline-none transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white dark:focus-visible:ring-neutral-600/60"
               >
                 <span className="grid size-5 shrink-0 place-items-center">
@@ -547,11 +551,8 @@ function Panel({
                 >
                   Collapse
                 </motion.span>
-                {!collapsed && (
-                  <kbd className="rounded border border-neutral-200 px-1 font-sans text-[10px] text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
-                    ⌘B
-                  </kbd>
-                )}
+                {/* ioiti-ui: the keys as this computer writes them (⌘B, Ctrl B). */}
+                {!collapsed && <Kbd keys={TOGGLE_KEYS} className="shrink-0" />}
               </button>
             )}
           </div>
@@ -575,6 +576,7 @@ function Panel({
               className="whitespace-nowrap rounded-md bg-neutral-900 px-2 py-1 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-neutral-900"
             >
               {tip.label}
+              {tip.keys && <span className="ml-1.5 opacity-70">{tip.keys}</span>}
             </motion.div>
           </div>
         )}

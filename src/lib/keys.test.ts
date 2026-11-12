@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { describeKeys, keyLabels, matchesStroke, parseKeys } from './keys.js'
+import { ariaKeyShortcuts, describeKeys, keyLabels, keysText, matchesStroke, parseKeys } from './keys.js'
 
 const press = (key: string, held: Partial<Record<'ctrlKey' | 'metaKey' | 'altKey' | 'shiftKey', boolean>> = {}) => ({
   key,
@@ -40,5 +40,15 @@ describe('the keys of a shortcut', () => {
     expect(describeKeys('mod+k', true)).toBe('Command K')
     expect(describeKeys('g o', false)).toBe('G then O')
     expect(describeKeys('escape', false)).toBe('Escape')
+  })
+
+  it('writes the keys as text where no key cap fits, and as aria-keyshortcuts names them', () => {
+    expect(keysText('mod+b', true)).toBe('⌘B')
+    expect(keysText('mod+b', false)).toBe('Ctrl B')
+    expect(keysText('g o', false)).toBe('G then O')
+    expect(ariaKeyShortcuts('mod+b', true)).toBe('Meta+B')
+    expect(ariaKeyShortcuts('mod+shift+p', false)).toBe('Control+Shift+P')
+    expect(ariaKeyShortcuts('escape', false)).toBe('Escape')
+    expect(ariaKeyShortcuts('g o', false)).toBeUndefined()
   })
 })

@@ -146,3 +146,43 @@ export function describeKeys(keys: string, apple = isApplePlatform()): string {
     .map((stroke) => stroke.map((label) => label.spoken ?? label.shown).join(' '))
     .join(' then ')
 }
+
+/**
+ * The keys as words drawn where no key cap fits (a tooltip): "⌘B" on an Apple computer, "Ctrl B" elsewhere, "G then O"
+ * for a sequence.
+ */
+export function keysText(keys: string, apple = isApplePlatform()): string {
+  return keyLabels(keys, apple)
+    .map((stroke) => stroke.map((label) => label.shown).join(apple ? '' : ' '))
+    .join(' then ')
+}
+
+const ARIA_NAMES: Record<string, string> = {
+  arrowup: 'ArrowUp',
+  arrowdown: 'ArrowDown',
+  arrowleft: 'ArrowLeft',
+  arrowright: 'ArrowRight',
+  pageup: 'PageUp',
+  pagedown: 'PageDown',
+  space: 'Space',
+}
+
+/**
+ * The keys as `aria-keyshortcuts` names them: "Meta+B" on an Apple computer, "Control+B" elsewhere. A sequence ("g o")
+ * has no such name: `undefined`.
+ */
+export function ariaKeyShortcuts(keys: string, apple = isApplePlatform()): string | undefined {
+  const strokes = parseKeys(keys)
+  if (strokes.length !== 1) return undefined
+  const [stroke] = strokes
+  const held = [
+    (stroke.ctrl || (stroke.mod && !apple)) && 'Control',
+    stroke.alt && 'Alt',
+    stroke.shift && 'Shift',
+    (stroke.meta || (stroke.mod && apple)) && 'Meta',
+  ].filter((name): name is string => typeof name === 'string')
+  const key =
+    ARIA_NAMES[stroke.key] ??
+    (stroke.key.length === 1 ? stroke.key.toUpperCase() : stroke.key[0].toUpperCase() + stroke.key.slice(1))
+  return [...held, key].join('+')
+}

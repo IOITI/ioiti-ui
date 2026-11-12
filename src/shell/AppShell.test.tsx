@@ -324,6 +324,59 @@ describe('the sidebar', () => {
 
     expect(onSignOut).toHaveBeenCalledOnce()
   })
+
+  describe('collapsed and expanded from the keyboard', () => {
+    // A wide window: the keys collapse the sidebar (a narrow one opens its drawer).
+    beforeEach(() => {
+      vi.stubGlobal(
+        'matchMedia',
+        vi.fn((query: string) => ({
+          matches: query.includes('min-width'),
+          media: query,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+        })),
+      )
+    })
+    afterEach(() => {
+      vi.unstubAllGlobals()
+      vi.restoreAllMocks()
+    })
+
+    const keysOf = (button: HTMLElement) => Array.from(button.querySelectorAll('kbd kbd')).map((key) => key.textContent)
+
+    it('with Ctrl B where the computer is not Apple\'s, as its button says', async () => {
+      // jsdom names no platform: mod is Ctrl.
+      const user = userEvent.setup()
+      renderShell()
+      const collapse = screen.getByRole('button', { name: 'Collapse sidebar' })
+      expect(keysOf(collapse)).toEqual(['Ctrl', 'B'])
+      expect(collapse).toHaveAttribute('aria-keyshortcuts', 'Control+B')
+
+      await user.keyboard('{Meta>}b{/Meta}')
+      expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeInTheDocument()
+      await user.keyboard('{Control>}b{/Control}')
+      expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
+      await user.keyboard('{Control>}b{/Control}')
+      expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeInTheDocument()
+    })
+
+    it('with ⌘B on an Apple computer', async () => {
+      vi.spyOn(navigator, 'platform', 'get').mockReturnValue('MacIntel')
+      const user = userEvent.setup()
+      renderShell()
+      const collapse = screen.getByRole('button', { name: 'Collapse sidebar' })
+      expect(keysOf(collapse)).toEqual(['⌘Command', 'B'])
+      expect(collapse).toHaveAttribute('aria-keyshortcuts', 'Meta+B')
+
+      await user.keyboard('{Control>}b{/Control}')
+      expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeInTheDocument()
+      await user.keyboard('{Meta>}b{/Meta}')
+      expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
+    })
+  })
 })
 
 /** A menu whose first and last sections have no heading, its tools folded under theirs, its trail without sections. */
