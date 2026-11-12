@@ -3,6 +3,19 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.16.0] - 2026-11-12
+
+- **The sidebar's Collapse says its keys as this computer writes them.** Its button drew "⌘B" on every computer;
+  it draws `Kbd keys="mod+b"` now: ⌘ B on an Apple computer, Ctrl B elsewhere, and the collapsed sidebar's "Expand"
+  hint says them too (`aria-keyshortcuts` on the button). The keys are a `useShortcut`: Ctrl B no longer folds it
+  on a Mac, nor ⌘ on another computer, `?` lists them ("Collapse or expand the sidebar", under Navigation), and
+  they wait while a dialog is open, as every shortcut does.
+- **`SpotlightSearch` can stay open to choose several entries.** `closeOnSelect={false}` keeps it open once an entry
+  without an `href` is chosen (the field keeps what was typed, and the focus); `picked` ticks the entries chosen
+  already (`aria-checked`, the list `aria-multiselectable`), and choosing one again calls `onSelect` again, to take
+  it back; `footer` is a line under the list (what was chosen, how to finish). Its Escape is drawn as every key is
+  (`Kbd`), a button that closes it.
+
 ## [0.15.0] - 2026-11-11
 
 - **A menu's sections can fold, or go without a heading.** A section of `Menu.sections` is a name, as before, or a

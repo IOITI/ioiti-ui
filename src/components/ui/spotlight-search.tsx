@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { History, Search } from 'lucide-react';
+import { Check, History, Search } from 'lucide-react';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -55,6 +55,18 @@ export interface SpotlightSearchProps {
   label?: string;
   /** ioiti-ui: the entries under a heading for each category, in the order the categories first come. */
   grouped?: boolean;
+  /**
+   * ioiti-ui: `false` keeps it open once an entry is chosen (one without an `href`), to choose another: several
+   * things attached, added, ticked. Escape or a click outside closes it.
+   */
+  closeOnSelect?: boolean;
+  /**
+   * ioiti-ui: the ids of the entries chosen already, each marked with a tick (and `aria-checked`). Choosing one again
+   * calls `onSelect` again: what that means (taking it back) is the application's.
+   */
+  picked?: string[];
+  /** ioiti-ui: under the list: what was chosen, how to finish. */
+  footer?: React.ReactNode;
   /** Custom class name */
   className?: string;
 }
@@ -90,6 +102,9 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   limit = 50,
   label = 'Spotlight Search',
   grouped = false,
+  closeOnSelect = true,
+  picked,
+  footer,
   className,
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
@@ -186,12 +201,19 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
     setSelectedIndex(0);
   }, [query]);
 
+  // ioiti-ui: an entry that leads somewhere closes it; another one too, unless it stays open to choose more.
+  const closesOn = (item: SpotlightSearchItem) => closeOnSelect || item.href !== undefined;
+  const afterChoosing = (item: SpotlightSearchItem) => {
+    if (closesOn(item)) handleClose();
+    else inputRef.current?.focus();
+  };
   const choose = (item: SpotlightSearchItem) => {
     item.action?.();
     onSelect?.(item);
     if (item.href !== undefined) (onNavigate ?? navigateTo)(item.href);
-    handleClose();
+    afterChoosing(item);
   };
+  const pickedIds = useMemo(() => new Set(picked ?? []), [picked]);
 
   const handleInputKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -269,16 +291,26 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                 aria-autocomplete="list"
                 aria-activedescendant={rows[selectedIndex] ? optionId(selectedIndex) : undefined}
               />
-              <kbd
+              {/* ioiti-ui: Escape, drawn as every key is (Kbd), closes it when clicked too. */}
+              <button
+                type="button"
+                tabIndex={-1}
                 onClick={handleClose}
-                className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-text-muted bg-surface border border-border rounded cursor-pointer hover:text-text-primary transition-colors shrink-0"
+                aria-label="Close"
+                className="shrink-0 cursor-pointer rounded transition-opacity hover:opacity-80"
               >
-                ESC
-              </kbd>
+                <Kbd>Esc</Kbd>
+              </button>
             </div>
 
             {/* Search Results List (ioiti-ui: with what each is, and its category) */}
-            <div id={listId} role="listbox" aria-label={label} className="max-h-[340px] overflow-y-auto p-1.5 space-y-0.5">
+            <div
+              id={listId}
+              role="listbox"
+              aria-label={label}
+              aria-multiselectable={picked ? true : undefined}
+              className="max-h-[340px] overflow-y-auto p-1.5 space-y-0.5"
+            >
               {rows.length > 0 ? (
                 rows.map((row, index) => {
                   const isSelected = index === selectedIndex;
@@ -329,6 +361,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                   }
 
                   const item = row.item;
+                  const isPicked = pickedIds.has(item.id);
                   const content = (
                     <>
                       {highlight}
@@ -353,6 +386,8 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                           </span>
                         )}
                         {!grouped && <span className="text-[11px] text-text-muted">{item.category}</span>}
+                        {/* ioiti-ui: chosen already. */}
+                        {isPicked && <Check aria-hidden className="size-4 shrink-0 text-text-primary accent:text-brand" />}
                       </span>
                     </>
                   );
@@ -365,6 +400,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                           id={optionId(index)}
                           role="option"
                           aria-selected={isSelected}
+                          aria-checked={picked ? isPicked : undefined}
                           href={item.href}
                           tabIndex={-1}
                           onClick={(e: React.MouseEvent) => {
@@ -372,7 +408,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                             if (!isPlainClick(e)) return;
                             item.action?.();
                             onSelect?.(item);
-                            handleClose();
+                            afterChoosing(item);
                           }}
                           onMouseEnter={() => setSelectedIndex(index)}
                           className={rowClass}
@@ -384,6 +420,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                           id={optionId(index)}
                           role="option"
                           aria-selected={isSelected}
+                          aria-checked={picked ? isPicked : undefined}
                           onClick={() => choose(item)}
                           onMouseEnter={() => setSelectedIndex(index)}
                           className={rowClass}
@@ -405,6 +442,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                 </p>
               )}
             </div>
+            {footer && <div className="border-t border-border px-4 py-2.5 text-xs text-text-muted">{footer}</div>}
           </motion.div>
         </div>
       )}

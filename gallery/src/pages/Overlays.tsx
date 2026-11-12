@@ -371,6 +371,39 @@ function Palette() {
   )
 }
 
+// It stays open to choose several things, each ticked once chosen; chosen again, it is taken back.
+function PickSeveral() {
+  const [open, setOpen] = useState(false)
+  const [picked, setPicked] = useState<string[]>(['c1'])
+  const things = [
+    { id: 'o42', title: 'Order 2026-0042', category: 'Orders', description: 'Acme · 1,840.00 €', icon: <Receipt /> },
+    { id: 'o41', title: 'Order 2026-0041', category: 'Orders', description: 'Globex · 960.50 €', icon: <Receipt /> },
+    { id: 'c1', title: 'Acme', category: 'Customers', icon: <Building2 /> },
+    { id: 'c2', title: 'Globex', category: 'Customers', icon: <Building2 /> },
+  ]
+  return (
+    <>
+      <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
+        Attach to a note ({picked.length})
+      </Button>
+      <SpotlightSearch
+        open={open}
+        onOpenChange={setOpen}
+        label="Attach"
+        placeholder="An order, a customer…"
+        grouped
+        closeOnSelect={false}
+        picked={picked}
+        onSelect={(item) =>
+          setPicked((was) => (was.includes(item.id) ? was.filter((id) => id !== item.id) : [...was, item.id]))
+        }
+        footer={`${picked.length} attached · Esc when done`}
+        items={things}
+      />
+    </>
+  )
+}
+
 export function Overlays() {
   return (
     <>
@@ -455,10 +488,13 @@ export function Overlays() {
       <Demo
         id="spotlight"
         title="SpotlightSearch"
-        description="A palette that goes somewhere: every word typed must be in an entry, Enter follows it. Its entries under their categories, each with its icon and its keys; the searches made before, while nothing is typed. The gallery's own is in its top bar (⌘K)."
+        description="A palette that goes somewhere: every word typed must be in an entry, Enter follows it. Its entries under their categories, each with its icon and its keys; the searches made before, while nothing is typed. Asked to, it stays open to choose several, each ticked once chosen. The gallery's own is in its top bar (⌘K on an Apple computer, Ctrl K elsewhere)."
         names={['SpotlightSearch']}
       >
-        <Palette />
+        <div className="flex flex-wrap gap-2">
+          <Palette />
+          <PickSeveral />
+        </div>
       </Demo>
 
       <Demo
