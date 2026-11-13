@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [0.17.0] - Unreleased
+## [0.17.0] - 2026-11-13
 
 - **The glass material, reviewed.** Its values change on purpose (`src/styles/glass.css`):
   - **What floats is nearly opaque:** `--glass-float` is `rgb(255 255 255 / 0.88)` in light and
