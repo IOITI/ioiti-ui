@@ -1,0 +1,207 @@
+[
+ {
+  "name": "AppShell",
+  "group": "Shell",
+  "height": 480
+ },
+ {
+  "name": "PageHeader",
+  "group": "Shell",
+  "height": 184
+ },
+ {
+  "name": "Panel",
+  "group": "Shell",
+  "height": 204
+ },
+ {
+  "name": "Button",
+  "group": "Actions",
+  "height": 192
+ },
+ {
+  "name": "IconButton",
+  "group": "Actions",
+  "height": 76
+ },
+ {
+  "name": "SplitButton",
+  "group": "Actions",
+  "height": 72
+ },
+ {
+  "name": "CopyButton",
+  "group": "Actions",
+  "height": 72
+ },
+ {
+  "name": "Kbd",
+  "group": "Actions",
+  "height": 60
+ },
+ {
+  "name": "Field",
+  "group": "Forms",
+  "height": 420
+ },
+ {
+  "name": "Checkbox",
+  "group": "Forms",
+  "height": 156
+ },
+ {
+  "name": "Switch",
+  "group": "Forms",
+  "height": 184
+ },
+ {
+  "name": "SegmentedControl",
+  "group": "Forms",
+  "height": 184
+ },
+ {
+  "name": "Slider",
+  "group": "Forms",
+  "height": 192
+ },
+ {
+  "name": "NumberInput",
+  "group": "Forms",
+  "height": 100
+ },
+ {
+  "name": "DatePicker",
+  "group": "Forms",
+  "height": 408
+ },
+ {
+  "name": "Badge",
+  "group": "Feedback",
+  "height": 64
+ },
+ {
+  "name": "StatusBadge",
+  "group": "Feedback",
+  "height": 64
+ },
+ {
+  "name": "Alert",
+  "group": "Feedback",
+  "height": 360
+ },
+ {
+  "name": "ToastProvider",
+  "group": "Feedback",
+  "height": 200
+ },
+ {
+  "name": "ProgressBar",
+  "group": "Feedback",
+  "height": 200
+ },
+ {
+  "name": "Skeleton",
+  "group": "Feedback",
+  "height": 160
+ },
+ {
+  "name": "Hint",
+  "group": "Overlays",
+  "height": 100
+ },
+ {
+  "name": "Popover",
+  "group": "Overlays",
+  "height": 76
+ },
+ {
+  "name": "DropdownMenu",
+  "group": "Overlays",
+  "height": 112
+ },
+ {
+  "name": "Flysheet",
+  "group": "Overlays",
+  "height": 72
+ },
+ {
+  "name": "AnimatedTabs",
+  "group": "Navigation",
+  "height": 292
+ },
+ {
+  "name": "Breadcrumb",
+  "group": "Navigation",
+  "height": 108
+ },
+ {
+  "name": "Stepper",
+  "group": "Navigation",
+  "height": 160
+ },
+ {
+  "name": "Table",
+  "group": "Data display",
+  "height": 420
+ },
+ {
+  "name": "KpiTile",
+  "group": "Data display",
+  "height": 332
+ },
+ {
+  "name": "StatCard",
+  "group": "Data display",
+  "height": 208
+ },
+ {
+  "name": "SignedValue",
+  "group": "Data display",
+  "height": 72
+ },
+ {
+  "name": "DescriptionList",
+  "group": "Data display",
+  "height": 296
+ },
+ {
+  "name": "Avatar",
+  "group": "Data display",
+  "height": 80
+ },
+ {
+  "name": "CodeBlock",
+  "group": "Data display",
+  "height": 284
+ },
+ {
+  "name": "LineChart",
+  "group": "Charts",
+  "height": 544
+ },
+ {
+  "name": "BarChart",
+  "group": "Charts",
+  "height": 380
+ },
+ {
+  "name": "DonutChart",
+  "group": "Charts",
+  "height": 500
+ },
+ {
+  "name": "Sparkline",
+  "group": "Charts",
+  "height": 380
+ },
+ {
+  "name": "EmptyState",
+  "group": "States",
+  "height": 328
+ },
+ {
+  "name": "QueryState",
+  "group": "States",
+  "height": 440
+ }
+]

@@ -21,5 +21,15 @@
     "src/components/ui/**",
     "src/lib/chart-primitives.tsx",
     "src/lib/dashboard-chart-utils.ts"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "design-system/previews/**"
+      ],
+      "rules": {
+        "react/only-export-components": "off"
+      }
+    }
   ]
 }

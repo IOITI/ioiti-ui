@@ -9,3 +9,4 @@ templates/app/dist/
 .vite/
 .claude/launch.json
 .claude/settings.local.json
+design-system/out/

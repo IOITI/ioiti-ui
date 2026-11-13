@@ -1,0 +1,392 @@
+{
+  "title": "IOITI Design System",
+  "namespace": "IoitiUI",
+  "artifact": "https://claude.ai/artifact/Y5cqfM5Rnfa3KN4UAWHDft",
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-13T10:55:06Z"
+  },
+  "groups": [
+    "Logos",
+    "Textures"
+  ],
+  "assetGroups": {
+    "Logos": {
+      "name": "Logos",
+      "tile": "m",
+      "order": [
+        "favicon.svg"
+      ],
+      "files": {
+        "favicon.svg": {
+          "name": "favicon.svg",
+          "blob": "3bbc582d4e253fe71ff21d26b9585b1d",
+          "size": 196,
+          "type": "image/svg+xml"
+        }
+      }
+    },
+    "Textures": {
+      "name": "Textures",
+      "tile": "s",
+      "order": [
+        "grain-white.png",
+        "grain-black.png"
+      ],
+      "files": {
+        "grain-white.png": {
+          "name": "grain-white.png",
+          "blob": "4684d4aadcd70cb2c586769f7502a8e6",
+          "size": 11960,
+          "type": "image/png"
+        },
+        "grain-black.png": {
+          "name": "grain-black.png",
+          "blob": "e7ad3f942f6598a7f3f15126ad948ca2",
+          "size": 11871,
+          "type": "image/png"
+        }
+      }
+    }
+  },
+  "assetSources": {
+    "Logos/favicon.svg": "gallery/public/favicon.svg",
+    "Textures/grain-white.png": "src/styles/grain-white.png",
+    "Textures/grain-black.png": "src/styles/grain-black.png"
+  },
+  "fonts": [
+    {
+      "family": "Geist Variable",
+      "file": "fonts/geist-latin-wght-normal.woff2",
+      "weight": "100 900",
+      "style": "normal",
+      "from": "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2"
+    },
+    {
+      "family": "JetBrains Mono Variable",
+      "file": "fonts/jetbrains-mono-latin-wght-normal.woff2",
+      "weight": "100 800",
+      "style": "normal",
+      "from": "@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2"
+    }
+  ],
+  "familyNotes": {
+    "radius": "One radius, 14px; Tailwind's rounded-* are its multiples.",
+    "shadow": "A shadow says something floats over the page. What sits in the page has a border.",
+    "tracking": "Letter-spacing. Headings are a little tighter than the text."
+  },
+  "notes": {
+    "background": "The page. One step off white in light, so that white cards and fields read as such.",
+    "foreground": "Body text and headings on background, card, popover, surface and surface-hover.",
+    "card": "A card or a dialog that is not a Panel.",
+    "card-foreground": "Text on card.",
+    "popover": "Menus, popovers, the combobox list.",
+    "popover-foreground": "Text on popover.",
+    "primary": "The neutral look's primary fill: ink on paper, inverted in dark. An accent sets it to its brand.",
+    "primary-foreground": "Text and icons on primary.",
+    "secondary": "A secondary button's fill.",
+    "secondary-foreground": "Text on secondary.",
+    "muted": "A quiet fill: a track, a skeleton, a tag.",
+    "muted-foreground": "Secondary text (descriptions, captions, a table's head, a tile's label) on background, card, surface, surface-hover and muted: 4.5:1 on each.",
+    "accent": "A hovered or highlighted menu item's ground. Not the accent presets: those are brand.",
+    "accent-foreground": "Text on accent.",
+    "destructive": "A destructive action's fill or outline.",
+    "border": "Every hairline: a Panel's border at 70 %, rows apart at 40 %.",
+    "input": "A field's border at rest.",
+    "ring": "The base outline colour (outline-ring/50). Keyboard focus uses focus-ring.",
+    "bg": "EasyUI's page colour: the scrollbar's track.",
+    "surface": "Fields, buttons, rows, tiles. A Panel is surface at 50 % (25 % in dark) over background.",
+    "surface-hover": "A hovered row, item or outline button.",
+    "surface-raised": "A box nested in a panel: an example, a code line, a sidebar item chosen.",
+    "border-hover": "A field or a card's border under the pointer.",
+    "border-subtle": "The faintest divider, inside a raised box.",
+    "text-primary": "Strong text in EasyUI's components, on surface, surface-hover and surface-raised.",
+    "text-secondary": "A field's label and secondary text on surface and surface-raised.",
+    "text-muted": "Muted text on surface, surface-hover and surface-raised: 4.5:1 (EasyUI's own value was lower).",
+    "text-subtle": "The faintest text: placeholders, a disabled label, on surface. Dark on surface-hover is 4.44:1, the design's one known pair under 4.5:1.",
+    "accent-subtle": "A faint ink wash over a surface (EasyUI).",
+    "accent-glow": "A soft ink glow (EasyUI).",
+    "accent-ring": "An ink ring around a selected thing (EasyUI).",
+    "indicator-active": "EasyUI's active dot (accent-blue).",
+    "pill-bg-scrolled": "EasyUI's navbar pill once the page has scrolled; no ioiti-ui component reads it.",
+    "pill-bg-idle": "EasyUI's navbar pill at rest.",
+    "pill-border-scrolled": "EasyUI's navbar pill border once scrolled.",
+    "pill-border-idle": "EasyUI's navbar pill border at rest.",
+    "focus-ring": "The one keyboard focus ring: 2px solid, 2px away, on every control but a text field. 3:1 on every surface. An accent sets it to its brand.",
+    "positive": "A gain or a success as text, with its sign or word: 4.5:1 on background, surface, surface-hover and surface-raised.",
+    "negative": "A loss or a failure as text, with its sign or word; ErrorText. 4.5:1 on every surface.",
+    "warning": "A warning as text, with its word. 4.5:1 on every surface.",
+    "info": "Information as text. 4.5:1 on every surface.",
+    "chart-series": "The one series of a chart. An accent sets it to its own hue.",
+    "chart-positive": "A bar or area of gain. A mark, not text: figures use positive.",
+    "chart-negative": "A bar or area of loss. A mark, not text: figures use negative.",
+    "chart-muted": "A mark set back: the rest, a fifth series, a baseline.",
+    "chart-grid": "A chart's grid lines.",
+    "chart-axis": "A chart's axis lines and ticks.",
+    "chart-compare-1": "The first of up to four things compared on one chart. In order, never recycled: a fifth is chart-muted.",
+    "chart-compare-2": "The second thing compared.",
+    "chart-compare-3": "The third thing compared.",
+    "chart-compare-4": "The fourth thing compared.",
+    "chart-gain-1": "A heatmap's smallest gain; recedes toward the card (the cell's figure is in its tooltip).",
+    "chart-gain-2": "A heatmap's second gain step.",
+    "chart-gain-3": "A heatmap's third gain step.",
+    "chart-gain-4": "A heatmap's largest gain. Teal, not emerald: emerald and red's pale steps look alike to deuteranopes.",
+    "chart-loss-1": "A heatmap's smallest loss.",
+    "chart-loss-2": "A heatmap's second loss step.",
+    "chart-loss-3": "A heatmap's third loss step.",
+    "chart-loss-4": "A heatmap's largest loss.",
+    "chart-funnel-1": "A funnel's first (widest) stage: one hue, its lightness stepping 0.06–0.09 a stage.",
+    "chart-funnel-2": "A funnel's second stage.",
+    "chart-funnel-3": "A funnel's third stage.",
+    "chart-funnel-4": "A funnel's fourth stage.",
+    "chart-funnel-5": "A funnel's last stage; the only one that may recede (2.5:1 on the card).",
+    "code-keyword": "Code highlighting: keywords. Every code colour is 4.5:1 on the editor's surface.",
+    "code-string": "Code highlighting: strings.",
+    "code-number": "Code highlighting: numbers.",
+    "code-comment": "Code highlighting: comments.",
+    "code-function": "Code highlighting: function names.",
+    "code-namespace": "Code highlighting: namespaces, sections.",
+    "code-type": "Code highlighting: types.",
+    "code-builtin": "Code highlighting: built-ins.",
+    "code-operator": "Code highlighting: operators, punctuation.",
+    "code-selection": "A code editor's selected text ground.",
+    "violet-brand": "Violet: the fill of what is chosen, current or primary (a filled button, a checked box, the page in the menu, a progress). With [data-accent=\"violet\"] it is brand, primary and focus-ring.",
+    "violet-brand-foreground": "Violet: text and icons on violet-brand, 4.5:1 on it.",
+    "violet-brand-soft": "Violet: the tint of a chosen row, item or range.",
+    "violet-brand-text": "Violet: the accent as text (links, the current page) on every surface and on violet-brand-soft, 4.5:1.",
+    "violet-brand-glow": "Violet: a coloured shadow, under a primary button in glass.",
+    "violet-brand-wash": "Violet: the accent's colour in the glass backdrop's first wash.",
+    "violet-brand-reflection": "Violet: the accent's colour in a far corner of a glass surface.",
+    "violet-chart-series": "Violet: the one series of a chart.",
+    "violet-chart-funnel-1": "Violet: funnel stage 1.",
+    "violet-chart-funnel-2": "Violet: funnel stage 2.",
+    "violet-chart-funnel-3": "Violet: funnel stage 3.",
+    "violet-chart-funnel-4": "Violet: funnel stage 4.",
+    "violet-chart-funnel-5": "Violet: funnel stage 5.",
+    "indigo-brand": "Indigo: the fill of what is chosen, current or primary (a filled button, a checked box, the page in the menu, a progress). With [data-accent=\"indigo\"] it is brand, primary and focus-ring.",
+    "indigo-brand-foreground": "Indigo: text and icons on indigo-brand, 4.5:1 on it.",
+    "indigo-brand-soft": "Indigo: the tint of a chosen row, item or range.",
+    "indigo-brand-text": "Indigo: the accent as text (links, the current page) on every surface and on indigo-brand-soft, 4.5:1.",
+    "indigo-brand-glow": "Indigo: a coloured shadow, under a primary button in glass.",
+    "indigo-brand-wash": "Indigo: the accent's colour in the glass backdrop's first wash.",
+    "indigo-brand-reflection": "Indigo: the accent's colour in a far corner of a glass surface.",
+    "indigo-chart-series": "Indigo: the one series of a chart.",
+    "indigo-chart-funnel-1": "Indigo: funnel stage 1.",
+    "indigo-chart-funnel-2": "Indigo: funnel stage 2.",
+    "indigo-chart-funnel-3": "Indigo: funnel stage 3.",
+    "indigo-chart-funnel-4": "Indigo: funnel stage 4.",
+    "indigo-chart-funnel-5": "Indigo: funnel stage 5.",
+    "blue-brand": "Blue: the fill of what is chosen, current or primary (a filled button, a checked box, the page in the menu, a progress). With [data-accent=\"blue\"] it is brand, primary and focus-ring.",
+    "blue-brand-foreground": "Blue: text and icons on blue-brand, 4.5:1 on it.",
+    "blue-brand-soft": "Blue: the tint of a chosen row, item or range.",
+    "blue-brand-text": "Blue: the accent as text (links, the current page) on every surface and on blue-brand-soft, 4.5:1.",
+    "blue-brand-glow": "Blue: a coloured shadow, under a primary button in glass.",
+    "blue-brand-wash": "Blue: the accent's colour in the glass backdrop's first wash.",
+    "blue-brand-reflection": "Blue: the accent's colour in a far corner of a glass surface.",
+    "bloom-brand": "Bloom: the fill of what is chosen, current or primary (a filled button, a checked box, the page in the menu, a progress). With [data-accent=\"bloom\"] it is brand, primary and focus-ring.",
+    "bloom-brand-foreground": "Bloom: text and icons on bloom-brand, 4.5:1 on it.",
+    "bloom-brand-soft": "Bloom: the tint of a chosen row, item or range.",
+    "bloom-brand-text": "Bloom: the accent as text (links, the current page) on every surface and on bloom-brand-soft, 4.5:1.",
+    "bloom-brand-glow": "Bloom: a coloured shadow, under a primary button in glass.",
+    "bloom-brand-wash": "Bloom: the accent's colour in the glass backdrop's first wash.",
+    "bloom-brand-reflection": "Bloom: the accent's colour in a far corner of a glass surface.",
+    "bloom-brand-wash-2": "Bloom: the glass backdrop's second wash, the flyer's tangerine. Never a mark's or a text's colour.",
+    "bloom-brand-wash-3": "Bloom: the glass backdrop's third wash, the flyer's mustard. Never a mark's or a text's colour.",
+    "bloom-gradient-1": "Bloom: the gradient's first stop (lilac), at 0 % of a 110deg linear gradient, under the grain. A filled primary button and the app mark only.",
+    "bloom-gradient-2": "Bloom: the gradient's middle stop (pink), at 50 %.",
+    "bloom-gradient-3": "Bloom: the gradient's last stop (tangerine), at 100 %.",
+    "bloom-brand-fill-foreground": "Bloom: text on the gradient, the dark page's ink in both themes, 4.5:1 on every point of it.",
+    "bloom-chart-series": "Bloom: the one series of a chart.",
+    "bloom-chart-funnel-1": "Bloom: funnel stage 1.",
+    "bloom-chart-funnel-2": "Bloom: funnel stage 2.",
+    "bloom-chart-funnel-3": "Bloom: funnel stage 3.",
+    "bloom-chart-funnel-4": "Bloom: funnel stage 4.",
+    "bloom-chart-funnel-5": "Bloom: funnel stage 5.",
+    "glass-base": "Glass: the page under the washes.",
+    "glass-tint-1": "Glass: the backdrop's first wash, top left (an accent replaces it with its own).",
+    "glass-tint-2": "Glass: the backdrop's second wash, top right.",
+    "glass-tint-3": "Glass: the backdrop's third wash, bottom.",
+    "glass-float": "Glass: what floats (popovers, menus, dialogs, toasts, tooltips), blurred 20px. Opaque white or #1c1c1f where less transparency is asked.",
+    "glass-bar": "Glass: the sidebar and the top bar, not blurred.",
+    "glass-card": "Glass: a panel, a tile, a card, not blurred.",
+    "glass-edge": "Glass: the border of a glass surface.",
+    "glass-hairline": "Glass: the hairline ring outside a glass card.",
+    "glass-highlight": "Glass: the light on a glass surface's top edge.",
+    "glass-shine": "Glass: the light across a surface from its top corner.",
+    "glass-shadow": "Glass: the colour of a glass surface's deeper shadow.",
+    "glass-scrim": "Glass: a dialog's scrim, lighter than the flat one so the dialog's glass shows the page.",
+    "glass-text-subtle": "Glass: text-subtle a step stronger, 4.5:1 on glass over the strongest wash.",
+    "glass-muted-foreground": "Glass, light theme only: muted-foreground a step stronger. Dark glass keeps muted-foreground.",
+    "glass-positive": "Glass, light theme only: positive a step stronger.",
+    "shadow-subtle": "A control lifted a hair off its surface.",
+    "shadow-elevated": "What floats over the page: a dialog, a menu, a popover, a toast. What sits in the page has a border instead.",
+    "shadow-glow": "A soft halo (EasyUI).",
+    "pill-shadow-scrolled": "EasyUI's navbar pill once scrolled.",
+    "pill-shadow-idle": "EasyUI's navbar pill at rest.",
+    "glass-shadow-subtle": "Glass: shadow-subtle under the glass material.",
+    "glass-shadow-elevated": "Glass: shadow-elevated under the glass material, deeper.",
+    "radius": "The one radius (14px). Every rounded-* class is a multiple of it, so changing it changes them all.",
+    "radius-sm": "rounded-sm, radius × 0.6: a small chip.",
+    "radius-md": "rounded-md, radius × 0.8: a small button (xs, sm), a menu item.",
+    "radius-lg": "rounded-lg, the radius itself: a button, a field, a nested box.",
+    "radius-xl": "rounded-xl, radius × 1.4: a popover, a menu, a dialog.",
+    "radius-2xl": "rounded-2xl, radius × 1.8: a Panel, a KpiTile.",
+    "radius-3xl": "rounded-3xl, radius × 2.2.",
+    "radius-4xl": "rounded-4xl, radius × 2.6.",
+    "radius-full": "rounded-full: a badge, a switch, an avatar, a pill.",
+    "tracking-tighter": "The tightest heading tracking.",
+    "tracking-tight-heading": "h1.",
+    "tracking-snug": "h3.",
+    "tracking-body": "The body: all running text."
+  },
+  "spacing": [
+    {
+      "name": "spacing",
+      "value": "0.25rem",
+      "usage": "Tailwind's unit (4px): p-4 is 4 × spacing. Every padding and gap is a step of it."
+    },
+    {
+      "name": "page-padding",
+      "value": "16px",
+      "usage": "A page's padding on a phone (p-4)."
+    },
+    {
+      "name": "page-padding-wide",
+      "value": "24px",
+      "usage": "A page's padding from 640px up (sm:p-6)."
+    },
+    {
+      "name": "page-gap",
+      "value": "24px",
+      "usage": "Between the blocks of a page (gap-6): the shell puts it there, a page adds no margins."
+    },
+    {
+      "name": "panel-padding",
+      "value": "20px",
+      "usage": "A Panel's header and body padding (px-5 pt-5, p-5)."
+    },
+    {
+      "name": "topbar-height",
+      "value": "56px",
+      "usage": "The shell's top bar (h-14)."
+    },
+    {
+      "name": "control-height",
+      "value": "40px",
+      "usage": "A button or field at size md (h-10); sm is 32px (h-8), xs 24px (h-6), lg 48px (h-12)."
+    },
+    {
+      "name": "page-max-width",
+      "value": "80rem",
+      "usage": "A page's column stops here (max-w-7xl) unless the page asks the shell to be wide."
+    }
+  ],
+  "typeGroups": [
+    {
+      "name": "Headings",
+      "family": "sans",
+      "styles": [
+        {
+          "name": "page-title",
+          "fontSize": "24px",
+          "lineHeight": "32px",
+          "fontWeight": 700,
+          "letterSpacing": "-0.025em",
+          "sample": "Orders",
+          "usage": "PageHeader's h1 (text-2xl tracking-tight). One a page."
+        },
+        {
+          "name": "figure",
+          "fontSize": "24px",
+          "lineHeight": "32px",
+          "fontWeight": 600,
+          "letterSpacing": "-0.025em",
+          "sample": "12,480.00 €",
+          "usage": "A KpiTile's figure (text-xl, sm:text-2xl): proportional digits at this size."
+        },
+        {
+          "name": "sign-in-title",
+          "fontSize": "20px",
+          "lineHeight": "28px",
+          "fontWeight": 600,
+          "letterSpacing": "-0.025em",
+          "sample": "My App",
+          "usage": "AuthLayout's title (text-xl font-semibold tracking-tight)."
+        },
+        {
+          "name": "section-title",
+          "fontSize": "14px",
+          "lineHeight": "20px",
+          "fontWeight": 600,
+          "letterSpacing": "-0.028em",
+          "sample": "Latest orders",
+          "usage": "A Panel's h2 (text-sm font-semibold)."
+        }
+      ]
+    },
+    {
+      "name": "Text",
+      "family": "sans",
+      "styles": [
+        {
+          "name": "body",
+          "fontSize": "14px",
+          "lineHeight": "20px",
+          "fontWeight": 400,
+          "letterSpacing": "-0.011em",
+          "sample": "The order was sent to the warehouse.",
+          "usage": "Running text, descriptions (text-sm)."
+        },
+        {
+          "name": "small",
+          "fontSize": "12px",
+          "lineHeight": "16px",
+          "fontWeight": 400,
+          "letterSpacing": "-0.011em",
+          "sample": "Updated 2 min ago",
+          "usage": "Captions, a table's head, a tile's label (text-xs text-muted-foreground)."
+        },
+        {
+          "name": "field-label",
+          "fontSize": "12px",
+          "lineHeight": "16px",
+          "fontWeight": 400,
+          "letterSpacing": "-0.011em",
+          "sample": "Customer",
+          "usage": "Field's label (text-xs text-text-secondary)."
+        },
+        {
+          "name": "badge",
+          "fontSize": "11px",
+          "lineHeight": "16px",
+          "fontWeight": 500,
+          "letterSpacing": "-0.011em",
+          "sample": "Healthy",
+          "usage": "A badge: the smallest text there is. Nothing goes under 11px."
+        }
+      ]
+    },
+    {
+      "name": "Code",
+      "family": "mono",
+      "styles": [
+        {
+          "name": "code",
+          "fontSize": "12px",
+          "lineHeight": "16px",
+          "fontWeight": 400,
+          "sample": "IT-1042",
+          "usage": "Ids, keys, what is typed exactly (font-mono text-xs)."
+        },
+        {
+          "name": "code-block",
+          "fontSize": "13px",
+          "lineHeight": "20px",
+          "fontWeight": 400,
+          "sample": "const total = items.reduce((s, i) => s + i.amount, 0)",
+          "usage": "CodeBlock, LogViewer and the code editors."
+        }
+      ]
+    }
+  ]
+}
