@@ -1,0 +1,46 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>IOITI Design System — cover</title>
+</head>
+<body>
+<style>
+  html, body { margin: 0; background: var(--background); }
+  .cover { position: relative; width: 960px; height: 288px; overflow: hidden; background: var(--background); font-family: var(--font-sans); }
+  .band { position: absolute; left: 0; top: 0; }
+  .tile { rx: var(--radius-2xl); }
+  .frame { fill: var(--surface); stroke: var(--border); stroke-width: 1px; }
+  .ink { fill: var(--foreground); }
+  .focus { fill: var(--focus-ring); }
+  .orchid { fill: var(--bloom-brand); }
+  .tint { fill: var(--border-hover); }
+  .words { position: absolute; left: 40px; bottom: 40px; max-width: 880px; }
+  .name { margin: 0; font-size: 64px; line-height: 0.95; font-weight: 700; letter-spacing: var(--tracking-tight-heading); color: var(--foreground); white-space: nowrap; }
+  .tagline { margin: 8px 0 0; font-size: 14px; line-height: 20px; letter-spacing: var(--tracking-body); color: var(--muted-foreground); max-width: 440px; }
+</style>
+<div class="cover">
+  <svg class="band" width="960" height="112" viewBox="0 0 960 112" aria-hidden="true">
+    <!--
+      blocks:   foreground (ink) two tiles wide 216×136 · focus-ring 102×136 · bloom-brand 102×136 · border-hover 102×136; the rest surface + border
+      arrange:  one strip of KPI-grid tiles across the top, bleeding off the top and the right edge, the ink panel merged two-wide
+      pattern:  "geometric, modular, dense UI → tiles": every section sits in a Panel and the figures in a KpiGrid, so the strip is those tiles
+      scales:   tile 102 wide, gap 12 (spacing × 3), pitch 114; corners radius-2xl (a Panel's); top bleed 28
+    -->
+    <rect class="tile frame" x="24.5" y="-28" width="101" height="136" />
+    <rect class="tile ink" x="138" y="-28" width="216" height="136" />
+    <rect class="tile frame" x="366.5" y="-28" width="101" height="136" />
+    <rect class="tile focus" x="480" y="-28" width="102" height="136" />
+    <rect class="tile frame" x="594.5" y="-28" width="101" height="136" />
+    <rect class="tile orchid" x="708" y="-28" width="102" height="136" />
+    <rect class="tile tint" x="822" y="-28" width="102" height="136" />
+    <rect class="tile frame" x="936.5" y="-28" width="101" height="136" />
+  </svg>
+  <div class="words">
+    <p class="name">IOITI Design System</p>
+    <p class="tagline">Ink on paper, for the admin interfaces of IOITI's applications.</p>
+  </div>
+</div>
+</body>
+</html>

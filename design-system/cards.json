@@ -1,0 +1,502 @@
+[
+ {
+  "name": "AppShell",
+  "group": "Shell",
+  "height": 480
+ },
+ {
+  "name": "PageHeader",
+  "group": "Shell",
+  "height": 184
+ },
+ {
+  "name": "Panel",
+  "group": "Shell",
+  "height": 204
+ },
+ {
+  "name": "UserMenu",
+  "group": "Shell",
+  "height": 412
+ },
+ {
+  "name": "StateChip",
+  "group": "Shell",
+  "height": 96
+ },
+ {
+  "name": "ShortcutsDialog",
+  "group": "Shell",
+  "height": 340
+ },
+ {
+  "name": "ResizablePanels",
+  "group": "Shell",
+  "height": 352
+ },
+ {
+  "name": "SaveBar",
+  "group": "Shell",
+  "height": 196
+ },
+ {
+  "name": "NotFoundState",
+  "group": "Shell",
+  "height": 884
+ },
+ {
+  "name": "AuthLayout",
+  "group": "Shell",
+  "height": 744
+ },
+ {
+  "name": "SignInProviders",
+  "group": "Shell",
+  "height": 360
+ },
+ {
+  "name": "Button",
+  "group": "Actions",
+  "height": 192
+ },
+ {
+  "name": "IconButton",
+  "group": "Actions",
+  "height": 76
+ },
+ {
+  "name": "SplitButton",
+  "group": "Actions",
+  "height": 72
+ },
+ {
+  "name": "CopyButton",
+  "group": "Actions",
+  "height": 72
+ },
+ {
+  "name": "Kbd",
+  "group": "Actions",
+  "height": 60
+ },
+ {
+  "name": "ButtonLink",
+  "group": "Actions",
+  "height": 108
+ },
+ {
+  "name": "ConfirmAction",
+  "group": "Actions",
+  "height": 100
+ },
+ {
+  "name": "DragToConfirm",
+  "group": "Actions",
+  "height": 116
+ },
+ {
+  "name": "ExportButton",
+  "group": "Actions",
+  "height": 100
+ },
+ {
+  "name": "Field",
+  "group": "Forms",
+  "height": 420
+ },
+ {
+  "name": "Checkbox",
+  "group": "Forms",
+  "height": 156
+ },
+ {
+  "name": "Switch",
+  "group": "Forms",
+  "height": 184
+ },
+ {
+  "name": "SegmentedControl",
+  "group": "Forms",
+  "height": 184
+ },
+ {
+  "name": "Slider",
+  "group": "Forms",
+  "height": 192
+ },
+ {
+  "name": "NumberInput",
+  "group": "Forms",
+  "height": 100
+ },
+ {
+  "name": "DatePicker",
+  "group": "Forms",
+  "height": 408
+ },
+ {
+  "name": "MultiSelect",
+  "group": "Forms",
+  "height": 128
+ },
+ {
+  "name": "InlineEdit",
+  "group": "Forms",
+  "height": 132
+ },
+ {
+  "name": "SpringSelect",
+  "group": "Forms",
+  "height": 132
+ },
+ {
+  "name": "StretchSwitch",
+  "group": "Forms",
+  "height": 104
+ },
+ {
+  "name": "OTPInput",
+  "group": "Forms",
+  "height": 116
+ },
+ {
+  "name": "TimeRangePicker",
+  "group": "Forms",
+  "height": 192
+ },
+ {
+  "name": "DateRangeFilter",
+  "group": "Forms",
+  "height": 168
+ },
+ {
+  "name": "AnimatedFileUpload",
+  "group": "Forms",
+  "height": 220
+ },
+ {
+  "name": "Badge",
+  "group": "Feedback",
+  "height": 64
+ },
+ {
+  "name": "StatusBadge",
+  "group": "Feedback",
+  "height": 64
+ },
+ {
+  "name": "Alert",
+  "group": "Feedback",
+  "height": 360
+ },
+ {
+  "name": "ToastProvider",
+  "group": "Feedback",
+  "height": 200
+ },
+ {
+  "name": "ProgressBar",
+  "group": "Feedback",
+  "height": 200
+ },
+ {
+  "name": "Skeleton",
+  "group": "Feedback",
+  "height": 160
+ },
+ {
+  "name": "VelocityToast",
+  "group": "Feedback",
+  "height": 192
+ },
+ {
+  "name": "UndoToast",
+  "group": "Feedback",
+  "height": 192
+ },
+ {
+  "name": "RequestStatus",
+  "group": "Feedback",
+  "height": 356
+ },
+ {
+  "name": "Loader",
+  "group": "Feedback",
+  "height": 108
+ },
+ {
+  "name": "CheckList",
+  "group": "Feedback",
+  "height": 136
+ },
+ {
+  "name": "Hint",
+  "group": "Overlays",
+  "height": 100
+ },
+ {
+  "name": "Popover",
+  "group": "Overlays",
+  "height": 76
+ },
+ {
+  "name": "DropdownMenu",
+  "group": "Overlays",
+  "height": 112
+ },
+ {
+  "name": "Flysheet",
+  "group": "Overlays",
+  "height": 72
+ },
+ {
+  "name": "DirectionalTooltip",
+  "group": "Overlays",
+  "height": 136
+ },
+ {
+  "name": "PeekLink",
+  "group": "Overlays",
+  "height": 208
+ },
+ {
+  "name": "ProductTour",
+  "group": "Overlays",
+  "height": 320
+ },
+ {
+  "name": "SettleModal",
+  "group": "Overlays",
+  "height": 336
+ },
+ {
+  "name": "NotificationBell",
+  "group": "Overlays",
+  "height": 416
+ },
+ {
+  "name": "SpotlightSearch",
+  "group": "Overlays",
+  "height": 496
+ },
+ {
+  "name": "DynamicIsland",
+  "group": "Overlays",
+  "height": 168
+ },
+ {
+  "name": "AnimatedTabs",
+  "group": "Navigation",
+  "height": 292
+ },
+ {
+  "name": "Breadcrumb",
+  "group": "Navigation",
+  "height": 108
+ },
+ {
+  "name": "Stepper",
+  "group": "Navigation",
+  "height": 160
+ },
+ {
+  "name": "TextLink",
+  "group": "Navigation",
+  "height": 88
+ },
+ {
+  "name": "SmoothAccordion",
+  "group": "Navigation",
+  "height": 264
+ },
+ {
+  "name": "SelectionBasket",
+  "group": "Navigation",
+  "height": 140
+ },
+ {
+  "name": "ScrollProgressNav",
+  "group": "Navigation",
+  "height": 384
+ },
+ {
+  "name": "Table",
+  "group": "Data display",
+  "height": 420
+ },
+ {
+  "name": "KpiTile",
+  "group": "Data display",
+  "height": 332
+ },
+ {
+  "name": "StatCard",
+  "group": "Data display",
+  "height": 208
+ },
+ {
+  "name": "SignedValue",
+  "group": "Data display",
+  "height": 72
+ },
+ {
+  "name": "DescriptionList",
+  "group": "Data display",
+  "height": 296
+ },
+ {
+  "name": "Avatar",
+  "group": "Data display",
+  "height": 80
+ },
+ {
+  "name": "CodeBlock",
+  "group": "Data display",
+  "height": 284
+ },
+ {
+  "name": "DataTable",
+  "group": "Data display",
+  "height": 960
+ },
+ {
+  "name": "ChangeList",
+  "group": "Data display",
+  "height": 208
+ },
+ {
+  "name": "Disclosure",
+  "group": "Data display",
+  "height": 164
+ },
+ {
+  "name": "LiveValue",
+  "group": "Data display",
+  "height": 72
+ },
+ {
+  "name": "RelativeTime",
+  "group": "Data display",
+  "height": 60
+ },
+ {
+  "name": "CopyChip",
+  "group": "Data display",
+  "height": 168
+ },
+ {
+  "name": "AttachmentChip",
+  "group": "Data display",
+  "height": 72
+ },
+ {
+  "name": "LogViewer",
+  "group": "Data display",
+  "height": 412
+ },
+ {
+  "name": "InteractiveTimeline",
+  "group": "Data display",
+  "height": 476
+ },
+ {
+  "name": "RecoveryLedger",
+  "group": "Data display",
+  "height": 412
+ },
+ {
+  "name": "SmartComparison",
+  "group": "Data display",
+  "height": 552
+ },
+ {
+  "name": "AIResponse",
+  "group": "Data display",
+  "height": 676
+ },
+ {
+  "name": "AIAgentActivity",
+  "group": "Data display",
+  "height": 592
+ },
+ {
+  "name": "PromptComposer",
+  "group": "Data display",
+  "height": 548
+ },
+ {
+  "name": "AirportMatrixClock",
+  "group": "Data display",
+  "height": 360
+ },
+ {
+  "name": "LineChart",
+  "group": "Charts",
+  "height": 544
+ },
+ {
+  "name": "BarChart",
+  "group": "Charts",
+  "height": 380
+ },
+ {
+  "name": "DonutChart",
+  "group": "Charts",
+  "height": 500
+ },
+ {
+  "name": "Sparkline",
+  "group": "Charts",
+  "height": 380
+ },
+ {
+  "name": "ChartLegend",
+  "group": "Charts",
+  "height": 124
+ },
+ {
+  "name": "BarList",
+  "group": "Charts",
+  "height": 192
+ },
+ {
+  "name": "ActivityHeatmap",
+  "group": "Charts",
+  "height": 480
+ },
+ {
+  "name": "FunnelChart",
+  "group": "Charts",
+  "height": 388
+ },
+ {
+  "name": "LiveLineChart",
+  "group": "Charts",
+  "height": 312
+ },
+ {
+  "name": "DependencyTrace",
+  "group": "Charts",
+  "height": 352
+ },
+ {
+  "name": "EmptyState",
+  "group": "States",
+  "height": 328
+ },
+ {
+  "name": "QueryState",
+  "group": "States",
+  "height": 440
+ },
+ {
+  "name": "LookPicker",
+  "group": "Themes",
+  "height": 320
+ },
+ {
+  "name": "ThemeToggle",
+  "group": "Themes",
+  "height": 100
+ }
+]
