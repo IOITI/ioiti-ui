@@ -93,7 +93,7 @@ const GLASS: Token[] = [
   { name: '--glass-tint-1', utility: 'body', use: 'The washes of the backdrop, at their strongest (an accent\'s in place of each it gives: the first, or all three).' },
   { name: '--glass-tint-2', utility: 'body', use: '' },
   { name: '--glass-tint-3', utility: 'body', use: '' },
-  { name: '--glass-bar', utility: 'glass-bar', use: 'The sidebar and the top bar, lightly blurred.' },
+  { name: '--glass-bar', utility: 'glass-bar', use: 'The sidebar and the top bar, unblurred over the still backdrop.' },
   { name: '--glass-card', utility: 'glass-card', use: 'Panels and cards.' },
   { name: '--glass-frost', utility: 'glass-tile', use: 'A figure\'s tile, frosted and blurred, lit from above in light.' },
   { name: '--glass-tile-glow', utility: 'glass-tile', use: 'The accent\'s glow on a tile, from a corner that changes from tile to tile.' },

@@ -581,8 +581,8 @@ function Panel({
         )}
       </div>
 
-      {/* ioiti-ui: in document.body: the sidebar blurs under the glass material (glass-bar), which would make it
-          the tip's containing block, and its overflow cut the tip at its edge. */}
+      {/* ioiti-ui: in document.body, as every layer: a sidebar that took a blur, a filter or a transform would be the
+          tip's containing block, and its overflow cut the tip at its edge. */}
       {typeof document !== "undefined" &&
         createPortal(
           <AnimatePresence>

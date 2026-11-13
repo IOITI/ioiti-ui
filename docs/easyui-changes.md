@@ -58,8 +58,8 @@ otherwise).
   `selection-basket` and `smart-comparison`, whose hover is the fill's own colour.
 - **Glass.** Under the glass material (`data-material="glass"` on `<html>`, src/styles/glass.css), a surface
   turns to glass through a utility that does nothing otherwise, after EasyUI's classes, which stay: `glass-bar`,
-  lightly blurred, for the sidebar and a `flysheet` pushing the page (neither holds a fixed child of its own:
-  the sidebar's tip, which was one, is drawn in `document.body`, and the sheet's children are drawn beside it); `glass-card` for `stat-card`, the frames of `advanced-data-table`, `ai-agent-activity` and `ai-response`,
+  not blurred (it stands on the still backdrop), for the sidebar and a `flysheet` pushing the page (the sidebar's
+  tip is drawn in `document.body`, and the sheet's children are drawn beside it); `glass-card` for `stat-card`, the frames of `advanced-data-table`, `ai-agent-activity` and `ai-response`,
   `smooth-accordion`, `request-status`, `airport-matrix-clock` and `recovery-ledger`; `glass-float`, blurred
   the most and without the sheen of the others, for what floats: the sidebar's drawer, `settle-modal`, `flysheet` (its children are drawn beside
   its panel, not in it), `spotlight-search`, `directional-tooltip`,
@@ -153,13 +153,13 @@ otherwise).
   `onActiveChange` is optional.
 - `sidebar`: `badgeTone` on an entry and a child (`SidebarBadgeTone`: `neutral`, `warning`, `negative`): a badge
   that says a state ("Degraded", "2 open") is in its tone's text colour with a dot, without the count's grey
-  pill. The tip naming an entry of the folded sidebar is drawn in `document.body`: the sidebar blurs under the
-  glass material (`glass-bar`), which made it the tip's containing block, its overflow cutting the tip.
+  pill. The tip naming an entry of the folded sidebar is drawn in `document.body`, as every layer: a sidebar
+  that took a blur, a filter or a transform would be the tip's containing block, its overflow cutting the tip.
 - `notification-bell`: its panel is a layer in `document.body`, placed under the bell by `useAnchoredLayer`
   (`src/lib/anchor.ts`), which gives it its keys: a press elsewhere, Escape and a Tab past its ends close it, and
   the focus goes into it and back to the bell (EasyUI's closed it at a mouse press only, and left the focus on
-  the bell). Drawn in the top bar, it was held by the bar's blur, its own blur seeing nothing of the page; on a
-  phone it spans the screen but its edges, as before.
+  the bell). Drawn in the top bar, it would be held by a blur, a filter or a transform the bar took, its own
+  blur seeing nothing of the page; on a phone it spans the screen but its edges, as before.
 - `button`: `buttonClassName`, the classes of a variant and size, for a link drawn as a button (`ButtonLink`).
   An `xs` size, for an action on a line of text or a row of a table; its icons as tall as its words at every
   size (12, 14, 16 and 20 px; an icon given its own `size-*` keeps it), where EasyUI left them at 24 px; its

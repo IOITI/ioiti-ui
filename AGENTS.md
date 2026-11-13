@@ -50,8 +50,12 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   (bloom): an image as `bg-(image:…)`, since tailwind-merge takes any other `bg-brand-…` for a colour and drops
   `bg-brand`. A grain is a PNG beside `accents.css`, made by `scripts/grains.mjs` (an SVG filter's noise
   vanishes or turns to moiré at some screens and zooms), never a `data:` URI; `GRAINS` in
-  `gallery/src/tokens.ts` reads it (the backdrop's, an overlay: `OVERLAY_GRAIN`). Three blur: `glass-bar` (the top bar, the sidebar, a pushing sheet),
-  `glass-tile` (KpiTile) and `glass-float`, nothing else: never on an element with a fixed child of its own (a
+  `gallery/src/tokens.ts` reads it (the backdrop's, an overlay: `OVERLAY_GRAIN`). Two blur: `glass-tile` (KpiTile)
+  and `glass-float`, nothing else. Not `glass-bar` (the top bar, the sidebar, a pushing sheet): it stands on the
+  still backdrop, which a blur barely changes, and the browser blurs it again at every frame of a change of page
+  beside it (one at a third of its frames). For the same reason nothing is blended with what is under it
+  (`mix-blend-mode`): the backdrop's grain is blended as it is painted (`background-blend-mode`, over a copy of
+  the backdrop: `--glass-backdrop`). A blur goes never on an element with a fixed child of its own (a
   blur becomes its containing block, and the root of the blur of what floats in it: a layer goes to
   `document.body`, as the sidebar's tip and the bell's panel), never on white text on ink, never under an
   element with a `view-transition-name` at rest (a name makes it the root of its children's backdrop: their

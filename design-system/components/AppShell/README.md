@@ -13,7 +13,7 @@ The frame of every page: the sidebar with the application's menu, the top bar wi
 </AppShell>
 ```
 
-- The sidebar is beside the page from 768px, a drawer below; ⌘B (Ctrl+B) folds it. Under glass the sidebar and the top bar are `glass-bar`, lightly blurred: what floats from them is drawn in `document.body`.
+- The sidebar is beside the page from 768px, a drawer below; ⌘B (Ctrl+B) folds it. Under glass the sidebar and the top bar are `glass-bar`, unblurred over the still backdrop; what floats from them is drawn in `document.body`.
 - An entry ends with a count (`badge: 38`), quiet, or a state in a word in its tone (`badge: 'Degraded', badgeTone: 'warning'`, or `negative`), with a dot.
 - The shell puts `page-gap` between the page's blocks: a page returns them side by side, no margins of its own.
 - A change of page fades the page alone; the sidebar and the top bar stay still and in use.

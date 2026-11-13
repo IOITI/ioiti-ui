@@ -19,16 +19,18 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   - **The backdrop is a layer fixed to the window** (`body::before`), no longer a background fixed to it:
     cheaper to scroll, and drawn by iOS's Safari. Over it lies a faint grain, for every accent
     (`body::after`, an overlay at `--glass-grain-opacity`: 3 % in light, 6 % in dark), so the steps of a dark
-    gradient no longer show. Asked for less transparency, neither is drawn.
-  - **The bars blur** (`--glass-bar-blur`, `blur(14px) saturate(140%)`, on `glass-bar`): the top bar, the
-    sidebar, a pushing sheet.
+    gradient no longer show. The grain is blended once, as it is painted, over a copy of the backdrop
+    (`--glass-backdrop`, its layers), not at every frame a page changes. Asked for less transparency, neither
+    is drawn.
+  - **The bars stay unblurred** (`glass-bar`): they stand on the still backdrop, which a blur barely changes,
+    and the browser would blur it again at every frame of a change of page beside them.
   - **New utilities:**
     - `glass-tile`: a figure's tile, frosted (`--glass-frost`) and blurred (`--glass-tile-blur`). In light, it
       is lit from above and has a glow of the accent (`--glass-tile-glow`, an accent's `--brand-tile-glow`)
       from a corner that changes from tile to tile. A dark tile has neither, its grey text kept at 4.5:1.
     - `glass-edge`: an edge lit at its top, fading to the hairline at its bottom.
   - **New tokens:** `--glass-raised` (a box nested in a panel: ink at 2.5 % in light, black at 12 % in dark),
-    `--glass-frost`, `--glass-tile-glow`, `--glass-bar-blur`, `--glass-tile-blur`, `--glass-edge-shadow`,
+    `--glass-frost`, `--glass-tile-glow`, `--glass-tile-blur`, `--glass-edge-shadow`, `--glass-backdrop`,
     `--glass-grain-opacity`, and `--brand-tile-glow` in each accent.
 - **`KpiTile`**:
   - `change`, `goodWhen` and `changeFormat`: the figure's change, signed, in the tone of what it means (down is
@@ -54,9 +56,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 - **`NotificationBell`**: its panel is a layer in `document.body`, placed under the bell. The focus goes into
   it, and Escape, a press elsewhere or a Tab past its ends closes it and gives the bell the focus again.
 
-Nothing to change in an application. A glass application may see the bars and tiles blur, and menus less
-see-through. An element of its own that is fixed and drawn inside the top bar or the sidebar is now held by
-their blur: draw it in `document.body`.
+Nothing to change in an application. A glass application may see its figures' tiles blur, and menus less
+see-through.
 
 ## [0.16.0] - 2026-11-12
 

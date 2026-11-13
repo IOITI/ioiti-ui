@@ -117,8 +117,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     prevCountRef.current = unreadCount;
   }, [unreadCount]);
 
-  // ioiti-ui: the panel is a layer in document.body, placed under the bell (anchor.ts): drawn in the top bar, it was
-  // held by the bar's blur (its containing block, its backdrop's root: the panel's own blur saw nothing of the page).
+  // ioiti-ui: the panel is a layer in document.body, placed under the bell (anchor.ts): drawn in the top bar, it would
+  // be held by a blur, a filter or a transform the bar took (its containing block, its backdrop's root: the panel's own
+  // blur would see nothing of the page).
   // A press elsewhere, Escape and a Tab past its ends close it; the focus goes into it, and back to the bell.
   const layer = useAnchoredLayer({
     open: isPanelOpen,

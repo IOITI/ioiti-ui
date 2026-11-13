@@ -73,7 +73,7 @@ describe('the stylesheets, as an application builds them', () => {
     expect(rule('.accent\\:text-brand-fill-foreground:is(:root[data-accent] *)')).toContain('color: var(--brand-fill-foreground, var(--brand-foreground))')
   })
 
-  it('turn a surface to glass only where the material is glass, and blur the bars, the tiles and what floats', async () => {
+  it('turn a surface to glass only where the material is glass, and blur the tiles and what floats', async () => {
     const utilities = ['glass-bar', 'glass-card', 'glass-tile', 'glass-edge', 'glass-float']
     const css = await build([...utilities, 'glass:bg-black/20'])
     const rule = (selector: string) => /\{([^{}]*)\}/.exec(css.slice(css.indexOf(selector)))?.[1] ?? ''
@@ -81,8 +81,10 @@ describe('the stylesheets, as an application builds them', () => {
 
     for (const utility of utilities) expect(css).toContain(`.${utility}:is(:root[data-material="glass"] *)`)
     expect(glass('glass-float')).toContain('backdrop-filter: var(--glass-blur)')
-    expect(glass('glass-bar')).toContain('backdrop-filter: var(--glass-bar-blur)')
     expect(glass('glass-tile')).toContain('backdrop-filter: var(--glass-tile-blur)')
+    // The bars stand on the still backdrop, which a blur barely changes, and which the browser would blur again at
+    // every frame of a change of page beside them.
+    expect(glass('glass-bar')).not.toContain('backdrop-filter')
     expect(glass('glass-card')).not.toContain('backdrop-filter')
     expect(glass('glass-edge')).not.toContain('backdrop-filter')
     // What floats has no sheen: its text holds 4.5:1 over black or white behind it (gallery/src/tokens.test.ts).
@@ -107,7 +109,34 @@ describe('the stylesheets, as an application builds them', () => {
       expect(drawn, layer).toContain('z-index: -1')
       expect(drawn, layer).toContain('pointer-events: none')
     }
-    expect(rule(':root[data-material="glass"] body::after')).toContain('mix-blend-mode: overlay')
+  })
+
+  it('blend the backdrop\'s grain as it is painted, never at each frame something moves on the page', async () => {
+    const css = await build([])
+    const rule = (selector: string) => /\{([^{}]*)\}/.exec(css.slice(css.indexOf(`${selector} {`)))?.[1] ?? ''
+    // A layer blended with what is under it (mix-blend-mode) is blended again at every frame of a change of page.
+    expect(css).not.toContain('mix-blend-mode')
+    // A list's entries, split at its commas outside parentheses.
+    const layers = (value: string) => {
+      const entries = ['']
+      let depth = 0
+      for (const character of value) {
+        depth += character === '(' ? 1 : character === ')' ? -1 : 0
+        if (character === ',' && depth === 0) entries.push('')
+        else entries[entries.length - 1] += character
+      }
+      return entries.map((entry) => entry.trim())
+    }
+    const backdrop = layers(/--glass-backdrop:([^;]*);/.exec(rule(':root[data-material="glass"]'))?.[1] ?? '')
+    expect(backdrop.length).toBeGreaterThan(1)
+    expect(rule(':root[data-material="glass"] body::before')).toContain('background-image: var(--glass-backdrop)')
+    // The grain over its own copy of the backdrop, opaque, laid at the grain's opacity over the backdrop: one blend
+    // mode for each of its layers (a shorter list repeats), the grain's an overlay.
+    const grain = rule(':root[data-material="glass"] body::after')
+    expect(grain).toContain('background-color: var(--glass-base)')
+    expect(grain).toContain('background-image: -webkit-image-set(url("./grain-overlay.png") 2x), var(--glass-backdrop)')
+    expect(layers(/background-blend-mode:([^;]*);/.exec(grain)?.[1] ?? '')).toEqual(['overlay', ...backdrop.map(() => 'normal')])
+    expect(grain).toContain('opacity: var(--glass-grain-opacity)')
   })
 
   it('keep every block of the design as it was, its base layer whole: the accents, glass and motion only add', async () => {

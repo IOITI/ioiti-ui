@@ -7,7 +7,7 @@
    `data-material="glass"`, and three utilities, which do nothing otherwise,
    turn a surface to glass:
 
-   - glass-bar    the sidebar and the top bar, lightly blurred (--glass-bar-blur)
+   - glass-bar    the sidebar and the top bar: not blurred
    - glass-card   a panel, a card: not blurred
    - glass-tile   a figure's tile (KpiTile), in place of glass-card: frosted and
                   blurred (--glass-tile-blur); in light, lit from above and a
@@ -20,7 +20,10 @@
                   white; no sheen on it for that (its light and its reflection
                   would take the text under 4.5:1 there).
 
-   Three blur: the bars, the tiles and what floats. A blur holds the fixed
+   Two blur: the tiles and what floats. Not the bars: they stand on the still
+   backdrop, which a blur barely changes (a step or two of 255 under them), and
+   the browser blurs it again at every frame of a change of page beside them,
+   which then runs at a third of its frames. A blur holds the fixed
    children of what it is on (backdrop-filter makes an element their containing
    block, its overflow cutting them) and cuts the blur of what floats inside it:
    never on an element with a fixed child of its own (a layer goes to
@@ -54,7 +57,6 @@
   --glass-blur-radius: 20px;
   --glass-saturate: 1.5;
   --glass-blur: blur(var(--glass-blur-radius)) saturate(var(--glass-saturate));
-  --glass-bar-blur: blur(14px) saturate(140%);
   --glass-tile-blur: blur(24px) saturate(150%);
   --glass-card-shadow: inset 0 1px 0 0 var(--glass-highlight), 0 0 0 1px var(--glass-hairline), 0 14px 34px -18px var(--glass-shadow);
   --glass-float-shadow:
@@ -67,6 +69,13 @@
     radial-gradient(480px 320px at 100% 100%, var(--glass-reflection), transparent 70%);
   /* A lit edge's shadow: its hairline and its depth, the light at its top drawn by the edge itself. */
   --glass-edge-shadow: 0 0 0 1px var(--glass-hairline), 0 14px 34px -18px var(--glass-shadow);
+  /* The backdrop's layers over its colour: the accent's grain, then its washes (the tints without one). Drawn
+     twice: the backdrop (body::before), and again under its own grain (body::after). */
+  --glass-backdrop:
+    var(--brand-grain, none),
+    radial-gradient(52rem 38rem at 8% -6%, var(--brand-wash, var(--glass-tint-1)), transparent 70%),
+    radial-gradient(46rem 34rem at 96% 4%, var(--brand-wash-2, var(--glass-tint-2)), transparent 70%),
+    radial-gradient(54rem 40rem at 72% 104%, var(--brand-wash-3, var(--glass-tint-3)), transparent 70%);
 }
 
 :root[data-material="glass"]:not(.dark) {
@@ -141,24 +150,24 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image:
-    var(--brand-grain, none),
-    radial-gradient(52rem 38rem at 8% -6%, var(--brand-wash, var(--glass-tint-1)), transparent 70%),
-    radial-gradient(46rem 34rem at 96% 4%, var(--brand-wash-2, var(--glass-tint-2)), transparent 70%),
-    radial-gradient(54rem 40rem at 72% 104%, var(--brand-wash-3, var(--glass-tint-3)), transparent 70%);
+  background-image: var(--glass-backdrop);
 }
 
 /* A grain over every backdrop, faint, blended as an overlay: a speck darkens or lightens what is under it,
-   and the steps of a gradient in the dark do not show. Its tile at 2x, as bloom's (scripts/grains.mjs). */
+   and the steps of a gradient in the dark do not show. Its tile at 2x, as bloom's (scripts/grains.mjs).
+   Blended once, as the layer is painted (background-blend-mode), over a copy of the backdrop, the whole laid
+   over the backdrop at the grain's opacity: the colours of the grain alone blended over it at that opacity
+   (mix-blend-mode), which the browser blends again at every frame something moves on the page, a change of
+   page then running at a third of its frames. One blend mode a layer: a shorter list repeats. */
 :root[data-material="glass"] body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: -webkit-image-set(url("./grain-overlay.png") 2x);
-  background-image: image-set(url("./grain-overlay.png") 2x);
-  mix-blend-mode: overlay;
+  background-color: var(--glass-base);
+  background-image: -webkit-image-set(url("./grain-overlay.png") 2x), var(--glass-backdrop);
+  background-blend-mode: overlay, normal, normal, normal, normal;
   opacity: var(--glass-grain-opacity);
 }
 
@@ -173,8 +182,6 @@
     background-image: var(--glass-sheen);
     border-color: var(--glass-edge);
     box-shadow: inset 0 1px 0 0 var(--glass-highlight);
-    -webkit-backdrop-filter: var(--glass-bar-blur);
-    backdrop-filter: var(--glass-bar-blur);
   }
 }
 
@@ -267,7 +274,6 @@
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root[data-material="glass"] {
     --glass-blur: none;
-    --glass-bar-blur: none;
     --glass-tile-blur: none;
     --glass-sheen: none;
   }

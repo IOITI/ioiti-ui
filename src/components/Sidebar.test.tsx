@@ -22,7 +22,7 @@ describe('the sidebar\'s entries', () => {
     expect(screen.getByText('2 open').querySelector('[aria-hidden]')).toHaveClass('rounded-full', 'bg-current')
   })
 
-  it('name themselves in a tip outside the sidebar when it is folded: its blur would hold and cut the tip', () => {
+  it('name themselves in a tip outside the sidebar when it is folded: a blur or a filter on it would hold and cut the tip', () => {
     const { container } = render(<Sidebar sections={SECTIONS} activeId="orders" defaultCollapsed />)
     fireEvent.mouseEnter(screen.getByRole('link', { name: /API/ }))
     const tip = screen.getAllByText('API').find((element) => !container.contains(element))!

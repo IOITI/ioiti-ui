@@ -242,7 +242,6 @@ describe('every look: a theme, an accent, a material', () => {
     const asked = inside(read('glass.css'), '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)')
     expect(tokensOf(asked, ':root[data-material="glass"]')).toMatchObject({
       '--glass-blur': 'none',
-      '--glass-bar-blur': 'none',
       '--glass-tile-blur': 'none',
       '--glass-sheen': 'none',
     })

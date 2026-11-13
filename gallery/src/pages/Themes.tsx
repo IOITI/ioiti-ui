@@ -82,7 +82,7 @@ export function Themes() {
         description="Translucent surfaces over a still backdrop of colour washes and a faint grain, a light across each panel and the colour around it in its far corner, of a set size, deeper shadows. Fields, rows and buttons stay solid."
       >
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Rule title="glass-bar">The sidebar and the top bar: translucent over the backdrop, lightly blurred, a light on their edge.</Rule>
+          <Rule title="glass-bar">The sidebar and the top bar: translucent over the still backdrop, unblurred, a light on their edge.</Rule>
           <Rule title="glass-card">Panels and cards: the same, unblurred, with a hairline and a soft shadow.</Rule>
           <Rule title="glass-tile">
             A figure's tile: frosted and blurred; in light, lit from above, with a glow of the accent from a corner that
@@ -121,7 +121,7 @@ ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })
           </Rule>
           <Rule title="No blur over a fixed child">
             A blur makes an element the containing block of its fixed children, and the end of the blur of what floats
-            inside it: the bars, the tiles and what floats blur, and none holds a layer of its own (it goes to
+            inside it: the tiles and what floats blur, and none holds a layer of its own (it goes to
             document.body); never on a white text on ink.
           </Rule>
           <Rule title="Every look, checked">
