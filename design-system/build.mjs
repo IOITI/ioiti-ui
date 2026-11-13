@@ -287,7 +287,17 @@ const withoutValues = (file) =>
 write(join(COPY, 'tokens.css'), withoutValues('tokens.css'))
 write(join(COPY, 'theme.css'), withoutValues('theme.css'))
 write(join(COPY, 'accents.css'), accentCss.filter(Boolean).join('\n\n'))
-write(join(COPY, 'glass.css'), glassCss.filter(Boolean).join('\n\n'))
+// A grain the glass stylesheet names itself (the backdrop's): the artifact's upload of it, as the tokens' grains.
+const grainsAsBlobs = (css) =>
+  css.replace(/url\("\.\/([\w.-]+\.png)"\)/g, (_, file) => {
+    const record = config.assetGroups.Textures.files[file]
+    if (!record) {
+      console.error(`${file}: a grain with no upload in config.json "assetGroups.Textures": upload it to the artifact, record its id`)
+      process.exit(1)
+    }
+    return `url("/_blob/${record.blob}")`
+  })
+write(join(COPY, 'glass.css'), grainsAsBlobs(glassCss.filter(Boolean).join('\n\n')))
 write(join(COPY, 'motion.css'), read(join(STYLES, 'motion.css')))
 write(join(COPY, 'styles.css'), read(join(STYLES, 'styles.css')))
 const previewsOut = relative(COPY, join(P, 'components'))

@@ -31,7 +31,8 @@
       "tile": "s",
       "order": [
         "grain-white.png",
-        "grain-black.png"
+        "grain-black.png",
+        "grain-overlay.png"
       ],
       "files": {
         "grain-white.png": {
@@ -45,6 +46,12 @@
           "blob": "e7ad3f942f6598a7f3f15126ad948ca2",
           "size": 11871,
           "type": "image/png"
+        },
+        "grain-overlay.png": {
+          "name": "grain-overlay.png",
+          "blob": "64b8554173bba74d7d917c9dd2107e1f",
+          "size": 11968,
+          "type": "image/png"
         }
       }
     }
@@ -52,7 +59,8 @@
   "assetSources": {
     "Logos/favicon.svg": "gallery/public/favicon.svg",
     "Textures/grain-white.png": "src/styles/grain-white.png",
-    "Textures/grain-black.png": "src/styles/grain-black.png"
+    "Textures/grain-black.png": "src/styles/grain-black.png",
+    "Textures/grain-overlay.png": "src/styles/grain-overlay.png"
   },
   "fonts": [
     {
@@ -157,6 +165,7 @@
     "violet-brand-glow": "Violet: a coloured shadow, under a primary button in glass.",
     "violet-brand-wash": "Violet: the accent's colour in the glass backdrop's first wash.",
     "violet-brand-reflection": "Violet: the accent's colour in a far corner of a glass surface.",
+    "violet-brand-tile-glow": "Violet: the glow of a glass tile (KpiTile), from a corner that changes from tile to tile, in light only; transparent in dark. About half its wash: grey text keeps 4.5:1 where it is strongest.",
     "violet-chart-series": "Violet: the one series of a chart.",
     "violet-chart-funnel-1": "Violet: funnel stage 1.",
     "violet-chart-funnel-2": "Violet: funnel stage 2.",
@@ -170,6 +179,7 @@
     "indigo-brand-glow": "Indigo: a coloured shadow, under a primary button in glass.",
     "indigo-brand-wash": "Indigo: the accent's colour in the glass backdrop's first wash.",
     "indigo-brand-reflection": "Indigo: the accent's colour in a far corner of a glass surface.",
+    "indigo-brand-tile-glow": "Indigo: the glow of a glass tile (KpiTile), from a corner that changes from tile to tile, in light only; transparent in dark. About half its wash: grey text keeps 4.5:1 where it is strongest.",
     "indigo-chart-series": "Indigo: the one series of a chart.",
     "indigo-chart-funnel-1": "Indigo: funnel stage 1.",
     "indigo-chart-funnel-2": "Indigo: funnel stage 2.",
@@ -183,6 +193,7 @@
     "blue-brand-glow": "Blue: a coloured shadow, under a primary button in glass.",
     "blue-brand-wash": "Blue: the accent's colour in the glass backdrop's first wash.",
     "blue-brand-reflection": "Blue: the accent's colour in a far corner of a glass surface.",
+    "blue-brand-tile-glow": "Blue: the glow of a glass tile (KpiTile), from a corner that changes from tile to tile, in light only; transparent in dark. About half its wash: grey text keeps 4.5:1 where it is strongest.",
     "bloom-brand": "Bloom: the fill of what is chosen, current or primary (a filled button, a checked box, the page in the menu, a progress). With [data-accent=\"bloom\"] it is brand, primary and focus-ring.",
     "bloom-brand-foreground": "Bloom: text and icons on bloom-brand, 4.5:1 on it.",
     "bloom-brand-soft": "Bloom: the tint of a chosen row, item or range.",
@@ -190,6 +201,7 @@
     "bloom-brand-glow": "Bloom: a coloured shadow, under a primary button in glass.",
     "bloom-brand-wash": "Bloom: the accent's colour in the glass backdrop's first wash.",
     "bloom-brand-reflection": "Bloom: the accent's colour in a far corner of a glass surface.",
+    "bloom-brand-tile-glow": "Bloom: the glow of a glass tile (KpiTile), from a corner that changes from tile to tile, in light only; transparent in dark. About half its wash: grey text keeps 4.5:1 where it is strongest.",
     "bloom-brand-wash-2": "Bloom: the glass backdrop's second wash, the flyer's tangerine. Never a mark's or a text's colour.",
     "bloom-brand-wash-3": "Bloom: the glass backdrop's third wash, the flyer's mustard. Never a mark's or a text's colour.",
     "bloom-gradient-1": "Bloom: the gradient's first stop (lilac), at 0 % of a 110deg linear gradient, under the grain. A filled primary button and the app mark only.",
@@ -206,13 +218,15 @@
     "glass-tint-1": "Glass: the backdrop's first wash, top left (an accent replaces it with its own).",
     "glass-tint-2": "Glass: the backdrop's second wash, top right.",
     "glass-tint-3": "Glass: the backdrop's third wash, bottom.",
-    "glass-float": "Glass: what floats (popovers, menus, dialogs, toasts, tooltips), blurred 20px. Opaque white or #1c1c1f where less transparency is asked.",
-    "glass-bar": "Glass: the sidebar and the top bar, not blurred.",
-    "glass-card": "Glass: a panel, a tile, a card, not blurred.",
+    "glass-float": "Glass: what floats (popovers, menus, dialogs, toasts, tooltips), blurred 20px, nearly opaque and without sheen: its grey text holds 4.5:1 with black (light) or white (dark) right behind it. Opaque white or #1c1c1f where less transparency is asked.",
+    "glass-bar": "Glass: the sidebar and the top bar, lightly blurred (14px).",
+    "glass-card": "Glass: a panel or a card, not blurred; a panel's edge is lit at its top (glass-edge).",
+    "glass-frost": "Glass: a figure's tile (KpiTile, glass-tile), frosted and blurred 24px; in light, lit from above. Opaque where less transparency is asked.",
+    "glass-raised": "Glass: a box nested in a panel (PanelInset), a faint tint of the panel: ink in light, black in dark (set into it, not lighter).",
     "glass-edge": "Glass: the border of a glass surface.",
     "glass-hairline": "Glass: the hairline ring outside a glass card.",
     "glass-highlight": "Glass: the light on a glass surface's top edge.",
-    "glass-shine": "Glass: the light across a surface from its top corner.",
+    "glass-shine": "Glass: the light across a panel or a tile from its top corner, of a set size (520 × 260 px). Not on what floats.",
     "glass-shadow": "Glass: the colour of a glass surface's deeper shadow.",
     "glass-scrim": "Glass: a dialog's scrim, lighter than the flat one so the dialog's glass shows the page.",
     "glass-text-subtle": "Glass: text-subtle a step stronger, 4.5:1 on glass over the strongest wash.",

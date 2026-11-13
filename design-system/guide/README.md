@@ -34,10 +34,11 @@ An accent colours what is **chosen, current or primary**: a filled primary butto
 
 ### Glass
 
-`data-material="glass"` on `<html>` turns surfaces to glass **by role**, over a still backdrop of three washes (`glass-tint-1…3`, or the accent's) on `glass-base`:
+`data-material="glass"` on `<html>` turns surfaces to glass **by role**, over a still backdrop of three washes (`glass-tint-1…3`, or the accent's) on `glass-base`, under a faint grain (Textures):
 
-- `glass-bar`: the sidebar and the top bar (`glass-bar` colour). `glass-card`: a panel, a tile, a card (`glass-card`). `glass-float`: what floats, popovers, menus, dialogs, toasts, tooltips (`glass-float`), the **only one blurred** (20px, saturate 170%).
-- Fields, rows and buttons stay solid. Never put `glass-float` on an element with a fixed child of its own, or on white text on ink.
+- `glass-bar`: the sidebar and the top bar (`glass-bar` colour), lightly blurred (14px). `glass-card`: a panel, a card (`glass-card`), not blurred, a panel's edge lit at its top (`glass-edge`), a box in it `glass-raised`. `glass-tile`: a figure's tile (`glass-frost`), blurred 24px; in light, lit from above, with a glow of the accent from a corner that changes from tile to tile (`<accent>-brand-tile-glow`). `glass-float`: what floats, popovers, menus, dialogs, toasts, tooltips (`glass-float`), blurred the most (20px, saturate 150%), nearly opaque and **without sheen**: its grey text holds 4.5:1 with black (light) or white (dark) right behind it.
+- The light (`glass-shine`) and the reflection of panels and tiles are corners of a set size: a wide panel is lit as a narrow one.
+- Fields, rows and buttons stay solid. A blurred surface never holds a fixed child of its own (what floats from it goes to `document.body`), and never takes white text on ink.
 - Under glass, `text-subtle`, `muted-foreground` and `positive` are a step stronger (`glass-text-subtle`, `glass-muted-foreground`, `glass-positive`), and the shadows deeper (`glass-shadow-subtle`, `glass-shadow-elevated`). A dialog's scrim is `glass-scrim`.
 - Asked for less transparency or more contrast, glass becomes opaque and the backdrop plain.
 
@@ -63,7 +64,7 @@ An accent colours what is **chosen, current or primary**: a filled primary butto
 
 - Every padding and gap is a step of `spacing` (4px). A page is padded `page-padding` (16px) on a phone and `page-padding-wide` (24px) from 640px; its column stops at `page-max-width` (80rem) unless the page asks the shell to be wide.
 - The shell puts `page-gap` (24px) between a page's blocks: a page returns its blocks side by side, with no margins of its own.
-- **Every section sits in a `Panel`**: `radius-2xl` corners, a `border` at 70%, `surface` at 50% (25% in dark) over `background`, its body padded `panel-padding` (20px). What is inside a panel has no second card around it; a nested box is `radius-lg`, a fainter border, `surface-raised`.
+- **Every section sits in a `Panel`**: `radius-2xl` corners, a `border` at 70%, `surface` at 50% (25% in dark) over `background`, its body padded `panel-padding` (20px). What is inside a panel has no second card around it; a nested box is a `PanelInset`: `radius-xl`, a fainter border, `surface-raised` at 60% (`glass-raised` under glass).
 - Rows of a list or a table are apart by `border` at 40%.
 - The top bar is `topbar-height` (56px). Controls are `control-height` (40px) at size md, 32px at sm, 24px at xs (inline on a line of text or a row).
 
@@ -99,12 +100,12 @@ Calm, the same everywhere, and only where it says what changed.
 
 ## Using the components
 
-The components are ioiti-ui's, live: `window.IoitiUI` (React 19.3, both in `components/lib`). Wrap an application in `IoitiProvider` (theme, reduced motion, the application's name in every tab's title) and give it a `LinkProvider` for its router; `ToastProvider` shows toasts. Pages are made of `PageHeader`, `Panel`, `KpiGrid` / `KpiTile`, `Table`, `Field` and the rest; the shell is `AppShell`, with the application's menu. Read each component's card for what it takes.
+The components are ioiti-ui's, live: `window.IoitiUI` (React 19.3, both in `components/lib`). Wrap an application in `IoitiProvider` (theme, reduced motion, the application's name in every tab's title) and give it a `LinkProvider` for its router; `ToastProvider` shows toasts. Pages are made of `PageHeader`, `Panel`, `KpiGrid` / `KpiTile` (a `KpiStrip` under them), `StatusHistory`, `Table`, `Field` and the rest; the shell is `AppShell`, with the application's menu. Read each component's card for what it takes.
 
 The stylesheet is Tailwind CSS 4: the tokens are classes (`bg-surface`, `text-muted-foreground`, `border-border`, `text-positive`, `bg-brand`), with the `dark:`, `accent:` and `glass:` variants. The theme is `.dark` on `<html>` (here, `data-theme="dark"` sets it).
 
 ## Not synced
 
-- Values the token format cannot hold stay in `components/bundle.css`: the glass blur and composite shadows (`--glass-blur`, `--glass-card-shadow`, `--glass-float-shadow`, `--glass-glow`, `--glass-sheen`, `--glass-reflection`), Bloom's `--brand-fill` and grain, the motion curves (`--ease-soft`, `--ease-fast`, `--ease-exit`) and Tailwind's own colour scales (emerald, red, amber, sky…), which some components use with their dark values beside them.
+- Values the token format cannot hold stay in `components/bundle.css`: the glass blurs and composite shadows (`--glass-blur`, `--glass-bar-blur`, `--glass-tile-blur`, `--glass-card-shadow`, `--glass-edge-shadow`, `--glass-float-shadow`, `--glass-glow`, `--glass-sheen`, `--glass-reflection`, `--glass-tile-light`, `--glass-tile-glow`), the backdrop's grain and its `--glass-grain-opacity`, Bloom's `--brand-fill` and grain, the motion curves (`--ease-soft`, `--ease-fast`, `--ease-exit`) and Tailwind's own colour scales (emerald, red, amber, sky…), which some components use with their dark values beside them.
 - The radius scale is derived: the classes compute `rounded-*` from `radius`, so change `radius` to change them all; `radius-sm…4xl` record the results.
 - Not in the bundle: the code editors (`ioiti-ui/code`, CodeMirror), the React Router adapter (`ioiti-ui/react-router`) and the Vite plugin. Components without a card are still in `window.IoitiUI`.

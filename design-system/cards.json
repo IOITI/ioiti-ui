@@ -12,7 +12,7 @@
  {
   "name": "Panel",
   "group": "Shell",
-  "height": 204
+  "height": 404
  },
  {
   "name": "UserMenu",
@@ -185,6 +185,11 @@
   "height": 64
  },
  {
+  "name": "StatusHistory",
+  "group": "Feedback",
+  "height": 132
+ },
+ {
   "name": "Alert",
   "group": "Feedback",
   "height": 360
@@ -327,7 +332,12 @@
  {
   "name": "KpiTile",
   "group": "Data display",
-  "height": 332
+  "height": 504
+ },
+ {
+  "name": "KpiStrip",
+  "group": "Data display",
+  "height": 300
  },
  {
   "name": "StatCard",

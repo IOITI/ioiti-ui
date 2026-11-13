@@ -1,16 +1,17 @@
-import { KpiGrid, KpiTile, Meter, formatMoney } from 'ioiti-ui'
+import { KpiGrid, KpiTile, Meter, Sparkline, formatMoney } from 'ioiti-ui'
 import { createRoot } from 'react-dom/client'
 
 createRoot(document.getElementById('root')!).render(
   <div className="p-5">
-    <KpiGrid>
-      <KpiTile label="Orders today" value="12" hint="8 yesterday" />
-      <KpiTile label="Amount" value={formatMoney(4210, 'EUR')} hint="Since midnight" />
-      <KpiTile label="Storage" value="62%" hint="of 50 GB">
-        <Meter ratio={0.62} tone="warning" label="Storage used" scale={['0', '50 GB']} />
+    <KpiGrid period="Compared with yesterday">
+      <KpiTile lead label="Revenue today" value={formatMoney(12400, 'EUR')} change={8.4} hint="Since midnight">
+        <Sparkline values={[3.1, 4.2, 3.8, 5.6, 6.1, 7.4, 8.9, 10.2, 12.4]} width={240} height={48} label="Revenue through the day" className="w-full" />
       </KpiTile>
-      <KpiTile label="Errors" value="0" hint="In the last hour">
-        <Meter ratio={0.05} tone="positive" label="Error budget used" />
+      <KpiTile label="Orders" value="38" change={4.2} />
+      <KpiTile label="Median delivery" value="2.4 days" change={-6.1} goodWhen="down" />
+      <KpiTile label="Refunds" value="7" change={40} goodWhen="down" tone="negative" toneLabel="Above usual" />
+      <KpiTile label="Storage" value="91%" hint="of 50 GB" tone="warning" toneLabel="Near the limit">
+        <Meter ratio={0.91} tone="warning" label="Storage used" scale={['0', '50 GB']} />
       </KpiTile>
     </KpiGrid>
   </div>,
