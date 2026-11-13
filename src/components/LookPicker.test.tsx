@@ -128,18 +128,36 @@ describe('the accent and material picker', () => {
     expect(gradients).toEqual(['bloom', 'bloom'])
   })
 
-  it('goes when the focus leaves it, and stays while it moves inside it', async () => {
+  it('is a layer in document.body: a top bar that blurs or stands above the page does not hold it', async () => {
     const user = userEvent.setup()
     renderPicker()
 
     await user.click(trigger())
+
+    expect(choices()?.parentElement).toBe(document.body)
+    expect(trigger().closest('div')?.contains(choices())).toBe(false)
+  })
+
+  it('takes the focus to the accent shown, keeps it inside, and gives it back past its ends', async () => {
+    const user = userEvent.setup()
+    html.setAttribute(ACCENT_ATTRIBUTE, 'blue')
+    renderPicker()
+
+    await user.click(trigger())
+    await waitFor(() => expect(screen.getByRole('radio', { name: 'Blue' })).toHaveFocus())
+
     await user.tab()
-    expect(screen.getByRole('radio', { name: 'Neutral' })).toHaveFocus()
+    expect(screen.getByRole('radio', { name: 'Flat' })).toHaveFocus()
     expect(choices()).toBeInTheDocument()
 
     await user.tab()
-    await user.tab()
-    expect(screen.getByRole('button', { name: 'Elsewhere' })).toHaveFocus()
     await waitFor(() => expect(choices()).not.toBeInTheDocument(), { timeout: 3000 })
+    expect(trigger()).toHaveFocus()
+
+    await user.click(trigger())
+    await waitFor(() => expect(screen.getByRole('radio', { name: 'Blue' })).toHaveFocus())
+    await user.tab({ shift: true })
+    await waitFor(() => expect(choices()).not.toBeInTheDocument(), { timeout: 3000 })
+    expect(trigger()).toHaveFocus()
   })
 })

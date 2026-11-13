@@ -14,6 +14,17 @@ const ITEMS: SpotlightSearchItem[] = [
 ]
 
 describe('SpotlightSearch', () => {
+  it('is drawn in document.body, out of what it is used in: a top bar that blurs would hold and cut it', () => {
+    const { container } = render(
+      <header>
+        <SpotlightSearch open onOpenChange={() => {}} items={ITEMS} label="Go to" />
+      </header>,
+    )
+    const dialog = screen.getByRole('dialog')
+    expect(container.contains(dialog)).toBe(false)
+    expect(dialog.closest('.fixed.inset-0')?.parentElement).toBe(document.body)
+  })
+
   it('draws an entry\'s icon and its keys', () => {
     render(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} label="Go to" />)
     const orders = screen.getByRole('option', { name: /^Orders/ })

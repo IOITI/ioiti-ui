@@ -95,9 +95,20 @@ export interface AnchoredLayerOptions {
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
-/** The controls the keyboard reaches in an element, in order. */
+const isRadio = (element: Element): element is HTMLInputElement =>
+  element instanceof HTMLInputElement && element.type === 'radio' && element.name !== ''
+
+/**
+ * The controls the keyboard reaches in an element, in order. A group of radios is one stop, as Tab goes: its
+ * checked radio, or its first while none is (the arrows move within it).
+ */
 export function focusables(root: HTMLElement): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((element) => element.tabIndex >= 0)
+  const all = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((element) => element.tabIndex >= 0)
+  return all.filter((element) => {
+    if (!isRadio(element)) return true
+    const group = all.filter((other): other is HTMLInputElement => isRadio(other) && other.name === element.name && other.form === element.form)
+    return element === (group.find((radio) => radio.checked) ?? group[0])
+  })
 }
 
 /**

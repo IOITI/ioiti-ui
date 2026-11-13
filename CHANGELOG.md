@@ -53,6 +53,14 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 - **The menu**: an entry's `badge` can be a state in a word in its tone, `badgeTone` (`warning`, `negative`), on
   `MenuEntry`, `SidebarItem` and `SidebarChild` (the type `SidebarBadgeTone`). The folded sidebar's tip is drawn
   in `document.body`.
+- **`LookPicker`**: its choices are a layer in `document.body`, placed under its button. Drawn in the top bar, they
+  were under the page wherever the bar was a stacking context (it blurred under glass: the page was drawn over
+  them, and their blur saw nothing of it). The focus goes into them, to the accent shown; Escape, a press
+  elsewhere or a Tab past their ends close them and give the button the focus again (a Tab went on to what
+  followed the button).
+- **`SpotlightSearch`** is drawn in `document.body`, as every dialog: opened from the top bar, it was held by the
+  bar wherever the bar was a stacking context or the containing block of what is fixed (under glass, the page
+  was drawn over it and its scrim covered the bar only).
 - **`NotificationBell`**: its panel is a layer in `document.body`, placed under the bell. The focus goes into
   it, and Escape, a press elsewhere or a Tab past its ends closes it and gives the bell the focus again.
 

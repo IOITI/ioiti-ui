@@ -57,7 +57,7 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   (`mix-blend-mode`): the backdrop's grain is blended as it is painted (`background-blend-mode`, over a copy of
   the backdrop: `--glass-backdrop`). A blur goes never on an element with a fixed child of its own (a
   blur becomes its containing block, and the root of the blur of what floats in it: a layer goes to
-  `document.body`, as the sidebar's tip and the bell's panel), never on white text on ink, never under an
+  `document.body`, as the sidebar's tip, the bell's panel and LookPicker's choices), never on white text on ink, never under an
   element with a `view-transition-name` at rest (a name makes it the root of its children's backdrop: their
   blur sees nothing of the page). What floats has no sheen: its text holds 4.5:1 over black or white behind it
   (`gallery/src/tokens.test.ts`). The tones (gain, loss, warning)

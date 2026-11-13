@@ -241,7 +241,9 @@ otherwise).
   followed with Enter too (`onNavigate`), and its `keywords` find it; every word typed must be in an entry;
   `onQueryChange`, `limit` (50 listed, the others found by typing, said under the list) and `label`; a
   combobox over a listbox with `aria-activedescendant`; the focus given back on closing; each entry shows what
-  it is and its category.
+  it is and its category. Drawn in `document.body`, as every dialog: drawn where it was used (a top bar), it was
+  held by what made that place a stacking context or the containing block of what is fixed (a blur), the page
+  drawn over it, its scrim cut to the bar.
 - `combobox`: `id` on the trigger for a `<label htmlFor>` (a `<label>` around it passed the clicks on its
   options to the trigger, which opened again); named by its label, not by its placeholder; placeholder,
   description and empty text a darker grey in light.

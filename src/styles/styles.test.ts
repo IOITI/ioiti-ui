@@ -196,7 +196,7 @@ describe('the motion, as an application builds it', () => {
 
     expect(rule(css, '.animate-reveal')).toContain('animation: var(--animate-reveal)')
     // Kept to its end (both, forwards), an animation of opacity stays in effect: a block it revealed held a
-    // layer opened in it without a portal (LookPicker's choices) under the blocks after it, its glass
+    // layer opened in it without a portal (as LookPicker's choices were) under the blocks after it, its glass
     // blurring nothing of them.
     expect(css).toMatch(/--animate-reveal: ioiti-reveal [^;]* backwards;/)
     expect(css).not.toMatch(/--animate-reveal:[^;]*\b(both|forwards)\b/)

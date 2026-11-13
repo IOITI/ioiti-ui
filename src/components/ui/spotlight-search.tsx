@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, History, Search } from 'lucide-react';
 import { isPlainClick } from '../../lib/links.js';
@@ -242,7 +243,12 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   const listId = `${uniqueId}-list`;
   const optionId = (index: number) => `${uniqueId}-option-${index}`;
 
-  return (
+  // ioiti-ui: in document.body, as every dialog: drawn where it is used (a top bar), it was held by whatever makes
+  // that place a stacking context or the containing block of what is fixed (a blur, a filter, a transform): the
+  // page was drawn over it, its scrim and its frame cut to the bar.
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         // ioiti-ui: kept above the page while a page changes, as every layer over it (over-page, motion.css).
@@ -446,6 +452,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };

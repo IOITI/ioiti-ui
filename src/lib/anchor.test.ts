@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { placeBeside } from './anchor.js'
+import { focusables, placeBeside } from './anchor.js'
 
 const VIEW = { width: 1000, height: 800 }
 const rect = (left: number, top: number, width = 100, height = 32) => ({ left, top, width, height, right: left + width, bottom: top + height })
@@ -35,5 +35,25 @@ describe('a layer placed beside what opened it', () => {
   it('opens at a point (a context menu)', () => {
     const point = { left: 300, right: 300, top: 400, bottom: 400, width: 0, height: 0 }
     expect(placeBeside(point, { width: 200, height: 160 }, 'bottom', 'start', 2, VIEW)).toMatchObject({ top: 402, left: 300 })
+  })
+})
+
+describe('the stops of the keyboard in a layer', () => {
+  it('count a group of radios once, as Tab goes: its checked radio, or its first while none is', () => {
+    const root = document.createElement('div')
+    root.innerHTML = `
+      <button>Before</button>
+      <input type="radio" name="accent" value="neutral"><input type="radio" name="accent" value="violet" checked>
+      <input type="radio" name="material" value="flat"><input type="radio" name="material" value="glass">
+      <input type="radio" value="alone">
+      <button tabindex="-1">Skipped</button>
+      <button>After</button>`
+    expect(focusables(root).map((element) => element.getAttribute('value') ?? element.textContent)).toEqual([
+      'Before',
+      'violet',
+      'flat',
+      'alone',
+      'After',
+    ])
   })
 })

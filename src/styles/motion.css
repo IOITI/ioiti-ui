@@ -32,7 +32,7 @@
   --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
   /* Filled backwards, never forwards: nothing of it is left once it has run. Kept to its end, an animation
      of opacity stays in effect, and each block it revealed stayed a layer of its own and the root of its
-     glass's backdrop: a layer opened in one without a portal (LookPicker's choices) went under the blocks
+     glass's backdrop: a layer opened in one without a portal (as LookPicker's choices were) went under the blocks
      after it, and its glass blurred nothing of them. */
   --animate-reveal: ioiti-reveal 200ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 
