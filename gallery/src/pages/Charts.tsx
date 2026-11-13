@@ -6,7 +6,6 @@ import {
   DependencyTrace,
   DonutChart,
   formatMoney,
-  formatPercent,
   FunnelChart,
   KpiGrid,
   KpiTile,
@@ -396,7 +395,7 @@ export function Charts() {
           windowSeconds={60}
           height={180}
           formatValue={(value) => `${value.toFixed(1)} ms`}
-          formatChange={(change) => formatPercent(change, true, 1)}
+          formatChange={(change) => `${change > 0 ? '+' : change < 0 ? '−' : ''}${Math.abs(change).toFixed(1)} ms`}
           ariaLabel="Response time"
         />
       </Demo>
