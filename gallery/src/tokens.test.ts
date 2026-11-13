@@ -10,6 +10,8 @@ import {
   colourOf,
   contrast,
   contrastPairs,
+  FLOAT_TEXTS,
+  floatOver,
   GRAINS,
   gradientColours,
   grainOf,
@@ -17,6 +19,8 @@ import {
   lookPairs,
   lookSelectors,
   lookTokens,
+  OVERLAY_GRAIN,
+  overlay,
   parseColor,
   themeTokens,
   toHex,
@@ -101,9 +105,9 @@ describe('the colours, read as the browser reads them', () => {
 })
 
 describe('the grains', () => {
-  // A grain's speck, as its file draws it: a PNG of grey and alpha, 8 bits each, its rows unfiltered
-  // (scripts/grains.mjs); its one grey, at its strongest alpha.
-  const drawn = (file: Buffer) => {
+  // A grain's specks, as its file draws it: a PNG of grey and alpha, 8 bits each, its rows unfiltered
+  // (scripts/grains.mjs); its greys, and its strongest alpha.
+  const specks = (file: Buffer) => {
     let at = 8
     const data: Buffer[] = []
     let header: Buffer = Buffer.alloc(0)
@@ -127,15 +131,34 @@ describe('the grains', () => {
         strongest = Math.max(strongest, rows[row + 2 + 2 * x])
       }
     }
-    expect(greys.size, 'one grey').toBe(1)
-    const grey = [...greys][0] / 255
-    return { r: grey, g: grey, b: grey, a: strongest / 255 }
+    return { greys: [...greys].sort((a, b) => a - b).map((grey) => grey / 255), strongest: strongest / 255 }
+  }
+  // A brand grain's speck: its one grey, at its strongest alpha.
+  const drawn = (file: Buffer) => {
+    const { greys, strongest } = specks(file)
+    expect(greys, 'one grey').toHaveLength(1)
+    return { r: greys[0], g: greys[0], b: greys[0], a: strongest }
   }
 
   it('are read as their files draw them', () => {
-    const files = readdirSync('src/styles').filter((name) => name.startsWith('grain-'))
+    const files = readdirSync('src/styles').filter((name) => name.startsWith('grain-') && name !== OVERLAY_GRAIN.file)
     expect(files.sort()).toEqual(Object.keys(GRAINS).sort())
     for (const file of files) expect(drawn(readFileSync(`src/styles/${file}`)), file).toEqual(GRAINS[file])
+  })
+
+  it('have the backdrop\'s among them, opaque, black and white specks', () => {
+    expect(specks(readFileSync(`src/styles/${OVERLAY_GRAIN.file}`))).toEqual({ greys: OVERLAY_GRAIN.greys, strongest: 1 })
+    expect(read('glass.css')).toContain(`url("./${OVERLAY_GRAIN.file}")`)
+  })
+
+  it('blend as an overlay: a black speck darkens, a white one lightens, by their opacity', () => {
+    const grey = parseColor('#808080')!
+    expect(overlay(0, grey, 0.1).r).toBeLessThan(grey.r)
+    expect(overlay(1, grey, 0.1).r).toBeGreaterThan(grey.r)
+    expect(overlay(1, grey, 0)).toEqual({ ...grey, a: 1 })
+    // Over black, an overlay changes nothing; over white, neither.
+    expect(overlay(1, parseColor('#000')!, 0.5).r).toBe(0)
+    expect(overlay(0, parseColor('#fff')!, 0.5).r).toBe(1)
   })
 
   it('are the ones the stylesheets name, read by their name', () => {
@@ -217,10 +240,25 @@ describe('every look: a theme, an accent, a material', () => {
 
   it('has opaque surfaces, and no blur, where less transparency or more contrast is asked for', () => {
     const asked = inside(read('glass.css'), '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more)')
-    expect(tokensOf(asked, ':root[data-material="glass"]')).toMatchObject({ '--glass-blur': 'none', '--glass-sheen': 'none' })
+    expect(tokensOf(asked, ':root[data-material="glass"]')).toMatchObject({
+      '--glass-blur': 'none',
+      '--glass-bar-blur': 'none',
+      '--glass-tile-blur': 'none',
+      '--glass-sheen': 'none',
+    })
     for (const theme of ['light', 'dark'] as const) {
       const tokens = tokensOf(asked, lookSelectors('material', 'glass', theme)[1])
-      for (const surface of ['--glass-float', '--glass-bar', '--glass-card']) expect(parseColor(tokens[surface] ?? '')?.a, `${surface}, ${theme}`).toBe(1)
+      for (const surface of ['--glass-float', '--glass-frost', '--glass-bar', '--glass-card']) expect(parseColor(tokens[surface] ?? '')?.a, `${surface}, ${theme}`).toBe(1)
     }
   })
+
+  // A menu over a page that is black (light) or white (dark) right behind it: a picture, a dark panel, an
+  // inverted surface. Its glass shows it through, and its grey text still reads.
+  for (const look of LOOKS.filter((look) => look.material === 'glass')) {
+    it(`keeps a menu's text at 4.5:1 over black or white behind it: ${named(look)}`, () => {
+      const tokens = lookTokens(SHEETS, look)
+      const surface = floatOver(tokens, look)!
+      for (const text of FLOAT_TEXTS) expect(contrast(colourOf(tokens, text)!, surface), text).toBeGreaterThanOrEqual(4.5)
+    })
+  }
 })

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { IoitiProvider } from './IoitiProvider.js'
-import { PageHeader, Panel } from './Panel.js'
+import { PageHeader, Panel, PanelInset } from './Panel.js'
 
 describe('the header of a page', () => {
   it('names the page in its heading and in the tab, and leaves the trail to the top bar', () => {
@@ -56,5 +56,17 @@ describe('a panel', () => {
 
     expect(screen.getByRole('heading', { level: 2, name: 'Latest' })).toBeInTheDocument()
     expect(screen.getByText('first row').parentElement).toHaveClass('p-5', 'pt-2')
+  })
+})
+
+describe('a box in a panel', () => {
+  it('is a shade off the panel, a faint tint of it under glass, with a lit edge on the panel', () => {
+    render(
+      <Panel title="Latest">
+        <PanelInset>detail</PanelInset>
+      </Panel>,
+    )
+    expect(screen.getByText('detail')).toHaveClass('rounded-xl', 'bg-surface-raised/60', 'glass:bg-[var(--glass-raised)]')
+    expect(screen.getByRole('heading', { name: 'Latest' }).closest('section')).toHaveClass('glass-card', 'glass-edge')
   })
 })

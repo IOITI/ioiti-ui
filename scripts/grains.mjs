@@ -1,4 +1,5 @@
-// Writes the grains of the bloom accent, src/styles/grain-white.png and grain-black.png:
+// Writes the grains of the bloom accent, src/styles/grain-white.png and grain-black.png, and the glass
+// backdrop's, grain-overlay.png:
 //
 //   node scripts/grains.mjs
 //
@@ -9,6 +10,10 @@
 // and vanishes or turns to moiré. Seeded: the same files every time. Files, never data: URIs: an
 // application inlines nothing of the package (img-src stays at self). gallery/src/tokens.ts reads
 // each as its speck (GRAINS), and its test holds them to these files.
+//
+// The backdrop's grain is opaque, every pixel a speck, black or white, half of them each: glass.css
+// lays it over the backdrop as an overlay, at a low opacity (--glass-grain-opacity), where a black
+// speck darkens what is under it and a white one lightens it (OVERLAY_GRAIN in gallery/src/tokens.ts).
 import { writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -22,6 +27,7 @@ const SIZE = 256
 const GRAINS = [
   { file: 'grain-white.png', grey: 255, alpha: 13, seed: 1 },
   { file: 'grain-black.png', grey: 0, alpha: 10, seed: 2 },
+  { file: 'grain-overlay.png', greys: [0, 255], alpha: 255, seed: 3 },
 ]
 
 /** mulberry32: a small seeded generator, from 0 to 1. */
@@ -45,7 +51,7 @@ function chunk(type, data) {
 }
 
 /** A PNG of grey and alpha, 8 bits each, every row unfiltered: what the tests read back. */
-function png({ grey, alpha, seed }) {
+function png({ grey, greys, alpha, seed }) {
   const next = random(seed)
   const header = Buffer.alloc(13)
   header.writeUInt32BE(SIZE, 0)
@@ -56,8 +62,13 @@ function png({ grey, alpha, seed }) {
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       const at = y * (1 + 2 * SIZE) + 1 + 2 * x
-      rows[at] = grey
-      rows[at + 1] = next() < 0.5 ? alpha : 0
+      if (greys) {
+        rows[at] = next() < 0.5 ? greys[0] : greys[1]
+        rows[at + 1] = alpha
+      } else {
+        rows[at] = grey
+        rows[at + 1] = next() < 0.5 ? alpha : 0
+      }
     }
   }
   const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])

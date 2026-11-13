@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import type { SidebarSection } from '../components/ui/sidebar.js'
+import type { SidebarBadgeTone, SidebarSection } from '../components/ui/sidebar.js'
 
 /**
  * The menu of an application, and where each page stands in it: the sidebar
@@ -15,7 +15,10 @@ export interface MenuEntry<S extends string = string> {
   section: S
   /** An icon of lucide-react, as an element: `<LayoutDashboard />`. */
   icon?: ReactNode
+  /** A count ("38") or a state in a word ("Degraded", "2 open"), after its label. */
   badge?: string | number
+  /** The badge's tone, for a state: `warning` or `negative`, in its colour with a dot; a count stays neutral. */
+  badgeTone?: SidebarBadgeTone
 }
 
 /**
@@ -131,6 +134,6 @@ export function sidebarSections(menu: Menu): SidebarSection[] {
     ...(section.foldable ? { foldable: true } : {}),
     items: menu.entries
       .filter((entry) => entry.section === section.id)
-      .map(({ id, label, icon, badge, path }) => ({ id, label, icon, badge, href: path })),
+      .map(({ id, label, icon, badge, badgeTone, path }) => ({ id, label, icon, badge, badgeTone, href: path })),
   }))
 }

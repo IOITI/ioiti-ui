@@ -88,4 +88,41 @@ describe('NotificationBell', () => {
 
     expect(screen.getByText('The 30 latest are shown.')).toBeInTheDocument()
   })
+
+  it('opens its panel as a layer of the page, not inside the top bar, and Escape gives the bell the focus again', async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <header className="glass-bar">
+        <NotificationBell
+          notifications={[{ id: '1', message: 'Order 2026-0042 paid', timestamp: new Date(2026, 9, 27, 9, 13), read: false }]}
+          onMarkAsRead={() => {}}
+        />
+      </header>,
+    )
+    const bell = screen.getByRole('button', { name: '1 unread notifications' })
+    await user.click(bell)
+    const panel = await screen.findByRole('dialog', { name: 'Notifications' })
+    expect(container.contains(panel)).toBe(false)
+    expect(panel.parentElement).toBe(document.body)
+    expect(panel.style.position).toBe('fixed')
+
+    await user.keyboard('{Escape}')
+    expect(bell).toHaveAttribute('aria-expanded', 'false')
+    expect(bell).toHaveFocus()
+  })
+
+  it('closes at a press elsewhere', async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <button type="button">Elsewhere</button>
+        <NotificationBell notifications={[]} onMarkAsRead={() => {}} />
+      </>,
+    )
+    const bell = screen.getByRole('button', { name: /notifications/i })
+    await user.click(bell)
+    expect(await screen.findByRole('dialog', { name: 'Notifications' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Elsewhere' }))
+    expect(bell).toHaveAttribute('aria-expanded', 'false')
+  })
 })

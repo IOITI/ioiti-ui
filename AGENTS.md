@@ -8,7 +8,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 
 | Path | Content |
 |---|---|
-| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `grain-*.png` (bloom's grains) |
+| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `grain-*.png` (bloom's grains, the glass backdrop's) |
 | `src/theme.js` | the pre-paint theme script, a file of its own (no inline script under a strict CSP) |
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
@@ -45,15 +45,18 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   `:root[data-accent="…"]:not(.dark)` and `:root[data-accent="…"].dark`, what both share under
   `:root[data-accent="…"]` (the same for `data-material`), never a rule in a layer (the reference holds the base
   layer whole), never an edit to a block of the design. A component keeps its classes and adds `accent:` ones
-  after them (the `brand` tokens), or `glass-bar`, `glass-card`, `glass-float`. A filled, primary control adds
+  after them (the `brand` tokens), or `glass-bar`, `glass-card`, `glass-tile`, `glass-float` (and `glass-edge`). A filled, primary control adds
   `accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground`, the accent's gradient where it has one
   (bloom): an image as `bg-(image:…)`, since tailwind-merge takes any other `bg-brand-…` for a colour and drops
   `bg-brand`. A grain is a PNG beside `accents.css`, made by `scripts/grains.mjs` (an SVG filter's noise
   vanishes or turns to moiré at some screens and zooms), never a `data:` URI; `GRAINS` in
-  `gallery/src/tokens.ts` reads it. `glass-float` is the only blur: never on an element with a fixed child of
-  its own (a blur becomes its containing block), never on white text on ink, never under an element with a
-  `view-transition-name` at rest (a name makes it the root of its children's backdrop: their blur sees nothing
-  of the page). The tones (gain, loss, warning)
+  `gallery/src/tokens.ts` reads it (the backdrop's, an overlay: `OVERLAY_GRAIN`). Three blur: `glass-bar` (the top bar, the sidebar, a pushing sheet),
+  `glass-tile` (KpiTile) and `glass-float`, nothing else: never on an element with a fixed child of its own (a
+  blur becomes its containing block, and the root of the blur of what floats in it: a layer goes to
+  `document.body`, as the sidebar's tip and the bell's panel), never on white text on ink, never under an
+  element with a `view-transition-name` at rest (a name makes it the root of its children's backdrop: their
+  blur sees nothing of the page). What floats has no sheen: its text holds 4.5:1 over black or white behind it
+  (`gallery/src/tokens.test.ts`). The tones (gain, loss, warning)
   keep their colours.
 - **Motion is a token, and calm.** framer-motion takes `motionTransitions` (`src/lib/motion-tokens.ts`), the
   stylesheets the same curves (`ease-soft`, `ease-fast`, `ease-exit`: `motion.css`, a test holding them equal):

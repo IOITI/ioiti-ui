@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronRight, PanelLeft } from "lucide-react";
 import { ariaKeyShortcuts, keysText } from "../../lib/keys.js";
@@ -50,12 +51,15 @@ const EXPANDED = 248;
 const COLLAPSED = 56;
 
 // ioiti-ui: `href` makes an entry a link, which can be opened in another tab as well as followed.
-export type SidebarChild = { id: string; label: string; badge?: string | number; href?: string };
+// `badgeTone`: a badge that says a state ("Degraded", "2 open") in its tone, with a dot; a count stays neutral.
+export type SidebarBadgeTone = "neutral" | "warning" | "negative";
+export type SidebarChild = { id: string; label: string; badge?: string | number; badgeTone?: SidebarBadgeTone; href?: string };
 export type SidebarItem = {
   id: string;
   label: string;
   icon?: React.ReactNode;
   badge?: string | number;
+  badgeTone?: SidebarBadgeTone;
   children?: SidebarChild[];
   href?: string;
 };
@@ -98,6 +102,12 @@ function unfoldedOf(sections: SidebarSection[], activeId: string, folds: Record<
   });
   return unfolded;
 }
+
+// ioiti-ui: a state's badge, in the tone's text colour (4.5:1 on every surface of every look), its dot beside it.
+const BADGE_TONE: Record<Exclude<SidebarBadgeTone, "neutral">, string> = {
+  warning: "text-warning",
+  negative: "text-negative",
+};
 
 const SidebarContext = React.createContext({ collapsed: false });
 /** Use inside `header` / `footer` to adapt to the icon-only state. */
@@ -358,8 +368,13 @@ function Panel({
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="relative rounded-md bg-neutral-200/70 px-1.5 text-[11px] tabular-nums text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+              className={
+                item.badgeTone && item.badgeTone !== "neutral"
+                  ? cn("relative inline-flex items-center gap-1 text-[11px] font-medium", BADGE_TONE[item.badgeTone])
+                  : "relative rounded-md bg-neutral-200/70 px-1.5 text-[11px] tabular-nums text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+              }
             >
+              {item.badgeTone && item.badgeTone !== "neutral" && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
               {item.badge}
             </motion.span>
           )}
@@ -417,7 +432,14 @@ function Panel({
                       )}
                       <span className="flex-1 truncate text-left">{c.label}</span>
                       {c.badge !== undefined && (
-                        <span className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">{c.badge}</span>
+                        <span
+                          className={cn(
+                            "text-[11px] tabular-nums",
+                            c.badgeTone && c.badgeTone !== "neutral" ? cn("font-medium", BADGE_TONE[c.badgeTone]) : "text-neutral-500 dark:text-neutral-400"
+                          )}
+                        >
+                          {c.badge}
+                        </span>
                       )}
                     </Child>
                   );
@@ -559,28 +581,34 @@ function Panel({
         )}
       </div>
 
-      <AnimatePresence>
-        {collapsed && tip && (
-          <div
-            key="tip"
-            // ioiti-ui: kept above the page while a page changes (over-page, motion.css), its entry clicked.
-            className="pointer-events-none fixed z-[60] -translate-y-1/2 over-page"
-            style={{ left: tip.x, top: tip.y }}
-          >
-            <motion.div
-              initial={{ opacity: 0, x: -4 }}
-              animate={{ opacity: 1, x: 0 }}
-              // ioiti-ui: the motion of everything that floats: springSnappy arriving, easeExit leaving.
-              exit={{ opacity: 0, transition: motionTransitions.easeExit }}
-              transition={motionTransitions.springSnappy}
-              className="whitespace-nowrap rounded-md bg-neutral-900 px-2 py-1 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-neutral-900"
-            >
-              {tip.label}
-              {tip.keys && <span className="ml-1.5 opacity-70">{tip.keys}</span>}
-            </motion.div>
-          </div>
+      {/* ioiti-ui: in document.body: the sidebar blurs under the glass material (glass-bar), which would make it
+          the tip's containing block, and its overflow cut the tip at its edge. */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {collapsed && tip && (
+              <div
+                key="tip"
+                // ioiti-ui: kept above the page while a page changes (over-page, motion.css), its entry clicked.
+                className="pointer-events-none fixed z-[60] -translate-y-1/2 over-page"
+                style={{ left: tip.x, top: tip.y }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  // ioiti-ui: the motion of everything that floats: springSnappy arriving, easeExit leaving.
+                  exit={{ opacity: 0, transition: motionTransitions.easeExit }}
+                  transition={motionTransitions.springSnappy}
+                  className="whitespace-nowrap rounded-md bg-neutral-900 px-2 py-1 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-neutral-900"
+                >
+                  {tip.label}
+                  {tip.keys && <span className="ml-1.5 opacity-70">{tip.keys}</span>}
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </SidebarContext.Provider>
   );
 }

@@ -4,6 +4,7 @@ import {
   Button,
   formatMoney,
   KpiGrid,
+  KpiStrip,
   KpiTile,
   Meter,
   PageHeader,
@@ -12,6 +13,7 @@ import {
   SignedValue,
   StatCard,
   StatusBadge,
+  StatusHistory,
   Table,
   TableBody,
   TableCell,
@@ -30,6 +32,12 @@ const OPEN = [
   { id: '2026-0037', customer: 'Hooli', items: 1, amount: 128.9, change: -1.3, placed: '08:47' },
   { id: '2026-0035', customer: 'Initech', items: 12, amount: 4320, change: 0, placed: '08:05' },
 ]
+
+// A day of imports, an hour a block: one failed in the night, two slow in the afternoon.
+const IMPORTS = Array.from({ length: 24 }, (_, hour) => ({
+  status: (hour === 2 ? 'down' : hour === 15 || hour === 16 ? 'warning' : 'ok') as HealthStatus,
+  at: `${String(hour).padStart(2, '0')}:00`,
+}))
 
 // The events happened minutes before the page was opened, and their times are said from now.
 const OPENED = Date.now()
@@ -73,7 +81,7 @@ export function DashboardPattern() {
         }
       />
 
-      <KpiGrid>
+      <KpiGrid period="Compared with last Monday">
         <StatCard
           label="Today"
           value={4210}
@@ -94,11 +102,26 @@ export function DashboardPattern() {
         >
           <Meter ratio={0.3} label="Orders of the day's limit" scale={['0', '10']} />
         </KpiTile>
-        <KpiTile label="Returns" value="2.1%" hint="Under 5 %">
+        <KpiTile label="Returns" value="2.1%" change={-0.4} goodWhen="down" hint="Under 5 %">
           <Meter ratio={0.42} tone="positive" label="Returns against their limit" scale={['0', '5 %']} />
         </KpiTile>
         <KpiTile label="Next import" value={<span className="text-positive">Open</span>} hint="At 12:00, in 2 h 48" />
       </KpiGrid>
+
+      <KpiStrip
+        title="This week"
+        period="Compared with last week"
+        items={[
+          { label: 'Orders', value: '214', change: 6.5 },
+          { label: 'Customers', value: '96', change: 2.1 },
+          { label: 'Basket', value: formatMoney(52.4, 'EUR'), change: -1.8 },
+          { label: 'Refunds', value: '9', change: 12.5, goodWhen: 'down' },
+        ]}
+      />
+
+      <Panel title="Imports" description="The price list's imports, an hour a block, over the last day.">
+        <StatusHistory label="Imports, the last 24 hours" slots={IMPORTS} scale={['24 h ago', 'Now']} />
+      </Panel>
 
       <Panel title="Open orders" description="Placed today, not sent yet." action={<TextLink to="/components/data" variant="quiet">All orders</TextLink>} dense>
         {/* On a phone, what matters first without scrolling sideways. */}

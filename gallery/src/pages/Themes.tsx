@@ -79,14 +79,19 @@ export function Themes() {
 
       <Panel
         title="The glass material"
-        description="Translucent surfaces over a still backdrop of colour washes, a light across each and the colour around it in its far corner, deeper shadows. Fields, rows and buttons stay solid."
+        description="Translucent surfaces over a still backdrop of colour washes and a faint grain, a light across each panel and the colour around it in its far corner, of a set size, deeper shadows. Fields, rows and buttons stay solid."
       >
-        <ul className="grid gap-4 sm:grid-cols-3">
-          <Rule title="glass-bar">The sidebar and the top bar: translucent over the backdrop, a light on their edge.</Rule>
-          <Rule title="glass-card">Panels, tiles and cards: the same, with a hairline and a soft shadow.</Rule>
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Rule title="glass-bar">The sidebar and the top bar: translucent over the backdrop, lightly blurred, a light on their edge.</Rule>
+          <Rule title="glass-card">Panels and cards: the same, unblurred, with a hairline and a soft shadow.</Rule>
+          <Rule title="glass-tile">
+            A figure's tile: frosted and blurred; in light, lit from above, with a glow of the accent from a corner that
+            changes from tile to tile.
+          </Rule>
+          <Rule title="glass-edge">An edge lit at its top, fading to the hairline at its bottom: on a panel and a tile.</Rule>
           <Rule title="glass-float">
-            What floats over the page, and the only glass blurred: popovers, menus, dialogs over a lighter scrim, toasts,
-            tooltips, the drawer.
+            What floats over the page, blurred the most and nearly opaque: its text holds 4.5:1 whatever is behind it.
+            Popovers, menus, dialogs over a lighter scrim, toasts, tooltips, the drawer.
           </Rule>
         </ul>
         <p className="mt-4 text-sm text-muted-foreground">
@@ -111,12 +116,13 @@ ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })
             accent:text-brand-fill-foreground. Neutral changes nothing.
           </Rule>
           <Rule title="A surface's material by its role">
-            glass-bar, glass-card or glass-float after the surface's own classes; they do nothing until the material
-            is glass.
+            glass-bar, glass-card, glass-tile or glass-float (and glass-edge) after the surface's own classes; they do
+            nothing until the material is glass.
           </Rule>
           <Rule title="No blur over a fixed child">
             A blur makes an element the containing block of its fixed children, and the end of the blur of what floats
-            inside it: glass-float on what holds neither, never on a white text on ink.
+            inside it: the bars, the tiles and what floats blur, and none holds a layer of its own (it goes to
+            document.body); never on a white text on ink.
           </Rule>
           <Rule title="Every look, checked">
             The gallery's tests hold text at 4.5:1 and marks at 3:1 on every surface of the 20 looks, glass over its

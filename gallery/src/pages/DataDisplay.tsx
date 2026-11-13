@@ -32,6 +32,7 @@ import {
   formatMoney,
   InteractiveTimeline,
   KpiGrid,
+  KpiStrip,
   KpiTile,
   LiveValue,
   Meter,
@@ -41,6 +42,7 @@ import {
   RelativeTime,
   SignedValue,
   SmartComparison,
+  Sparkline,
   StatCard,
   StatGrid,
   Table,
@@ -626,11 +628,23 @@ export function DataDisplay() {
       <Demo
         id="kpi"
         title="KpiTile, KpiGrid and Meter"
-        description="The figures a page is about, four across from 1280 px (or the columns asked: three here), two on a phone. A meter is one ratio against a limit, its track a faint step of its own colour."
+        description="The figures a page is about, four across from 1280 px (or the columns asked: three here), two on a phone. The lead tile takes two columns, its chart beside the figure. A change is signed and in the tone of what it means (down is good news for a cost); what it is compared with is said once, above the row. A tile that needs attention is faintly tinted, and says why in a word. A meter is one ratio against a limit, its track a faint step of its own colour."
         names={['KpiGrid', 'KpiTile', 'Meter']}
         className="block w-full"
       >
-        <KpiGrid>
+        <KpiGrid period="Compared with yesterday">
+          <KpiTile lead label="Revenue today" value={formatMoney(12400, 'EUR')} change={8.4} hint="Since midnight">
+            <Sparkline values={[3.1, 4.2, 3.8, 5.6, 6.1, 7.4, 8.9, 10.2, 12.4]} width={240} height={48} label="Revenue through the day" className="w-full" />
+          </KpiTile>
+          <KpiTile label="Orders" value="38" change={4.2} />
+          <KpiTile label="Median delivery" value="2.4 days" change={-6.1} goodWhen="down" />
+          <KpiTile label="Refunds" value="7" change={40} goodWhen="down" tone="negative" toneLabel="Above usual" />
+          <KpiTile label="Disk" value="91%" hint="of 50 GB" tone="warning" toneLabel="Near the limit">
+            <Meter ratio={0.91} tone="warning" label="Disk used" />
+          </KpiTile>
+          <KpiTile label="Conversion" value="3.2%" change={0} />
+        </KpiGrid>
+        <KpiGrid className="mt-4">
           <KpiTile label="Orders today" value="12" hint="8 yesterday" />
           <KpiTile label="Amount" value={formatMoney(4210, 'EUR')} hint="Since midnight" />
           <KpiTile label="Storage" value="62%" hint="of 50 GB">
@@ -645,6 +659,26 @@ export function DataDisplay() {
           <KpiTile label="Refunded" value={formatMoney(1260, 'EUR')} hint="This week" />
           <KpiTile label="Median delivery" value="2.4 days" hint="−0.3 on last week" />
         </KpiGrid>
+      </Demo>
+
+      <Demo
+        id="kpi-strip"
+        title="KpiStrip"
+        description="Secondary figures in one panel, divided by hairlines: as many across as there are (six at most), three on a tablet, two on a phone, the hairlines between them however they wrap. It takes what a tile takes: a label, a value, a change."
+        names={['KpiStrip']}
+        className="block w-full"
+      >
+        <KpiStrip
+          title="The shop"
+          period="Compared with yesterday"
+          items={[
+            { label: 'Visits', value: '9,120', change: 3.4 },
+            { label: 'Carts', value: '311', change: -2.1 },
+            { label: 'Basket', value: formatMoney(48.1, 'EUR'), change: 1.2 },
+            { label: 'Returns', value: '2.1%', change: -0.4, goodWhen: 'down' },
+            { label: 'Support tickets', value: '14', change: 16.7, goodWhen: 'down' },
+          ]}
+        />
       </Demo>
 
       <Demo

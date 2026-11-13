@@ -3,6 +3,61 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.17.0] - Unreleased
+
+- **The glass material, reviewed.** Its values change on purpose (`src/styles/glass.css`):
+  - **What floats is nearly opaque:** `--glass-float` is `rgb(255 255 255 / 0.88)` in light and
+    `rgb(22 22 26 / 0.86)` in dark (it was 0.8 and 0.78), so a menu's grey text holds 4.5:1 with black (light)
+    or white (dark) right behind it, a new check of the contrast test. A float has **no sheen** for the same
+    reason: its light and its reflection took that text under 4.5:1 in their corners. It keeps the accent's
+    glow in its shadow.
+  - **Its blur is set by two plain numbers,** `--glass-blur-radius` (20px) and `--glass-saturate` (1.5, it
+    was 170 %).
+  - **The sheen is of a set size:** two corners (520 × 260 px of light, 480 × 320 px of reflection), a wide
+    panel lit as a narrow one.
+  - **The dark backdrop's third wash** is a violet, `rgb(147 51 160 / 0.2)` (it was close to red).
+  - **The backdrop is a layer fixed to the window** (`body::before`), no longer a background fixed to it:
+    cheaper to scroll, and drawn by iOS's Safari. Over it lies a faint grain, for every accent
+    (`body::after`, an overlay at `--glass-grain-opacity`: 3 % in light, 6 % in dark), so the steps of a dark
+    gradient no longer show. Asked for less transparency, neither is drawn.
+  - **The bars blur** (`--glass-bar-blur`, `blur(14px) saturate(140%)`, on `glass-bar`): the top bar, the
+    sidebar, a pushing sheet.
+  - **New utilities:**
+    - `glass-tile`: a figure's tile, frosted (`--glass-frost`) and blurred (`--glass-tile-blur`). In light, it
+      is lit from above and has a glow of the accent (`--glass-tile-glow`, an accent's `--brand-tile-glow`)
+      from a corner that changes from tile to tile. A dark tile has neither, its grey text kept at 4.5:1.
+    - `glass-edge`: an edge lit at its top, fading to the hairline at its bottom.
+  - **New tokens:** `--glass-raised` (a box nested in a panel: ink at 2.5 % in light, black at 12 % in dark),
+    `--glass-frost`, `--glass-tile-glow`, `--glass-bar-blur`, `--glass-tile-blur`, `--glass-edge-shadow`,
+    `--glass-grain-opacity`, and `--brand-tile-glow` in each accent.
+- **`KpiTile`**:
+  - `change`, `goodWhen` and `changeFormat`: the figure's change, signed, in the tone of what it means (down is
+    good news for a cost), an arrow its way, read "up 2.5%" by a screen reader.
+  - `lead`: two columns wide, its chart beside the figure from a tablet up.
+  - `tone` (`warning` or `negative`) with its word, `toneLabel`, which TypeScript requires with it: a faint
+    tint, and no glow under glass.
+  - Under glass, the tile is `glass-tile` with a lit edge (it was `glass-card`).
+  - Types: `KpiTileProps`, `GoodWhen`.
+- **`KpiGrid`**: `period` says once, above the row, what the changes are compared with ("Compared with
+  yesterday"); a screen reader hears it with the tiles. A lead tile takes a whole row on a phone.
+- **`KpiStrip`**, new: secondary figures in one panel, divided by hairlines, fewer columns on a narrower screen
+  (`items` take a tile's label, value, hint and change; `title`, `period`, `columns`). Types: `KpiStripItem`,
+  `KpiStripProps`.
+- **`StatusHistory`**, new: the uptime strip, one block per slot of time coloured by its state, said in words
+  for a screen reader ("23 hours up, 1 degraded at 14:00"); `unit`, `summary`, `scale`. Types:
+  `StatusHistoryProps`, `StatusHistorySlot`, `StatusHistoryUnit`.
+- **`Panel`** has a lit edge under glass; **`PanelInset`**, new, is a box nested in it (`--glass-raised` under
+  glass).
+- **The menu**: an entry's `badge` can be a state in a word in its tone, `badgeTone` (`warning`, `negative`), on
+  `MenuEntry`, `SidebarItem` and `SidebarChild` (the type `SidebarBadgeTone`). The folded sidebar's tip is drawn
+  in `document.body`.
+- **`NotificationBell`**: its panel is a layer in `document.body`, placed under the bell. The focus goes into
+  it, and Escape, a press elsewhere or a Tab past its ends closes it and gives the bell the focus again.
+
+Nothing to change in an application. A glass application may see the bars and tiles blur, and menus less
+see-through. An element of its own that is fixed and drawn inside the top bar or the sidebar is now held by
+their blur: draw it in `document.body`.
+
 ## [0.16.0] - 2026-11-12
 
 - **The sidebar's Collapse says its keys as this computer writes them.** Its button drew "⌘B" on every computer;

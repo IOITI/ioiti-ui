@@ -27,7 +27,7 @@ export function Panel({ id, title, description, action, className, bodyClassName
     <section
       id={id}
       className={cn(
-        'min-w-0 rounded-2xl border border-border/70 bg-surface/50 text-foreground dark:bg-surface/25 glass-card',
+        'min-w-0 rounded-2xl border border-border/70 bg-surface/50 text-foreground dark:bg-surface/25 glass-card glass-edge',
         className,
       )}
     >
@@ -42,6 +42,23 @@ export function Panel({ id, title, description, action, className, bodyClassName
       )}
       <div className={cn('p-5', dense && 'pt-2', bodyClassName)}>{children}</div>
     </section>
+  )
+}
+
+interface PanelInsetProps {
+  className?: string
+  children: ReactNode
+}
+
+/**
+ * A box nested in a panel: a figure's detail, a note, a group of fields set apart. A shade off the panel;
+ * under glass, a faint tint of it (--glass-raised), not a solid surface over the glass.
+ */
+export function PanelInset({ className, children }: PanelInsetProps) {
+  return (
+    <div className={cn('min-w-0 rounded-xl border border-border/60 bg-surface-raised/60 p-4 glass:border-[var(--glass-hairline)] glass:bg-[var(--glass-raised)]', className)}>
+      {children}
+    </div>
   )
 }
 

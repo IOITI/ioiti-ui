@@ -15,6 +15,10 @@
    - --brand-glow       a coloured shadow
    - --brand-wash       the accent's colour in the glass backdrop (glass.css)
    - --brand-reflection the accent's colour in the glass itself, a corner of it
+   - --brand-tile-glow  the glow of a glass tile (glass.css), in light: about
+                        half the strength of its wash, as strong as its text
+                        keeps 4.5:1 where the glow is strongest, over the
+                        reflection; none on a dark tile (transparent)
    - --brand-fill       what a filled, primary control draws over --brand
                         (accent:bg-(image:--brand-fill)): the accent's gradient
                         under its grain where it has them, nothing otherwise
@@ -70,6 +74,7 @@
   --brand-text: #6d28d9;
   --brand-glow: rgb(124 58 237 / 0.35);
   --brand-wash: rgb(124 58 237 / 0.12);
+  --brand-tile-glow: rgb(124 58 237 / 0.06);
   --brand-reflection: rgb(124 58 237 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
@@ -89,6 +94,7 @@
   --brand-text: #c4b5fd;
   --brand-glow: rgb(167 139 250 / 0.3);
   --brand-wash: rgb(167 139 250 / 0.18);
+  --brand-tile-glow: transparent;
   --brand-reflection: rgb(167 139 250 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
@@ -108,6 +114,7 @@
   --brand-text: #4338ca;
   --brand-glow: rgb(79 70 229 / 0.35);
   --brand-wash: rgb(79 70 229 / 0.12);
+  --brand-tile-glow: rgb(79 70 229 / 0.06);
   --brand-reflection: rgb(79 70 229 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
@@ -127,6 +134,7 @@
   --brand-text: #a5b4fc;
   --brand-glow: rgb(129 140 248 / 0.3);
   --brand-wash: rgb(129 140 248 / 0.18);
+  --brand-tile-glow: transparent;
   --brand-reflection: rgb(129 140 248 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
@@ -146,6 +154,7 @@
   --brand-text: #1d4ed8;
   --brand-glow: rgb(37 99 235 / 0.35);
   --brand-wash: rgb(37 99 235 / 0.12);
+  --brand-tile-glow: rgb(37 99 235 / 0.05);
   --brand-reflection: rgb(37 99 235 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
@@ -159,6 +168,7 @@
   --brand-text: #93c5fd;
   --brand-glow: rgb(96 165 250 / 0.3);
   --brand-wash: rgb(96 165 250 / 0.18);
+  --brand-tile-glow: transparent;
   --brand-reflection: rgb(96 165 250 / 0.08);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
@@ -182,6 +192,7 @@
   --brand-wash-2: rgb(250 135 73 / 0.18);
   --brand-wash-3: rgb(228 178 97 / 0.26);
   --brand-reflection: rgb(194 57 139 / 0.08);
+  --brand-tile-glow: rgb(231 122 181 / 0.08);
   --brand-grain: -webkit-image-set(url("./grain-white.png") 2x);
   --brand-gradient: linear-gradient(110deg, #d58ecf, #e77ab5 50%, #fa8749);
   --brand-fill-foreground: #111113;
@@ -206,6 +217,7 @@
   --brand-wash-2: rgb(250 135 73 / 0.18);
   --brand-wash-3: rgb(161 146 84 / 0.2);
   --brand-reflection: rgb(243 154 200 / 0.08);
+  --brand-tile-glow: transparent;
   --brand-grain: -webkit-image-set(url("./grain-black.png") 2x);
   --brand-gradient: linear-gradient(110deg, #f0b5e2, #f39ac8 50%, #fca676);
   --brand-fill-foreground: #111113;

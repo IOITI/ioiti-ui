@@ -1,4 +1,4 @@
-import { Button, PageHeader, Panel } from 'ioiti-ui'
+import { Button, PageHeader, Panel, PanelInset } from 'ioiti-ui'
 
 import { Demo, Rule } from '../parts'
 
@@ -12,12 +12,18 @@ export function Shape() {
       <Demo
         id="panel"
         title="The panel"
-        description="Every section of a page sits in one: a hairline border, the surface at half its strength over the page, 16 px corners. Its title is a section's, its body padded 20 px."
-        names={['Panel']}
+        description="Every section of a page sits in one: a hairline border, the surface at half its strength over the page, 16 px corners. Its title is a section's, its body padded 20 px. Under glass, its edge is lit at the top. A box set apart in it is a PanelInset: a shade off the panel, a faint tint of it under glass."
+        names={['Panel', 'PanelInset']}
         className="grid gap-4 md:grid-cols-2"
       >
         <Panel title="Latest orders" description="The five sent last." action={<Button size="sm" variant="outline">View all</Button>}>
           <p className="text-sm text-muted-foreground">A panel with a title, a description and an action.</p>
+        </Panel>
+        <Panel title="With a box in it" description="A figure's detail, set apart.">
+          <PanelInset className="text-sm">
+            <p className="font-medium">Payout on 14 Nov</p>
+            <p className="mt-1 text-xs text-muted-foreground">To the account ending 4410, after the day's refunds.</p>
+          </PanelInset>
         </Panel>
         <Panel title="Dense" description="Its body close under the title, for a list." dense>
           <ul className="divide-y divide-border/40 text-xs">

@@ -7,24 +7,35 @@
    `data-material="glass"`, and three utilities, which do nothing otherwise,
    turn a surface to glass:
 
-   - glass-bar    the sidebar and the top bar
-   - glass-card   a panel, a tile, a card
+   - glass-bar    the sidebar and the top bar, lightly blurred (--glass-bar-blur)
+   - glass-card   a panel, a card: not blurred
+   - glass-tile   a figure's tile (KpiTile), in place of glass-card: frosted and
+                  blurred (--glass-tile-blur); in light, lit from above and a
+                  glow of the accent from a corner that changes from tile to tile
+   - glass-edge   an edge lit at its top, fading to the hairline at its bottom
+                  (a panel, a tile)
    - glass-float  what floats over the page: a popover, a menu, a dialog, a
-                  toast, a tooltip, a drawer. The only one blurred: chrome and
-                  cards stand on a still backdrop, which a blur would not change,
-                  and a blur would hold their fixed children (backdrop-filter
-                  makes an element their containing block) and cut the blur of
-                  what floats inside them. Never on an element with a fixed
-                  child of its own, never on an inverted surface (white text
-                  on ink).
+                  toast, a tooltip, a drawer. Blurred the most, and the most
+                  opaque: its text holds 4.5:1 whatever is behind it, black or
+                  white; no sheen on it for that (its light and its reflection
+                  would take the text under 4.5:1 there).
 
-   Each glass surface has a light across it from its top corner (--glass-shine)
-   and, in the far corner, the colour of what is around it (--glass-reflection).
+   Three blur: the bars, the tiles and what floats. A blur holds the fixed
+   children of what it is on (backdrop-filter makes an element their containing
+   block, its overflow cutting them) and cuts the blur of what floats inside it:
+   never on an element with a fixed child of its own (a layer goes to
+   document.body), never on an inverted surface (white text on ink).
+
+   Each panel and tile has a light across it from its top corner (--glass-shine)
+   and, in the far corner, the colour of what is around it (--glass-reflection),
+   each of a set size: a wide panel is lit as a narrow one.
    Fields, rows and buttons stay solid. A dialog's scrim is lighter than the
    design's (--glass-scrim): the dialog's glass shows what is under it. With an
    accent, the backdrop's first wash, the reflection and the floats' glow take
    its colour (accents.css); an accent that gives the other washes too (bloom)
-   is the whole backdrop, its grain over it.
+   is the whole backdrop, its grain over it. A faint grain of its own lies over
+   every backdrop (--glass-grain-opacity, blended as an overlay): the steps of a
+   dark gradient do not show.
 
    Light values under :root[data-material="glass"]:not(.dark), dark ones under
    :root[data-material="glass"].dark, what both share under
@@ -39,7 +50,12 @@
    --------------------------------------------------------------------------- */
 
 :root[data-material="glass"] {
-  --glass-blur: blur(20px) saturate(170%);
+  /* Plain numbers, so that the floats' blur is set as the other tokens are. */
+  --glass-blur-radius: 20px;
+  --glass-saturate: 1.5;
+  --glass-blur: blur(var(--glass-blur-radius)) saturate(var(--glass-saturate));
+  --glass-bar-blur: blur(14px) saturate(140%);
+  --glass-tile-blur: blur(24px) saturate(150%);
   --glass-card-shadow: inset 0 1px 0 0 var(--glass-highlight), 0 0 0 1px var(--glass-hairline), 0 14px 34px -18px var(--glass-shadow);
   --glass-float-shadow:
     inset 0 1px 0 0 var(--glass-highlight), 0 0 0 1px var(--glass-hairline), 0 26px 60px -20px var(--glass-shadow),
@@ -47,8 +63,10 @@
   /* Under a primary button: the accent's glow, a plain shadow without one. */
   --glass-glow: 0 10px 26px -10px var(--brand-glow, var(--glass-shadow));
   --glass-sheen:
-    radial-gradient(130% 110% at 100% 100%, var(--glass-reflection), transparent 60%),
-    linear-gradient(135deg, var(--glass-shine), transparent 42%);
+    radial-gradient(520px 260px at 0 0, var(--glass-shine), transparent 70%),
+    radial-gradient(480px 320px at 100% 100%, var(--glass-reflection), transparent 70%);
+  /* A lit edge's shadow: its hairline and its depth, the light at its top drawn by the edge itself. */
+  --glass-edge-shadow: 0 0 0 1px var(--glass-hairline), 0 14px 34px -18px var(--glass-shadow);
 }
 
 :root[data-material="glass"]:not(.dark) {
@@ -56,9 +74,17 @@
   --glass-tint-1: rgb(165 180 252 / 0.24);
   --glass-tint-2: rgb(125 211 252 / 0.24);
   --glass-tint-3: rgb(249 168 212 / 0.22);
-  --glass-float: rgb(255 255 255 / 0.8);
+  --glass-float: rgb(255 255 255 / 0.88);
   --glass-bar: rgb(255 255 255 / 0.7);
   --glass-card: rgb(255 255 255 / 0.66);
+  --glass-frost: rgb(255 255 255 / 0.72);
+  --glass-raised: rgb(20 22 50 / 0.025);
+  /* A tile's glow: the accent's (accents.css), the first tint at half its strength without one. */
+  --glass-tile-glow: var(--brand-tile-glow, rgb(165 180 252 / 0.12));
+  --glass-tile-light:
+    linear-gradient(180deg, rgb(255 255 255 / 0.55), transparent 55%),
+    radial-gradient(360px 200px at 0 0, rgb(255 255 255 / 0.45), transparent 75%);
+  --glass-grain-opacity: 0.03;
   --glass-edge: rgb(255 255 255 / 0.75);
   --glass-hairline: rgb(20 22 50 / 0.07);
   --glass-highlight: rgb(255 255 255 / 0.9);
@@ -77,10 +103,18 @@
   --glass-base: #0c0c11;
   --glass-tint-1: rgb(79 70 229 / 0.32);
   --glass-tint-2: rgb(14 116 144 / 0.32);
-  --glass-tint-3: rgb(157 23 77 / 0.26);
-  --glass-float: rgb(22 22 26 / 0.78);
+  --glass-tint-3: rgb(147 51 160 / 0.2);
+  --glass-float: rgb(22 22 26 / 0.86);
   --glass-bar: rgb(22 22 26 / 0.62);
   --glass-card: rgb(26 26 30 / 0.58);
+  --glass-frost: rgb(26 26 30 / 0.58);
+  /* Set into the panel, not lighter than it: a lighter box took the subtle text under 4.5:1. */
+  --glass-raised: rgb(0 0 0 / 0.12);
+  /* No light and no glow on a dark tile: the light was not of a piece with the dark panels, and the glow
+     took the grey text under 4.5:1 where it was strongest. */
+  --glass-tile-light: none;
+  --glass-tile-glow: transparent;
+  --glass-grain-opacity: 0.06;
   --glass-edge: rgb(255 255 255 / 0.1);
   --glass-hairline: rgb(0 0 0 / 0.35);
   --glass-highlight: rgb(255 255 255 / 0.08);
@@ -93,16 +127,39 @@
   --text-subtle: #92929a;
 }
 
-/* The backdrop: the page itself, which never scrolls under the shell (its main column does). With an
-   accent, each wash it gives is the accent's (the first, or all three), and its grain lies over them. */
+/* The backdrop: the page's colour, and over it a layer fixed to the window, under everything (z-index
+   -1 under the root, the body being no stacking context), which never scrolls: cheaper than a background
+   fixed to the window, and drawn by iOS's Safari, which takes such a background as a scrolling one. With
+   an accent, each wash it gives is the accent's (the first, or all three), and its grain lies over them. */
 :root[data-material="glass"] body {
   background-color: var(--glass-base);
+}
+
+:root[data-material="glass"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-image:
     var(--brand-grain, none),
     radial-gradient(52rem 38rem at 8% -6%, var(--brand-wash, var(--glass-tint-1)), transparent 70%),
     radial-gradient(46rem 34rem at 96% 4%, var(--brand-wash-2, var(--glass-tint-2)), transparent 70%),
     radial-gradient(54rem 40rem at 72% 104%, var(--brand-wash-3, var(--glass-tint-3)), transparent 70%);
-  background-attachment: fixed;
+}
+
+/* A grain over every backdrop, faint, blended as an overlay: a speck darkens or lightens what is under it,
+   and the steps of a gradient in the dark do not show. Its tile at 2x, as bloom's (scripts/grains.mjs). */
+:root[data-material="glass"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: -webkit-image-set(url("./grain-overlay.png") 2x);
+  background-image: image-set(url("./grain-overlay.png") 2x);
+  mix-blend-mode: overlay;
+  opacity: var(--glass-grain-opacity);
 }
 
 /* The design's scrollbar track is the page's colour (tokens.css): a stripe over the backdrop. */
@@ -116,6 +173,8 @@
     background-image: var(--glass-sheen);
     border-color: var(--glass-edge);
     box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+    -webkit-backdrop-filter: var(--glass-bar-blur);
+    backdrop-filter: var(--glass-bar-blur);
   }
 }
 
@@ -128,10 +187,61 @@
   }
 }
 
+/* A figure's tile, in place of glass-card: frosted, its light (in light), a glow of the accent from a corner of
+   its own (each of four tiles in a row from another: one hue, never the same spot), its sheen. */
+@utility glass-tile {
+  &:is(:root[data-material="glass"] *) {
+    background-color: var(--glass-frost);
+    border-color: var(--glass-edge);
+    box-shadow: var(--glass-card-shadow);
+    background-image:
+      var(--glass-tile-light),
+      radial-gradient(260px 180px at var(--glass-glow-at, 0 0), var(--glass-tile-glow), transparent 70%),
+      var(--glass-sheen);
+    -webkit-backdrop-filter: var(--glass-tile-blur);
+    backdrop-filter: var(--glass-tile-blur);
+  }
+
+  &:is(:root[data-material="glass"] *):nth-child(4n + 2) {
+    --glass-glow-at: 100% 0;
+  }
+
+  &:is(:root[data-material="glass"] *):nth-child(4n + 3) {
+    --glass-glow-at: 100% 100%;
+  }
+
+  &:is(:root[data-material="glass"] *):nth-child(4n + 4) {
+    --glass-glow-at: 0 100%;
+  }
+}
+
+/* An edge lit at its top, fading to the hairline at its bottom: a ring of one pixel over the border, cut
+   out of a gradient by a mask. Its shadow is the hairline and the depth, the light at the top its own. */
+@utility glass-edge {
+  &:is(:root[data-material="glass"] *) {
+    position: relative;
+    --glass-card-shadow: var(--glass-edge-shadow);
+  }
+
+  &:is(:root[data-material="glass"] *)::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(180deg, var(--glass-highlight), var(--glass-edge) 35%, var(--glass-hairline));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
 @utility glass-float {
   &:is(:root[data-material="glass"] *) {
     background-color: var(--glass-float);
-    background-image: var(--glass-sheen);
     border-color: var(--glass-edge);
     box-shadow: var(--glass-float-shadow);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -143,10 +253,12 @@
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   :root[data-material="glass"]:not(.dark) {
     --glass-float: rgb(255 255 255 / 0.95);
+    --glass-frost: rgb(255 255 255 / 0.95);
   }
 
   :root[data-material="glass"].dark {
     --glass-float: rgb(22 22 26 / 0.95);
+    --glass-frost: rgb(26 26 30 / 0.95);
   }
 }
 
@@ -155,6 +267,8 @@
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root[data-material="glass"] {
     --glass-blur: none;
+    --glass-bar-blur: none;
+    --glass-tile-blur: none;
     --glass-sheen: none;
   }
 
@@ -162,15 +276,22 @@
     --glass-float: #ffffff;
     --glass-bar: #ffffff;
     --glass-card: #ffffff;
+    --glass-frost: #ffffff;
+    --glass-tile-light: none;
   }
 
   :root[data-material="glass"].dark {
     --glass-float: #1c1c1f;
     --glass-bar: #161619;
     --glass-card: #18181b;
+    --glass-frost: #18181b;
   }
 
-  :root[data-material="glass"] body {
-    background-image: none;
+  :root[data-material="glass"] body::before {
+    display: none;
+  }
+
+  :root[data-material="glass"] body::after {
+    display: none;
   }
 }

@@ -250,6 +250,25 @@ function grained(colours: Rgba[], speck: Rgba | undefined): Rgba[] {
   return speck ? colours.flatMap((colour) => [colour, over(speck, colour)]) : colours
 }
 
+/**
+ * The glass backdrop's grain (src/styles/grain-overlay.png): opaque, every pixel black or white, laid over
+ * the backdrop as an overlay at --glass-grain-opacity (glass.css). Read as its two specks.
+ */
+export const OVERLAY_GRAIN = { file: 'grain-overlay.png', greys: [0, 1] }
+
+/** A speck blended over a colour as CSS's `overlay` blends it, at an opacity: per channel, in sRGB. */
+export function overlay(speck: number, under: Rgba, opacity: number): Rgba {
+  const blend = (back: number) => (back <= 0.5 ? 2 * back * speck : 1 - 2 * (1 - back) * (1 - speck))
+  const mix = (back: number) => opacity * blend(back) + (1 - opacity) * back
+  return { r: mix(under.r), g: mix(under.g), b: mix(under.b), a: 1 }
+}
+
+/** Colours under the backdrop's grain: each as it is, under its black speck, and under its white one. */
+function overlaid(colours: Rgba[], opacity: number | undefined): Rgba[] {
+  if (!opacity) return colours
+  return colours.flatMap((colour) => [colour, ...OVERLAY_GRAIN.greys.map((grey) => overlay(grey, colour, opacity))])
+}
+
 /** The surfaces text is read on, and the text colours the design promises 4.5:1 on all of them. */
 export const SURFACES = ['--background', '--bg', '--surface', '--surface-raised', '--surface-hover']
 export const TEXTS = [
@@ -307,14 +326,27 @@ export interface LookPair extends Pair {
   minimum: number
 }
 
-/** The glass surfaces, from the most opaque. */
-export const GLASS_SURFACES = ['--glass-float', '--glass-bar', '--glass-card']
+/** The glass surfaces, from the most opaque. What floats has no sheen (glass.css): the others have it. */
+export const GLASS_SURFACES = ['--glass-float', '--glass-frost', '--glass-bar', '--glass-card']
+
+/** The grey of a menu, and its text: what must hold 4.5:1 on what floats whatever is behind it. */
+export const FLOAT_TEXTS = ['--foreground', '--muted-foreground']
+
+/**
+ * What floats, over a solid colour (no backdrop shows through, nor wash, nor grain): over black in light
+ * and white in dark, the colours that take its text furthest from 4.5:1.
+ */
+export function floatOver(tokens: Record<string, string>, look: Look): Rgba | null {
+  const float = colourOf(tokens, '--glass-float')
+  if (!float) return null
+  return over(float, look.theme === 'dark' ? { r: 1, g: 1, b: 1, a: 1 } : { r: 0, g: 0, b: 0, a: 1 })
+}
 
 /**
  * What text and marks are read on in a look, each surface as the colours it can show. An opaque
  * surface is one colour. Glass shows the backdrop through it: the page's base, and the strongest point
  * of each wash over it (the accent's in place of each it gives, as glass.css paints them), under the
- * accent's grain where it has one; a dialog its scrim too. Text set straight on the page is read on the
+ * accent's grain where it has one, and each speck of the backdrop's own; a dialog its scrim too. Text set straight on the page is read on the
  * backdrop itself.
  */
 export function lookSurfaces(tokens: Record<string, string>, look: Look): Record<string, Rgba[]> {
@@ -334,21 +366,32 @@ export function lookSurfaces(tokens: Record<string, string>, look: Look): Record
     const colour = colourOf(tokens, accent) ?? colourOf(tokens, glass)
     return colour ? [over(colour, base)] : []
   })
-  const backdrop = grained([base, ...washes], grainOf(tokens))
+  const opacity = Number.parseFloat(valueOf(tokens, '--glass-grain-opacity') ?? '')
+  const backdrop = overlaid(grained([base, ...washes], grainOf(tokens)), Number.isNaN(opacity) ? undefined : opacity)
   surfaces.backdrop = backdrop
-  // Each surface as it is, and where its light and its reflection are strongest.
-  const lights = ['--glass-shine', '--glass-reflection'].flatMap((name) => {
-    const colour = colourOf(tokens, name)
-    return colour ? [colour] : []
-  })
+  // Each surface as it is, and where its light and its reflection are strongest; what floats has neither.
+  // A tile, where its glow is strongest too, alone and over its light or its reflection, in the same
+  // corner as either on one tile or another. A light tile's own light only lightens it, under dark text.
+  const colours = (names: string[]) =>
+    names.flatMap((name) => {
+      const colour = colourOf(tokens, name)
+      return colour ? [colour] : []
+    })
+  const lights = colours(['--glass-shine', '--glass-reflection'])
+  const glow = colourOf(tokens, '--glass-tile-glow')
   for (const name of GLASS_SURFACES) {
     const colour = colourOf(tokens, name)
-    if (colour)
-      surfaces[name] = backdrop.flatMap((under) => {
-        const surface = over(colour, under)
-        return [surface, ...lights.map((light) => over(light, surface))]
-      })
+    if (!colour) continue
+    surfaces[name] = backdrop.flatMap((under) => {
+      const surface = over(colour, under)
+      if (name === '--glass-float') return [surface]
+      const lit = [surface, ...lights.map((light) => over(light, surface))]
+      return name === '--glass-frost' && glow ? [...lit, ...lit.map((shown) => over(glow, shown))] : lit
+    })
   }
+  // A box nested in a panel: its tint over every colour of the panel.
+  const raised = colourOf(tokens, '--glass-raised')
+  if (raised && surfaces['--glass-card']) surfaces['--glass-raised on --glass-card'] = surfaces['--glass-card'].map((under) => over(raised, under))
   // A dialog: what floats, over its scrim, over the page.
   const float = colourOf(tokens, '--glass-float')
   const scrim = colourOf(tokens, '--glass-scrim')

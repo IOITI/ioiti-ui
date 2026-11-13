@@ -140,7 +140,8 @@ export function Shell() {
   sections: ['Work', 'Settings'],
   entries: [
     { id: 'home', path: '/', label: 'Dashboard', section: 'Work', icon: <LayoutDashboard /> },
-    { id: 'orders', path: '/orders', label: 'Orders', section: 'Work', icon: <Receipt /> },
+    { id: 'orders', path: '/orders', label: 'Orders', section: 'Work', icon: <Receipt />, badge: 38 },
+    { id: 'api', path: '/api', label: 'API', section: 'Work', icon: <Server />, badge: 'Degraded', badgeTone: 'warning' },
     { id: 'settings', path: '/settings', label: 'Settings', section: 'Settings', icon: <Settings /> },
   ],
 }
@@ -153,7 +154,8 @@ export function Shell() {
 </AppShell>`} />
         <p className="text-sm text-muted-foreground">
           A page deeper than the menu (/orders/42) stands under the entry its address starts with; its PageHeader gives
-          the trail its name, and the pages between (parents).
+          the trail its name, and the pages between (parents). An entry ends with a count (badge), or a state in a word
+          in its tone (badgeTone: warning or negative, with a dot).
         </p>
       </Demo>
 

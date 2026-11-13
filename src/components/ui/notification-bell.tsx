@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Bell, CheckCheck, X } from 'lucide-react';
+import { useAnchoredLayer } from '../../lib/anchor.js';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -90,8 +92,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   const LinkComponent = useLinkComponent(linkComponent);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const layerRef = useRef<HTMLDivElement>(null);
 
   const isPanelOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
   const setPanelOpen = useCallback(
@@ -115,30 +117,18 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     prevCountRef.current = unreadCount;
   }, [unreadCount]);
 
-  // Click outside to close panel
-  useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setPanelOpen(false);
-      }
-    };
-    if (isPanelOpen) {
-      document.addEventListener('mousedown', handleOutsideClick);
-      return () => document.removeEventListener('mousedown', handleOutsideClick);
-    }
-  }, [isPanelOpen, setPanelOpen]);
-
-  // ioiti-ui: Escape closes the panel, and the bell has the focus again.
-  useEffect(() => {
-    if (!isPanelOpen) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      setPanelOpen(false);
-      triggerRef.current?.focus();
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [isPanelOpen, setPanelOpen]);
+  // ioiti-ui: the panel is a layer in document.body, placed under the bell (anchor.ts): drawn in the top bar, it was
+  // held by the bar's blur (its containing block, its backdrop's root: the panel's own blur saw nothing of the page).
+  // A press elsewhere, Escape and a Tab past its ends close it; the focus goes into it, and back to the bell.
+  const layer = useAnchoredLayer({
+    open: isPanelOpen,
+    onClose: () => setPanelOpen(false),
+    triggerRef,
+    layerRef,
+    side: 'bottom',
+    align: 'end',
+    offset: 8,
+  });
 
   // ioiti-ui: the notifications could not be read, and what to do about it.
   const failed = error !== undefined && error !== null && error !== false && error !== '';
@@ -154,11 +144,12 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   );
 
   return (
-    <div ref={containerRef} className={cn('relative inline-block', className)}>
+    <div className={cn('relative inline-block', className)}>
       {/* Bell Trigger Button */}
       <motion.button
         ref={triggerRef}
         type="button"
+        onKeyDown={layer.onTriggerKeyDown}
         onClick={() => setPanelOpen(!isPanelOpen)}
         animate={
           isShaking
@@ -211,9 +202,15 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       </motion.button>
 
       {/* Floating Notification Panel */}
+      {typeof document !== 'undefined' &&
+        createPortal(
       <AnimatePresence>
         {isPanelOpen && (
           <motion.div
+            ref={layerRef}
+            tabIndex={-1}
+            onKeyDown={layer.onLayerKeyDown}
+            style={layer.style}
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
@@ -221,9 +218,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             transition={motionTransitions.springSnappy}
             role="dialog"
             aria-label="Notifications"
-            // ioiti-ui: on a phone the panel spans the screen under the top bar (centred on the bell, it went past the edge).
+            // ioiti-ui: on a phone the panel spans the screen but its edges (centred on the bell, it went past the edge).
             // Glass under the glass material (glass-float), its header clear on it.
-            className="fixed left-4 right-4 top-14 sm:absolute sm:left-auto sm:right-0 sm:top-auto mt-2 sm:w-96 rounded-2xl bg-white/95 backdrop-blur-xl border border-neutral-200 shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden dark:bg-[#0E0E0E]/95 dark:border-[#1F1F1F] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] glass-float"
+            className="flex w-[calc(100vw-2rem)] flex-col outline-none sm:w-96 rounded-2xl bg-white/95 backdrop-blur-xl border border-neutral-200 shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden dark:bg-[#0E0E0E]/95 dark:border-[#1F1F1F] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] glass-float"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 bg-neutral-50 dark:border-[#1F1F1F] dark:bg-[#141414] glass:bg-transparent">
@@ -268,7 +265,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             )}
 
             {/* List */}
-            <div className="max-h-80 overflow-y-auto divide-y divide-neutral-200 dark:divide-[#1F1F1F]">
+            <div className="min-h-0 max-h-80 overflow-y-auto divide-y divide-neutral-200 dark:divide-[#1F1F1F]">
               {notifications.length === 0 && failed ? (
                 // ioiti-ui: what is true when nothing could be read: not "No notifications right now".
                 <div className="py-8 px-4 text-center">
@@ -366,7 +363,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             )}
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+          document.body
+        )}
     </div>
   );
 };

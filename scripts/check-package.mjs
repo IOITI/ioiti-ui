@@ -60,8 +60,8 @@ const DESIGN = [
   '.over-page:is(:root:active-view-transition:not([data-look-change]) *){view-transition-name:match-element;',
 ]
 
-// The images the stylesheets name: the grains of the bloom accent.
-const GRAINS = ['grain-white', 'grain-black']
+// The images the stylesheets name: the grains of the bloom accent, and the glass backdrop's.
+const GRAINS = ['grain-white', 'grain-black', 'grain-overlay']
 
 const FILES = [
   'package.json',

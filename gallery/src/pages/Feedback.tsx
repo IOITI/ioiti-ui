@@ -16,6 +16,7 @@ import {
   SkeletonReveal,
   SkeletonText,
   StatusBadge,
+  StatusHistory,
   UndoToast,
   useToast,
 } from 'ioiti-ui'
@@ -23,6 +24,12 @@ import type { Check, RequestLifecycleStatus } from 'ioiti-ui'
 import { useState } from 'react'
 
 import { Demo } from '../parts'
+
+// A day of an API, an hour a block: down once in the night, slow in the afternoon.
+const DAY = Array.from({ length: 24 }, (_, hour) => ({
+  status: hour === 3 ? ('down' as const) : hour === 14 || hour === 15 ? ('warning' as const) : ('ok' as const),
+  at: `${String(hour).padStart(2, '0')}:00`,
+}))
 
 const CHECKS: Check[] = [
   { id: 'tests', label: 'Tests', state: 'pass', detail: '142 passed in 6 s.' },
@@ -208,6 +215,17 @@ export function Feedback() {
         <StatusBadge status="down" />
         <StatusBadge status="unknown" />
         <StatusBadge status="disabled" />
+      </Demo>
+
+      <Demo
+        id="status-history"
+        title="StatusHistory"
+        description="The uptime strip: one block per slot of time, coloured by its state. A screen reader hears it in words: how long it was up, then each other state with when it was."
+        names={['StatusHistory']}
+        className="flex w-full flex-col items-stretch gap-4"
+      >
+        <StatusHistory label="API, the last 24 hours" slots={DAY} scale={['24 h ago', 'Now']} />
+        <p className="text-xs text-muted-foreground">Read as: API, the last 24 hours: 21 hours up, 1 down at 03:00, 2 degraded at 14:00 and 15:00.</p>
       </Demo>
 
       <Demo id="toasts" title="Toasts" description="One at a time, at the bottom centre, each for its whole time: an error stays 8 s; when others wait, the one shown moves along faster. One may lead on, by a link or a button (its action, which closes it): it stays 6 s, and its time stops under the pointer or while the keyboard is in it." names={['ToastProvider', 'useToast', 'VelocityToast']}>

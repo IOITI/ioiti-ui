@@ -73,15 +73,41 @@ describe('the stylesheets, as an application builds them', () => {
     expect(rule('.accent\\:text-brand-fill-foreground:is(:root[data-accent] *)')).toContain('color: var(--brand-fill-foreground, var(--brand-foreground))')
   })
 
-  it('turn a surface to glass only where the material is glass, and blur only what floats', async () => {
-    const css = await build(['glass-bar', 'glass-card', 'glass-float', 'glass:bg-black/20'])
-    const rule = (utility: string) => /\{([^{}]*)\}/.exec(css.slice(css.indexOf(`.${utility}:is(:root[data-material="glass"] *)`)))?.[1] ?? ''
+  it('turn a surface to glass only where the material is glass, and blur the bars, the tiles and what floats', async () => {
+    const utilities = ['glass-bar', 'glass-card', 'glass-tile', 'glass-edge', 'glass-float']
+    const css = await build([...utilities, 'glass:bg-black/20'])
+    const rule = (selector: string) => /\{([^{}]*)\}/.exec(css.slice(css.indexOf(selector)))?.[1] ?? ''
+    const glass = (utility: string) => rule(`.${utility}:is(:root[data-material="glass"] *) {`)
 
-    for (const utility of ['glass-bar', 'glass-card', 'glass-float']) expect(css).toContain(`.${utility}:is(:root[data-material="glass"] *)`)
-    expect(rule('glass-float')).toContain('backdrop-filter: var(--glass-blur)')
-    expect(rule('glass-card')).not.toContain('backdrop-filter')
-    expect(rule('glass-bar')).not.toContain('backdrop-filter')
+    for (const utility of utilities) expect(css).toContain(`.${utility}:is(:root[data-material="glass"] *)`)
+    expect(glass('glass-float')).toContain('backdrop-filter: var(--glass-blur)')
+    expect(glass('glass-bar')).toContain('backdrop-filter: var(--glass-bar-blur)')
+    expect(glass('glass-tile')).toContain('backdrop-filter: var(--glass-tile-blur)')
+    expect(glass('glass-card')).not.toContain('backdrop-filter')
+    expect(glass('glass-edge')).not.toContain('backdrop-filter')
+    // What floats has no sheen: its text holds 4.5:1 over black or white behind it (gallery/src/tokens.test.ts).
+    expect(glass('glass-float')).not.toContain('background-image')
+    expect(glass('glass-card')).toContain('background-image: var(--glass-sheen)')
+    // The lit edge: a ring cut out by a mask, over the border, which takes no click.
+    const edge = rule('.glass-edge:is(:root[data-material="glass"] *)::before')
+    expect(edge).toContain('mask-composite: exclude')
+    expect(edge).toContain('pointer-events: none')
+    // Each of four tiles in a row has its glow from another corner.
+    for (const nth of ['4n + 2', '4n + 3', '4n + 4']) expect(rule(`.glass-tile:is(:root[data-material="glass"] *):nth-child(${nth})`)).toContain('--glass-glow-at')
     expect(css).toContain('.glass\\:bg-black\\/20:is(:root[data-material="glass"] *)')
+  })
+
+  it('draw the glass backdrop on a layer fixed to the window, not on a background fixed to it', async () => {
+    const css = await build([])
+    const rule = (selector: string) => /\{([^{}]*)\}/.exec(css.slice(css.indexOf(`${selector} {`)))?.[1] ?? ''
+    expect(rule(':root[data-material="glass"] body')).not.toContain('background-attachment')
+    for (const layer of ['::before', '::after']) {
+      const drawn = rule(`:root[data-material="glass"] body${layer}`)
+      expect(drawn, layer).toContain('position: fixed')
+      expect(drawn, layer).toContain('z-index: -1')
+      expect(drawn, layer).toContain('pointer-events: none')
+    }
+    expect(rule(':root[data-material="glass"] body::after')).toContain('mix-blend-mode: overlay')
   })
 
   it('keep every block of the design as it was, its base layer whole: the accents, glass and motion only add', async () => {
