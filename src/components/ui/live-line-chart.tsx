@@ -50,8 +50,9 @@ export interface LiveLineChartProps {
   /** ioiti-ui: the y-axis labels (EasyUI's compact numbers), short enough for the left margin. */
   formatTick?: (n: number) => string;
   /**
-   * ioiti-ui: the change over the window as the readout says it (latest minus the value at the window's start). EasyUI
-   * gave a percentage of the first value ever pushed, which means nothing for a value that is itself a percentage.
+   * ioiti-ui: the change over the window as the readout says it (latest minus the value at the window's start), in
+   * the series' own units, as `formatValue` takes them: a difference, never a percentage. EasyUI gave a percentage
+   * of the first value ever pushed, which means nothing for a value that is itself a percentage.
    */
   formatChange?: (change: number) => string;
   domain?: [number, number];
