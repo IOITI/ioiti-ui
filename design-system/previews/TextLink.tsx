@@ -31,10 +31,10 @@ function Preview() {
           <p className="text-sm">
             Read <TextLink to="/foundations/usable-by-all">the rules</TextLink> before writing a page.
           </p>
-          <TextLink to="/components/data" variant="hover" className="text-sm font-medium">
+          <TextLink to="/components/tables" variant="hover" className="text-sm font-medium">
             Order 2026-0042
           </TextLink>
-          <TextLink to="/components/data" variant="quiet">
+          <TextLink to="/components/tables" variant="quiet">
             View all
           </TextLink>
         </div>

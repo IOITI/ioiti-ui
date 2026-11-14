@@ -14,6 +14,13 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   - `hash`, the part of the page the address shows (`#rules`; `RouterAppShell` gives the router's): the page
     scrolls to it once it is there, for a link from another page too, as the browser does for a page it loads.
   - `className`, on the frame, which fills the window (`h-dvh`): `h-full` draws it in a box of a page.
+- **The gallery, a page per component**: 119 pages in 16 groups (the frame, page layout, the top bar, actions,
+  forms, choices, dates and time, feedback, loading and empty, overlays, navigation, tables and lists, figures,
+  charts, code, AI), each with its examples (more of them: states, sizes, errors, empty), the code of each, its
+  guidelines (`design-system/components/<Name>/README.md`, 17 new) and its props, read from the types
+  (`npm run props`, `gallery/src/props.json`; `npm run lint` fails when it is stale). A group's page shows each of
+  its components once; `/components` lists them all, from A to Z. ⌘K finds a component by its name, its parts or
+  what it does, and an example. The former pages' addresses, and their parts', lead where their content went.
 
 ## [0.17.0] - 2026-11-13
 

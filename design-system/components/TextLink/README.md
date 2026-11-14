@@ -6,7 +6,7 @@ A link made of words, through the application's router: underlined in text, unde
 
 ```tsx
 <p className="text-sm">Read <TextLink to="/foundations/usable-by-all">the rules</TextLink> before writing a page.</p>
-<TextLink to="/components/data" variant="quiet">View all</TextLink>
+<TextLink to="/components/tables" variant="quiet">View all</TextLink>
 ```
 
 - `inline` in running text: underlined, in the accent's `brand-text` where one is chosen. `hover` where every name in a list or a table is a link. `quiet` for a panel's "View all": `text-xs`, `muted-foreground`, `foreground` under the pointer.

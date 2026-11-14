@@ -31,7 +31,7 @@ export function ComponentIndex() {
           type="search"
           aria-label="Find a component"
           placeholder="A component, a part, a word…"
-          leftIcon={<Search />}
+          leftIcon={<Search className="size-3.5" />}
           value={query}
           onChange={(event) => setParams(event.target.value ? { q: event.target.value } : {}, { replace: true })}
         />

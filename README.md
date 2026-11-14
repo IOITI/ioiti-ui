@@ -17,7 +17,8 @@ interface, as a package any application can install. React 19, Tailwind CSS 4, f
   that open in another tab, nothing loaded from another origin (a strict Content-Security-Policy holds).
 
 The gallery shows all of it, in every look: https://ioiti.github.io/ioiti-ui/ (`main`'s, published by CI once every
-check passes), or `npm run gallery` (http://localhost:5180).
+check passes), or `npm run gallery` (http://localhost:5180). A page per component, in 16 groups: its examples, the
+code of each, its guidelines and its props; ⌘K finds a component, a part of one, or an example.
 
 ## Start a new application
 
