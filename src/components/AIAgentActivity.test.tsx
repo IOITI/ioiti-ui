@@ -72,7 +72,7 @@ describe('AIAgentActivity', () => {
     expect(screen.getByText('Its edge is thin.')).not.toHaveClass('truncate')
     // A note has no state of its own: the steps alone say theirs, and are counted.
     expect(screen.getAllByText('Done')).toHaveLength(2)
-    expect(screen.getByText('2 of 3 completed')).toBeInTheDocument()
+    expect(screen.getByText('2 of 3 done')).toBeInTheDocument()
   })
 
   it('cuts its line where notes come: a step after them begins a stretch of its own', () => {

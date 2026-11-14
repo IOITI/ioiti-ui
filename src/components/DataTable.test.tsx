@@ -182,7 +182,7 @@ describe('the data table, as the pages use it', () => {
     expect(screen.queryByText('Inside Row 1')).not.toBeInTheDocument()
 
     // A click on a column's name in the list, as on its box.
-    await user.click(screen.getByRole('button', { name: 'Toggle visible columns' }))
+    await user.click(screen.getByRole('button', { name: 'Columns shown' }))
     const kind = screen.getByRole('checkbox', { name: 'Kind' })
     expect(kind).toBeChecked()
     await user.click(within(kind.closest('label')!).getByText('Kind'))

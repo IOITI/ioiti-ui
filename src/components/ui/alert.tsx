@@ -3,6 +3,7 @@
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X, type LucideIcon } from "lucide-react";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 
 export type AlertTone = "neutral" | "info" | "success" | "warning" | "danger";
@@ -67,7 +68,8 @@ export function Alert({
           initial={false}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+          // ioiti-ui: it only leaves (initial={false}), with the design's exit, quicker than an entrance.
+          transition={motionTransitions.easeExit}
           className="overflow-hidden"
         >
           <div
@@ -85,7 +87,8 @@ export function Alert({
                 type="button"
                 aria-label="Dismiss"
                 onClick={() => setVisible(false)}
-                className="-mr-1 -mt-1 grid size-7 shrink-0 place-items-center rounded-lg text-neutral-400 outline-none transition hover:bg-black/5 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-400/50 active:scale-95 dark:hover:bg-white/10 dark:hover:text-white dark:focus-visible:ring-neutral-600/60"
+                // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                className="-mr-1 -mt-1 grid size-7 shrink-0 place-items-center rounded-lg text-neutral-400 outline-none transition hover:bg-black/5 hover:text-neutral-900 active:scale-95 dark:hover:bg-white/10 dark:hover:text-white"
               >
                 <X className="size-4" />
               </button>

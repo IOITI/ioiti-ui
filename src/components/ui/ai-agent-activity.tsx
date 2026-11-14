@@ -72,10 +72,10 @@ export interface AgentActivityItemData {
 export interface AgentActivityContextValue {
   activities: AgentActivityItemData[];
   isRunning?: boolean;
-  /** ioiti-ui: the names of an item's input and output (EasyUI's "Parameters" and "Output Result"). */
+  /** ioiti-ui: the names of an item's input and output ("Asked" and "Answer" by default). */
   inputLabel: string;
   outputLabel: string;
-  /** ioiti-ui: in the header, in place of "N of M completed". */
+  /** ioiti-ui: in the header, in place of "N of M done" ("Not started" with no step). */
   summary?: string;
   /** ioiti-ui: the name of a group of notes, said to screen readers. */
   notesLabel: string;
@@ -171,7 +171,8 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
           </span>
         ) : (
           <span>
-            {summary ?? `${completedCount} of ${steps.length} completed`}
+            {/* ioiti-ui: "N of M done"; with no step yet, not "0 of 0". */}
+            {summary ?? (steps.length ? `${completedCount} of ${steps.length} done` : 'Not started')}
           </span>
         )}
       </span>
@@ -554,8 +555,9 @@ export interface AIAgentActivityProps {
 export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
   activities = [],
   isRunning = false,
-  inputLabel = 'Parameters',
-  outputLabel = 'Output Result',
+  // ioiti-ui: what was asked and what came back, in the words of the design (EasyUI's "Parameters", "Output Result").
+  inputLabel = 'Asked',
+  outputLabel = 'Answer',
   summary,
   notesLabel = 'Notes',
   collapsible = false,

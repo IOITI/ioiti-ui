@@ -29,6 +29,7 @@ export interface AnimatedTabsProps {
   tabsContainerClassName?: string;
   renderContent?: boolean;
   layoutId?: string;
+  /** ioiti-ui: `default`, a row under a line; `pill`, a rounded track; `glass`, the same as `pill` (kept for EasyUI's). */
   variant?: 'default' | 'glass' | 'pill';
   /** ioiti-ui: what draws a tab that has an `href`; the application's link (LinkProvider) by default, else `a`. */
   linkComponent?: React.ElementType;
@@ -70,6 +71,7 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
   };
 
   const currentTabObj = tabs.find((t) => t.id === activeTab);
+  // ioiti-ui: `glass` is `pill` (EasyUI drew them alike): the glass material gives any surface its glass.
   const isGlass = variant === 'glass' || variant === 'pill';
 
   // ioiti-ui: tabs that switch panels are a tablist (tab, tabpanel, one stop of the keyboard, the arrows,
@@ -106,7 +108,9 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
           // of its tabs broken over two lines.
           'relative flex max-w-full items-center gap-1 self-start overflow-x-auto whitespace-nowrap select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
           isGlass
-            ? 'p-1 rounded-full bg-surface-raised backdrop-blur-xl border border-border dark:bg-[#0E0E0E] dark:border-[#1F1F1F]'
+            ? // ioiti-ui: no blur: the design blurs a tile and what floats only (glass-tile, glass-float), and this one,
+              // on a solid surface, blurred nothing seen.
+              'p-1 rounded-full bg-surface-raised border border-border dark:bg-[#0E0E0E] dark:border-[#1F1F1F]'
             : 'p-1 rounded-lg bg-surface-raised border border-border dark:bg-[#0E0E0E] dark:border-[#1F1F1F]',
           tabsContainerClassName
         )}

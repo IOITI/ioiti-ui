@@ -27,6 +27,8 @@ import { SelectionBasket } from './selection-basket.js';
 import type { SelectionActionItem } from './selection-basket.js';
 // ioiti-ui: every box of the table is the package's checkbox, EasyUI's draw-checkbox.
 import { DrawCheckbox } from './draw-checkbox.js';
+import { Skeleton } from './skeleton.js';
+import { Hint } from '../Hint.js';
 
 // =============================================================================
 // DESIGN SYSTEM CONSTANTS & SPRING TOKENS
@@ -215,31 +217,34 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
             )}
           </div>
 
-          {/* View Mode Switcher */}
-          <motion.button
-            type="button"
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
-            onClick={() => setViewMode(viewMode === 'cards' ? 'table' : 'cards')}
-            className="p-1.5 sm:p-2 rounded-lg border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer shrink-0"
-            title={viewMode === 'cards' ? 'Switch to Table view' : 'Switch to Cards view'}
-            aria-label="Toggle view mode"
-          >
-            {viewMode === 'cards' ? <List className="w-3.5 h-3.5" /> : <LayoutGrid className="w-3.5 h-3.5" />}
-          </motion.button>
-
-          {/* Column Visibility Menu */}
-          <div className="relative shrink-0">
+          {/* View Mode Switcher. ioiti-ui: what it does in a Hint, shown on hover, keyboard focus and a tap (a title
+              showed on none), and its name the same words. */}
+          <Hint content={viewMode === 'cards' ? 'Show as a table' : 'Show as cards'}>
             <motion.button
               type="button"
               whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
-              onClick={() => setIsColumnPickerOpen(!isColumnPickerOpen)}
-              className="p-1.5 sm:p-2 rounded-lg border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer"
-              title="Toggle columns"
-              aria-label="Toggle visible columns"
-              aria-expanded={isColumnPickerOpen}
+              onClick={() => setViewMode(viewMode === 'cards' ? 'table' : 'cards')}
+              className="p-1.5 sm:p-2 rounded-lg border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer shrink-0"
+              aria-label={viewMode === 'cards' ? 'Show as a table' : 'Show as cards'}
             >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
+              {viewMode === 'cards' ? <List className="w-3.5 h-3.5" /> : <LayoutGrid className="w-3.5 h-3.5" />}
             </motion.button>
+          </Hint>
+
+          {/* Column Visibility Menu */}
+          <div className="relative shrink-0">
+            <Hint content="Columns shown">
+              <motion.button
+                type="button"
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+                onClick={() => setIsColumnPickerOpen(!isColumnPickerOpen)}
+                className="p-1.5 sm:p-2 rounded-lg border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer"
+                aria-label="Columns shown"
+                aria-expanded={isColumnPickerOpen}
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+              </motion.button>
+            </Hint>
 
             {isColumnPickerOpen && (
               <div className="absolute right-0 top-full mt-2 w-48 max-h-60 overflow-y-auto rounded-xl border border-border/70 bg-surface p-2 shadow-elevated z-30 font-sans glass-float">
@@ -743,10 +748,12 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
   }
 
   if (isLoading) {
+    // ioiti-ui: the design's skeleton (seen in both themes: `surface-raised` is darker than the frame in dark, its
+    // rows were not seen), and said, as the bell's list says it.
     return (
-      <div className="p-6 space-y-3 font-sans">
+      <div role="status" aria-label="Loading the records" className="p-6 space-y-3 font-sans">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-9 rounded-lg bg-surface-raised/30 animate-pulse" />
+          <Skeleton key={i} className="h-9 rounded-lg" />
         ))}
       </div>
     );
@@ -1062,6 +1069,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
     setPageSize,
     totalPages,
     totalFilteredCount,
+    isLoading,
   } = useDataTable();
   const shouldReduceMotion = useReducedMotion();
 
@@ -1075,10 +1083,16 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
         className
       )}
     >
-      {/* Count Indicator */}
+      {/* Count Indicator. ioiti-ui: while the records load, no count of what was there before (or of none). */}
       <div className="text-muted-foreground tabular-nums">
-        Showing <span className="text-foreground font-medium">{startRecord}–{endRecord}</span> of{' '}
-        <span className="text-foreground font-medium">{totalFilteredCount}</span> records
+        {isLoading ? (
+          'Loading…'
+        ) : (
+          <>
+            Showing <span className="text-foreground font-medium">{startRecord}–{endRecord}</span> of{' '}
+            <span className="text-foreground font-medium">{totalFilteredCount}</span> records
+          </>
+        )}
       </div>
 
       {/* Pagination Controls */}
@@ -1110,7 +1124,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
             onClick={() => setCurrentPage(1)}
-            disabled={currentPage <= 1}
+            disabled={isLoading || currentPage <= 1}
             aria-label="First page"
             className="p-1.5 rounded-md border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
@@ -1120,7 +1134,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
             onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage <= 1}
+            disabled={isLoading || currentPage <= 1}
             aria-label="Previous page"
             className="p-1.5 rounded-md border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
@@ -1135,7 +1149,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
             onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage >= totalPages}
+            disabled={isLoading || currentPage >= totalPages}
             aria-label="Next page"
             className="p-1.5 rounded-md border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
@@ -1145,7 +1159,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
             onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage >= totalPages}
+            disabled={isLoading || currentPage >= totalPages}
             aria-label="Last page"
             className="p-1.5 rounded-md border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
