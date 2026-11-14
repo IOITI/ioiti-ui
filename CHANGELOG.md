@@ -3,6 +3,18 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.18.0] - Unreleased
+
+- **Entries under another** (`MenuEntry.parent`, the `id` of an entry of the same section): the sidebar lists
+  them under it, and the trail goes through it, a link ("Home › Work › Orders › Returns"). One level.
+- **`Sidebar`**: an entry with children and an `href` is a link to its page, a chevron beside it opening it on its
+  children (it was a button that only opened). The entry that is, or holds, the page shown opens at every page
+  (it opened at the first only), those the reader opened staying open; in the rail, it is a link alone.
+- **`AppShell`**:
+  - `hash`, the part of the page the address shows (`#rules`; `RouterAppShell` gives the router's): the page
+    scrolls to it once it is there, for a link from another page too, as the browser does for a page it loads.
+  - `className`, on the frame, which fills the window (`h-dvh`): `h-full` draws it in a box of a page.
+
 ## [0.17.0] - 2026-11-13
 
 - **The glass material, reviewed.** Its values change on purpose (`src/styles/glass.css`):

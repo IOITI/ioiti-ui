@@ -4,16 +4,16 @@ import { Outlet, useLocation } from 'react-router'
 import { AppShell } from '../shell/AppShell.js'
 import type { AppShellProps } from '../shell/AppShell.js'
 
-type RouterAppShellProps<S extends string> = Omit<AppShellProps<S>, 'pathname' | 'children'> & {
+type RouterAppShellProps<S extends string> = Omit<AppShellProps<S>, 'pathname' | 'hash' | 'children'> & {
   /** The page; the router's child routes (`<Outlet />`) by default. */
   children?: ReactNode
 }
 
-/** AppShell, for the layout route of an application on React Router: the address is the router's. */
+/** AppShell, for the layout route of an application on React Router: the address is the router's, its part too. */
 export function RouterAppShell<S extends string = string>({ children, ...props }: RouterAppShellProps<S>) {
-  const { pathname } = useLocation()
+  const { pathname, hash } = useLocation()
   return (
-    <AppShell {...props} pathname={pathname}>
+    <AppShell {...props} pathname={pathname} hash={hash}>
       {children ?? <Outlet />}
     </AppShell>
   )

@@ -151,6 +151,10 @@ otherwise).
 - `sidebar`, `animated-tabs`: an entry or a tab with an `href` is a link (`linkComponent`); a plain click of
   a tab still goes through `onChange`, and a tab without `href` is `type="button"`. The sidebar's
   `onActiveChange` is optional.
+- `sidebar`: an entry with children and an `href` is a link, as one without, and a chevron beside it (a button
+  of its own, `aria-expanded`, `aria-controls`) opens it on its children; EasyUI's was a button that only opened.
+  The entry that is, or holds, the page shown opens at each page shown (EasyUI's, at the first), those the reader
+  opened staying open; in the rail, the entry is its link alone.
 - `sidebar`: `badgeTone` on an entry and a child (`SidebarBadgeTone`: `neutral`, `warning`, `negative`): a badge
   that says a state ("Degraded", "2 open") is in its tone's text colour with a dot, without the count's grey
   pill. The tip naming an entry of the folded sidebar is drawn in `document.body`, as every layer: a sidebar

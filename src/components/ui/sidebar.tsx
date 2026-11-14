@@ -103,6 +103,15 @@ function unfoldedOf(sections: SidebarSection[], activeId: string, folds: Record<
   return unfolded;
 }
 
+/** ioiti-ui: the entries open on their children: the reader's, and the one that is, or holds, the page shown. */
+function openOf(sections: SidebarSection[], activeId: string, chosen: Set<string>) {
+  const open = new Set(chosen);
+  for (const item of sections.flatMap((section) => section.items)) {
+    if (item.children?.length && (item.id === activeId || item.children.some((c) => c.id === activeId))) open.add(item.id);
+  }
+  return open;
+}
+
 // ioiti-ui: a state's badge, in the tone's text colour (4.5:1 on every surface of every look), its dot beside it.
 const BADGE_TONE: Record<Exclude<SidebarBadgeTone, "neutral">, string> = {
   warning: "text-warning",
@@ -266,15 +275,25 @@ function Panel({
   const [hoverBox, setHoverBox] = React.useState<{ y: number; h: number } | null>(null);
   const [hovering, setHovering] = React.useState(false);
   const [tip, setTip] = React.useState<{ label: string; keys?: string; x: number; y: number } | null>(null);
-  const [open, setOpen] = React.useState<Set<string>>(
-    () =>
-      new Set(
-        sections
-          .flatMap((s) => s.items)
-          .filter((i) => i.children?.some((c) => c.id === activeId))
-          .map((i) => i.id)
-      )
-  );
+  // ioiti-ui: the entries open on their children: those the reader opened, and the one that is or holds the page
+  // shown, again at each page (EasyUI's opened it at the first page only).
+  const [chosen, setChosen] = React.useState<Set<string>>(() => new Set());
+  const [open, setOpen] = React.useState<Set<string>>(() => openOf(sections, activeId, chosen));
+  const [openFor, setOpenFor] = React.useState(activeId);
+  if (openFor !== activeId) {
+    setOpenFor(activeId);
+    setOpen(openOf(sections, activeId, chosen));
+  }
+  const toggleOpen = (id: string, opening = !open.has(id)) => {
+    const change = (current: Set<string>) => {
+      const next = new Set(current);
+      if (opening) next.add(id);
+      else next.delete(id);
+      return next;
+    };
+    setChosen(change);
+    setOpen(change);
+  };
   // ioiti-ui: the foldable sections unfolded; another page shown unfolds the one it is in (for this visit: the
   // reader's own choice stays as it was kept).
   const [unfolded, setUnfolded] = React.useState<Set<string>>(() => unfoldedOf(sections, activeId, readFolds()));
@@ -308,89 +327,106 @@ function Panel({
     const hasChildren = !!item.children?.length;
     const isOpen = hasChildren && open.has(item.id) && !collapsed;
     const childActive = !!item.children?.some((c) => c.id === activeId);
-    const isActive = !hasChildren && activeId === item.id;
-    const linked = !hasChildren && item.href !== undefined;
+    // ioiti-ui: an entry with children and an `href` is a page too, and a link (its chevron opens it apart); in the
+    // rail, a link alone.
+    const isActive = activeId === item.id && (!hasChildren || item.href !== undefined);
+    const linked = item.href !== undefined;
+    const chevron = hasChildren && linked && !collapsed;
+    const childrenId = `${uid}-children-${item.id}`;
     const Entry: React.ElementType = linked ? LinkComponent : "button";
 
     const onClick = (e: React.MouseEvent) => {
       if (linked && !isPlainClick(e)) return;
-      if (!hasChildren) {
+      if (!hasChildren || linked) {
         onActiveChange?.(item.id);
         onNavigate?.();
       } else if (collapsed) {
         onToggle?.();
-        setOpen((p) => new Set(p).add(item.id));
+        toggleOpen(item.id, true);
       } else {
-        setOpen((p) => {
-          const n = new Set(p);
-          if (n.has(item.id)) n.delete(item.id);
-          else n.add(item.id);
-          return n;
-        });
+        toggleOpen(item.id);
       }
     };
 
     return (
       <div key={item.id}>
-        <Entry
-          {...(linked ? { href: item.href } : { type: "button" })}
-          onClick={onClick}
-          onMouseEnter={(e: React.MouseEvent<HTMLElement>) => enter(e, item.label)}
-          onFocus={(e: React.FocusEvent<HTMLElement>) => enter(e, item.label)}
-          aria-label={collapsed ? item.label : undefined}
-          aria-expanded={hasChildren ? isOpen : undefined}
-          aria-current={isActive ? "page" : undefined}
-          className={cn(
-            "relative flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:focus-visible:ring-neutral-600/60",
-            isActive || childActive
-              ? // ioiti-ui: the page shown, in the accent when the theme has one (accent:), as its pill below.
-                "text-neutral-900 dark:text-white accent:text-brand-text"
-              : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-          )}
-        >
-          {isActive && (
-            <motion.span
-              layoutId={`${uid}-active`}
-              transition={spring}
-              className="absolute inset-0 rounded-lg bg-neutral-200/70 dark:bg-neutral-800 accent:bg-brand-soft"
-            />
-          )}
-          <span className="relative grid size-5 shrink-0 place-items-center [&>svg]:size-[18px]">{item.icon}</span>
-          <motion.span
-            initial={false}
-            animate={{ opacity: collapsed ? 0 : 1 }}
-            transition={{ duration: 0.15 }}
-            className="relative flex-1 truncate whitespace-nowrap text-left"
+        <div className="flex items-center">
+          <Entry
+            {...(linked ? { href: item.href } : { type: "button" })}
+            onClick={onClick}
+            onMouseEnter={(e: React.MouseEvent<HTMLElement>) => enter(e, item.label)}
+            onFocus={(e: React.FocusEvent<HTMLElement>) => enter(e, item.label)}
+            aria-label={collapsed ? item.label : undefined}
+            aria-expanded={hasChildren && !linked ? isOpen : undefined}
+            aria-current={isActive ? "page" : undefined}
+            className={cn(
+              "relative flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:focus-visible:ring-neutral-600/60",
+              chevron && "pr-9",
+              isActive || childActive
+                ? // ioiti-ui: the page shown, in the accent when the theme has one (accent:), as its pill below.
+                  "text-neutral-900 dark:text-white accent:text-brand-text"
+                : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+            )}
           >
-            {item.label}
-          </motion.span>
-          {!collapsed && item.badge !== undefined && (
+            {isActive && (
+              <motion.span
+                layoutId={`${uid}-active`}
+                transition={spring}
+                className="absolute inset-0 rounded-lg bg-neutral-200/70 dark:bg-neutral-800 accent:bg-brand-soft"
+              />
+            )}
+            <span className="relative grid size-5 shrink-0 place-items-center [&>svg]:size-[18px]">{item.icon}</span>
             <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className={
-                item.badgeTone && item.badgeTone !== "neutral"
-                  ? cn("relative inline-flex items-center gap-1 text-[11px] font-medium", BADGE_TONE[item.badgeTone])
-                  : "relative rounded-md bg-neutral-200/70 px-1.5 text-[11px] tabular-nums text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
-              }
+              initial={false}
+              animate={{ opacity: collapsed ? 0 : 1 }}
+              transition={{ duration: 0.15 }}
+              className="relative flex-1 truncate whitespace-nowrap text-left"
             >
-              {item.badgeTone && item.badgeTone !== "neutral" && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
-              {item.badge}
+              {item.label}
             </motion.span>
+            {!collapsed && item.badge !== undefined && (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={
+                  item.badgeTone && item.badgeTone !== "neutral"
+                    ? cn("relative inline-flex items-center gap-1 text-[11px] font-medium", BADGE_TONE[item.badgeTone])
+                    : "relative rounded-md bg-neutral-200/70 px-1.5 text-[11px] tabular-nums text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+                }
+              >
+                {item.badgeTone && item.badgeTone !== "neutral" && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
+                {item.badge}
+              </motion.span>
+            )}
+            {!collapsed && hasChildren && !linked && (
+              <ChevronRight
+                className={cn(
+                  "relative size-3.5 shrink-0 text-neutral-500 transition-transform duration-200 dark:text-neutral-400",
+                  isOpen && "rotate-90"
+                )}
+              />
+            )}
+          </Entry>
+          {chevron && (
+            <button
+              type="button"
+              onClick={() => toggleOpen(item.id)}
+              onMouseEnter={(e) => enter(e, item.label)}
+              onFocus={(e) => enter(e, item.label)}
+              aria-label={`The pages under ${item.label}`}
+              aria-expanded={isOpen}
+              aria-controls={isOpen ? childrenId : undefined}
+              className="relative -ml-8 grid h-9 w-8 shrink-0 place-items-center rounded-md text-neutral-500 outline-none transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+            >
+              <ChevronRight aria-hidden className={cn("size-3.5 transition-transform duration-200", isOpen && "rotate-90")} />
+            </button>
           )}
-          {!collapsed && hasChildren && (
-            <ChevronRight
-              className={cn(
-                "relative size-3.5 shrink-0 text-neutral-500 transition-transform duration-200 dark:text-neutral-400",
-                isOpen && "rotate-90"
-              )}
-            />
-          )}
-        </Entry>
+        </div>
 
         <AnimatePresence initial={false}>
           {isOpen && (
             <motion.div
+              id={childrenId}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
