@@ -58,7 +58,10 @@ describe('a link to a part of a former page', () => {
     for (const { from, to } of FORMER_PARTS.filter((_, index) => index % 9 === 0)) {
       const router = renderAt(from)
       await heading()
-      expect(router.state.location.pathname, from).toBe(`${BASE}${to.slice(1)}`)
+      // A part named as one of the components of the category at its former address stays: it is that one's panel.
+      const [path, part] = from.split('#')
+      const stays = to === `${path}/${part}`
+      expect(router.state.location.pathname, from).toBe(`${BASE}${(stays ? path : to).slice(1)}`)
       cleanup()
     }
   }, A_PAGE)

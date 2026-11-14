@@ -24,7 +24,6 @@ import {
 } from 'ioiti-ui'
 import type { HealthStatus } from 'ioiti-ui'
 
-import { Demo } from '../parts'
 
 // Example records: a page made the way the design's pages are.
 const OPEN = [
@@ -195,23 +194,6 @@ export function DashboardPattern() {
           </ul>
         </Panel>
       </div>
-
-      <Demo
-        id="text-link"
-        title="TextLink"
-        description="A link made of words, through the application's router: underlined in text, underlined under the pointer in a list, quiet as a panel's way further."
-        names={['TextLink']}
-      >
-        <p className="text-sm">
-          Read <TextLink to="/foundations/usable-by-all">the rules</TextLink> before writing a page.
-        </p>
-        <TextLink to="/components/tables/data-table" variant="hover" className="text-sm font-medium">
-          Order 2026-0042
-        </TextLink>
-        <TextLink to="/components/tables/data-table" variant="quiet">
-          View all
-        </TextLink>
-      </Demo>
     </>
   )
 }

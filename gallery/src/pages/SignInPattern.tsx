@@ -74,47 +74,45 @@ export function SignInPattern() {
       footer={
         <div className="flex flex-col items-start gap-3">
           <p>Need an account? Ask an administrator.</p>
-          <ButtonLink to="/components/shell" variant="ghost" size="sm" leftIcon={<ArrowLeft className="size-3.5" />} className="-ml-3">
+          <ButtonLink to="/components/shell/auth-layout" variant="ghost" size="sm" leftIcon={<ArrowLeft className="size-3.5" />} className="-ml-3">
             Back to the gallery
           </ButtonLink>
         </div>
       }
     >
-      <div data-names="AuthLayout SignInProviders">
-        <SignInProviders providers={providers} pending={pending} onPendingChange={setPending}>
-          <Form onSubmit={signIn}>
-            <FormItem>
-              <FormLabel htmlFor="username">Username</FormLabel>
-              <FormControl>
-                <Input
-                  id="username"
-                  autoComplete="username"
-                  value={username}
-                  disabled={pending !== null}
-                  onChange={(event) => setUsername(event.target.value)}
-                />
-              </FormControl>
-            </FormItem>
-            <FormItem>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <FormControl>
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  showPasswordToggle
-                  value={password}
-                  disabled={pending !== null}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-              </FormControl>
-            </FormItem>
-            <Button type="submit" fullWidth isLoading={pending === 'password'} disabled={pending !== null || !username || !password}>
-              Sign in
-            </Button>
-          </Form>
-        </SignInProviders>
-      </div>
+      <SignInProviders providers={providers} pending={pending} onPendingChange={setPending}>
+        <Form onSubmit={signIn}>
+          <FormItem>
+            <FormLabel htmlFor="username">Username</FormLabel>
+            <FormControl>
+              <Input
+                id="username"
+                autoComplete="username"
+                value={username}
+                disabled={pending !== null}
+                onChange={(event) => setUsername(event.target.value)}
+              />
+            </FormControl>
+          </FormItem>
+          <FormItem>
+            <FormLabel htmlFor="password">Password</FormLabel>
+            <FormControl>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                showPasswordToggle
+                value={password}
+                disabled={pending !== null}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </FormControl>
+          </FormItem>
+          <Button type="submit" fullWidth isLoading={pending === 'password'} disabled={pending !== null || !username || !password}>
+            Sign in
+          </Button>
+        </Form>
+      </SignInProviders>
     </AuthLayout>
   )
 }
