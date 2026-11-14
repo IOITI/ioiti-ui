@@ -16,9 +16,10 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/lib/` | helpers (`cn`, formats, theme, CSV, dates, date maths, keys, the clock), the placing of a layer (`anchor.ts`), the charts' scales and colours, EasyUI's chart helpers |
 | `src/react-router/` | the adapter for React Router, the only code that imports it |
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
-| `gallery/` | an application made with the package: every component, in both themes |
+| `gallery/` | an application made with the package: a page per component, in both themes (`gallery/src/components/<category>/`: its `category.ts`, then a folder per component of one file per example, whose code the page shows; `gallery/src/catalogue/` draws them, with each component's guidelines and props) |
 | `templates/app/` | the starter template an application is copied from |
-| `scripts/` | build, release, the package and source checks, the import codemod, the golden reference, the grains |
+| `scripts/` | build, release, the package and source checks, the import codemod, the golden reference, the grains, the props (`props.mjs`) |
+| `design-system/` | the claude.ai Design System artifact's files (`design-system/README.md`); `components/<Name>/README.md` are also the gallery's guidelines |
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
 
 ## Commands
@@ -28,6 +29,7 @@ Node 24: `source ~/.nvm/nvm.sh && nvm use 24` first (the default Node of this Ma
 ```bash
 npm run lint && npm run typecheck && npm test && npm run build && npm run build:gallery && npm run check:package
 npm run gallery                    # http://localhost:5180, on src/
+npm run props                      # gallery/src/props.json, after a change of a component's props (lint checks it)
 npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 ```
 
@@ -99,8 +101,11 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 - **No name of the original application** (WATA, its broker) in `src/`, `gallery/` or `templates/`: the docs
   say where it comes from, the code does not. `check-source` holds it.
 - **Every export is a decision**: `src/index.ts` names each one; `src/index.test.ts` snapshots the list
-  (`npx vitest run -u` on purpose, and a line of CHANGELOG.md). Every component has a demo in the gallery
-  (`gallery/src/gallery.test.tsx` fails otherwise): a `Demo` names it in `names`.
+  (`npx vitest run -u` on purpose, and a line of CHANGELOG.md). Every component belongs to one family of the
+  gallery (`gallery/src/components/<category>/category.ts`, its `names`), which has its guidelines
+  (`design-system/components/<Name>/README.md`), two examples at least that import it, as an application would
+  (`scripts/check-source.mjs` holds their imports), and its props (`npm run props`):
+  `gallery/src/catalogue/catalogue.test.ts` fails otherwise.
 - **A component exports components only** (fast refresh): constants and helpers go in a `.ts` beside it
   (`lib/health.ts`, `link-context.ts`).
 - **The link drawn from context** is flagged by oxlint's `react/static-components`: disable it on that line
@@ -120,7 +125,9 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 - jsdom has no `matchMedia`, `ResizeObserver` or `IntersectionObserver`: the components guard their use;
   `src/test/systemTheme.ts` stands in for the system's theme.
 - The gallery's tests render every page through its router: a page that throws fails them, and so does a link
-  that leaves `/ioiti-ui/`, the path CI publishes `main`'s gallery at on GitHub Pages (`vite build --base`).
+  that leaves `/ioiti-ui/`, the path CI publishes `main`'s gallery at on GitHub Pages (`vite build --base`). A
+  category's examples are a chunk loaded with its pages (the route's `lazy`): a test waits for the page's heading.
+  A former address of the gallery leads where its content went (`gallery/src/catalogue/legacy.ts`).
 - `check:package` installs the packed package into a copy of the template (network for npm), `--keep` keeps
   it to look at.
 

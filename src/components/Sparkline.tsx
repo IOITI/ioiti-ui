@@ -4,6 +4,10 @@ import { NEGATIVE_COLOUR, POSITIVE_COLOUR, SERIES_COLOUR } from '../lib/chart-co
 import { monotonePath } from '../lib/dashboard-chart-utils.js'
 import { formatNumber, toneOf } from '../lib/format.js'
 import type { Tone } from '../lib/format.js'
+import { cn } from '../lib/utils.js'
+
+/** Its size where it fits; narrower where it does not (a tile on a phone), its height with it: never past its box. */
+const FIT = 'block h-auto max-w-full'
 
 interface SparklineProps {
   values: number[]
@@ -61,7 +65,7 @@ export function Sparkline({
     const slot = width / finite.length
     const bar = Math.max(1, slot * 0.7)
     return (
-      <svg role="img" aria-label={name} width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={className}>
+      <svg role="img" aria-label={name} width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={cn(FIT, className)}>
         {finite.map((value, index) => {
           const y = pad + ((top - Math.max(value, 0)) / span) * (height - pad * 2)
           const end = pad + ((top - Math.min(value, 0)) / span) * (height - pad * 2)
@@ -93,7 +97,7 @@ export function Sparkline({
   const area = `${line}L${endX.toFixed(2)} ${height}L${points[0][0].toFixed(2)} ${height}Z`
 
   return (
-    <svg role="img" aria-label={name} width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={className}>
+    <svg role="img" aria-label={name} width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={cn(FIT, className)}>
       <defs>
         <linearGradient id={gradient} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor={colour} stopOpacity={0.18} />

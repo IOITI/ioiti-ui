@@ -24,7 +24,6 @@ import {
 } from 'ioiti-ui'
 import type { HealthStatus } from 'ioiti-ui'
 
-import { Demo } from '../parts'
 
 // Example records: a page made the way the design's pages are.
 const OPEN = [
@@ -123,7 +122,7 @@ export function DashboardPattern() {
         <StatusHistory label="Imports, the last 24 hours" slots={IMPORTS} scale={['24 h ago', 'Now']} />
       </Panel>
 
-      <Panel title="Open orders" description="Placed today, not sent yet." action={<TextLink to="/components/data" variant="quiet">All orders</TextLink>} dense>
+      <Panel title="Open orders" description="Placed today, not sent yet." action={<TextLink to="/components/tables/data-table" variant="quiet">All orders</TextLink>} dense>
         {/* On a phone, what matters first without scrolling sideways. */}
         <ul className="divide-y divide-border/40 text-xs sm:hidden">
           {OPEN.map((order) => (
@@ -149,7 +148,7 @@ export function DashboardPattern() {
               <TableRow key={order.id}>
                 <TableCell className="max-w-[18rem] truncate font-medium">{order.customer}</TableCell>
                 <TableCell>
-                  <TextLink to="/components/data" variant="hover" className="font-mono">
+                  <TextLink to="/components/tables/data-table" variant="hover" className="font-mono">
                     {order.id}
                   </TextLink>
                 </TableCell>
@@ -195,23 +194,6 @@ export function DashboardPattern() {
           </ul>
         </Panel>
       </div>
-
-      <Demo
-        id="text-link"
-        title="TextLink"
-        description="A link made of words, through the application's router: underlined in text, underlined under the pointer in a list, quiet as a panel's way further."
-        names={['TextLink']}
-      >
-        <p className="text-sm">
-          Read <TextLink to="/foundations/usable-by-all">the rules</TextLink> before writing a page.
-        </p>
-        <TextLink to="/components/data" variant="hover" className="text-sm font-medium">
-          Order 2026-0042
-        </TextLink>
-        <TextLink to="/components/data" variant="quiet">
-          View all
-        </TextLink>
-      </Demo>
     </>
   )
 }

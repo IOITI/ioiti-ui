@@ -1,5 +1,5 @@
-import { useId, useMemo, useRef, useState, ViewTransition } from 'react'
-import type { ComponentProps, ElementType, MouseEvent, ReactNode } from 'react'
+import { useId, useLayoutEffect, useMemo, useRef, useState, ViewTransition } from 'react'
+import type { ComponentProps, ElementType, MouseEvent, ReactNode, RefObject } from 'react'
 
 import { useAppName } from '../components/app-context.js'
 import { MainScrollContext } from '../components/main-scroll-context.js'
@@ -17,6 +17,12 @@ export interface AppShellProps<S extends string = string> {
   menu: Menu<S>
   /** The address of the page shown (the router's: `useLocation().pathname`; RouterAppShell gives it). */
   pathname: string
+  /**
+   * The part of the page the address shows (the router's `useLocation().hash`: `#rules`; RouterAppShell gives it):
+   * the page scrolls to it once it is there, as the browser does for a page it loads, for a link from another page
+   * too (a part the page draws late is waited for, 3 s at most).
+   */
+  hash?: string
   /** The page. */
   children: ReactNode
   /** The name at the top of the sidebar; IoitiProvider's `appName` by default. */
@@ -46,8 +52,18 @@ export interface AppShellProps<S extends string = string> {
   /** What draws the menu's links; the application's (LinkProvider) by default. */
   linkComponent?: ElementType
   defaultCollapsed?: boolean
-  /** The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none. */
+  /**
+   * The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none.
+   * @default true
+   */
   shortcutsDialog?: boolean
+  /** Classes of the frame, which fills the window (`h-dvh`); drawn in a box of a page (a demo): `h-full`. */
+  className?: string
+  /**
+   * Whether its pages name the browser's tab (PageHeader): yes, unless it is drawn inside another shell (a demo in
+   * a page, which names the tab itself).
+   */
+  tabTitle?: boolean
 }
 
 /**
@@ -57,7 +73,7 @@ export interface AppShellProps<S extends string = string> {
  */
 export function AppShell<S extends string = string>(props: AppShellProps<S>) {
   return (
-    <PageTrailProvider menu={props.menu} pathname={props.pathname}>
+    <PageTrailProvider menu={props.menu} pathname={props.pathname} tabTitle={props.tabTitle}>
       <Shell {...props} />
     </PageTrailProvider>
   )
@@ -66,6 +82,7 @@ export function AppShell<S extends string = string>(props: AppShellProps<S>) {
 function Shell<S extends string>({
   menu,
   pathname,
+  hash,
   children,
   appName,
   appDetail,
@@ -80,6 +97,7 @@ function Shell<S extends string>({
   linkComponent,
   defaultCollapsed,
   shortcutsDialog = true,
+  className,
 }: AppShellProps<S>) {
   const providedName = useAppName()
   const name = appName ?? providedName ?? ''
@@ -95,6 +113,8 @@ function Shell<S extends string>({
   // it arrived (a part of it loading, a redirect to its first tab) moved the whole page again, a step after the
   // first. A new frame also opens the page at its top.
   const page = pageOf ? pageOf(pathname) : pathname
+
+  useScrollToPart(main, page, hash)
 
   const current = menuEntry(menu, pathname)
   const sections = useMemo(() => sidebarSections(menu), [menu])
@@ -112,7 +132,7 @@ function Shell<S extends string>({
   }
 
   return (
-    <div className="flex h-dvh overflow-hidden">
+    <div className={cn('flex h-dvh overflow-hidden', className)}>
       {/* The first stop of the keyboard, shown once it has the focus. */}
       <a
         href={`#${mainId}`}
@@ -164,6 +184,49 @@ function Shell<S extends string>({
 }
 
 /**
+ * The part of the page an address shows (`#rules`), scrolled to the top of the page once it is there: the browser
+ * does it for a page it loads, not for one a router draws. A part drawn late (a page loading, its data arriving) is
+ * waited for, 3 s at most, and while the page and the part stay the same.
+ */
+function useScrollToPart(main: RefObject<HTMLElement | null>, page: string, hash: string | undefined) {
+  useLayoutEffect(() => {
+    const scroller = main.current
+    const id = hash ? safeDecode(hash.replace(/^#/, '')) : ''
+    if (!scroller || !id) return
+    const find = () => {
+      const part = scroller.ownerDocument.getElementById(id)
+      return part && scroller.contains(part) ? part : null
+    }
+    const show = (part: HTMLElement) => part.scrollIntoView?.({ block: 'start' })
+    const found = find()
+    if (found) {
+      show(found)
+      return
+    }
+    const observer = new MutationObserver(() => {
+      const part = find()
+      if (!part) return
+      observer.disconnect()
+      show(part)
+    })
+    observer.observe(scroller, { childList: true, subtree: true })
+    const giveUp = window.setTimeout(() => observer.disconnect(), 3000)
+    return () => {
+      observer.disconnect()
+      window.clearTimeout(giveUp)
+    }
+  }, [main, page, hash])
+}
+
+function safeDecode(text: string): string {
+  try {
+    return decodeURIComponent(text)
+  } catch {
+    return text
+  }
+}
+
+/**
  * The application's name at the top of the sidebar, beside its mark; the mark alone once the sidebar is folded.
  * The mark is in the accent, as a filled button is: its gradient and grain where it has them.
  */
@@ -195,7 +258,8 @@ export function SidebarFooterButton({ icon, label, className, ...props }: Sideba
       type="button"
       aria-label={label}
       className={cn(
-        'flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-600 outline-none transition-colors hover:bg-neutral-200/70 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-400/60 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white dark:focus-visible:ring-neutral-600/60',
+        // The design's focus ring alone (design.css), not one of its own beside it.
+        'flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-600 outline-none transition-colors hover:bg-neutral-200/70 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white',
         className,
       )}
       {...props}

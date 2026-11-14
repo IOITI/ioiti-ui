@@ -131,3 +131,44 @@ describe('sections said more of than their names', () => {
     expect(trailFor(plain, '/nothing')).toEqual([{ label: PAGE_NOT_FOUND }])
   })
 })
+
+/** The test menu, Returns under Orders, and Returns' own deeper pages. */
+const NESTED: Menu = {
+  ...MENU,
+  entries: [
+    ...MENU.entries,
+    { id: 'returns', path: '/orders/returns', label: 'Returns', section: 'Work', parent: 'orders' },
+    { id: 'refunds', path: '/orders/refunds', label: 'Refunds', section: 'Work', parent: 'orders', badge: 3 },
+    // Not under an entry of its own section: listed as an entry of its own.
+    { id: 'stray', path: '/stray', label: 'Stray', section: 'Reports', parent: 'orders' },
+  ],
+}
+
+describe('entries under another', () => {
+  it('are listed under it by the sidebar, which lists only the others at the top', () => {
+    const [work, reports] = sidebarSections(NESTED)
+    expect(work.items.map((item) => item.id)).toEqual(['dashboard', 'orders', 'customers'])
+    expect(work.items[1].children).toEqual([
+      { id: 'returns', label: 'Returns', badge: undefined, badgeTone: undefined, href: '/orders/returns' },
+      { id: 'refunds', label: 'Refunds', badge: 3, badgeTone: undefined, href: '/orders/refunds' },
+    ])
+    expect(work.items[0]).not.toHaveProperty('children')
+    expect(reports.items.map((item) => item.id)).toEqual(['reports', 'timing', 'stray'])
+  })
+
+  it('are reached through their parent, a page: a link in the trail', () => {
+    expect(trailFor(NESTED, '/orders')).toEqual([{ label: 'Work' }, { label: 'Orders' }])
+    expect(trailFor(NESTED, '/orders/returns')).toEqual([
+      { label: 'Work' },
+      { label: 'Orders', href: '/orders' },
+      { label: 'Returns' },
+    ])
+    expect(trailFor(NESTED, '/orders/returns/42', { title: 'Return 42' })).toEqual([
+      { label: 'Work' },
+      { label: 'Orders', href: '/orders' },
+      { label: 'Returns', href: '/orders/returns' },
+      { label: 'Return 42' },
+    ])
+    expect(trailFor(NESTED, '/stray')).toEqual([{ label: 'Reports' }, { label: 'Stray' }])
+  })
+})

@@ -56,6 +56,24 @@ for (const file of filesUnder('src')) {
   }
 }
 
+// One focus ring, the design's (design.css): no component draws one of its own beside it. What a control means is a
+// Hint, never a title (a title shows on none of a phone, a keyboard or a disabled control): ThemeToggle's is the
+// original's, kept on purpose.
+const OWN_RING = /focus-visible:ring|focus-visible:outline-none/
+const TITLE_ON_CONTROL = /<(?:button|a|motion\.button)\b[^>]*?\stitle=/s
+for (const file of filesUnder('src')) {
+  if (!/\.tsx$/.test(file) || /\.test\.tsx$/.test(file)) continue
+  const text = readFileSync(join(root, file), 'utf8')
+  text.split('\n').forEach((line, index) => {
+    if (OWN_RING.test(line)) problems.push(`${file}:${index + 1}: draws a focus ring of its own (the design's is the one)`)
+  })
+  if (file.endsWith(join('components', 'ThemeToggle.tsx'))) continue
+  for (const match of text.matchAll(new RegExp(TITLE_ON_CONTROL, 'gs'))) {
+    const line = text.slice(0, match.index).split('\n').length
+    problems.push(`${file}:${line}: a title on a control: say it in a Hint`)
+  }
+}
+
 // The gallery is an application made with the package: it imports `ioiti-ui`, never the package's source.
 for (const file of filesUnder(join('gallery', 'src'))) {
   const text = readFileSync(join(root, file), 'utf8')
@@ -65,7 +83,29 @@ for (const file of filesUnder(join('gallery', 'src'))) {
   }
 }
 
-for (const file of [...filesUnder('src'), ...filesUnder('gallery'), ...filesUnder('templates')]) {
+// The gallery's examples are what an application writes, and the code their page shows: they import the
+// package's entries, React, lucide-react and the gallery's sample data; the router only for the shell's own.
+// An import statement (from the start of a line), a side effect's or a dynamic import, never words in a string.
+const SPECIFIER = /^\s*(?:import|export)\b[^'";]*?\bfrom\s*(['"])([^'"]+)\1|^\s*import\s*(['"])([^'"]+)\3|\bimport\(\s*(['"])([^'"]+)\5\s*\)/gm
+const EXAMPLES = join('gallery', 'src', 'components')
+for (const file of filesUnder(EXAMPLES)) {
+  if (!file.endsWith('.tsx')) continue
+  const router = file.startsWith(join(EXAMPLES, 'shell'))
+  for (const match of readFileSync(join(root, file), 'utf8').matchAll(SPECIFIER)) {
+    const specifier = match[2] ?? match[4] ?? match[6]
+    const allowed =
+      /^(ioiti-ui|ioiti-ui\/react-router|ioiti-ui\/code|react|react-dom|lucide-react)$/.test(specifier) ||
+      /^(\.\.\/)+samples\/[\w-]+$/.test(specifier) ||
+      (router && specifier === 'react-router')
+    if (!allowed) problems.push(`${file}: an example imports "${specifier}": the package's entries, react, lucide-react or the samples only`)
+  }
+}
+
+// The guidelines are shipped with the gallery too.
+const GUIDELINES = join('design-system', 'components')
+const guidelines = readdirSync(join(root, GUIDELINES)).map((name) => join(GUIDELINES, name, 'README.md'))
+
+for (const file of [...filesUnder('src'), ...filesUnder('gallery'), ...filesUnder('templates'), ...guidelines]) {
   const lines = readFileSync(join(root, file), 'utf8').split('\n')
   lines.forEach((line, index) => {
     if (ORIGIN.test(line)) problems.push(`${relative(root, join(root, file))}:${index + 1}: names ${line.match(ORIGIN)[0]}`)
@@ -77,4 +117,4 @@ if (problems.length) {
   console.error(`\ncheck-source: ${problems.length} problem${problems.length === 1 ? '' : 's'}`)
   process.exit(1)
 }
-console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, no name of the original application')
+console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, examples import what an application would, no name of the original application')

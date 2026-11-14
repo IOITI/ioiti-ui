@@ -30,7 +30,11 @@ otherwise).
   a darker step. Nothing dark was changed by this.
 - **One focus ring.** The keyboard's focus is the global rule of `design.css`, outside any layer so that it
   wins over the components' `outline-none`. The components' own rings (white ones, made for a dark page)
-  are gone where they hid it. A field that takes text has none: its caret and its border show its focus.
+  are gone, and since 0.18.0 the grey ones too, which drew a second ring beside the design's (`sidebar`,
+  `breadcrumb`, `calendar`, `date-picker`, `alert`, `stepper`, `drag-to-confirm`); `check-source` holds it. A
+  field that takes text has none: its caret and its border show its focus. A control's `title`s are Hints
+  (`interactive-timeline`, `advanced-data-table`, `notification-bell`, `scroll-progress-nav`, `selection-basket`,
+  `not-found`), named by `aria-label` where the title was their only name.
 - **Links are links.** A component that leads somewhere draws a real link, which a ⌘-click, a middle click
   or a right click opens in another tab (`isPlainClick` leaves such a click to the browser). The link is
   drawn by a component the caller gives (`linkComponent`, `as` for the breadcrumb, `LinkComponent` for the
@@ -151,6 +155,10 @@ otherwise).
 - `sidebar`, `animated-tabs`: an entry or a tab with an `href` is a link (`linkComponent`); a plain click of
   a tab still goes through `onChange`, and a tab without `href` is `type="button"`. The sidebar's
   `onActiveChange` is optional.
+- `sidebar`: an entry with children and an `href` is a link, as one without, and a chevron beside it (a button
+  of its own, `aria-expanded`, `aria-controls`) opens it on its children; EasyUI's was a button that only opened.
+  The entry that is, or holds, the page shown opens at each page shown (EasyUI's, at the first), those the reader
+  opened staying open; in the rail, the entry is its link alone.
 - `sidebar`: `badgeTone` on an entry and a child (`SidebarBadgeTone`: `neutral`, `warning`, `negative`): a badge
   that says a state ("Degraded", "2 open") is in its tone's text colour with a dot, without the count's grey
   pill. The tip naming an entry of the folded sidebar is drawn in `document.body`, as every layer: a sidebar
@@ -447,6 +455,36 @@ otherwise).
 - `velocity-toast`, `undo-toast` (0.14.1): their frame one layer above the others over the page (`z-[55]`, where it
   was `z-50`, theirs): a sheet or a dialog, put in `document.body` after the page the toast is in, covered it with
   its scrim, its action out of reach. Still under the hints (`z-[60]`).
+
+- `form` (0.18.0): `Input`, `Textarea` and `Select` draw their own border or the error's, never both
+  (`fieldBorder`, `src/lib/field-border.ts`): the error's `border-rose-500/50` added over the others lost to their
+  `dark:` and `accent:` variants, and an error showed no red in dark. The error is `negative`, said
+  (`aria-invalid`), and `aria-invalid` given by a `Field` reads as one. `RadioGroup` takes `id`, `aria-label`,
+  `aria-labelledby`, `aria-describedby` and `aria-invalid` (it could not be named); its radio lies over its circle,
+  transparent, as the checkbox's, so that the design's focus ring is seen (it was `sr-only`).
+- `otp-input`, `draw-checkbox` (0.18.0): `error` (and `aria-invalid`, as a `Field` gives it): the boxes' border, or an
+  empty box's, in `negative`; `otp-input` takes `aria-describedby` on its group.
+- `date-picker`, `combobox` (0.18.0): their popup is a layer in `document.body`, placed by `useAnchoredLayer`, its
+  keys its own, the focus in it (the day to choose, the search): EasyUI's was placed by hand inside the picker, cut
+  by a parent that clips and held by a `Field`'s label around it, whose click on the calendar's empty space opened or
+  closed it again. Both take `id`, `aria-label`, `aria-labelledby`, `aria-describedby` and `error`. Their own springs
+  are `springSnappy`, as `calendar`'s.
+- `directional-tooltip` (0.18.0): its description is `hidden` (aria-describedby reads it all the same), not
+  `sr-only`: a label around the trigger took its words into the control's name ("Seats Decrease Increase").
+- `not-found` (0.18.0): `focusOnMount` (`true`): one drawn in a part of a page leaves the focus where it is. The
+  whole address in a `Hint`, not a `title`.
+- `alert` (0.18.0): it leaves with `easeExit` (EasyUI's curve was written by hand).
+- `scroll-progress-nav` (0.18.0): with a `containerRef`, a part is scrolled to in it alone (`scrollIntoView` moved
+  the page around it too), less its `scroll-margin-top`; reduced motion is IoitiProvider's too
+  (`useReducedMotionConfig`).
+- `advanced-data-table` (0.18.0): its loading rows are `skeleton`s, said ("Loading the records"; `surface-raised` is
+  darker than the frame in dark, and they were not seen); its paging says "Loading…" and waits.
+- `animated-tabs` (0.18.0): no `backdrop-blur-xl` (it blurred nothing seen, and the design blurs a tile and what
+  floats only); `glass` is `pill`, as EasyUI drew them.
+- `ai-agent-activity` (0.18.0): `inputLabel` "Asked" and `outputLabel` "Answer" by default (EasyUI's "Parameters",
+  "Output Result"); its header says "N of M done", or "Not started" with no step (it said "0 of 0 completed").
+- `dependency-trace` (0.18.0): never wider than its canvas (`max-width`): on a wide page it grew, its words with it.
+- `live-line-chart` (0.18.0): with a `domain`, its scale is written from the first frame (it waited for two readings).
 
 ## ioiti-ui's own changes
 

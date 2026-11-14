@@ -186,6 +186,15 @@ export function LiveLineChart({
       const b = buf.current;
       const { win, domain: fixed } = live.current;
       const g = geom();
+      // ioiti-ui: a scale given (`domain`) is said from the first frame, the y labels with it: the chart waited for two
+      // readings, an empty frame without a figure until then.
+      if (b.length < 2 && fixed && !dom.init) {
+        [dom.lo, dom.hi] = fixed;
+        for (let i = 0; i < 3; i++) {
+          const el = tickEls.current[i];
+          if (el) el.textContent = fmtTick.current(dom.hi - ((dom.hi - dom.lo) * i) / 2);
+        }
+      }
       if (b.length < 2 || !lineEl.current || !areaEl.current) return;
 
       // y-range eases toward what's on screen

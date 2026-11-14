@@ -29,7 +29,7 @@ function Preview() {
       <div className="flex flex-col items-start gap-3 p-5">
         <div className="flex flex-wrap items-center gap-3">
           <ButtonLink to="/components/forms">Go to the forms</ButtonLink>
-          <ButtonLink to="/components/data" variant="outline" size="sm">
+          <ButtonLink to="/components/tables" variant="outline" size="sm">
             Data display
           </ButtonLink>
           <ButtonLink to={null} variant="outline" size="sm">

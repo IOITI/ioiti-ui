@@ -545,3 +545,68 @@ describe("the page's frame", () => {
   })
 })
 
+
+describe('a part of a page an address shows (#part)', () => {
+  const scrolled: string[] = []
+  beforeEach(() => {
+    scrolled.length = 0
+    // jsdom scrolls nothing: what the shell asks is written down.
+    Element.prototype.scrollIntoView = function (this: Element) {
+      scrolled.push(this.id)
+    }
+  })
+  afterEach(() => {
+    delete (Element.prototype as Partial<Element>).scrollIntoView
+  })
+
+  function Late() {
+    const [shown, setShown] = useState(false)
+    return shown ? (
+      <h2 id="late">Late orders</h2>
+    ) : (
+      <button type="button" onClick={() => setShown(true)}>
+        Load
+      </button>
+    )
+  }
+
+  function renderParts(path: string) {
+    return render(
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route element={<RouterAppShell menu={MENU} shortcutsDialog={false} />}>
+            <Route path="customers" element={<Link to="/orders#late">The late orders</Link>} />
+            <Route path="orders" element={<Late />} />
+            <Route path="timing" element={<h2 id="by-day">By day</h2>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>,
+    )
+  }
+
+  it('is scrolled to on the page loaded with it', () => {
+    renderParts('/timing#by-day')
+    expect(scrolled).toEqual(['by-day'])
+  })
+
+  it('is scrolled to from a link on another page, once the page has drawn it', async () => {
+    renderParts('/customers')
+    await userEvent.click(screen.getByRole('link', { name: 'The late orders' }))
+    expect(scrolled).toEqual([])
+    await userEvent.click(await screen.findByRole('button', { name: 'Load' }))
+    expect(await screen.findByRole('heading', { name: 'Late orders' })).toBeInTheDocument()
+    await vi.waitFor(() => expect(scrolled).toEqual(['late']))
+  })
+})
+
+describe('the frame', () => {
+  it('fills the window, or the box it is given', () => {
+    const { container } = render(
+      <AppShell menu={MENU} pathname="/orders" className="h-full" shortcutsDialog={false}>
+        <h1>Orders</h1>
+      </AppShell>,
+    )
+    expect(container.firstElementChild).toHaveClass('h-full')
+    expect(container.firstElementChild).not.toHaveClass('h-dvh')
+  })
+})

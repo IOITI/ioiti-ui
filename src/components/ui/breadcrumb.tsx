@@ -69,7 +69,8 @@ export function Breadcrumb({
   );
 
   const linkBase =
-    "relative flex h-7 items-center gap-1.5 rounded-md px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:focus-visible:ring-neutral-600/60";
+    // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+    "relative flex h-7 items-center gap-1.5 rounded-md px-2 text-sm outline-none";
 
   return (
     <nav aria-label="Breadcrumb" className={className} {...props}>
@@ -92,7 +93,8 @@ export function Breadcrumb({
                   type="button"
                   aria-label="Show hidden pages"
                   onClick={() => setExpanded(true)}
-                  className="grid h-7 w-8 place-items-center rounded-md outline-none transition-colors hover:bg-neutral-100 hover:text-foreground focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:hover:bg-neutral-800 dark:focus-visible:ring-neutral-600/60"
+                  // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                  className="grid h-7 w-8 place-items-center rounded-md outline-none transition-colors hover:bg-neutral-100 hover:text-foreground dark:hover:bg-neutral-800"
                 >
                   <Ellipsis className="size-4" />
                 </button>

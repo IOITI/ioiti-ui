@@ -86,4 +86,21 @@ describe('keyboard shortcuts', () => {
     await user.keyboard('{Escape}')
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
+
+  it('lists once the same keys registered twice for the same thing (a second sidebar)', async () => {
+    const user = userEvent.setup()
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    render(
+      <IoitiProvider>
+        <Page go={() => {}} search={() => {}} />
+        <Page go={() => {}} search={() => {}} />
+        <ShortcutsDialog />
+      </IoitiProvider>,
+    )
+    await user.keyboard('?')
+    const dialog = await screen.findByRole('dialog', { name: 'Keyboard shortcuts' })
+    expect(within(dialog).getAllByText('Fold the sidebar')).toHaveLength(1)
+    expect(errors).not.toHaveBeenCalledWith(expect.stringContaining('same key'), expect.anything(), expect.anything())
+    errors.mockRestore()
+  })
 })

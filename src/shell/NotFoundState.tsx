@@ -26,6 +26,11 @@ export interface NotFoundStateProps {
   home?: { href: string; label: string } | null
   /** The way back, a step back in this tab's history; `null` for none. */
   back?: { label: string } | null
+  /**
+   * Its heading takes the focus as it appears, which a screen reader says: for a page that is none. `false` where it
+   * is drawn in a part of a page (a tab, a sheet), the focus left where it is. `true` by default.
+   */
+  focusOnMount?: boolean
 }
 
 const HOME = { href: '/', label: 'Back to home' }
@@ -36,14 +41,24 @@ const BACK = { label: 'Previous page' }
  * a page whose record the server does not have (its 404). EasyUI's 404, named
  * in the trail and the tab as any page is, with the way home and back.
  */
-export function NotFoundState({ title, description, name = title, parents, suggestions, pathname, home = HOME, back = BACK }: NotFoundStateProps) {
+export function NotFoundState({
+  title,
+  description,
+  name = title,
+  parents,
+  suggestions,
+  pathname,
+  home = HOME,
+  back = BACK,
+  focusOnMount = true,
+}: NotFoundStateProps) {
   const navigate = useNavigateTo()
   const trail = useTrail()
   usePageName(name, parents)
   useTabTitle(name)
   const path = pathname ?? trail?.pathname ?? window.location.pathname
   return (
-    <NotFound title={title} description={description} path={path} suggestions={suggestions}>
+    <NotFound title={title} description={description} path={path} suggestions={suggestions} focusOnMount={focusOnMount}>
       {/* Home is a place, a link; the page before is a step back in this tab's history. */}
       {home && (
         <ButtonLink to={home.href} leftIcon={<Home className="size-4" />}>

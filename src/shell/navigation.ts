@@ -19,6 +19,12 @@ export interface MenuEntry<S extends string = string> {
   badge?: string | number
   /** The badge's tone, for a state: `warning` or `negative`, in its colour with a dot; a count stays neutral. */
   badgeTone?: SidebarBadgeTone
+  /**
+   * The entry this one is under (its `id`), in the same section: the sidebar lists it under its parent, which
+   * opens on its pages and is a page itself, and the trail goes through the parent ("Home › Work › Orders ›
+   * Returns"). One level: a parent has no parent.
+   */
+  parent?: string
 }
 
 /**
@@ -117,6 +123,9 @@ export function trailFor(menu: Menu, pathname: string, page?: PageName | null): 
       ? undefined
       : headingOf(menuSections(menu).find((section) => section.id === entry.section), entry.section)
   const section: Crumb[] = heading ? [{ label: heading }] : []
+  // An entry under another goes through it: a page, so a link.
+  const parent = parentOf(menu, entry)
+  if (parent) section.push({ label: parent.label, href: parent.path })
   if (withoutTrailingSlash(pathname) === entry.path) return [...section, { label: entry.label }]
   return [
     ...section,
@@ -126,14 +135,32 @@ export function trailFor(menu: Menu, pathname: string, page?: PageName | null): 
   ]
 }
 
-/** The menu as the sidebar draws it: each entry a link, which can be opened in another tab as well as followed. */
+/** The entry another is under, when it names one of the same section (a parent has no parent of its own). */
+function parentOf<S extends string>(menu: Menu<S>, entry: MenuEntry<S>): MenuEntry<S> | undefined {
+  if (entry.parent === undefined) return undefined
+  const parent = menu.entries.find((candidate) => candidate.id === entry.parent)
+  return parent && parent.section === entry.section && parent.parent === undefined ? parent : undefined
+}
+
+/**
+ * The menu as the sidebar draws it: each entry a link, which can be opened in another tab as well as followed;
+ * the entries under another (`parent`) listed under it.
+ */
 export function sidebarSections(menu: Menu): SidebarSection[] {
-  return menuSections(menu).map((section) => ({
-    id: section.id,
-    title: headingOf(section, section.id),
-    ...(section.foldable ? { foldable: true } : {}),
-    items: menu.entries
-      .filter((entry) => entry.section === section.id)
-      .map(({ id, label, icon, badge, badgeTone, path }) => ({ id, label, icon, badge, badgeTone, href: path })),
-  }))
+  return menuSections(menu).map((section) => {
+    const entries = menu.entries.filter((entry) => entry.section === section.id)
+    return {
+      id: section.id,
+      title: headingOf(section, section.id),
+      ...(section.foldable ? { foldable: true } : {}),
+      items: entries
+        .filter((entry) => !parentOf(menu, entry))
+        .map(({ id, label, icon, badge, badgeTone, path }) => {
+          const children = entries
+            .filter((child) => parentOf(menu, child)?.id === id)
+            .map((child) => ({ id: child.id, label: child.label, badge: child.badge, badgeTone: child.badgeTone, href: child.path }))
+          return { id, label, icon, badge, badgeTone, href: path, ...(children.length ? { children } : {}) }
+        }),
+    }
+  })
 }

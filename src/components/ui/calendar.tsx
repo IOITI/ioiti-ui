@@ -3,6 +3,7 @@
 import * as React from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 
 function useControllableState<T>(
@@ -30,7 +31,8 @@ function useControllableState<T>(
   return [current, set];
 }
 
-const spring = { type: "spring", stiffness: 460, damping: 38, mass: 0.7 } as const;
+// ioiti-ui: the design's spring for what moves within a layer (springSnappy), not one written here.
+const spring = motionTransitions.springSnappy;
 
 const slide: Variants = {
   enter: (d: number) => ({ x: d * 24, opacity: 0 }),
@@ -273,7 +275,8 @@ export function Calendar(props: CalendarProps) {
                           onClick={() => pick(d)}
                           onMouseEnter={() => setHover(d)}
                           className={cn(
-                            "group relative grid size-9 place-items-center rounded-lg text-sm tabular-nums outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/60 dark:focus-visible:ring-neutral-600",
+                            // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                            "group relative grid size-9 place-items-center rounded-lg text-sm tabular-nums outline-none transition-colors",
                             picked ? "text-white dark:text-neutral-900 accent:text-brand-foreground" : "text-neutral-900 dark:text-neutral-100",
                             !picked &&
                               !off &&
@@ -327,7 +330,7 @@ function NavButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid size-8 place-items-center rounded-lg text-neutral-500 outline-none transition hover:bg-neutral-100 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-400/60 active:scale-95 disabled:pointer-events-none disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-neutral-600"
+      className="grid size-8 place-items-center rounded-lg text-neutral-500 outline-none transition hover:bg-neutral-100 hover:text-neutral-900 active:scale-95 disabled:pointer-events-none disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
     >
       {children}
     </button>

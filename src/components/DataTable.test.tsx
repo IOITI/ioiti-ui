@@ -76,7 +76,7 @@ describe('the data table, as the pages use it', () => {
     expect(basket.getByText('rows selected')).toBeInTheDocument()
     // Said once: the table's own counter is not shown beside the basket.
     expect(screen.queryByText('4 selected')).not.toBeInTheDocument()
-    await user.click(basket.getByRole('button', { name: 'Clear selection' }))
+    await user.click(basket.getByRole('button', { name: 'Clear the selection' }))
     expect(changes.at(-1)).toEqual([])
     await waitFor(() => expect(screen.queryByRole('toolbar', { name: 'Bulk actions toolbar' })).not.toBeInTheDocument())
 
@@ -182,7 +182,7 @@ describe('the data table, as the pages use it', () => {
     expect(screen.queryByText('Inside Row 1')).not.toBeInTheDocument()
 
     // A click on a column's name in the list, as on its box.
-    await user.click(screen.getByRole('button', { name: 'Toggle visible columns' }))
+    await user.click(screen.getByRole('button', { name: 'Columns shown' }))
     const kind = screen.getByRole('checkbox', { name: 'Kind' })
     expect(kind).toBeChecked()
     await user.click(within(kind.closest('label')!).getByText('Kind'))

@@ -3,6 +3,58 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.18.0] - Unreleased
+
+- **Entries under another** (`MenuEntry.parent`, the `id` of an entry of the same section): the sidebar lists
+  them under it, and the trail goes through it, a link ("Home › Work › Orders › Returns"). One level.
+- **`Sidebar`**: an entry with children and an `href` is a link to its page, a chevron beside it opening it on its
+  children (it was a button that only opened). The entry that is, or holds, the page shown opens at every page
+  (it opened at the first only), those the reader opened staying open; in the rail, it is a link alone.
+- **`AppShell`**:
+  - `hash`, the part of the page the address shows (`#rules`; `RouterAppShell` gives the router's): the page
+    scrolls to it once it is there, for a link from another page too, as the browser does for a page it loads.
+  - `className`, on the frame, which fills the window (`h-dvh`): `h-full` draws it in a box of a page.
+- **A field in error is red in every look, and said to be wrong.** `Input`, `Textarea`, `Select`, `NumberInput` and
+  `MultiSelect` drew the error's border over their own, whose `dark:` and `accent:` classes won: no red in dark. One
+  border or the other now, in `negative`, with `aria-invalid`; `aria-invalid` given to a field (a `Field` gives it)
+  reads as an error. `OTPInput`, `Checkbox`, `Combobox`, `DatePicker` and `DateRangePicker` take `error` too.
+- **`Field`** puts its error out of the label (without a description it was part of the control's name), reads it out
+  with the control (`aria-describedby`) and marks the control invalid (`aria-invalid`), as its README said it did.
+- **Naming**: `RadioGroup` takes `id`, `aria-label`, `aria-labelledby`, `aria-describedby`, and its radios show the
+  focus ring (it was hidden); `DatePicker`, `DateRangePicker` and `Combobox` take `id`, `aria-label`,
+  `aria-labelledby`, `aria-describedby`. A `Hint`'s words no longer join the name of a control in a label (a
+  `NumberInput` in a `Field` was "Seats Decrease Increase").
+- **`DatePicker`, `DateRangePicker`, `Combobox`**: their popup is a layer over the page (`document.body`, placed
+  beside its field and following it), the focus in it: it was cut by a parent that clips, and a click on the
+  calendar's empty space in a `Field` closed it again.
+- **`MultiSelect`**: `max`, values at most: past it the others cannot be chosen, and the list says so.
+- **`NotFound`**, **`NotFoundState`**, **`NotFoundPage`**: `focusOnMount` (`true`); `false` where it is drawn in a part
+  of a page, the focus left where it is.
+- **`ScrollProgressNav`** in a box (`containerRef`) scrolls it alone: the page around it jumped. It follows
+  IoitiProvider's reduced motion.
+- **The data table loading**: rows to come seen in dark and said ("Loading the records"), its paging saying
+  "Loading…" and waiting; its view and columns toggles named and hinted as they act.
+- **One focus ring, hints not titles, everywhere**: the sidebar, `Breadcrumb`, `Stepper`, `Calendar`, the pickers,
+  `Alert`, `DragToConfirm` and `SidebarFooterButton` drew a ring of their own beside the design's;
+  `InteractiveTimeline`, `SelectionBasket`, `NotificationBell`, `ScrollProgressNav`, the data table and `NotFound`
+  said what a control does in a `title`. `check-source` fails on either now.
+- **`AIAgentActivity`**: "Asked" and "Answer" by default (it said "Parameters", "Output Result"), and "N of M done", or
+  "Not started" (it said "0 of 0 completed").
+- **`Sparkline`** shrinks with a box narrower than it; **`DependencyTrace`** is never wider than its canvas;
+  **`LiveLineChart`** with a `domain` says its scale before its first readings. **`AnimatedTabs`** blurs nothing
+  (`glass` is `pill`).
+- **`AuthLayout`**: `className` (`min-h-full` in a box). **`AppShell`**, **`PageTrailProvider`**: `tabTitle`; a shell
+  drawn inside another leaves the browser's tab to the page around it.
+- **`ShortcutsDialog`** lists once the same keys registered twice for the same thing (a second sidebar's ⌘B):
+  React warned of two rows with one key.
+- **The gallery, a page per component**: 119 pages in 16 groups (the frame, page layout, the top bar, actions,
+  forms, choices, dates and time, feedback, loading and empty, overlays, navigation, tables and lists, figures,
+  charts, code, AI), each with its examples (more of them: states, sizes, errors, empty), the code of each, its
+  guidelines (`design-system/components/<Name>/README.md`, 17 new) and its props, read from the types
+  (`npm run props`, `gallery/src/props.json`; `npm run lint` fails when it is stale). A group's page shows each of
+  its components once; `/components` lists them all, from A to Z. ⌘K finds a component by its name, its parts or
+  what it does, and an example. The former pages' addresses, and their parts', lead where their content went.
+
 ## [0.17.0] - 2026-11-13
 
 - **The glass material, reviewed.** Its values change on purpose (`src/styles/glass.css`):

@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { Hint } from "../Hint.js";
 import { useLinkComponent } from "../link-context.js";
 
 /* -------------------------------------------------------------------------- */
@@ -58,6 +59,12 @@ export interface NotFoundProps {
   parallax?: boolean;
   footer?: ReactNode;
   className?: string;
+  /**
+   * ioiti-ui: its heading takes the focus as it appears, so that a screen reader says the page is none: right for a
+   * page that replaces the page (the router's catch-all, a record the server does not have), wrong for one drawn in
+   * a part of a page (a tab, a sheet), where the focus is someone else's. `true` by default.
+   */
+  focusOnMount?: boolean;
 }
 
 /* ------------------------------ Design space ------------------------------- */
@@ -343,6 +350,7 @@ export function NotFound({
   suggestions,
   LinkComponent,
   parallax = true,
+  focusOnMount = true,
   footer,
   className = "",
 }: NotFoundProps) {
@@ -357,8 +365,9 @@ export function NotFound({
   useEffect(() => {
     setDetected(window.location.pathname);
     setCanGoBack(window.history.length > 1);
-    headingRef.current?.focus({ preventScroll: true }); // announce the page to screen readers on navigation
-  }, []);
+    // announce the page to screen readers on navigation. ioiti-ui: unless it is drawn in a part of a page.
+    if (focusOnMount) headingRef.current?.focus({ preventScroll: true });
+  }, [focusOnMount]);
 
   const shownPath = path === undefined ? detected : path;
   const effectiveHomeLabel = actionLabel || homeLabel || "Go back home";
@@ -415,9 +424,12 @@ export function NotFound({
             className="mt-5 inline-flex max-w-full items-center gap-2 rounded-full bg-black/[0.04] px-3.5 py-1.5 ring-1 ring-black/10 dark:bg-white/[0.04] dark:ring-white/10"
           >
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#fe5510]" aria-hidden />
-            <code title={shownPath} className="truncate font-mono text-[12px] text-muted-foreground">
-              {shownPath.length > 80 ? `${shownPath.slice(0, 79)}…` : shownPath}
-            </code>
+            {/* ioiti-ui: the whole address in a Hint, shown on hover, keyboard focus and a tap, where a title shows on none. */}
+            <Hint content={shownPath.length > 80 ? shownPath : null} wrap className="min-w-0">
+              <code className="block truncate font-mono text-[12px] text-muted-foreground">
+                {shownPath.length > 80 ? `${shownPath.slice(0, 79)}…` : shownPath}
+              </code>
+            </Hint>
           </motion.div>
         )}
 

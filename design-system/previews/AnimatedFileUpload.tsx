@@ -9,7 +9,7 @@ async function pretendUpload(_file: unknown, onProgress: (progress: number) => v
     await new Promise((resolve) => window.setTimeout(resolve, 120))
     onProgress(Math.min(progress, 100))
   }
-  return { href: '/components/data', label: 'Open' }
+  return { href: '/components/tables', label: 'Open' }
 }
 
 // The frame has no router: the link a done file gets stays here.

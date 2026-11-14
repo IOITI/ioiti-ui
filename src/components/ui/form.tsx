@@ -3,6 +3,7 @@
 import React, { forwardRef, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -153,6 +154,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const isPassword = type === 'password';
+    // ioiti-ui: in error by its own prop, or marked invalid (a Field around it).
+    const invalid = invalidOf(error, props['aria-invalid']);
     const computedType = isPassword && showPassword ? 'text' : type;
 
     // ioiti-ui: the units inside the field, measured, the text keeping clear of them; each describes the field.
@@ -191,16 +194,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           disabled={disabled}
           className={cn(
             'w-full h-10 px-3.5 text-xs text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150',
-            'border-neutral-300 dark:border-[#1F1F1F] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
-            // ioiti-ui: a field in focus has a border in the accent, under a theme that has one (accent:).
-            'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand focus:outline-none focus-ring',
+            // ioiti-ui: its border, or the error's (never both: the error's lost to the dark ones); in focus, in
+            // the accent under a theme that has one (accent:).
+            fieldBorder(invalid),
+            'focus:bg-white dark:focus:bg-[#141414] focus:outline-none focus-ring',
             leftIcon && 'pl-9',
             (rightIcon || (isPassword && showPasswordToggle)) && 'pr-9',
-            error && 'border-rose-500/50 focus:border-rose-500',
             disabled && 'opacity-30 cursor-not-allowed bg-neutral-100 dark:bg-[#0E0E0E]',
             className
           )}
+          // ioiti-ui: an error is said, not only shown.
           {...props}
+          aria-invalid={invalid || undefined}
           aria-describedby={describedBy}
           style={{ ...(prefix && pad.left ? { paddingLeft: pad.left } : {}), ...(suffix && pad.right ? { paddingRight: pad.right } : {}), ...style }}
         />
@@ -253,20 +258,21 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, error, disabled, ...props }, ref) => {
+    const invalid = invalidOf(error, props['aria-invalid']);
     return (
       <textarea
         ref={ref}
         disabled={disabled}
         className={cn(
           'w-full min-h-[90px] p-3 text-xs text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150 resize-y',
-          'border-neutral-300 dark:border-[#1F1F1F] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
-          // ioiti-ui: a field in focus has a border in the accent, under a theme that has one (accent:).
-          'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand focus:outline-none focus-ring leading-relaxed',
-          error && 'border-rose-500/50 focus:border-rose-500',
+          // ioiti-ui: its border, or the error's, as the Input's.
+          fieldBorder(invalid),
+          'focus:bg-white dark:focus:bg-[#141414] focus:outline-none focus-ring leading-relaxed',
           disabled && 'opacity-30 cursor-not-allowed bg-neutral-100 dark:bg-[#0E0E0E]',
           className
         )}
         {...props}
+        aria-invalid={invalid || undefined}
       />
     );
   }
@@ -290,6 +296,7 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, options = [], children, error, disabled, ...props }, ref) => {
+    const invalid = invalidOf(error, props['aria-invalid']);
     return (
       <div className="relative w-full flex items-center">
         <select
@@ -297,14 +304,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           disabled={disabled}
           className={cn(
             'w-full h-10 pl-3.5 pr-8 text-xs text-neutral-900 dark:text-[#FAFAFA] bg-white dark:bg-[#141414] rounded-lg border appearance-none transition-all duration-150 cursor-pointer',
-            'border-neutral-300 dark:border-[#1F1F1F] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
-            // ioiti-ui: a field in focus has a border in the accent, under a theme that has one (accent:).
-            'focus:bg-white dark:focus:bg-[#141414] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand focus:outline-none focus-ring',
-            error && 'border-rose-500/50 focus:border-rose-500',
+            // ioiti-ui: its border, or the error's, as the Input's.
+            fieldBorder(invalid),
+            'focus:bg-white dark:focus:bg-[#141414] focus:outline-none focus-ring',
             disabled && 'opacity-30 cursor-not-allowed bg-neutral-100 dark:bg-[#0E0E0E]',
             className
           )}
           {...props}
+          aria-invalid={invalid || undefined}
         >
           {options.length > 0
             ? options.map((opt) => (
@@ -354,6 +361,16 @@ export interface RadioGroupProps {
   onChange?: (value: string) => void;
   className?: string;
   children?: React.ReactNode;
+  /** ioiti-ui: the group's id, for a `<label htmlFor>`… or `aria-labelledby` elsewhere. */
+  id?: string;
+  /** ioiti-ui: its name, the question its choices answer, where no element names it (`aria-labelledby`). */
+  'aria-label'?: string;
+  /** ioiti-ui: the id of what names it: a heading, a Field's label. */
+  'aria-labelledby'?: string;
+  /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
+  'aria-describedby'?: string;
+  /** ioiti-ui: marked invalid, as a Field with an error marks it. */
+  'aria-invalid'?: boolean | 'true' | 'false';
 }
 
 export const RadioGroup: React.FC<RadioGroupProps> = ({
@@ -364,6 +381,11 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   onChange,
   className,
   children,
+  id,
+  'aria-label': ariaLabel,
+  'aria-labelledby': labelledBy,
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
 }) => {
   const [selectedValue, setSelectedValue] = React.useState(defaultValue || '');
   const isControlled = value !== undefined;
@@ -379,7 +401,16 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   };
 
   return (
-    <div role="radiogroup" className={cn('space-y-2', className)}>
+    // ioiti-ui: named, as a group of choices must be (EasyUI's could not be): by its label, or by what it points to.
+    <div
+      role="radiogroup"
+      id={id}
+      aria-label={ariaLabel}
+      aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
+      aria-invalid={invalidOf(undefined, ariaInvalid) || undefined}
+      className={cn('space-y-2', className)}
+    >
       {options.length > 0
         ? options.map((opt) => (
             <RadioGroupItem
@@ -432,14 +463,14 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
           checked={checked}
           disabled={disabled}
           onChange={onChange}
-          className="peer sr-only"
+          // ioiti-ui: the input lies over the circle, transparent, and takes its clicks and the design's focus ring,
+          // as the checkbox's: EasyUI's was `sr-only`, which hid the ring, so a keyboard saw no focus at all.
+          className="peer absolute inset-0 m-0 appearance-none rounded-full bg-transparent cursor-pointer disabled:cursor-not-allowed"
         />
         <div
-          onClick={() => {
-            if (!disabled && onChange) onChange();
-          }}
+          aria-hidden
           className={cn(
-            'w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-150 cursor-pointer focus-ring',
+            'w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-150 cursor-pointer pointer-events-none',
             checked
               ? 'border-neutral-900 dark:border-[#FAFAFA] bg-white dark:bg-[#141414] accent:border-brand'
               : 'border-neutral-300 dark:border-[#1F1F1F] bg-white dark:bg-[#141414] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',

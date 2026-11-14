@@ -40,6 +40,13 @@ types), build, check, publish. A preview imports only from `ioiti-ui`, `lucide-r
 `react-dom/client`; it opens nothing that takes the focus on load, and its links go to `#…` (the frame has no
 router).
 
+## The gallery's guidelines
+
+`components/<Name>/README.md` is also what the gallery shows of a component (`gallery/src/catalogue/`): its summary
+under the page's title, its rules under Guidelines (not its "You provide": the gallery's props tables are read from
+the types). Every family of the gallery has one, so some have no card (`CodeEditor`, `DiffEditor`, `Calendar`…): the
+build reads `cards.json` only, and leaves them out.
+
 ## Assets
 
 The mark (`gallery/public/favicon.svg`) and Bloom's grains (`src/styles/grain-*.png`) are uploads of the artifact:

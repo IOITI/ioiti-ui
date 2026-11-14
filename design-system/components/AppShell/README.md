@@ -2,7 +2,7 @@
 
 The frame of every page: the sidebar with the application's menu, the top bar with the trail of where the page is, and the page in a column of `page-max-width`.
 
-**You provide** `menu` (`{ sections, entries: [{ id, path, label, section, icon, badge?, badgeTone? }] }`), the `pathname` shown, the page as `children`; optionally `appName` (IoitiProvider's by default), `appDetail` (a version), `brandMark`, `sidebarFooter` (a `SidebarFooterButton` to sign out), `topBarChips`, `topBarEnd` (the theme button by default), `isWide(pathname)` for pages that need the whole width. Its links are the application's (`LinkProvider`, or `RouterAppShell` with React Router).
+**You provide** `menu` (`{ sections, entries: [{ id, path, label, section, icon, badge?, badgeTone? }] }`), the `pathname` shown, the page as `children`; optionally `appName` (IoitiProvider's by default), `appDetail` (a version), `brandMark`, `sidebarFooter` (a `SidebarFooterButton` to sign out), `topBarChips`, `topBarEnd` (the theme button by default), `isWide(pathname)` for pages that need the whole width; `hash` (the part of the page the address shows, scrolled to; `RouterAppShell` gives it), `className` (`h-full` in a box), `tabTitle` (whether its pages name the tab: not by default inside another shell). An entry under another takes `parent`. Its links are the application's (`LinkProvider`, or `RouterAppShell` with React Router).
 
 ```tsx
 <AppShell menu={MENU} pathname={location.pathname} appDetail="v1.2.0"

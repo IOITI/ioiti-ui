@@ -10,11 +10,13 @@ interface FieldProps {
   label: ReactNode
   /**
    * What the value is for, or how to write it: under the control, in muted text, read out with it
-   * (`aria-describedby`, when the control is one element). The label alone names the control then; the error
-   * describes it too.
+   * (`aria-describedby`, when the control is one element). The label alone names the control.
    */
   description?: ReactNode
-  /** What is wrong with the value, under the control. */
+  /**
+   * What is wrong with the value, under the control: read out with it (`aria-describedby`), and the control marked
+   * invalid (`aria-invalid`), which the package's fields draw in the error's colour.
+   */
   error?: ReactNode
   /**
    * The control's `id`, for a control that must not sit inside its label: a Combobox (a label passes
@@ -26,71 +28,55 @@ interface FieldProps {
   children: ReactNode
 }
 
-/** The control, described by the ids given, after any description of its own. */
-function described(control: ReactNode, ids: string): ReactNode {
-  if (!isValidElement<{ 'aria-describedby'?: string }>(control)) return control
+/**
+ * The control, described by the ids given (after any description of its own), and marked invalid while there is an
+ * error: `aria-invalid`, which any element takes, and which the package's fields draw as their `error`.
+ */
+function marked(control: ReactNode, ids: string | undefined, invalid: boolean): ReactNode {
+  if (!isValidElement<{ 'aria-describedby'?: string; 'aria-invalid'?: unknown }>(control)) return control
   const own = control.props['aria-describedby']
-  return cloneElement(control, { 'aria-describedby': own ? `${own} ${ids}` : ids })
+  return cloneElement(control, {
+    ...(ids ? { 'aria-describedby': own ? `${own} ${ids}` : ids } : {}),
+    ...(invalid ? { 'aria-invalid': true } : {}),
+  })
 }
 
-/** A control under its label, the label small and semibold; what it is for, and what is wrong, under it, muted. */
+/**
+ * A control under its label, the label small and semibold; what it is for, and what is wrong, under it, muted, out
+ * of the label (which names the control by itself): they describe it, and an error marks it invalid.
+ */
 export function Field({ label, description, error, htmlFor, className, children }: FieldProps) {
   const id = useId()
-  const said = error ? <span className="text-xs text-negative">{error}</span> : null
+  const descriptionId = `${id}-description`
+  const errorId = `${id}-error`
+  const ids = [description ? descriptionId : null, error ? errorId : null].filter(Boolean).join(' ') || undefined
+  const control = marked(children, ids, Boolean(error))
 
-  if (description) {
-    // Out of the label, which names the control by itself: the description and the error describe it.
-    const descriptionId = `${id}-description`
-    const errorId = `${id}-error`
-    const control = described(children, error ? `${descriptionId} ${errorId}` : descriptionId)
-    const under = (
-      <>
+  return (
+    <div className={cn('flex flex-col gap-1', className)}>
+      {htmlFor ? (
+        <>
+          <label htmlFor={htmlFor} className={LABEL}>
+            {label}
+          </label>
+          {control}
+        </>
+      ) : (
+        <label className="flex flex-col gap-1">
+          <span className={LABEL}>{label}</span>
+          {control}
+        </label>
+      )}
+      {description && (
         <span id={descriptionId} className="text-xs text-muted-foreground">
           {description}
         </span>
-        {error && (
-          <span id={errorId} className="text-xs text-negative">
-            {error}
-          </span>
-        )}
-      </>
-    )
-    return (
-      <div className={cn('flex flex-col gap-1', className)}>
-        {htmlFor ? (
-          <>
-            <label htmlFor={htmlFor} className={LABEL}>
-              {label}
-            </label>
-            {control}
-          </>
-        ) : (
-          <label className="flex flex-col gap-1">
-            <span className={LABEL}>{label}</span>
-            {control}
-          </label>
-        )}
-        {under}
-      </div>
-    )
-  }
-
-  if (htmlFor) {
-    return (
-      <div className={cn('flex flex-col gap-1', className)}>
-        <label htmlFor={htmlFor} className={LABEL}>
-          {label}
-        </label>
-        {children}
-        {said}
-      </div>
-    )
-  }
-  return (
-    <label className={cn('flex flex-col gap-1', className)}>
-      <span className={LABEL}>{label}</span>
-      {children}
-      {said}
-    </label>
+      )}
+      {error && (
+        <span id={errorId} className="text-xs text-negative">
+          {error}
+        </span>
+      )}
+    </div>
   )
 }

@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+// ioiti-ui: reduced motion as IoitiProvider says it too (useReducedMotionConfig), not the system's alone.
+import { motion, useReducedMotionConfig } from 'framer-motion';
 import { ArrowUp, ChevronRight } from 'lucide-react';
 import { isPlainClick } from '../../lib/links.js';
+import { Hint } from '../Hint.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -56,7 +58,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
   label = 'Table of contents',
 }) => {
   const uniqueId = React.useId();
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionConfig();
   const rowRef = useRef<HTMLDivElement>(null);
   const [isFloating, setIsFloating] = useState(mode !== 'inline');
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -132,9 +134,22 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
   const scrollToSection = (id: string) => {
     setActiveSection(id);
     onSectionClick?.(id);
-    // ioiti-ui: brought into view in its container as on the page, so that its scroll-margin-top keeps it clear of
-    // a sticky nav (20 px put the part's heading under it); at once when motion is reduced.
-    document.getElementById(id)?.scrollIntoView?.({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    // ioiti-ui: brought into view, its scroll-margin-top keeping it clear of a sticky nav (20 px put the part's
+    // heading under it); at once when motion is reduced. In its container, that alone scrolls: scrollIntoView moved
+    // every box around it too, the page jumping under a nav drawn in a part of it.
+    const behavior = reduceMotion ? 'auto' : 'smooth';
+    const container = containerRef?.current;
+    const part = container
+      ? container.querySelector<HTMLElement>(`[id="${id.replace(/["\\]/g, '\\$&')}"]`)
+      : document.getElementById(id);
+    if (container && part) {
+      const margin = parseFloat(getComputedStyle(part).scrollMarginTop) || 0;
+      const top =
+        container.scrollTop + part.getBoundingClientRect().top - container.getBoundingClientRect().top - container.clientTop - margin;
+      container.scrollTo?.({ top, behavior });
+    } else {
+      part?.scrollIntoView?.({ behavior, block: 'start' });
+    }
     setIsExpanded(false);
   };
 
@@ -271,16 +286,18 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
         </div>
 
         {/* Scroll To Top Action */}
+        {/* ioiti-ui: what it does in a Hint, shown on hover, keyboard focus and a tap, where a title shows on none. */}
         {isFloating && (
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="w-6 h-6 rounded-full bg-neutral-100 hover:bg-white border border-neutral-200 hover:border-neutral-400 flex items-center justify-center text-muted-foreground hover:text-neutral-900 transition-colors focus-ring shrink-0 ml-0.5 cursor-pointer dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:hover:text-[#FAFAFA]"
-            title="Scroll to top"
-            aria-label="Scroll back to top"
-          >
-            <ArrowUp className="w-3 h-3" />
-          </button>
+          <Hint content="Back to the top">
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="w-6 h-6 rounded-full bg-neutral-100 hover:bg-white border border-neutral-200 hover:border-neutral-400 flex items-center justify-center text-muted-foreground hover:text-neutral-900 transition-colors focus-ring shrink-0 ml-0.5 cursor-pointer dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:hover:text-[#FAFAFA]"
+              aria-label="Back to the top"
+            >
+              <ArrowUp className="w-3 h-3" />
+            </button>
+          </Hint>
         )}
       </motion.nav>
     </div>
