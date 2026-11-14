@@ -52,7 +52,10 @@ export interface AppShellProps<S extends string = string> {
   /** What draws the menu's links; the application's (LinkProvider) by default. */
   linkComponent?: ElementType
   defaultCollapsed?: boolean
-  /** The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none. */
+  /**
+   * The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none.
+   * @default true
+   */
   shortcutsDialog?: boolean
   /** Classes of the frame, which fills the window (`h-dvh`); drawn in a box of a page (a demo): `h-full`. */
   className?: string

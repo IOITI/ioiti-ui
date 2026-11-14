@@ -1,0 +1,8099 @@
+{
+ "ActivityHeatmap": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/activity-heatmap.tsx",
+  "props": [
+   {
+    "name": "mode",
+    "type": "\"calendar\" | \"hours\"",
+    "values": [
+     "calendar",
+     "hours"
+    ],
+    "default": "\"calendar\"",
+    "description": "Calendar: one cell per day (GitHub style) · hours: weekday × hour grid"
+   },
+   {
+    "name": "data",
+    "type": "HeatDay[]",
+    "default": "[]",
+    "description": "Calendar mode"
+   },
+   {
+    "name": "matrix",
+    "type": "(number | null)[][]",
+    "description": "Hours mode: a row per row label × a column per hour. ioiti-ui: null for a cell with nothing."
+   },
+   {
+    "name": "rowLabels",
+    "type": "string[]",
+    "default": "[\"Mon\", \"Tue\", \"Wed\", \"Thu\", \"Fri\", \"Sat\", \"Sun\"]",
+    "description": "Hours mode row names (default Mon…Sun). ioiti-ui: as many rows as names."
+   },
+   {
+    "name": "hours",
+    "type": "number[]",
+    "default": "ALL_HOURS",
+    "description": "Hours mode, the hours shown as columns (default 0 to 23)."
+   },
+   {
+    "name": "details",
+    "type": "(string | null | undefined)[][]",
+    "description": "Hours mode, a line under each cell's value in its tooltip."
+   },
+   {
+    "name": "weeks",
+    "type": "number",
+    "default": "53",
+    "description": "Most weeks to show. Narrow screens automatically show fewer (default 53)"
+   },
+   {
+    "name": "endDate",
+    "type": "string | Date",
+    "description": "Last day shown (default: latest date in data)"
+   },
+   {
+    "name": "startDate",
+    "type": "string | Date",
+    "description": "Calendar mode, no day drawn before it (the start of a period)."
+   },
+   {
+    "name": "weekStart",
+    "type": "0 | 1",
+    "values": [
+     "0",
+     "1"
+    ],
+    "default": "0",
+    "description": "0 = Sunday, 1 = Monday"
+   },
+   {
+    "name": "color",
+    "type": "string",
+    "default": "\"var(--chart-series)\""
+   },
+   {
+    "name": "diverging",
+    "type": "DivergingColors",
+    "description": "Signed values on two scales, in place of `color`."
+   },
+   {
+    "name": "unit",
+    "type": "string",
+    "default": "\"contributions\"",
+    "description": "Plural noun used in the tooltip / summary"
+   },
+   {
+    "name": "format",
+    "type": "(value: number) => string",
+    "description": "How a value is written (its unit included), in place of the number and `unit`."
+   },
+   {
+    "name": "summary",
+    "type": "ReactNode",
+    "description": "In place of the total over the grid."
+   },
+   {
+    "name": "emptyText",
+    "type": "string",
+    "description": "What a cell with nothing says."
+   },
+   {
+    "name": "legend",
+    "type": "[string, string]",
+    "default": "[\"Less\", \"More\"]",
+    "description": "The two ends of the legend (default Less, More)."
+   },
+   {
+    "name": "minCell",
+    "type": "number",
+    "default": "11",
+    "description": "Smallest cell size in px before weeks are dropped (default 11)"
+   },
+   {
+    "name": "animated",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "\"\""
+   }
+  ]
+ },
+ "AdvancedDataTable": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/advanced-data-table.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string"
+   },
+   {
+    "name": "searchPlaceholder",
+    "type": "string"
+   },
+   {
+    "name": "emptyTitle",
+    "type": "string",
+    "description": "What to say when there is no row at all (as opposed to none matching a search)."
+   },
+   {
+    "name": "emptyDescription",
+    "type": "string"
+   },
+   {
+    "name": "onBulkDelete",
+    "type": "(selectedIds: string[]) => void"
+   },
+   {
+    "name": "onBulkExport",
+    "type": "(selectedIds: string[]) => void"
+   },
+   {
+    "name": "data",
+    "type": "T[]",
+    "required": true
+   },
+   {
+    "name": "columns",
+    "type": "ColumnDef<T>[]",
+    "required": true
+   },
+   {
+    "name": "getRowId",
+    "type": "(row: T, index: number) => string"
+   },
+   {
+    "name": "defaultPageSize",
+    "type": "number"
+   },
+   {
+    "name": "defaultViewMode",
+    "type": "DataTableViewMode",
+    "values": [
+     "table",
+     "auto",
+     "cards"
+    ]
+   },
+   {
+    "name": "accentColor",
+    "type": "string"
+   },
+   {
+    "name": "selectable",
+    "type": "boolean",
+    "description": "Row checkboxes for bulk actions (default true)."
+   },
+   {
+    "name": "selectedRowIds",
+    "type": "ReadonlySet<string>",
+    "description": "A selection the page holds, told of each change; without it the table keeps its own."
+   },
+   {
+    "name": "onSelectionChange",
+    "type": "(ids: Set<string>) => void"
+   },
+   {
+    "name": "isRowSelectable",
+    "type": "(row: T) => boolean",
+    "description": "The rows that can be selected; the others have no box, and \"select all\" leaves them out."
+   },
+   {
+    "name": "selectionBasket",
+    "type": "DataTableSelectionBasket",
+    "description": "The bulk actions, in EasyUI's selection basket under the table once a row is selected."
+   },
+   {
+    "name": "renderSubComponent",
+    "type": "(row: T) => ReactNode"
+   },
+   {
+    "name": "initialSearch",
+    "type": "string",
+    "description": "What the search holds when the table appears (a link to one row)."
+   },
+   {
+    "name": "initialExpandedRowIds",
+    "type": "string[]",
+    "description": "The rows shown opened when the table appears."
+   },
+   {
+    "name": "initialFilters",
+    "type": "Record<string, string[]>",
+    "description": "The filters chosen when the table appears (a link to some of the rows), by column id."
+   },
+   {
+    "name": "state",
+    "type": "DataTableState",
+    "description": "The search, the filters, the sort and the page as the page holds them (in its address, for a link or a reload to show the same rows), told of each change by `onStateChange`; without it the table keeps its own."
+   },
+   {
+    "name": "onStateChange",
+    "type": "(state: DataTableState) => void",
+    "description": "Told of each change of the search, the filters, the sort or the page."
+   },
+   {
+    "name": "expandOnRowClick",
+    "type": "boolean",
+    "description": "A click anywhere on a row opens it, not only its arrow."
+   },
+   {
+    "name": "singleExpand",
+    "type": "boolean",
+    "description": "One row open at a time: opening another closes it."
+   },
+   {
+    "name": "rowLabel",
+    "type": "(row: T) => string",
+    "description": "What names a row, for its expand button (\"Open …\")."
+   },
+   {
+    "name": "isLoading",
+    "type": "boolean"
+   },
+   {
+    "name": "error",
+    "type": "string | null"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   }
+  ]
+ },
+ "AgentActivityHeader": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-agent-activity.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string",
+    "default": "'Activity'"
+   },
+   {
+    "name": "agentName",
+    "type": "string"
+   },
+   {
+    "name": "showControls",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AgentActivityItem": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-agent-activity.tsx",
+  "props": [
+   {
+    "name": "activity",
+    "type": "AgentActivityItemData",
+    "required": true
+   },
+   {
+    "name": "isLast",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AgentActivityNotes": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-agent-activity.tsx",
+  "props": [
+   {
+    "name": "notes",
+    "type": "AgentActivityItemData[]",
+    "required": true
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AgentActivityTimeline": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-agent-activity.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AIAgentActivity": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-agent-activity.tsx",
+  "props": [
+   {
+    "name": "activities",
+    "type": "AgentActivityItemData[]",
+    "required": true,
+    "default": "[]"
+   },
+   {
+    "name": "isRunning",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "inputLabel",
+    "type": "string",
+    "default": "'Parameters'",
+    "description": "See the context."
+   },
+   {
+    "name": "outputLabel",
+    "type": "string",
+    "default": "'Output Result'"
+   },
+   {
+    "name": "summary",
+    "type": "string"
+   },
+   {
+    "name": "notesLabel",
+    "type": "string",
+    "default": "'Notes'",
+    "description": "The name of a group of notes, said to screen readers (\"Notes\")."
+   },
+   {
+    "name": "collapsible",
+    "type": "boolean",
+    "default": "false",
+    "description": "Its steps fold under its header, which opens them again: `open` held by the caller (told by `onOpenChange`), or left to it from `defaultOpen` (open)."
+   },
+   {
+    "name": "open",
+    "type": "boolean"
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void"
+   },
+   {
+    "name": "title",
+    "type": "string"
+   },
+   {
+    "name": "agentName",
+    "type": "string"
+   },
+   {
+    "name": "accentColor",
+    "type": "string"
+   },
+   {
+    "name": "defaultExpandedIds",
+    "type": "string[]",
+    "default": "[]"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   }
+  ]
+ },
+ "AIResponse": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-response.tsx",
+  "props": [
+   {
+    "name": "content",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Markdown text. Safe to stream into: unfinished code fences and lists render fine"
+   },
+   {
+    "name": "status",
+    "type": "AIResponseStatus",
+    "values": [
+     "idle",
+     "generating",
+     "streaming",
+     "complete",
+     "error",
+     "cancelled"
+    ],
+    "default": "\"complete\""
+   },
+   {
+    "name": "modelName",
+    "type": "string",
+    "description": "No default (EasyUI's \"EasyAI 2.0\"): without one, no badge."
+   },
+   {
+    "name": "sources",
+    "type": "AIResponseSource[]",
+    "default": "[]"
+   },
+   {
+    "name": "onRegenerate",
+    "type": "() => void"
+   },
+   {
+    "name": "onFeedback",
+    "type": "(type: \"like\" | \"dislike\") => void"
+   },
+   {
+    "name": "feedback",
+    "type": "\"like\" | \"dislike\" | null",
+    "values": [
+     "like",
+     "dislike"
+    ],
+    "default": "null",
+    "description": "The feedback given before (kept by the application), shown pressed."
+   },
+   {
+    "name": "thinking",
+    "type": "AIResponseThinkingProps",
+    "description": "What it is doing while nothing of its answer is written (`AIResponseThinking`), in place of a skeleton."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "description": "Custom composition using the compound parts. Defaults to header + content + sources + actions"
+   }
+  ]
+ },
+ "AIResponseActions": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-response.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AIResponseContent": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-response.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AIResponseHeader": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-response.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string",
+    "default": "\"Assistant\""
+   },
+   {
+    "name": "modelBadge",
+    "type": "string"
+   },
+   {
+    "name": "timestamp",
+    "type": "string"
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AIResponseSources": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-response.tsx",
+  "props": [
+   {
+    "name": "sources",
+    "type": "AIResponseSource[]"
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "default": "\"Sources\""
+   },
+   {
+    "name": "defaultExpanded",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AIResponseThinking": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-response.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "What it does now, under a shimmer (\"Thinking\", \"Waiting for 3 runs\"): the one part read out as it changes."
+   },
+   {
+    "name": "lines",
+    "type": "string[]",
+    "default": "[]",
+    "description": "What it is about, shown one after the other under the label, round and round."
+   },
+   {
+    "name": "since",
+    "type": "string | number | Date",
+    "description": "When it began: the time it has taken is said beside the label."
+   },
+   {
+    "name": "interval",
+    "type": "number",
+    "default": "4",
+    "description": "Seconds each line is shown."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AIResponseToolsSummary": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/ai-response.tsx",
+  "props": [
+   {
+    "name": "toolCount",
+    "type": "number",
+    "required": true
+   },
+   {
+    "name": "tools",
+    "type": "Array<{ name: string; status?: \"success\" | \"running\" | \"error\"; duration?: string }>",
+    "default": "[]"
+   },
+   {
+    "name": "onToggleDetails",
+    "type": "() => void"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AirportMatrixClock": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/airport-matrix-clock.tsx",
+  "props": [
+   {
+    "name": "cities",
+    "type": "AirportMatrixCity[]",
+    "required": true,
+    "description": "One to five cities, each with its IANA time zone."
+   },
+   {
+    "name": "format",
+    "type": "'12h' | '24h'",
+    "values": [
+     "12h",
+     "24h"
+    ],
+    "default": "'24h'",
+    "description": "24-hour airport-board time by default."
+   },
+   {
+    "name": "showSeconds",
+    "type": "boolean",
+    "default": "false",
+    "description": "Include seconds in each city time."
+   },
+   {
+    "name": "updateInterval",
+    "type": "number",
+    "default": "1000",
+    "description": "Refresh cadence in milliseconds. Defaults to one second."
+   },
+   {
+    "name": "title",
+    "type": "string | null",
+    "default": "'WORLD CLOCK'",
+    "description": "The board's heading (EasyUI's \"WORLD CLOCK\"); null for none."
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "The board's last line, in the caller's words (EasyUI's \"N CITIES / IANA TIME ZONES\")."
+   },
+   {
+    "name": "size",
+    "type": "'md' | 'sm'",
+    "values": [
+     "sm",
+     "md"
+    ],
+    "default": "'md'",
+    "description": "'sm', a board for the side of a page's header (EasyUI's characters are up to 20 px wide)."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "''"
+   }
+  ]
+ },
+ "Alert": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/alert.tsx",
+  "props": [
+   {
+    "name": "tone",
+    "type": "AlertTone",
+    "values": [
+     "success",
+     "warning",
+     "danger",
+     "neutral",
+     "info"
+    ],
+    "default": "\"neutral\""
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode | false",
+    "description": "Custom icon, or `false` for none."
+   },
+   {
+    "name": "dismissible",
+    "type": "boolean"
+   },
+   {
+    "name": "onDismiss",
+    "type": "() => void",
+    "description": "Fires after the collapse animation finishes."
+   },
+   {
+    "name": "action",
+    "type": "ReactNode",
+    "description": "Right-side slot, e.g. a button."
+   }
+  ],
+  "inherits": {
+   "count": 279,
+   "element": "div",
+   "omit": [
+    "title"
+   ]
+  }
+ },
+ "AlertDescription": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/alert.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "AlertTitle": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/alert.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "p"
+  }
+ },
+ "AnimatedFileUpload": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/animated-file-upload.tsx",
+  "props": [
+   {
+    "name": "multiple",
+    "type": "boolean",
+    "default": "true",
+    "description": "Allow multiple files selection and upload"
+   },
+   {
+    "name": "accept",
+    "type": "string | string[]",
+    "description": "Accepted MIME types or extensions (e.g., \"image/*,application/pdf\" or [\".png\", \".jpg\"])"
+   },
+   {
+    "name": "maxSize",
+    "type": "number",
+    "default": "25 * 1024 * 1024",
+    "description": "Maximum file size in bytes (e.g., 10 * 1024 * 1024 for 10MB)"
+   },
+   {
+    "name": "maxFiles",
+    "type": "number",
+    "default": "10",
+    "description": "Maximum number of files allowed when multiple is true"
+   },
+   {
+    "name": "dropTitle",
+    "type": "string",
+    "default": "'Drop files here'",
+    "description": "Custom label for primary drop title"
+   },
+   {
+    "name": "dropSubtitle",
+    "type": "string",
+    "default": "'or browse from your device'",
+    "description": "Custom label for secondary browse action"
+   },
+   {
+    "name": "variant",
+    "type": "'standard' | 'compact'",
+    "values": [
+     "compact",
+     "standard"
+    ],
+    "default": "'standard'",
+    "description": "Layout mode: standard full-size or compact inline"
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false",
+    "description": "Disabled state"
+   },
+   {
+    "name": "initialFiles",
+    "type": "UploadFileItem[]",
+    "description": "Initial files list for controlled or default showcase"
+   },
+   {
+    "name": "onFilesSelected",
+    "type": "(files: File[]) => void",
+    "description": "Callback fired when files are dropped or selected"
+   },
+   {
+    "name": "onUploadComplete",
+    "type": "(file: UploadFileItem) => void",
+    "description": "Callback fired when a file upload completes"
+   },
+   {
+    "name": "uploadHandler",
+    "type": "( file: UploadFileItem, onProgress: (progress: number) => void ) => Promise<UploadResult>",
+    "description": "Custom upload simulation or upload handler returning a promise. ioiti-ui: it may answer with a link."
+   },
+   {
+    "name": "arrange",
+    "type": "(files: File[]) => Promise<File[]>",
+    "description": "The order the files are handled in (EasyUI's: as dropped); read before they are listed."
+   },
+   {
+    "name": "sequential",
+    "type": "boolean",
+    "default": "false",
+    "description": "One file after the other, each when the one before has ended (EasyUI's started them all at once)."
+   },
+   {
+    "name": "workingLabel",
+    "type": "string",
+    "description": "The words of a file's states (EasyUI's \"Uploading N%\" and \"Ready\")."
+   },
+   {
+    "name": "doneLabel",
+    "type": "string",
+    "default": "'Ready'"
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws a done file's link; the application's (LinkProvider) by default."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Upload files'",
+    "description": "The name of its file input, what a test or a script finds it by (\"Upload files\" in EasyUI)."
+   },
+   {
+    "name": "onRemove",
+    "type": "(file: UploadFileItem) => void",
+    "description": "A file taken off the list by its Remove (the application forgets what it did with it)."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name"
+   }
+  ]
+ },
+ "AnimatedNumber": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/animated-number.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "number",
+    "required": true,
+    "description": "Numeric value to animate to"
+   },
+   {
+    "name": "decimals",
+    "type": "number",
+    "default": "0",
+    "description": "Number of decimal places (default: 0)"
+   },
+   {
+    "name": "prefix",
+    "type": "string",
+    "default": "''",
+    "description": "Prepend text or currency symbol (e.g. \"$\", \"+\")"
+   },
+   {
+    "name": "suffix",
+    "type": "string",
+    "default": "''",
+    "description": "Append text (e.g. \"%\", \" users\", \"ms\")"
+   },
+   {
+    "name": "text",
+    "type": "string",
+    "description": "The value as written (the application's formats: sign, currency and %), in place of the formatting below: its digits roll, the rest stays."
+   },
+   {
+    "name": "stiffness",
+    "type": "number",
+    "default": "170",
+    "description": "Spring physics stiffness"
+   },
+   {
+    "name": "damping",
+    "type": "number",
+    "default": "22",
+    "description": "Spring physics damping"
+   },
+   {
+    "name": "mass",
+    "type": "number",
+    "default": "0.6",
+    "description": "Mass of spring"
+   },
+   {
+    "name": "useGrouping",
+    "type": "boolean",
+    "default": "true",
+    "description": "Format as locale string (e.g. \"1,250\")"
+   },
+   {
+    "name": "compact",
+    "type": "boolean",
+    "default": "false",
+    "description": "Compact notation (e.g. 1.2M, 45K)"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name"
+   }
+  ]
+ },
+ "AnimatedTabs": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/animated-tabs.tsx",
+  "props": [
+   {
+    "name": "tabs",
+    "type": "TabItem[]",
+    "required": true
+   },
+   {
+    "name": "defaultTab",
+    "type": "string"
+   },
+   {
+    "name": "activeTab",
+    "type": "string"
+   },
+   {
+    "name": "onChange",
+    "type": "(tabId: string) => void"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "tabsContainerClassName",
+    "type": "string"
+   },
+   {
+    "name": "renderContent",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "layoutId",
+    "type": "string"
+   },
+   {
+    "name": "variant",
+    "type": "'default' | 'glass' | 'pill'",
+    "values": [
+     "default",
+     "glass",
+     "pill"
+    ],
+    "default": "'default'"
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws a tab that has an `href`; the application's link (LinkProvider) by default, else `a`."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "The tabs' name for a screen reader: \"Views of the order\"."
+   }
+  ]
+ },
+ "AppBrand": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/AppShell.tsx",
+  "props": [
+   {
+    "name": "name",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "detail",
+    "type": "ReactNode"
+   },
+   {
+    "name": "mark",
+    "type": "ReactNode"
+   }
+  ]
+ },
+ "AppShell": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/AppShell.tsx",
+  "props": [
+   {
+    "name": "menu",
+    "type": "Menu<S>",
+    "required": true,
+    "description": "The application's menu: the sidebar lists it, the trail of the top bar says where the page is in it."
+   },
+   {
+    "name": "pathname",
+    "type": "string",
+    "required": true,
+    "description": "The address of the page shown (the router's: `useLocation().pathname`; RouterAppShell gives it)."
+   },
+   {
+    "name": "hash",
+    "type": "string",
+    "description": "The part of the page the address shows (the router's `useLocation().hash`: `#rules`; RouterAppShell gives it): the page scrolls to it once it is there, as the browser does for a page it loads, for a link from another page too (a part the page draws late is waited for, 3 s at most)."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true,
+    "description": "The page."
+   },
+   {
+    "name": "appName",
+    "type": "string",
+    "description": "The name at the top of the sidebar; IoitiProvider's `appName` by default."
+   },
+   {
+    "name": "appDetail",
+    "type": "ReactNode",
+    "description": "A line under the name (a version: `v1.2.0`)."
+   },
+   {
+    "name": "brandMark",
+    "type": "ReactNode",
+    "description": "The square beside the name; the name's first letter by default."
+   },
+   {
+    "name": "sidebarHeader",
+    "type": "ReactNode",
+    "description": "In place of the name and its mark, at the top of the sidebar."
+   },
+   {
+    "name": "sidebarFooter",
+    "type": "ReactNode",
+    "description": "At the bottom of the sidebar, above its Collapse button: a sign-out (SidebarFooterButton)."
+   },
+   {
+    "name": "topBarChips",
+    "type": "ReactNode",
+    "description": "States the user must not miss, after the trail (StateChip); nothing takes room while there is none."
+   },
+   {
+    "name": "topBarEnd",
+    "type": "ReactNode",
+    "description": "The right end of the top bar (search, notifications…): the theme button by default, `null` for nothing."
+   },
+   {
+    "name": "isWide",
+    "type": "(pathname: string) => boolean",
+    "description": "The pages that take the whole width (an editor beside its preview, a chart); the others stop at 80rem."
+   },
+   {
+    "name": "pageOf",
+    "type": "(pathname: string) => string",
+    "description": "Which page an address shows: the page moves (fades out, the next rising in) only between two, and opens at its top. Addresses of one page change it in place, where it was scrolled: its tabs, a record's sheet over its list (`/rules/:id` is `/rules`), a redirect to its first tab. Each address is a page of its own by default."
+   },
+   {
+    "name": "home",
+    "type": "{ label: string; href: string }",
+    "description": "The first step of the trail."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws the menu's links; the application's (LinkProvider) by default."
+   },
+   {
+    "name": "defaultCollapsed",
+    "type": "boolean"
+   },
+   {
+    "name": "shortcutsDialog",
+    "type": "boolean",
+    "default": "true",
+    "description": "The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Classes of the frame, which fills the window (`h-dvh`); drawn in a box of a page (a demo): `h-full`."
+   }
+  ]
+ },
+ "AttachmentChip": {
+  "entry": "ioiti-ui",
+  "file": "src/components/AttachmentChip.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "What it is: a file's name, a record's title."
+   },
+   {
+    "name": "detail",
+    "type": "ReactNode",
+    "description": "Beside it: its size, \"Uploading…\", why it could not be taken."
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "description": "What kind of thing it is, unless a thumbnail shows it; a paperclip by default."
+   },
+   {
+    "name": "thumbnail",
+    "type": "string",
+    "description": "An image's address, shown small in place of the icon."
+   },
+   {
+    "name": "href",
+    "type": "string",
+    "description": "Where it leads: its label is then a link."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws that link: the application's (LinkProvider) by default; `'a'` for a file the browser opens itself."
+   },
+   {
+    "name": "onRemove",
+    "type": "() => void",
+    "description": "It can be taken away: a button named \"Remove <label>\"."
+   },
+   {
+    "name": "tone",
+    "type": "'neutral' | 'danger'",
+    "values": [
+     "danger",
+     "neutral"
+    ],
+    "default": "'neutral'",
+    "description": "`danger`: it could not be taken, `detail` says why."
+   },
+   {
+    "name": "busy",
+    "type": "boolean",
+    "default": "false",
+    "description": "While it is made ready (an upload): a spinner in place of its icon, said to screen readers."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AuthLayout": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/AuthLayout.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string",
+    "required": true,
+    "description": "The heading: the application's name."
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "description": "What signing in asks for."
+   },
+   {
+    "name": "logo",
+    "type": "ReactNode",
+    "description": "The application's mark, above the heading in place of the tile and its icon. The heading names the application: a picture that says the name again says nothing more (`alt=\"\"`)."
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "description": "In the tile above the heading: a lock by default. Not drawn with a `logo`."
+   },
+   {
+    "name": "notice",
+    "type": "ReactNode",
+    "description": "Above the form: what the last attempt came to, or what to do first, as an `Alert` (\"This Gitea account is not linked to an account here: sign in with your password, then link it from your profile\")."
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "Under the form, apart from it at the foot of the card: help, a way further (\"Need an account? Ask an administrator.\")."
+   },
+   {
+    "name": "themeToggle",
+    "type": "boolean",
+    "default": "true",
+    "description": "The theme can be chosen before signing in: this page is the first one seen."
+   },
+   {
+    "name": "tabTitle",
+    "type": "string",
+    "description": "The tab's title; the heading by default."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true,
+    "description": "The form."
+   }
+  ]
+ },
+ "AutoRefresh": {
+  "entry": "ioiti-ui",
+  "file": "src/components/TimeRangePicker.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "RefreshSettings",
+    "required": true,
+    "description": "How often, and whether it is stopped."
+   },
+   {
+    "name": "onChange",
+    "type": "(settings: RefreshSettings) => void",
+    "required": true
+   },
+   {
+    "name": "onRefresh",
+    "type": "() => void",
+    "required": true,
+    "description": "Called each time it is due."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Avatar": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Avatar.tsx",
+  "props": [
+   {
+    "name": "name",
+    "type": "string",
+    "required": true,
+    "description": "Whose it is: its initials are drawn from it, and a screen reader hears it."
+   },
+   {
+    "name": "src",
+    "type": "string",
+    "description": "A picture, from the application's own origin; the initials where there is none, or it fails."
+   },
+   {
+    "name": "size",
+    "type": "AvatarSize",
+    "values": [
+     "xs",
+     "sm",
+     "md",
+     "lg"
+    ],
+    "default": "'md'"
+   },
+   {
+    "name": "hint",
+    "type": "boolean",
+    "default": "false",
+    "description": "The name in a hint, the avatar a stop of the keyboard to show it."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "AvatarGroup": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Avatar.tsx",
+  "props": [
+   {
+    "name": "people",
+    "type": "{ name: string; src?: string }[]",
+    "required": true
+   },
+   {
+    "name": "max",
+    "type": "number",
+    "default": "4",
+    "description": "The avatars shown before \"+N\" says how many more."
+   },
+   {
+    "name": "size",
+    "type": "AvatarSize",
+    "values": [
+     "xs",
+     "sm",
+     "md",
+     "lg"
+    ],
+    "default": "'md'"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'People'",
+    "description": "The group's name for a screen reader: \"Who works on it\"."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Badge": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/badge.tsx",
+  "props": [
+   {
+    "name": "variant",
+    "type": "BadgeVariant",
+    "values": [
+     "outline",
+     "soft",
+     "solid"
+    ],
+    "default": "\"soft\""
+   },
+   {
+    "name": "tone",
+    "type": "BadgeTone",
+    "values": [
+     "success",
+     "warning",
+     "danger",
+     "neutral"
+    ],
+    "default": "\"neutral\""
+   },
+   {
+    "name": "dot",
+    "type": "boolean",
+    "description": "Leading status dot."
+   },
+   {
+    "name": "pulse",
+    "type": "boolean",
+    "description": "Soft ping on the dot, use for live status only."
+   },
+   {
+    "name": "onRemove",
+    "type": "() => void",
+    "description": "Shows an × button (chip)."
+   },
+   {
+    "name": "removeLabel",
+    "type": "string",
+    "default": "\"Remove\"",
+    "description": "The × button's name for a screen reader: \"Remove Lyon\", each chip's its own (\"Remove\" otherwise)."
+   },
+   {
+    "name": "removeFocusable",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether the × button is a stop of the keyboard (a field of chips removes them with Backspace)."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   }
+  ],
+  "inherits": {
+   "count": 338,
+   "element": "span",
+   "motion": true,
+   "omit": [
+    "children"
+   ]
+  }
+ },
+ "BarChart": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/bar-chart.tsx",
+  "props": [
+   {
+    "name": "data",
+    "type": "BarDatum[]",
+    "required": true
+   },
+   {
+    "name": "series",
+    "type": "BarSeries[]",
+    "required": true
+   },
+   {
+    "name": "variant",
+    "type": "\"grouped\" | \"stacked\"",
+    "values": [
+     "grouped",
+     "stacked"
+    ],
+    "default": "\"grouped\"",
+    "description": "Grouped: bars side by side · stacked: bars on top of each other (changing it morphs)"
+   },
+   {
+    "name": "tone",
+    "type": "\"series\" | \"sign\"",
+    "values": [
+     "series",
+     "sign"
+    ],
+    "default": "\"series\"",
+    "description": "`series` colours each series (one series in the series colour, things compared in the four compare colours, never recycled); `sign` colours each bar by its sign, a gain's colour up and a loss's down (daily gains and losses)."
+   },
+   {
+    "name": "height",
+    "type": "number",
+    "default": "260"
+   },
+   {
+    "name": "formatValue",
+    "type": "(n: number) => string",
+    "default": "defaultFormat"
+   },
+   {
+    "name": "formatTick",
+    "type": "(n: number) => string",
+    "default": "defaultTick"
+   },
+   {
+    "name": "formatTitle",
+    "type": "(datum: BarDatum, index: number) => string",
+    "description": "A category's heading in the tooltip and its row in the table (\"12 Oct 2026\" where the axis says \"12 Oct\")."
+   },
+   {
+    "name": "details",
+    "type": "(datum: BarDatum, index: number) => ChartDetail[]",
+    "description": "More to say of a category, under its series' values in the tooltip and in the table."
+   },
+   {
+    "name": "tickAt",
+    "type": "(datum: BarDatum, index: number) => boolean",
+    "description": "The categories the axis names (a time axis's round moments); as many as fit otherwise."
+   },
+   {
+    "name": "integer",
+    "type": "boolean",
+    "default": "false",
+    "description": "Whole numbers on the value axis, for counts."
+   },
+   {
+    "name": "marked",
+    "type": "{ index: number; label: string }",
+    "description": "One category set apart, a result among those it is set against (a run among random ones), for one series: its bar in the series colour and a line through it, named above; the others in the muted grey."
+   },
+   {
+    "name": "showLegend",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "animated",
+    "type": "boolean",
+    "default": "true",
+    "description": "Entrance animation (also disabled by prefers-reduced-motion)"
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "\"\""
+   }
+  ]
+ },
+ "BarList": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ProgressBar.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "BarListItem[]",
+    "required": true
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "The list's name for a screen reader."
+   },
+   {
+    "name": "max",
+    "type": "number",
+    "description": "The value of a full bar; the largest value otherwise."
+   },
+   {
+    "name": "format",
+    "type": "(value: number) => string",
+    "default": "(value) => formatNumber(value)"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Breadcrumb": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/breadcrumb.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "BreadcrumbItem[]",
+    "required": true
+   },
+   {
+    "name": "separator",
+    "type": "\"chevron\" | \"slash\"",
+    "values": [
+     "chevron",
+     "slash"
+    ],
+    "default": "\"chevron\""
+   },
+   {
+    "name": "maxItems",
+    "type": "number",
+    "default": "4",
+    "description": "Collapse the middle into \"…\" when there are more items than this."
+   },
+   {
+    "name": "as",
+    "type": "ElementType",
+    "description": "Your router's link, e.g. next/link. ioiti-ui: the application's link (LinkProvider) by default, else <a>."
+   },
+   {
+    "name": "wrap",
+    "type": "boolean",
+    "default": "true",
+    "description": "False keeps the trail on one line (the top bar), each crumb cut short with an ellipsis, the last one first, instead of going to a second line."
+   }
+  ],
+  "inherits": {
+   "count": 279,
+   "element": "nav",
+   "omit": [
+    "children"
+   ]
+  }
+ },
+ "Button": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/button.tsx",
+  "props": [
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "description": "Button content"
+   },
+   {
+    "name": "variant",
+    "type": "ButtonVariant",
+    "values": [
+     "link",
+     "default",
+     "primary",
+     "secondary",
+     "outline",
+     "ghost",
+     "destructive",
+     "success",
+     "gradient"
+    ],
+    "default": "'primary'",
+    "description": "Visual presentation style"
+   },
+   {
+    "name": "size",
+    "type": "ButtonSize",
+    "values": [
+     "xs",
+     "sm",
+     "md",
+     "lg",
+     "icon"
+    ],
+    "default": "'md'",
+    "description": "Dimension scale"
+   },
+   {
+    "name": "isLoading",
+    "type": "boolean",
+    "default": "false",
+    "description": "Loading state displaying an animated spinner"
+   },
+   {
+    "name": "loadingText",
+    "type": "string",
+    "description": "Text or element displayed during loading"
+   },
+   {
+    "name": "leftIcon",
+    "type": "ReactNode",
+    "description": "Icon placed before the button children"
+   },
+   {
+    "name": "rightIcon",
+    "type": "ReactNode",
+    "description": "Icon placed after the button children"
+   },
+   {
+    "name": "fullWidth",
+    "type": "boolean",
+    "default": "false",
+    "description": "Expand button to fill 100% of container width"
+   }
+  ],
+  "inherits": {
+   "count": 348,
+   "element": "button",
+   "motion": true,
+   "omit": [
+    "children"
+   ]
+  }
+ },
+ "ButtonLink": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ButtonLink.tsx",
+  "props": [
+   {
+    "name": "to",
+    "type": "string | null | undefined",
+    "required": true,
+    "description": "Where it leads. Nothing: a button that cannot be pressed, there being nowhere to go (no day before the first)."
+   },
+   {
+    "name": "reloadDocument",
+    "type": "boolean",
+    "default": "false",
+    "description": "Its page is loaded from the server: a plain `<a>`, not the application's link. For an address the server answers, which the router would look for among the application's own pages and not find: a sign-in that sends the browser on to an identity provider (`/api/v1/auth/oidc/gitea/login?next=/w/main`), a file, another application on the same site. The address is followed as written, without the router's base path."
+   },
+   {
+    "name": "variant",
+    "type": "ButtonVariant",
+    "values": [
+     "link",
+     "default",
+     "primary",
+     "secondary",
+     "outline",
+     "ghost",
+     "destructive",
+     "success",
+     "gradient"
+    ],
+    "default": "'primary'"
+   },
+   {
+    "name": "size",
+    "type": "ButtonSize",
+    "values": [
+     "xs",
+     "sm",
+     "md",
+     "lg",
+     "icon"
+    ],
+    "default": "'md'"
+   },
+   {
+    "name": "leftIcon",
+    "type": "ReactNode"
+   },
+   {
+    "name": "rightIcon",
+    "type": "ReactNode"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ],
+  "inherits": {
+   "count": 286,
+   "element": "a",
+   "omit": [
+    "href",
+    "className"
+   ]
+  }
+ },
+ "Calendar": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/calendar.tsx",
+  "props": [
+   {
+    "name": "mode",
+    "type": "\"single\""
+   },
+   {
+    "name": "value",
+    "type": "Date | null"
+   },
+   {
+    "name": "defaultValue",
+    "type": "Date | null"
+   },
+   {
+    "name": "onChange",
+    "type": "(date: Date | null) => void"
+   },
+   {
+    "name": "defaultMonth",
+    "type": "Date"
+   },
+   {
+    "name": "minDate",
+    "type": "Date"
+   },
+   {
+    "name": "maxDate",
+    "type": "Date"
+   },
+   {
+    "name": "isDateDisabled",
+    "type": "(date: Date) => boolean"
+   },
+   {
+    "name": "weekStartsOn",
+    "type": "0 | 1",
+    "values": [
+     "0",
+     "1"
+    ],
+    "default": "0"
+   },
+   {
+    "name": "locale",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "ChangeList": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ChangeList.tsx",
+  "props": [
+   {
+    "name": "changes",
+    "type": "Change[]",
+    "default": "[]",
+    "description": "The changes, or `groups` of them under their titles."
+   },
+   {
+    "name": "groups",
+    "type": "ChangeGroup[]"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "The list's name for a screen reader: \"Changes to apply\"."
+   },
+   {
+    "name": "numeric",
+    "type": "boolean",
+    "default": "false",
+    "description": "The values as figures: digits of one width."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "ChartLegend": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ChartLegend.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "ChartLegendItem[]",
+    "required": true
+   },
+   {
+    "name": "onToggle",
+    "type": "(index: number) => void",
+    "description": "Makes each item a button that shows or hides its series. The chart decides what it allows (one series left)."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Legend'",
+    "description": "The legend's name for a screen reader."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Checkbox": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/draw-checkbox.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "ReactNode"
+   },
+   {
+    "name": "description",
+    "type": "string"
+   },
+   {
+    "name": "indeterminate",
+    "type": "boolean",
+    "default": "false",
+    "description": "Indeterminate visual state"
+   }
+  ],
+  "inherits": {
+   "count": 309,
+   "element": "input",
+   "omit": [
+    "type"
+   ]
+  }
+ },
+ "CheckIcon": {
+  "entry": "ioiti-ui",
+  "file": "src/components/CheckList.tsx",
+  "props": [
+   {
+    "name": "state",
+    "type": "CheckState",
+    "values": [
+     "pass",
+     "fail",
+     "open"
+    ],
+    "required": true
+   },
+   {
+    "name": "named",
+    "type": "boolean",
+    "default": "true"
+   }
+  ]
+ },
+ "CheckList": {
+  "entry": "ioiti-ui",
+  "file": "src/components/CheckList.tsx",
+  "props": [
+   {
+    "name": "checks",
+    "type": "readonly T[]",
+    "required": true
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "hrefOf",
+    "type": "(check: T) => string | null"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Code": {
+  "entry": "ioiti-ui",
+  "file": "src/components/CodeBlock.tsx",
+  "props": [
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "CodeBlock": {
+  "entry": "ioiti-ui",
+  "file": "src/components/CodeBlock.tsx",
+  "props": [
+   {
+    "name": "code",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "language",
+    "type": "CodeLanguage",
+    "values": [
+     "text",
+     "json",
+     "js",
+     "jsx",
+     "ts",
+     "tsx",
+     "css",
+     "shell",
+     "toml",
+     "yaml",
+     "diff",
+     "python"
+    ],
+    "default": "'text'",
+    "description": "How it is coloured: `text` not at all."
+   },
+   {
+    "name": "highlight",
+    "type": "(code: string) => CodeToken[]",
+    "description": "Another language's tokens, from the code: its own tokeniser."
+   },
+   {
+    "name": "label",
+    "type": "ReactNode",
+    "description": "Above the code: a file's name, what the code is."
+   },
+   {
+    "name": "lineNumbers",
+    "type": "boolean | number",
+    "default": "false",
+    "description": "The lines numbered, from 1 or from the number given."
+   },
+   {
+    "name": "highlightLines",
+    "type": "number[]",
+    "default": "[]",
+    "description": "Lines to look at, by their number (from 1, or from `lineNumbers`)."
+   },
+   {
+    "name": "maxHeight",
+    "type": "number | string",
+    "description": "Taller code scrolls inside it."
+   },
+   {
+    "name": "wrap",
+    "type": "boolean",
+    "default": "false",
+    "description": "Long lines wrapped, rather than scrolled sideways."
+   },
+   {
+    "name": "copyable",
+    "type": "boolean",
+    "default": "true",
+    "description": "A button that copies the code."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "CodeEditor": {
+  "entry": "ioiti-ui/code",
+  "file": "src/code/CodeEditor.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "string",
+    "required": true,
+    "description": "The code. Each change the user makes is given to `onChange`; a new value given replaces the document."
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string) => void"
+   },
+   {
+    "name": "language",
+    "type": "CodeEditorLanguage",
+    "values": [
+     "text",
+     "json",
+     "toml",
+     "yaml",
+     "python",
+     "markdown"
+    ],
+    "default": "'text'",
+    "description": "How it is coloured (and indented): `text` not at all. Loaded when first used."
+   },
+   {
+    "name": "readOnly",
+    "type": "boolean",
+    "default": "false",
+    "description": "Read, selected, searched and copied, not changed."
+   },
+   {
+    "name": "wrap",
+    "type": "boolean",
+    "default": "false",
+    "description": "Long lines wrapped, rather than scrolled sideways."
+   },
+   {
+    "name": "diagnostics",
+    "type": "readonly CodeDiagnostic[]",
+    "description": "Problems found in the code (a server's parse errors), marked under the text and in the gutter."
+   },
+   {
+    "name": "onSave",
+    "type": "(value: string) => void",
+    "description": "Called with the code on ⌘S / Ctrl+S, the browser's own save kept from the page."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "What the code is, for a screen reader: \"Rule file\"."
+   },
+   {
+    "name": "lineNumbers",
+    "type": "boolean",
+    "default": "true",
+    "description": "The lines numbered in a gutter."
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "description": "Shown while the document is empty."
+   },
+   {
+    "name": "minHeight",
+    "type": "number | string",
+    "description": "At least this high (a number is pixels)."
+   },
+   {
+    "name": "maxHeight",
+    "type": "number | string",
+    "description": "At most this high: taller code scrolls inside it."
+   },
+   {
+    "name": "autoFocus",
+    "type": "boolean",
+    "default": "false",
+    "description": "Takes the focus when it appears."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Combobox": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/combobox.tsx",
+  "props": [
+   {
+    "name": "options",
+    "type": "ComboboxOption[]",
+    "required": true
+   },
+   {
+    "name": "value",
+    "type": "string | null"
+   },
+   {
+    "name": "defaultValue",
+    "type": "string | null",
+    "default": "null"
+   },
+   {
+    "name": "onValueChange",
+    "type": "(value: string | null) => void"
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "default": "\"Select…\""
+   },
+   {
+    "name": "searchPlaceholder",
+    "type": "string",
+    "default": "\"Search…\""
+   },
+   {
+    "name": "emptyText",
+    "type": "string",
+    "default": "\"No results.\""
+   },
+   {
+    "name": "align",
+    "type": "\"start\" | \"end\"",
+    "values": [
+     "end",
+     "start"
+    ],
+    "default": "\"start\""
+   },
+   {
+    "name": "disabled",
+    "type": "boolean"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "aria-label",
+    "type": "string"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The trigger's id, for a `<label htmlFor>`."
+   }
+  ]
+ },
+ "ConfirmAction": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ConfirmAction.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean",
+    "required": true
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "required": true,
+    "description": "Exactly what will happen, in the user's terms."
+   },
+   {
+    "name": "confirmLabel",
+    "type": "string",
+    "required": true,
+    "description": "Text on the slider, e.g. \"Slide to send\"; with `gesture=\"button\"`, the text of the button."
+   },
+   {
+    "name": "warning",
+    "type": "ReactNode",
+    "description": "What is at stake, said first (\"This sends the order to the live account.\"). Nothing by default."
+   },
+   {
+    "name": "gesture",
+    "type": "'slide' | 'button'",
+    "values": [
+     "button",
+     "slide"
+    ],
+    "default": "'slide'",
+    "description": "How it is confirmed. The slide is for what puts something at risk or cannot be taken back. A plain button is for the protective direction (pausing), which has to be quick: `confirmLabel` is then the text of that button."
+   },
+   {
+    "name": "doneLabel",
+    "type": "string",
+    "default": "'Done'",
+    "description": "Shown on the slider once it is done (\"Saved\", \"Sent\"...)."
+   },
+   {
+    "name": "workingLabel",
+    "type": "string",
+    "default": "'Working…'",
+    "description": "Shown on the slider while the action is under way."
+   },
+   {
+    "name": "cancelLabel",
+    "type": "string",
+    "default": "'Cancel'"
+   },
+   {
+    "name": "pending",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "blocked",
+    "type": "boolean",
+    "default": "false",
+    "description": "The gesture waits for something the description asks first (a box ticked)."
+   },
+   {
+    "name": "error",
+    "type": "string | null"
+   },
+   {
+    "name": "onConfirm",
+    "type": "() => void",
+    "required": true
+   },
+   {
+    "name": "onClose",
+    "type": "() => void",
+    "required": true
+   }
+  ]
+ },
+ "ContextMenu": {
+  "entry": "ioiti-ui",
+  "file": "src/components/DropdownMenu.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "DropdownMenuItem[]",
+    "required": true
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "The menu's name for a screen reader."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What it is the menu of: a right click, a long press, Shift+F10 or the menu key on it opens the menu."
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "CopyButton": {
+  "entry": "ioiti-ui",
+  "file": "src/components/CopyButton.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "string | (() => string)",
+    "required": true,
+    "description": "What is copied, or a function giving it when the button is pressed."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Copy'",
+    "description": "What it copies, in words: \"Copy the key\"."
+   },
+   {
+    "name": "showLabel",
+    "type": "boolean",
+    "default": "false",
+    "description": "The label written beside the icon, not only in its hint."
+   },
+   {
+    "name": "size",
+    "type": "'sm' | 'md'",
+    "values": [
+     "sm",
+     "md"
+    ],
+    "default": "'md'"
+   },
+   {
+    "name": "onCopy",
+    "type": "(copied: boolean) => void",
+    "description": "Told whether the copy was made."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "CopyChip": {
+  "entry": "ioiti-ui",
+  "file": "src/components/CopyChip.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "string",
+    "required": true,
+    "description": "What is shown and copied: a reference, a key, an address."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "What it is, for its button: \"the key\" makes \"Copy the key\"."
+   },
+   {
+    "name": "truncate",
+    "type": "'middle' | 'end' | false",
+    "default": "false",
+    "description": "A long value cut short: in its `middle` (an identifier, whose ends tell it apart), at its `end`, or not at all. The whole of it is in a hint, and a screen reader hears it."
+   },
+   {
+    "name": "keep",
+    "type": "{ start: number; end: number }",
+    "default": "{ start: 8, end: 6 }",
+    "description": "In the middle: the characters kept at its start and at its end."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "DataTable": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/advanced-data-table.tsx",
+  "props": [
+   {
+    "name": "data",
+    "type": "T[]",
+    "required": true
+   },
+   {
+    "name": "columns",
+    "type": "ColumnDef<T>[]",
+    "required": true
+   },
+   {
+    "name": "getRowId",
+    "type": "(row: T, index: number) => string",
+    "default": "(row: any, i) => row.id || `row-${i}`"
+   },
+   {
+    "name": "defaultPageSize",
+    "type": "number",
+    "default": "10"
+   },
+   {
+    "name": "defaultViewMode",
+    "type": "DataTableViewMode",
+    "values": [
+     "table",
+     "auto",
+     "cards"
+    ],
+    "default": "'auto'"
+   },
+   {
+    "name": "accentColor",
+    "type": "string"
+   },
+   {
+    "name": "selectable",
+    "type": "boolean",
+    "default": "true",
+    "description": "Row checkboxes for bulk actions (default true)."
+   },
+   {
+    "name": "selectedRowIds",
+    "type": "ReadonlySet<string>",
+    "description": "A selection the page holds, told of each change; without it the table keeps its own."
+   },
+   {
+    "name": "onSelectionChange",
+    "type": "(ids: Set<string>) => void"
+   },
+   {
+    "name": "isRowSelectable",
+    "type": "(row: T) => boolean",
+    "default": "() => true",
+    "description": "The rows that can be selected; the others have no box, and \"select all\" leaves them out."
+   },
+   {
+    "name": "selectionBasket",
+    "type": "DataTableSelectionBasket",
+    "description": "The bulk actions, in EasyUI's selection basket under the table once a row is selected."
+   },
+   {
+    "name": "renderSubComponent",
+    "type": "(row: T) => ReactNode"
+   },
+   {
+    "name": "initialSearch",
+    "type": "string",
+    "default": "''",
+    "description": "What the search holds when the table appears (a link to one row)."
+   },
+   {
+    "name": "initialExpandedRowIds",
+    "type": "string[]",
+    "description": "The rows shown opened when the table appears."
+   },
+   {
+    "name": "initialFilters",
+    "type": "Record<string, string[]>",
+    "description": "The filters chosen when the table appears (a link to some of the rows), by column id."
+   },
+   {
+    "name": "state",
+    "type": "DataTableState",
+    "description": "The search, the filters, the sort and the page as the page holds them (in its address, for a link or a reload to show the same rows), told of each change by `onStateChange`; without it the table keeps its own."
+   },
+   {
+    "name": "onStateChange",
+    "type": "(state: DataTableState) => void",
+    "description": "Told of each change of the search, the filters, the sort or the page."
+   },
+   {
+    "name": "expandOnRowClick",
+    "type": "boolean",
+    "default": "false",
+    "description": "A click anywhere on a row opens it, not only its arrow."
+   },
+   {
+    "name": "singleExpand",
+    "type": "boolean",
+    "default": "false",
+    "description": "One row open at a time: opening another closes it."
+   },
+   {
+    "name": "rowLabel",
+    "type": "(row: T) => string",
+    "description": "What names a row, for its expand button (\"Open …\")."
+   },
+   {
+    "name": "isLoading",
+    "type": "boolean"
+   },
+   {
+    "name": "error",
+    "type": "string | null"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   }
+  ]
+ },
+ "DataTableContent": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/advanced-data-table.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "emptyTitle",
+    "type": "string",
+    "default": "'Nothing to show'"
+   },
+   {
+    "name": "emptyDescription",
+    "type": "string"
+   }
+  ]
+ },
+ "DataTableFilters": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/advanced-data-table.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "DataTablePagination": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/advanced-data-table.tsx",
+  "props": [
+   {
+    "name": "pageSizeOptions",
+    "type": "number[]",
+    "default": "[5, 10, 20, 50]"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "DataTableToolbar": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/advanced-data-table.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string"
+   },
+   {
+    "name": "searchPlaceholder",
+    "type": "string",
+    "default": "'Search...'"
+   },
+   {
+    "name": "onBulkDelete",
+    "type": "(selectedIds: string[]) => void"
+   },
+   {
+    "name": "onBulkExport",
+    "type": "(selectedIds: string[]) => void"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "DatePicker": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/date-picker.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "Date | null"
+   },
+   {
+    "name": "defaultValue",
+    "type": "Date | null",
+    "default": "null"
+   },
+   {
+    "name": "onChange",
+    "type": "(date: Date | null) => void"
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "default": "\"Pick a date\""
+   },
+   {
+    "name": "align",
+    "type": "\"start\" | \"end\"",
+    "values": [
+     "end",
+     "start"
+    ]
+   },
+   {
+    "name": "side",
+    "type": "Side | \"auto\"",
+    "values": [
+     "top",
+     "bottom",
+     "auto"
+    ]
+   },
+   {
+    "name": "disabled",
+    "type": "boolean"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "defaultMonth",
+    "type": "Date"
+   },
+   {
+    "name": "minDate",
+    "type": "Date"
+   },
+   {
+    "name": "maxDate",
+    "type": "Date"
+   },
+   {
+    "name": "isDateDisabled",
+    "type": "(date: Date) => boolean"
+   },
+   {
+    "name": "weekStartsOn",
+    "type": "0 | 1",
+    "values": [
+     "0",
+     "1"
+    ]
+   },
+   {
+    "name": "locale",
+    "type": "string"
+   }
+  ]
+ },
+ "DateRangeFilter": {
+  "entry": "ioiti-ui",
+  "file": "src/components/DateRangeFilter.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "DateRange",
+    "required": true
+   },
+   {
+    "name": "onChange",
+    "type": "(range: DateRange) => void",
+    "required": true
+   },
+   {
+    "name": "presets",
+    "type": "DateRangePreset[]",
+    "default": "PRESETS",
+    "description": "The ranges offered first; the last 7, 30 and 90 days by default."
+   },
+   {
+    "name": "allTime",
+    "type": "boolean",
+    "default": "true",
+    "description": "An \"All time\" button, after the presets."
+   },
+   {
+    "name": "today",
+    "type": "Date",
+    "description": "The day the presets of days end on: today by default, the last day there is data for otherwise."
+   },
+   {
+    "name": "minDate",
+    "type": "Date",
+    "description": "The first and the last day the calendar offers."
+   },
+   {
+    "name": "maxDate",
+    "type": "Date"
+   }
+  ]
+ },
+ "DateRangePicker": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/date-picker.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "DateRange"
+   },
+   {
+    "name": "defaultValue",
+    "type": "DateRange",
+    "default": "{ from: null, to: null }"
+   },
+   {
+    "name": "onChange",
+    "type": "(range: DateRange) => void"
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "default": "\"Pick a range\""
+   },
+   {
+    "name": "align",
+    "type": "\"start\" | \"end\"",
+    "values": [
+     "end",
+     "start"
+    ]
+   },
+   {
+    "name": "side",
+    "type": "Side | \"auto\"",
+    "values": [
+     "top",
+     "bottom",
+     "auto"
+    ]
+   },
+   {
+    "name": "disabled",
+    "type": "boolean"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "defaultMonth",
+    "type": "Date"
+   },
+   {
+    "name": "minDate",
+    "type": "Date"
+   },
+   {
+    "name": "maxDate",
+    "type": "Date"
+   },
+   {
+    "name": "isDateDisabled",
+    "type": "(date: Date) => boolean"
+   },
+   {
+    "name": "weekStartsOn",
+    "type": "0 | 1",
+    "values": [
+     "0",
+     "1"
+    ]
+   },
+   {
+    "name": "locale",
+    "type": "string"
+   }
+  ]
+ },
+ "DependencyTrace": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/dependency-trace.tsx",
+  "props": [
+   {
+    "name": "nodes",
+    "type": "TraceNode[]",
+    "required": true,
+    "description": "Nodes in the dependency graph."
+   },
+   {
+    "name": "connections",
+    "type": "TraceConnection[]",
+    "required": true,
+    "description": "Connection links between nodes."
+   },
+   {
+    "name": "onNodeSelect",
+    "type": "(id: string) => void",
+    "description": "Selected node handler."
+   },
+   {
+    "name": "onNodeHover",
+    "type": "(id: string | null) => void",
+    "description": "Hovered node handler."
+   },
+   {
+    "name": "nodeSize",
+    "type": "number",
+    "default": "36",
+    "description": "Radius/size of the node badge in pixels. Default is 36."
+   },
+   {
+    "name": "width",
+    "type": "number",
+    "default": "400",
+    "description": "The canvas the nodes' x and y are on (EasyUI's was 400 × 280)."
+   },
+   {
+    "name": "height",
+    "type": "number",
+    "default": "280"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Dependency Relationship Graph'",
+    "description": "The graph's name, for screen readers."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom CSS class names."
+   }
+  ]
+ },
+ "DescriptionList": {
+  "entry": "ioiti-ui",
+  "file": "src/components/DescriptionList.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "DescriptionItem[]",
+    "required": true
+   },
+   {
+    "name": "layout",
+    "type": "'rows' | 'columns' | 'grid' | 'inline'",
+    "values": [
+     "rows",
+     "columns",
+     "grid",
+     "inline"
+    ],
+    "default": "'rows'",
+    "description": "`rows`: each term and its details on one line, the details at the end (a summary, a card). `columns`: the terms in a column of their own, ruled rows (a record's details). `grid`: each term over its details, in columns (figures side by side). `inline`: one after the other in a sentence's flow (facts about a line of a list)."
+   },
+   {
+    "name": "columns",
+    "type": "2 | 3 | 4",
+    "values": [
+     "2",
+     "3",
+     "4"
+    ],
+    "default": "2",
+    "description": "For `grid`: how many columns, from a small screen up (one on a phone)."
+   },
+   {
+    "name": "termWidth",
+    "type": "string",
+    "default": "'12rem'",
+    "description": "For `columns`: the width of the terms' column."
+   },
+   {
+    "name": "divided",
+    "type": "boolean",
+    "default": "false",
+    "description": "Rows divided by a rule (`columns` always are)."
+   },
+   {
+    "name": "boxed",
+    "type": "boolean",
+    "default": "false",
+    "description": "A border around it, its rows divided."
+   },
+   {
+    "name": "compressed",
+    "type": "boolean",
+    "default": "false",
+    "description": "Tighter rows and smaller text."
+   },
+   {
+    "name": "numeric",
+    "type": "boolean",
+    "default": "false",
+    "description": "The details as figures: digits of one width, so that they line up."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "DiffEditor": {
+  "entry": "ioiti-ui/code",
+  "file": "src/code/DiffEditor.tsx",
+  "props": [
+   {
+    "name": "original",
+    "type": "string",
+    "required": true,
+    "description": "The version compared against: never changed here."
+   },
+   {
+    "name": "modified",
+    "type": "string",
+    "required": true,
+    "description": "The version shown changed: edited unless `readOnly`, each change given to `onChange`."
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string) => void"
+   },
+   {
+    "name": "language",
+    "type": "CodeEditorLanguage",
+    "values": [
+     "text",
+     "json",
+     "toml",
+     "yaml",
+     "python",
+     "markdown"
+    ],
+    "default": "'text'"
+   },
+   {
+    "name": "layout",
+    "type": "'split' | 'unified'",
+    "values": [
+     "split",
+     "unified"
+    ],
+    "default": "'split'",
+    "description": "`split`: the two side by side, unchanged lines aligned. `unified`: one column, what was removed above what replaced it."
+   },
+   {
+    "name": "collapseUnchanged",
+    "type": "boolean | { margin?: number; minSize?: number }",
+    "default": "true",
+    "description": "Long unchanged stretches folded, three lines kept around each change (or as given)."
+   },
+   {
+    "name": "readOnly",
+    "type": "boolean",
+    "default": "false",
+    "description": "The changed version read, not edited."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "What is compared, for the header and a screen reader: \"Rule file\"."
+   },
+   {
+    "name": "originalLabel",
+    "type": "string",
+    "default": "'Original'",
+    "description": "The names of the two versions, above them: \"Saved\" and \"Yours\"."
+   },
+   {
+    "name": "modifiedLabel",
+    "type": "string",
+    "default": "'Modified'"
+   },
+   {
+    "name": "wrap",
+    "type": "boolean",
+    "default": "false",
+    "description": "Long lines wrapped, rather than scrolled sideways."
+   },
+   {
+    "name": "maxHeight",
+    "type": "number | string",
+    "description": "At most this high: taller scrolls inside it."
+   },
+   {
+    "name": "actions",
+    "type": "ReactNode",
+    "description": "At the end of the header, after the buttons that move between changes: a toggle, an action."
+   },
+   {
+    "name": "diagnostics",
+    "type": "readonly CodeDiagnostic[]",
+    "description": "Problems found in the changed version (a server's parse errors), marked as CodeEditor marks them."
+   },
+   {
+    "name": "onSave",
+    "type": "(value: string) => void",
+    "description": "Called with the changed version on ⌘S / Ctrl+S in it, the browser's own save kept from the page."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "DirectionalTooltip": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/directional-tooltip.tsx",
+  "props": [
+   {
+    "name": "children",
+    "type": "ReactElement",
+    "required": true,
+    "description": "Trigger element(s)"
+   },
+   {
+    "name": "content",
+    "type": "ReactNode",
+    "required": true,
+    "description": "Tooltip content"
+   },
+   {
+    "name": "side",
+    "type": "TooltipSide",
+    "values": [
+     "top",
+     "bottom",
+     "left",
+     "right"
+    ],
+    "default": "'top'",
+    "description": "Preferred side; may be flipped if there's no space (auto by default)"
+   },
+   {
+    "name": "align",
+    "type": "TooltipAlign",
+    "values": [
+     "center",
+     "end",
+     "start"
+    ],
+    "default": "'center'",
+    "description": "Alignment along the side"
+   },
+   {
+    "name": "delayDuration",
+    "type": "number",
+    "default": "150",
+    "description": "Delay before showing, in ms"
+   },
+   {
+    "name": "showArrow",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether to show an arrow"
+   },
+   {
+    "name": "offset",
+    "type": "number",
+    "default": "8",
+    "description": "Offset from the trigger in px"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "wrapperClassName",
+    "type": "string",
+    "description": "The classes of the span around the trigger (a full-width field keeps its width)."
+   },
+   {
+    "name": "forceOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Force the tooltip to always be visible (for design previews)"
+   }
+  ]
+ },
+ "Disclosure": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Disclosure.tsx",
+  "props": [
+   {
+    "name": "summary",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What it holds, in a few words: always shown."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "open",
+    "type": "boolean"
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void"
+   },
+   {
+    "name": "variant",
+    "type": "'plain' | 'boxed'",
+    "values": [
+     "plain",
+     "boxed"
+    ],
+    "default": "'plain'",
+    "description": "`plain` in the flow of a page; `boxed` in a border of its own."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "DonutChart": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/donut-chart.tsx",
+  "props": [
+   {
+    "name": "data",
+    "type": "DonutDatum[]",
+    "required": true
+   },
+   {
+    "name": "variant",
+    "type": "\"donut\" | \"semi\"",
+    "values": [
+     "donut",
+     "semi"
+    ],
+    "default": "\"donut\"",
+    "description": "Donut: full ring · semi: half-ring gauge"
+   },
+   {
+    "name": "size",
+    "type": "number",
+    "default": "240",
+    "description": "Largest diameter in px (it shrinks to fit its container)"
+   },
+   {
+    "name": "thickness",
+    "type": "number",
+    "default": "16"
+   },
+   {
+    "name": "centerLabel",
+    "type": "string",
+    "default": "\"Total\"",
+    "description": "Text above the total in the centre"
+   },
+   {
+    "name": "otherLabel",
+    "type": "string",
+    "default": "\"Other\"",
+    "description": "The name of the segment the fifth and those after it make together: the design compares four colours, never recycled (a segment given its own `color` keeps it, and nothing is grouped then)."
+   },
+   {
+    "name": "formatValue",
+    "type": "(n: number) => string",
+    "default": "defaultFormat"
+   },
+   {
+    "name": "showLegend",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "animated",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "\"\""
+   }
+  ]
+ },
+ "DragToConfirm": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/drag-to-confirm.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Slide to confirm'",
+    "description": "Label shown along track"
+   },
+   {
+    "name": "confirmedLabel",
+    "type": "string",
+    "default": "'Confirmed ✓'",
+    "description": "Label shown upon completion"
+   },
+   {
+    "name": "actionType",
+    "type": "DragConfirmActionType",
+    "values": [
+     "submit",
+     "delete",
+     "archive",
+     "confirm",
+     "unlock",
+     "continue"
+    ],
+    "default": "'confirm'",
+    "description": "Action archetype"
+   },
+   {
+    "name": "variant",
+    "type": "DragConfirmVariant",
+    "values": [
+     "default",
+     "success",
+     "warning",
+     "danger",
+     "info"
+    ],
+    "description": "Visual variant tone override"
+   },
+   {
+    "name": "size",
+    "type": "DragConfirmSize",
+    "values": [
+     "sm",
+     "md",
+     "lg"
+    ],
+    "default": "'md'",
+    "description": "Size variant"
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "description": "Custom idle icon"
+   },
+   {
+    "name": "confirmedIcon",
+    "type": "ReactNode",
+    "description": "Custom confirmed icon"
+   },
+   {
+    "name": "isConfirmed",
+    "type": "boolean",
+    "description": "Controlled confirmed state"
+   },
+   {
+    "name": "onConfirm",
+    "type": "() => void",
+    "description": "Callback fired on confirmation reach"
+   },
+   {
+    "name": "onReset",
+    "type": "() => void",
+    "description": "Callback fired when reset back to start"
+   },
+   {
+    "name": "autoResetDelay",
+    "type": "number",
+    "default": "2500",
+    "description": "Reset to start automatically after completion delay (ms). Pass 0 to disable."
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false",
+    "description": "Disabled state"
+   },
+   {
+    "name": "haptic",
+    "type": "boolean",
+    "default": "true",
+    "description": "Enable haptic vibration feedback on confirmation"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom track class name"
+   }
+  ]
+ },
+ "DropdownMenu": {
+  "entry": "ioiti-ui",
+  "file": "src/components/DropdownMenu.tsx",
+  "props": [
+   {
+    "name": "trigger",
+    "type": "ReactElement<TriggerProps>",
+    "required": true,
+    "description": "What opens it: a button that takes a ref (`Button`, `IconButton`), given the menu's props."
+   },
+   {
+    "name": "items",
+    "type": "DropdownMenuItem[]",
+    "required": true
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "The menu's name for a screen reader: \"Actions on the order\"."
+   },
+   {
+    "name": "open",
+    "type": "boolean"
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void"
+   },
+   {
+    "name": "side",
+    "type": "AnchorSide",
+    "values": [
+     "top",
+     "bottom",
+     "left",
+     "right"
+    ],
+    "default": "'bottom'"
+   },
+   {
+    "name": "align",
+    "type": "AnchorAlign",
+    "values": [
+     "center",
+     "end",
+     "start"
+    ],
+    "default": "'start'"
+   }
+  ]
+ },
+ "DynamicIsland": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/dynamic-island.tsx",
+  "props": [
+   {
+    "name": "compact",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What the pill shows, collapsed: the whole pill opens the island."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What the island shows, opened."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "The name of the pill and of the opened island, for screen readers."
+   },
+   {
+    "name": "defaultState",
+    "type": "DynamicIslandState",
+    "values": [
+     "collapsed",
+     "expanded"
+    ],
+    "default": "'collapsed'"
+   },
+   {
+    "name": "state",
+    "type": "DynamicIslandState",
+    "values": [
+     "collapsed",
+     "expanded"
+    ]
+   },
+   {
+    "name": "onStateChange",
+    "type": "(state: DynamicIslandState) => void"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "EmptyState": {
+  "entry": "ioiti-ui",
+  "file": "src/components/EmptyState.tsx",
+  "props": [
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "description": "What would be there, as an icon of lucide-react: `<Inbox />`."
+   },
+   {
+    "name": "title",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What there is not: \"No detection rule yet\"."
+   },
+   {
+    "name": "headingLevel",
+    "type": "1 | 2 | 3 | 4 | 5 | 6",
+    "values": [
+     "2",
+     "3",
+     "4",
+     "1",
+     "5",
+     "6"
+    ],
+    "description": "The level of its heading, one under what holds it: 2 under the page's (3 when `compact`, under a panel's)."
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "description": "Why, and what would bring something."
+   },
+   {
+    "name": "actions",
+    "type": "ReactNode",
+    "description": "What to do about it: a `Button` for an action, a `ButtonLink` for a page, or a few."
+   },
+   {
+    "name": "compact",
+    "type": "boolean",
+    "default": "false",
+    "description": "Smaller and closer: inside a `Panel`, or across the columns of a table's body."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "EmptyText": {
+  "entry": "ioiti-ui",
+  "file": "src/components/messages.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "ErrorText": {
+  "entry": "ioiti-ui",
+  "file": "src/components/messages.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "ExportButton": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ExportButton.tsx",
+  "props": [
+   {
+    "name": "name",
+    "type": "string",
+    "required": true,
+    "description": "File name without date or extension, e.g. \"orders\": the day of the export is added (\"orders-2026-10-26.csv\")."
+   },
+   {
+    "name": "rows",
+    "type": "readonly T[]",
+    "required": true
+   },
+   {
+    "name": "columns",
+    "type": "readonly CsvColumn<T>[]",
+    "required": true
+   }
+  ]
+ },
+ "Field": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Field.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "description": "What the value is for, or how to write it: under the control, in muted text, read out with it (`aria-describedby`, when the control is one element). The label alone names the control then; the error describes it too."
+   },
+   {
+    "name": "error",
+    "type": "ReactNode",
+    "description": "What is wrong with the value, under the control."
+   },
+   {
+    "name": "htmlFor",
+    "type": "string",
+    "description": "The control's `id`, for a control that must not sit inside its label: a Combobox (a label passes an option's click on to its field). The label is then beside it, and names it by `htmlFor`."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true,
+    "description": "The control: an Input, a Select, a Combobox…"
+   }
+  ]
+ },
+ "Flysheet": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean"
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean, details?: { reason: FlysheetCloseReason }) => void",
+    "description": "With why it closed (`details.reason`)."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "FlysheetBody": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "FlysheetClose": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 290,
+   "element": "button"
+  }
+ },
+ "FlysheetContent": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [
+   {
+    "name": "side",
+    "type": "FlysheetSide",
+    "values": [
+     "top",
+     "bottom",
+     "left",
+     "right"
+    ],
+    "default": "\"right\"",
+    "description": "The side it comes from. A child takes its parent's."
+   },
+   {
+    "name": "size",
+    "type": "FlysheetSize",
+    "default": "\"md\"",
+    "description": "A side sheet's width: `sm` (22 rem), `md` (26 rem, EasyUI's) or `lg` (40 rem), or pixels."
+   },
+   {
+    "name": "type",
+    "type": "FlysheetType",
+    "values": [
+     "overlay",
+     "push"
+    ],
+    "default": "\"overlay\"",
+    "description": "`push` pushes the page aside (the body's margin) instead of covering it: a side sheet, from a window `pushMinWidth` wide; narrower, it is drawn over the page. Without a backdrop, it leaves the focus free."
+   },
+   {
+    "name": "pushMinWidth",
+    "type": "number",
+    "default": "PUSH_MIN_WIDTH",
+    "description": "The window's width from which a `push` sheet pushes the page (1024 px)."
+   },
+   {
+    "name": "modal",
+    "type": "boolean",
+    "default": "true",
+    "description": "A backdrop, and the focus held in the sheet (true); false leaves the page in use. A child takes its parent's."
+   },
+   {
+    "name": "closeOnOutsideClick",
+    "type": "boolean",
+    "description": "A click outside closes the sheet: true when it is modal (on its backdrop), false otherwise."
+   },
+   {
+    "name": "resizable",
+    "type": "boolean",
+    "default": "false",
+    "description": "A side sheet the reader may widen or narrow, by its inner edge or with the arrow keys on it."
+   },
+   {
+    "name": "minWidth",
+    "type": "number",
+    "default": "MIN_WIDTH",
+    "description": "In pixels (280)."
+   },
+   {
+    "name": "maxWidth",
+    "type": "number",
+    "description": "In pixels; 88% of the window at most in any case."
+   },
+   {
+    "name": "onResize",
+    "type": "(width: number) => void",
+    "description": "The width the reader gave, in pixels."
+   },
+   {
+    "name": "padding",
+    "type": "FlysheetPadding",
+    "values": [
+     "sm",
+     "md",
+     "lg",
+     "none"
+    ],
+    "default": "\"md\"",
+    "description": "The padding of its header, body and footer (`md`, EasyUI's)."
+   },
+   {
+    "name": "showClose",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "closePosition",
+    "type": "\"inside\" | \"outside\"",
+    "values": [
+     "inside",
+     "outside"
+    ],
+    "default": "\"inside\"",
+    "description": "The close button inside the panel, or outside it, on the side facing the page."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, for a sheet without a FlysheetTitle."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "FlysheetDescription": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "p"
+  }
+ },
+ "FlysheetFooter": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "FlysheetHeader": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "FlysheetTitle": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "h2"
+  }
+ },
+ "FlysheetTrigger": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 290,
+   "element": "button"
+  }
+ },
+ "Form": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "onSubmit",
+    "type": "(e: FormEvent<HTMLFormElement>) => void"
+   }
+  ],
+  "inherits": {
+   "count": 287,
+   "element": "form"
+  }
+ },
+ "FormControl": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "FormDescription": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "p"
+  }
+ },
+ "FormItem": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "error",
+    "type": "string"
+   }
+  ],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "FormLabel": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "required",
+    "type": "boolean"
+   }
+  ],
+  "inherits": {
+   "count": 282,
+   "element": "label"
+  }
+ },
+ "FormMessage": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "error",
+    "type": "string | null"
+   }
+  ],
+  "inherits": {
+   "count": 280,
+   "element": "p"
+  }
+ },
+ "FunnelChart": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/funnel-chart.tsx",
+  "props": [
+   {
+    "name": "stages",
+    "type": "FunnelStage[]",
+    "required": true
+   },
+   {
+    "name": "formatValue",
+    "type": "(n: number) => string",
+    "default": "defaultFormat"
+   },
+   {
+    "name": "showSummary",
+    "type": "boolean",
+    "default": "true",
+    "description": "Overall conversion + biggest drop-off line above the chart (default true)"
+   },
+   {
+    "name": "animated",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "\"\""
+   },
+   {
+    "name": "summaryLabel",
+    "type": "string",
+    "default": "\"overall conversion\"",
+    "description": "What the last stage is of the first, beside its share (\"of the visits ended in a purchase\")."
+   },
+   {
+    "name": "noun",
+    "type": "string",
+    "default": "\"Users\"",
+    "description": "What is counted, in the tooltip and the table (\"Visits\"; EasyUI's \"Users\")."
+   },
+   {
+    "name": "emptyText",
+    "type": "string",
+    "default": "\"No data\"",
+    "description": "Said in place of the chart when there is no stage."
+   }
+  ]
+ },
+ "Hint": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Hint.tsx",
+  "props": [
+   {
+    "name": "content",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "children",
+    "type": "ReactElement",
+    "required": true
+   },
+   {
+    "name": "side",
+    "type": "TooltipSide",
+    "values": [
+     "top",
+     "bottom",
+     "left",
+     "right"
+    ],
+    "default": "'top'"
+   },
+   {
+    "name": "wrap",
+    "type": "boolean",
+    "default": "false",
+    "description": "For what takes no focus of its own: a disabled control (which takes no pointer either: the wrapper gets its hover and its tap) or a plain text. The wrapper then takes the focus, so that a keyboard reaches the hint too."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "The classes of the span around it: a full-width field keeps its width (`flex w-full`)."
+   }
+  ]
+ },
+ "IconButton": {
+  "entry": "ioiti-ui",
+  "file": "src/components/IconButton.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "What it does, in words: an icon alone says nothing to a screen reader."
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "required": true,
+    "description": "An icon of lucide-react, as an element: `<Search />`."
+   },
+   {
+    "name": "hint",
+    "type": "ReactNode",
+    "description": "Shown on hover, keyboard focus and a tap (a Hint, under it). On a disabled button, why it is disabled: the hint is then carried by a wrapper the keyboard and the pointer still reach."
+   }
+  ],
+  "inherits": {
+   "count": 288,
+   "element": "button",
+   "omit": [
+    "children",
+    "aria-label"
+   ]
+  }
+ },
+ "InlineEdit": {
+  "entry": "ioiti-ui",
+  "file": "src/components/InlineEdit.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "onSave",
+    "type": "(value: string) => Saved | Promise<Saved>",
+    "required": true,
+    "description": "Saves the new value; may take its time (a Promise)."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "What the value is, for a screen reader: \"Name of the run\"."
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "default": "'Add a value'"
+   },
+   {
+    "name": "variant",
+    "type": "'text' | 'title'",
+    "values": [
+     "title",
+     "text"
+    ],
+    "default": "'text'",
+    "description": "`text` in a sentence's size; `title` a heading's (`as` says which)."
+   },
+   {
+    "name": "as",
+    "type": "'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span'",
+    "values": [
+     "h1",
+     "h2",
+     "h3",
+     "h4",
+     "p",
+     "span"
+    ],
+    "default": "variant === 'title' ? 'h2' : 'span'"
+   },
+   {
+    "name": "validate",
+    "type": "(value: string) => string | undefined",
+    "description": "What is wrong with a value, before it is saved."
+   },
+   {
+    "name": "readOnly",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Input": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "leftIcon",
+    "type": "ReactNode",
+    "description": "Optional icon rendered at the start of input"
+   },
+   {
+    "name": "rightIcon",
+    "type": "ReactNode",
+    "description": "Optional icon rendered at the end of input"
+   },
+   {
+    "name": "prefix",
+    "type": "ReactNode",
+    "description": "A unit before the value, inside the field (\"€\", \"https://\"): the text keeps clear of it, and a screen reader hears it."
+   },
+   {
+    "name": "suffix",
+    "type": "ReactNode",
+    "description": "A unit after the value, inside the field (\"ms\", \"kg\", \"%\")."
+   },
+   {
+    "name": "error",
+    "type": "string | boolean",
+    "description": "Pass an error message or boolean to trigger danger styling"
+   },
+   {
+    "name": "showPasswordToggle",
+    "type": "boolean",
+    "default": "false",
+    "description": "For type=\"password\", automatically provide a show/hide toggle icon"
+   }
+  ],
+  "inherits": {
+   "count": 309,
+   "element": "input",
+   "omit": [
+    "prefix"
+   ]
+  }
+ },
+ "InteractiveTimeline": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/interactive-timeline.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "TimelineItem[]",
+    "required": true,
+    "default": "[]"
+   },
+   {
+    "name": "defaultSelectedId",
+    "type": "string"
+   },
+   {
+    "name": "defaultExpandedIds",
+    "type": "string[]",
+    "description": "The items open at first (EasyUI opens the selected one alone)."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "What the list of items is called (whose moments they are)."
+   },
+   {
+    "name": "onItemSelect",
+    "type": "(item: TimelineItem) => void"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "collapsible",
+    "type": "boolean",
+    "default": "true"
+   }
+  ],
+  "inherits": {
+   "count": 277,
+   "element": "div"
+  }
+ },
+ "IoitiProvider": {
+  "entry": "ioiti-ui",
+  "file": "src/components/IoitiProvider.tsx",
+  "props": [
+   {
+    "name": "appName",
+    "type": "string",
+    "description": "The application's name, which ends the title of every tab (\"Orders · My App\")."
+   },
+   {
+    "name": "themeStorageKey",
+    "type": "string",
+    "description": "Where the theme chosen is kept in the browser: one key per application. By default the key the pre-paint script was given (`ioiti({ themeStorageKey })` in vite.config), else `ioiti.theme`."
+   },
+   {
+    "name": "reducedMotion",
+    "type": "ReducedMotion",
+    "values": [
+     "user",
+     "always",
+     "never"
+    ],
+    "default": "'user'",
+    "description": "Animations reduced as the system asks (`user`, the default), always, or never: framer-motion's, and the stylesheets' too (a change of page, the loops of spinners, `motion-safe:` and `motion-reduce:`). Reduced, movement goes and fades stay."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "Kbd": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Kbd.tsx",
+  "props": [
+   {
+    "name": "keys",
+    "type": "string",
+    "description": "The keys of a shortcut, as `useShortcut` takes them: `mod+k` (⌘K on an Apple computer, Ctrl K elsewhere), `shift+?`, `g o` (G, then O)."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "description": "A key named as it is, where there are no `keys`: `<Kbd>Esc</Kbd>`."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "KpiGrid": {
+  "entry": "ioiti-ui",
+  "file": "src/components/KpiTile.tsx",
+  "props": [
+   {
+    "name": "columns",
+    "type": "2 | 3 | 4 | 5 | 6",
+    "values": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
+    ],
+    "default": "4",
+    "description": "How many tiles side by side on a wide screen (1280 px; three from 1024 for five or six): four by default."
+   },
+   {
+    "name": "period",
+    "type": "ReactNode",
+    "description": "What the tiles' changes are compared with, said once above the row (\"Compared with yesterday\"), not in every tile; a screen reader hears it with the tiles."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "The grid's own classes."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "KpiStrip": {
+  "entry": "ioiti-ui",
+  "file": "src/components/KpiStrip.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "KpiStripItem[]",
+    "required": true
+   },
+   {
+    "name": "title",
+    "type": "ReactNode",
+    "description": "Its heading."
+   },
+   {
+    "name": "period",
+    "type": "ReactNode",
+    "description": "What the changes are compared with, said once (\"Compared with yesterday\")."
+   },
+   {
+    "name": "columns",
+    "type": "2 | 3 | 4 | 5 | 6",
+    "values": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
+    ],
+    "description": "How many side by side on a wide screen: as many as there are figures, six at most, by default."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "KpiTile": {
+  "entry": "ioiti-ui",
+  "file": "src/components/KpiTile.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "value",
+    "type": "ReactNode",
+    "required": true,
+    "description": "The figure. Proportional digits: tabular ones look loose at this size."
+   },
+   {
+    "name": "hint",
+    "type": "ReactNode",
+    "description": "One line of context under the figure (the limit, the period...)."
+   },
+   {
+    "name": "change",
+    "type": "number",
+    "description": "The figure's change, signed and in the tone of what it means: a percentage by default (`2.5` is \"+2.5%\"), what `changeFormat` writes otherwise. What it is compared with is said once, by KpiGrid's `period`, or by `hint`."
+   },
+   {
+    "name": "goodWhen",
+    "type": "GoodWhen",
+    "values": [
+     "up",
+     "down"
+    ],
+    "description": "Which way is good news: `down` for a cost, a latency, a churn. Up by default."
+   },
+   {
+    "name": "changeFormat",
+    "type": "(change: number) => string",
+    "description": "Writes the change, signed (`(n) => formatMoney(n, 'EUR', true)`)."
+   },
+   {
+    "name": "lead",
+    "type": "boolean",
+    "default": "false",
+    "description": "The tile that leads a row: two columns wide, its chart beside the figure from a tablet up."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "description": "A meter or a sparkline."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "tone",
+    "type": "undefined"
+   },
+   {
+    "name": "toneLabel",
+    "type": "undefined"
+   }
+  ]
+ },
+ "LineChart": {
+  "entry": "ioiti-ui",
+  "file": "src/components/LineChart.tsx",
+  "props": [
+   {
+    "name": "data",
+    "type": "LinePoint[]",
+    "required": true
+   },
+   {
+    "name": "series",
+    "type": "LineSeries[]",
+    "required": true
+   },
+   {
+    "name": "area",
+    "type": "boolean",
+    "default": "false",
+    "description": "An area under the line, for a single series."
+   },
+   {
+    "name": "references",
+    "type": "LineReference[]",
+    "default": "[]",
+    "description": "Horizontal lines: a limit, a target."
+   },
+   {
+    "name": "markers",
+    "type": "LineMarker[]",
+    "default": "[]",
+    "description": "Moments marked across the chart: a restart, a release."
+   },
+   {
+    "name": "zero",
+    "type": "boolean",
+    "default": "false",
+    "description": "Zero kept on the axis (a balance, a result), or the axis fitted to the values (a price, a delay)."
+   },
+   {
+    "name": "height",
+    "type": "number",
+    "default": "240"
+   },
+   {
+    "name": "timeZone",
+    "type": "string",
+    "default": "'UTC'",
+    "description": "The time zone the times are read in."
+   },
+   {
+    "name": "formatValue",
+    "type": "(value: number) => string",
+    "default": "defaultFormat"
+   },
+   {
+    "name": "formatTick",
+    "type": "(value: number) => string",
+    "default": "defaultTick"
+   },
+   {
+    "name": "formatTime",
+    "type": "(t: number) => string",
+    "description": "The moment at the top of the tooltip."
+   },
+   {
+    "name": "details",
+    "type": "(point: LinePoint, index: number) => ChartDetail[]",
+    "description": "More to say of a moment, under its series' values in the tooltip and in the table: \"That day +€12.40\"."
+   },
+   {
+    "name": "connectGaps",
+    "type": "boolean",
+    "default": "false",
+    "description": "A missing value is passed over and the line drawn through it: series measured on days of their own (runs compared over the days of each). A gap in the line otherwise."
+   },
+   {
+    "name": "showLegend",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "animated",
+    "type": "boolean",
+    "default": "true",
+    "description": "Lines drawn in when they first show (not where motion is reduced)."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "LinkProvider": {
+  "entry": "ioiti-ui",
+  "file": "src/components/LinkProvider.tsx",
+  "props": [
+   {
+    "name": "component",
+    "type": "ElementType",
+    "description": "What draws a link, given `href` and the props of an `<a>`: the router's (`RouterLink` of `ioiti-ui/react-router`). A plain `<a>` without one."
+   },
+   {
+    "name": "navigate",
+    "type": "NavigateTo",
+    "description": "Follows an address from code (a palette's Enter, a 404's \"Previous page\"). The window's without one."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "LiveLineChart": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/live-line-chart.tsx",
+  "props": [
+   {
+    "name": "source",
+    "type": "(push: (value: number, time?: number) => void) => void | (() => void)",
+    "description": "Your data feed. Called once; call `push(value)` whenever a new reading arrives and return a cleanup function (close the socket, clear the timer…)."
+   },
+   {
+    "name": "initial",
+    "type": "number[]",
+    "description": "Values already known, oldest → newest, spaced `intervalMs` apart and ending now"
+   },
+   {
+    "name": "initialPoints",
+    "type": "TimestampedPoint[]",
+    "description": "Values already known with their own times (ms), oldest → newest: what the tab kept of a feed."
+   },
+   {
+    "name": "intervalMs",
+    "type": "number",
+    "default": "1000",
+    "description": "How often readings arrive, roughly. Also the small delay that makes motion silky (default 1000)"
+   },
+   {
+    "name": "windowSeconds",
+    "type": "number",
+    "default": "60",
+    "description": "Seconds visible on screen (default 60)"
+   },
+   {
+    "name": "height",
+    "type": "number",
+    "default": "220"
+   },
+   {
+    "name": "color",
+    "type": "string",
+    "default": "\"var(--chart-series)\""
+   },
+   {
+    "name": "unit",
+    "type": "string",
+    "default": "\"\""
+   },
+   {
+    "name": "formatValue",
+    "type": "(n: number) => string",
+    "default": "defaultFormat"
+   },
+   {
+    "name": "formatTick",
+    "type": "(n: number) => string",
+    "default": "defaultTick",
+    "description": "The y-axis labels (EasyUI's compact numbers), short enough for the left margin."
+   },
+   {
+    "name": "formatChange",
+    "type": "(change: number) => string",
+    "description": "The change over the window as the readout says it (latest minus the value at the window's start), in the series' own units, as `formatValue` takes them: a difference, never a percentage. EasyUI gave a percentage of the first value ever pushed, which means nothing for a value that is itself a percentage."
+   },
+   {
+    "name": "domain",
+    "type": "[number, number]"
+   },
+   {
+    "name": "showReadout",
+    "type": "boolean",
+    "default": "true",
+    "description": "Big current value + pause button above the chart (default true)"
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "\"\""
+   }
+  ]
+ },
+ "LiveValue": {
+  "entry": "ioiti-ui",
+  "file": "src/components/LiveValue.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "number | null",
+    "required": true,
+    "description": "The figure now; `null` (or `NaN`) while there is none."
+   },
+   {
+    "name": "format",
+    "type": "(value: number) => string",
+    "default": "(number) => formatNumber(number, Number.isInteger(number) ? 0 : 2)"
+   },
+   {
+    "name": "stale",
+    "type": "boolean",
+    "default": "false",
+    "description": "The figure is old: what sends it stopped. It is muted, and a screen reader hears that it is stale."
+   },
+   {
+    "name": "flash",
+    "type": "boolean",
+    "default": "true",
+    "description": "A change shows in its tone a moment: up in the gain colour, down in the loss colour."
+   },
+   {
+    "name": "invert",
+    "type": "boolean",
+    "default": "false",
+    "description": "Where down is good (a delay, a cost): the tones swap."
+   },
+   {
+    "name": "staleLabel",
+    "type": "string",
+    "default": "'stale'",
+    "description": "The word a screen reader hears for a stale figure."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Loader": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/loader.tsx",
+  "props": [
+   {
+    "name": "size",
+    "type": "number",
+    "default": "32",
+    "description": "Size of the loader in pixels. Default is 32."
+   },
+   {
+    "name": "variant",
+    "type": "'arc' | 'dots' | 'line' | 'rings'",
+    "values": [
+     "line",
+     "arc",
+     "dots",
+     "rings"
+    ],
+    "default": "'arc'",
+    "description": "Visual animation style variant. Default is 'arc'."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Loading...'",
+    "description": "Optional accessible text label."
+   },
+   {
+    "name": "reduceMotion",
+    "type": "boolean",
+    "default": "false",
+    "description": "Force reduced motion if true."
+   },
+   {
+    "name": "color",
+    "type": "string",
+    "default": "'currentColor'",
+    "description": "Custom stroke / fill color. Default inherits or neutral."
+   }
+  ],
+  "inherits": {
+   "count": 277,
+   "element": "div"
+  }
+ },
+ "LogViewer": {
+  "entry": "ioiti-ui",
+  "file": "src/components/LogViewer.tsx",
+  "props": [
+   {
+    "name": "lines",
+    "type": "readonly string[]",
+    "description": "The lines, oldest first; a job's output grows by lines appended."
+   },
+   {
+    "name": "text",
+    "type": "string",
+    "description": "Or the whole text, cut at its line breaks."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "What the log is: its header, and its name for a screen reader (\"Build log\")."
+   },
+   {
+    "name": "follow",
+    "type": "boolean",
+    "default": "true",
+    "description": "Keeps the newest line in sight as lines arrive; scrolling up stops it, and \"Jump to the end\" starts it again."
+   },
+   {
+    "name": "maxLines",
+    "type": "number",
+    "default": "50_000",
+    "description": "The most lines kept: the earlier ones are dropped, and said to be above the first."
+   },
+   {
+    "name": "droppedLines",
+    "type": "number",
+    "default": "0",
+    "description": "Lines already dropped before these (a server that sent only the end): counted in the numbers."
+   },
+   {
+    "name": "defaultWrap",
+    "type": "boolean",
+    "default": "false",
+    "description": "Long lines wrapped at first; the reader can change it."
+   },
+   {
+    "name": "height",
+    "type": "number | string",
+    "default": "384",
+    "description": "The view's height; the log scrolls inside it."
+   },
+   {
+    "name": "downloadName",
+    "type": "string",
+    "default": "'log.txt'",
+    "description": "The name of the file \"Download\" saves."
+   },
+   {
+    "name": "emptyText",
+    "type": "ReactNode",
+    "default": "'Nothing logged yet.'",
+    "description": "Shown while nothing is logged."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "LookPicker": {
+  "entry": "ioiti-ui",
+  "file": "src/components/LookPicker.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Meter": {
+  "entry": "ioiti-ui",
+  "file": "src/components/KpiTile.tsx",
+  "props": [
+   {
+    "name": "ratio",
+    "type": "number",
+    "required": true,
+    "description": "0 to 1."
+   },
+   {
+    "name": "tone",
+    "type": "MeterTone",
+    "values": [
+     "warning",
+     "neutral",
+     "positive",
+     "negative"
+    ],
+    "default": "'neutral'"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "scale",
+    "type": "[string, string]",
+    "description": "What the two ends of the bar stand for, written under it."
+   }
+  ]
+ },
+ "MultiSelect": {
+  "entry": "ioiti-ui",
+  "file": "src/components/MultiSelect.tsx",
+  "props": [
+   {
+    "name": "options",
+    "type": "MultiSelectOption[]",
+    "required": true
+   },
+   {
+    "name": "value",
+    "type": "string[]"
+   },
+   {
+    "name": "defaultValue",
+    "type": "string[]",
+    "default": "[]"
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string[]) => void"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "Its name for a screen reader, where no `<label htmlFor>` names it."
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "Its field's id, for a `Field htmlFor`."
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "default": "'Choose…'"
+   },
+   {
+    "name": "onCreateOption",
+    "type": "(text: string) => MultiSelectOption | string | void",
+    "description": "What is typed may become a value of its own (a tag): given the text, it gives the option made, or its value. Without it, only the options can be chosen."
+   },
+   {
+    "name": "maxChips",
+    "type": "number",
+    "description": "Chips shown before \"+N\" says how many more."
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "error",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "emptyText",
+    "type": "string",
+    "default": "'Nothing matches'",
+    "description": "What the list says when nothing matches."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "NotFound": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/not-found.tsx",
+  "props": [
+   {
+    "name": "errorCode",
+    "type": "string",
+    "default": "\"404\""
+   },
+   {
+    "name": "badgeLabel",
+    "type": "string"
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "default": "\"This page took a wrong turn.\""
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "default": "\"The requested page doesn't exist or may have moved.\""
+   },
+   {
+    "name": "actionLabel",
+    "type": "string"
+   },
+   {
+    "name": "onAction",
+    "type": "() => void"
+   },
+   {
+    "name": "homeHref",
+    "type": "string",
+    "default": "\"/\""
+   },
+   {
+    "name": "homeLabel",
+    "type": "string"
+   },
+   {
+    "name": "showBack",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "backLabel",
+    "type": "string"
+   },
+   {
+    "name": "secondaryActionLabel",
+    "type": "string"
+   },
+   {
+    "name": "onBack",
+    "type": "() => void"
+   },
+   {
+    "name": "onSecondaryAction",
+    "type": "() => void"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   },
+   {
+    "name": "path",
+    "type": "string | null",
+    "description": "The missing path, shown in a small chip. Left undefined it's read from window.location.pathname after mount (the query string is never shown). Pass `null` to hide it."
+   },
+   {
+    "name": "suggestions",
+    "type": "NotFoundSuggestion[]",
+    "description": "Up to 3 helpful destinations"
+   },
+   {
+    "name": "LinkComponent",
+    "type": "ElementType",
+    "description": "Pass next/link (or your router's Link) so navigation stays client-side. ioiti-ui: the application's link (LinkProvider) by default."
+   },
+   {
+    "name": "parallax",
+    "type": "boolean",
+    "default": "true",
+    "description": "Pointer parallax on the illustration (desktop, default true)"
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "\"\""
+   }
+  ]
+ },
+ "NotFoundPage": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/NotFoundState.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string",
+    "default": "'There is no page here.'",
+    "description": "The heading."
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "default": "'The address does not match any page of this application.'"
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "What the trail of the top bar and the tab call the page: the heading, unless said otherwise."
+   },
+   {
+    "name": "parents",
+    "type": "Crumb[]",
+    "description": "The pages between its entry of the menu and itself, as PageHeader takes them."
+   },
+   {
+    "name": "suggestions",
+    "type": "NotFoundSuggestion[]",
+    "description": "Up to three pages that may be what was looked for."
+   },
+   {
+    "name": "pathname",
+    "type": "string",
+    "description": "The address shown: the shell's by default, else the window's."
+   },
+   {
+    "name": "home",
+    "type": "{ href: string; label: string } | null",
+    "description": "The way home, a link; `null` for none."
+   },
+   {
+    "name": "back",
+    "type": "{ label: string } | null",
+    "description": "The way back, a step back in this tab's history; `null` for none."
+   }
+  ]
+ },
+ "NotFoundState": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/NotFoundState.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string",
+    "required": true,
+    "description": "The heading."
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "default": "title",
+    "description": "What the trail of the top bar and the tab call the page: the heading, unless said otherwise."
+   },
+   {
+    "name": "parents",
+    "type": "Crumb[]",
+    "description": "The pages between its entry of the menu and itself, as PageHeader takes them."
+   },
+   {
+    "name": "suggestions",
+    "type": "NotFoundSuggestion[]",
+    "description": "Up to three pages that may be what was looked for."
+   },
+   {
+    "name": "pathname",
+    "type": "string",
+    "description": "The address shown: the shell's by default, else the window's."
+   },
+   {
+    "name": "home",
+    "type": "{ href: string; label: string } | null",
+    "default": "HOME",
+    "description": "The way home, a link; `null` for none."
+   },
+   {
+    "name": "back",
+    "type": "{ label: string } | null",
+    "default": "BACK",
+    "description": "The way back, a step back in this tab's history; `null` for none."
+   }
+  ]
+ },
+ "NotificationBell": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/notification-bell.tsx",
+  "props": [
+   {
+    "name": "notifications",
+    "type": "Notification[]",
+    "required": true,
+    "description": "List of notifications."
+   },
+   {
+    "name": "onMarkAsRead",
+    "type": "(id: string) => void",
+    "required": true,
+    "description": "Handler when an item is marked as read."
+   },
+   {
+    "name": "onMarkAllAsRead",
+    "type": "() => void",
+    "description": "Optional handler to mark all as read."
+   },
+   {
+    "name": "isOpen",
+    "type": "boolean",
+    "description": "Controlled open state of notification drawer/panel."
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(isOpen: boolean) => void",
+    "description": "Open state change handler."
+   },
+   {
+    "name": "showCount",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show numeric counter inside red badge. Default is true."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws an entry's link; the application's (LinkProvider) by default."
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "Under the list (a setting of the notifications, that only the latest are shown)."
+   },
+   {
+    "name": "loading",
+    "type": "boolean",
+    "default": "false",
+    "description": "The notifications are still being read: said in place of the list while there is none (never \"No notifications right now\", which is not known yet)."
+   },
+   {
+    "name": "error",
+    "type": "ReactNode",
+    "description": "They could not be read: what went wrong (`true`: \"The notifications could not be read.\"), in place of the list while there is none, above it otherwise (the list is then the last one read)."
+   },
+   {
+    "name": "onRetry",
+    "type": "() => void",
+    "description": "Reads them again: a \"Try again\" beside the error."
+   },
+   {
+    "name": "triggerClassName",
+    "type": "string",
+    "description": "The trigger's own look, to sit with the buttons around it."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom CSS class names."
+   }
+  ]
+ },
+ "NumberInput": {
+  "entry": "ioiti-ui",
+  "file": "src/components/NumberInput.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "number | null",
+    "description": "The value; `null` (or `NaN`) for none, an empty field."
+   },
+   {
+    "name": "defaultValue",
+    "type": "number | null",
+    "default": "null"
+   },
+   {
+    "name": "onChange",
+    "type": "(value: number | null) => void",
+    "description": "Each value it holds: `null` once emptied. A value being typed (\"1.\", \"-\") is not one yet."
+   },
+   {
+    "name": "min",
+    "type": "number"
+   },
+   {
+    "name": "max",
+    "type": "number"
+   },
+   {
+    "name": "step",
+    "type": "number",
+    "default": "1",
+    "description": "What the arrows and the buttons add or take away (ten times with Shift, Page Up and Page Down)."
+   },
+   {
+    "name": "integer",
+    "type": "boolean",
+    "default": "false",
+    "description": "Whole numbers only."
+   },
+   {
+    "name": "precision",
+    "type": "number",
+    "description": "The digits after the point it shows once it leaves the field."
+   },
+   {
+    "name": "prefix",
+    "type": "ReactNode",
+    "description": "A unit before the value, or after it: \"€\", \"ms\", \"days\"."
+   },
+   {
+    "name": "suffix",
+    "type": "ReactNode"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "Its name for a screen reader, where no `<label htmlFor>` names it."
+   },
+   {
+    "name": "id",
+    "type": "string"
+   },
+   {
+    "name": "name",
+    "type": "string"
+   },
+   {
+    "name": "placeholder",
+    "type": "string"
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "error",
+    "type": "boolean",
+    "default": "false",
+    "description": "A value that is wrong: its border in the negative colour."
+   },
+   {
+    "name": "steppers",
+    "type": "boolean",
+    "default": "true",
+    "description": "The − and + buttons beside it."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "OTPInput": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/otp-input.tsx",
+  "props": [
+   {
+    "name": "length",
+    "type": "number",
+    "default": "6"
+   },
+   {
+    "name": "value",
+    "type": "string"
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string) => void"
+   },
+   {
+    "name": "onComplete",
+    "type": "(value: string) => void"
+   },
+   {
+    "name": "autoFocus",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "boxClassName",
+    "type": "string"
+   },
+   {
+    "name": "aria-label",
+    "type": "string"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The id of the first box, so that a `<label htmlFor>` leads to it."
+   }
+  ]
+ },
+ "PageHeader": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Panel.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "What the trail of the top bar and the browser's tab call the page, where it is deeper than its heading says: a tab of a record, or a record of a tab, under the record's own header (\"Exceptions\", then \"List 42\", under \"Acme (1024)\"). Its title by default."
+   },
+   {
+    "name": "description",
+    "type": "ReactNode"
+   },
+   {
+    "name": "actions",
+    "type": "ReactNode"
+   },
+   {
+    "name": "parents",
+    "type": "Crumb[]",
+    "description": "For the trail of the top bar, on a page deeper than the menu: the pages between its entry of the menu and itself (the order a line of it belongs to). Its name is the page's own step."
+   }
+  ]
+ },
+ "PageTrailProvider": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/PageTrail.tsx",
+  "props": [
+   {
+    "name": "menu",
+    "type": "Menu",
+    "required": true
+   },
+   {
+    "name": "pathname",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "Panel": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Panel.tsx",
+  "props": [
+   {
+    "name": "id",
+    "type": "string",
+    "description": "An anchor a link can lead to (`#trades`)."
+   },
+   {
+    "name": "title",
+    "type": "ReactNode"
+   },
+   {
+    "name": "description",
+    "type": "ReactNode"
+   },
+   {
+    "name": "action",
+    "type": "ReactNode"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "bodyClassName",
+    "type": "string"
+   },
+   {
+    "name": "dense",
+    "type": "boolean",
+    "default": "false",
+    "description": "Its body starts close under the header: for a list or a table whose first row is the content."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "PanelInset": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Panel.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "PeekCard": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/peek-card.tsx",
+  "props": [
+   {
+    "name": "children",
+    "type": "ReactElement",
+    "required": true,
+    "description": "Trigger element (e.g. text link, badge, invoice pill). ioiti-ui: one element, which keeps its own focus and click."
+   },
+   {
+    "name": "renderContent",
+    "type": "() => ReactNode",
+    "required": true,
+    "description": "Custom peek preview renderer. ioiti-ui: called only while the card is open: what it reads is read then."
+   },
+   {
+    "name": "delay",
+    "type": "number",
+    "default": "200",
+    "description": "Hover delay in milliseconds"
+   },
+   {
+    "name": "placement",
+    "type": "'top' | 'bottom' | 'auto'",
+    "values": [
+     "top",
+     "bottom",
+     "auto"
+    ],
+    "default": "'auto'",
+    "description": "Placement preference: 'top' | 'bottom' | 'auto'"
+   },
+   {
+    "name": "openOnTap",
+    "type": "boolean",
+    "default": "true",
+    "description": "On a touch screen, the first tap on the trigger opens the card instead of following the trigger's link; a second tap follows it, and so does the card's own link. Off, a tap follows the link at once."
+   },
+   {
+    "name": "href",
+    "type": "string",
+    "description": "The card's own link to what it shows (\"Open\"), drawn by `linkComponent`."
+   },
+   {
+    "name": "hrefLabel",
+    "type": "string",
+    "default": "'Open'"
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name for trigger"
+   }
+  ]
+ },
+ "PeekLink": {
+  "entry": "ioiti-ui",
+  "file": "src/components/PeekLink.tsx",
+  "props": [
+   {
+    "name": "to",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "content",
+    "type": "() => ReactNode",
+    "required": true,
+    "description": "What the card shows, read once it opens."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "openOnTap",
+    "type": "boolean",
+    "default": "true",
+    "description": "False: a tap follows the link at once, the card being for a pointer and the keyboard only."
+   },
+   {
+    "name": "aria-label",
+    "type": "string"
+   }
+  ]
+ },
+ "Popover": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Popover.tsx",
+  "props": [
+   {
+    "name": "trigger",
+    "type": "ReactElement<TriggerProps>",
+    "required": true,
+    "description": "What opens it: a button that takes a ref (`Button`, `IconButton`), given the popover's props."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode | ((close: () => void) => ReactNode)",
+    "required": true,
+    "description": "What it holds, or a function of `close`, for a control in it that closes it."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "Its name for a screen reader: \"Filters\"."
+   },
+   {
+    "name": "open",
+    "type": "boolean"
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void"
+   },
+   {
+    "name": "side",
+    "type": "AnchorSide",
+    "values": [
+     "top",
+     "bottom",
+     "left",
+     "right"
+    ],
+    "default": "'bottom'"
+   },
+   {
+    "name": "align",
+    "type": "AnchorAlign",
+    "values": [
+     "center",
+     "end",
+     "start"
+    ],
+    "default": "'start'"
+   },
+   {
+    "name": "width",
+    "type": "'trigger' | number | 'auto'",
+    "default": "'auto'",
+    "description": "Its width: the trigger's, a number of pixels, or its content's (the default)."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "ProductTour": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/product-tour.tsx",
+  "props": [
+   {
+    "name": "steps",
+    "type": "TourStep[]",
+    "required": true
+   },
+   {
+    "name": "open",
+    "type": "boolean",
+    "required": true
+   },
+   {
+    "name": "onClose",
+    "type": "(reason: TourCloseReason) => void",
+    "required": true
+   },
+   {
+    "name": "onStepChange",
+    "type": "(index: number) => void"
+   },
+   {
+    "name": "startAt",
+    "type": "number",
+    "default": "0"
+   },
+   {
+    "name": "closeOnOverlayClick",
+    "type": "boolean",
+    "default": "false"
+   }
+  ]
+ },
+ "ProgressBar": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ProgressBar.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What is under way: \"Importing the files\"."
+   },
+   {
+    "name": "value",
+    "type": "number",
+    "description": "Done so far, out of `max`. None for work whose length is not known: the bar then says it is working."
+   },
+   {
+    "name": "max",
+    "type": "number",
+    "default": "100"
+   },
+   {
+    "name": "valueText",
+    "type": "string",
+    "description": "The progress in words, said beside the bar and to a screen reader: \"42 of 120 files\". The percentage otherwise."
+   },
+   {
+    "name": "tone",
+    "type": "MeterTone",
+    "values": [
+     "warning",
+     "neutral",
+     "positive",
+     "negative"
+    ],
+    "default": "'neutral'"
+   },
+   {
+    "name": "size",
+    "type": "'sm' | 'md'",
+    "values": [
+     "sm",
+     "md"
+    ],
+    "default": "'md'"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "PromptComposer": {
+  "entry": "ioiti-ui",
+  "file": "src/components/PromptComposer.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "onValueChange",
+    "type": "(value: string) => void",
+    "required": true
+   },
+   {
+    "name": "onSubmit",
+    "type": "(value: string) => void",
+    "required": true,
+    "description": "The text sent, without its spaces around."
+   },
+   {
+    "name": "onStop",
+    "type": "() => void",
+    "description": "While `busy`: the request under way stopped. Without it, nothing can be sent until it ends."
+   },
+   {
+    "name": "busy",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "disabledReason",
+    "type": "ReactNode",
+    "description": "Why nothing can be sent: shown on the button's hint, on hover, focus and tap."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "The field's name, said to screen readers, and shown unless `hideLabel`."
+   },
+   {
+    "name": "hideLabel",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "placeholder",
+    "type": "string"
+   },
+   {
+    "name": "suggestions",
+    "type": "PromptSuggestion[]",
+    "default": "[]",
+    "description": "Requests to start from: a chip fills the field, which is then read and sent as typed."
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "Under the field: what a request costs, the model it goes to."
+   },
+   {
+    "name": "controls",
+    "type": "ReactNode",
+    "description": "Under the field, before the footer: what the request goes with (a model's menu, a meter). Each is kept whole; where they do not all fit beside the send button (a phone), they wrap onto another line."
+   },
+   {
+    "name": "maxLength",
+    "type": "number"
+   },
+   {
+    "name": "minRows",
+    "type": "number",
+    "default": "2"
+   },
+   {
+    "name": "maxRows",
+    "type": "number",
+    "default": "10",
+    "description": "Longer, the field scrolls."
+   },
+   {
+    "name": "floating",
+    "type": "boolean",
+    "default": "false",
+    "description": "It floats over what scrolls under it, at a page's foot, with no band behind it: its frame lifted by a shadow, blurred glass under the glass material."
+   },
+   {
+    "name": "attachments",
+    "type": "ReactNode",
+    "description": "Above the field, inside its frame: what the request goes with (`AttachmentChip`s). Each wraps whole."
+   },
+   {
+    "name": "onFiles",
+    "type": "(files: File[]) => void",
+    "description": "Files dropped on its frame (shown while one is dragged over it) or pasted into its field (a screenshot): given here, what to do with them the application's. A paste of text stays a paste. Not while `disabled`."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "QueryState": {
+  "entry": "ioiti-ui",
+  "file": "src/components/status.tsx",
+  "props": [
+   {
+    "name": "isPending",
+    "type": "boolean",
+    "required": true
+   },
+   {
+    "name": "error",
+    "type": "Error | null",
+    "required": true
+   },
+   {
+    "name": "hasData",
+    "type": "boolean",
+    "required": true,
+    "description": "There is data from an earlier fetch: keep showing it and report the failure above it."
+   },
+   {
+    "name": "skeleton",
+    "type": "ReactNode"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "RadioGroup": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "name",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "value",
+    "type": "string"
+   },
+   {
+    "name": "defaultValue",
+    "type": "string"
+   },
+   {
+    "name": "options",
+    "type": "RadioOption[]",
+    "default": "[]"
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string) => void"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   }
+  ]
+ },
+ "RadioGroupItem": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "name",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "value",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "checked",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "onChange",
+    "type": "() => void"
+   },
+   {
+    "name": "label",
+    "type": "ReactNode"
+   },
+   {
+    "name": "description",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "RangeSlider": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Slider.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "[number, number]"
+   },
+   {
+    "name": "defaultValue",
+    "type": "[number, number]"
+   },
+   {
+    "name": "onChange",
+    "type": "(value: [number, number]) => void"
+   },
+   {
+    "name": "label",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What it sets, shown above it: \"Risk per trade\"."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "description": "Its name for a screen reader, where the label is not text."
+   },
+   {
+    "name": "min",
+    "type": "number",
+    "default": "0"
+   },
+   {
+    "name": "max",
+    "type": "number",
+    "default": "100"
+   },
+   {
+    "name": "step",
+    "type": "number",
+    "default": "1"
+   },
+   {
+    "name": "format",
+    "type": "(value: number) => string",
+    "default": "(number) => formatNumber(number, step < 1 ? String(step).split('.')[1]?.length ?? 0 : 0)",
+    "description": "The value in words: \"2.5%\", \"45 min\"."
+   },
+   {
+    "name": "ticks",
+    "type": "boolean | number[] | SliderTick[]",
+    "description": "Marks under the track: at every step (`true`), at the values given, or with their labels."
+   },
+   {
+    "name": "levels",
+    "type": "SliderLevel[]",
+    "default": "[]",
+    "description": "Bands of the track in a tone: where a value is safe, to watch, too far."
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "RecoveryLedger": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/recovery-ledger.tsx",
+  "props": [
+   {
+    "name": "entries",
+    "type": "LedgerEntry[]",
+    "required": true,
+    "description": "Array of chronological version history or state recovery entries."
+   },
+   {
+    "name": "currentEntryId",
+    "type": "string",
+    "description": "Currently active / restored state entry ID."
+   },
+   {
+    "name": "onRestore",
+    "type": "(id: string) => Promise<void> | void",
+    "description": "Revert / restore callback. ioiti-ui: the caller opens its confirmation there; the ledger restores nothing itself."
+   },
+   {
+    "name": "onSelect",
+    "type": "(id: string) => void",
+    "description": "Entry selection handler."
+   },
+   {
+    "name": "expandedId",
+    "type": "string | null",
+    "description": "The entry opened, when the caller holds it (null: none)."
+   },
+   {
+    "name": "onExpandedChange",
+    "type": "(id: string | null) => void",
+    "description": "Called with the entry opened, or null once it is closed."
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "default": "'Recovery Ledger'",
+    "description": "The header's title."
+   },
+   {
+    "name": "countLabel",
+    "type": "string",
+    "description": "Beside the title."
+   },
+   {
+    "name": "restoreLabel",
+    "type": "string",
+    "default": "'Revert'",
+    "description": "The text of the restore button."
+   },
+   {
+    "name": "currentLabel",
+    "type": "string",
+    "default": "'Current Head'",
+    "description": "The badge of the current entry."
+   },
+   {
+    "name": "variant",
+    "type": "'timeline' | 'compact'",
+    "values": [
+     "compact",
+     "timeline"
+    ],
+    "default": "'timeline'",
+    "description": "Visual presentation mode. Default is 'timeline'."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom CSS class names."
+   }
+  ]
+ },
+ "RelativeTime": {
+  "entry": "ioiti-ui",
+  "file": "src/components/RelativeTime.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "Date | number | string",
+    "required": true,
+    "description": "The moment: a `Date`, milliseconds, or an ISO string."
+   },
+   {
+    "name": "timeZone",
+    "type": "string",
+    "description": "The time zone its full date is written in, in its hint; the browser's otherwise."
+   },
+   {
+    "name": "past",
+    "type": "boolean",
+    "default": "false",
+    "description": "The moment has happened (a last update, a message received), whatever the clocks say: one a little ahead of this one, taken on a server's, is said \"0 s ago\", not \"in 2 s\"."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "RequestStatus": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/request-status.tsx",
+  "props": [
+   {
+    "name": "status",
+    "type": "RequestLifecycleStatus",
+    "values": [
+     "success",
+     "unknown",
+     "processing",
+     "verifying",
+     "failed"
+    ],
+    "default": "'processing'",
+    "description": "Where the request stands."
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "required": true,
+    "description": "The step's heading, in the caller's words (EasyUI's were a payment's)."
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "description": "What the step means, in the caller's words."
+   },
+   {
+    "name": "subject",
+    "type": "ReactNode",
+    "description": "What it is about, in the pill (EasyUI's amount)."
+   },
+   {
+    "name": "figures",
+    "type": "RequestStatusFigure[]",
+    "default": "[]",
+    "description": "The outcome's figures, once known (EasyUI's transaction details and receipt)."
+   },
+   {
+    "name": "reference",
+    "type": "{ label: string; value: string }",
+    "description": "A reference to copy (an order, a request), with its name."
+   },
+   {
+    "name": "link",
+    "type": "{ href: string; label: string }",
+    "description": "Where it is read further."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws the link; the application's (LinkProvider) by default."
+   },
+   {
+    "name": "onDismiss",
+    "type": "() => void",
+    "description": "The card is put away. It watched, and acted on nothing."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name"
+   }
+  ]
+ },
+ "ResizableHandle": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ResizablePanels.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "string",
+    "description": "What it resizes, for a screen reader: \"Resize the editor\"."
+   }
+  ]
+ },
+ "ResizablePanel": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ResizablePanels.tsx",
+  "props": [
+   {
+    "name": "defaultSize",
+    "type": "number",
+    "required": true,
+    "description": "Its share of the room at first, in percent: the shares of all the panels make 100."
+   },
+   {
+    "name": "minSize",
+    "type": "number",
+    "description": "The least share it keeps, in percent (unless collapsed)."
+   },
+   {
+    "name": "maxSize",
+    "type": "number"
+   },
+   {
+    "name": "collapsible",
+    "type": "boolean",
+    "description": "Enter on a handle beside it folds it away, and back."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "Its name, for the handle that resizes it."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   }
+  ]
+ },
+ "ResizablePanels": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ResizablePanels.tsx",
+  "props": [
+   {
+    "name": "direction",
+    "type": "'horizontal' | 'vertical'",
+    "values": [
+     "horizontal",
+     "vertical"
+    ],
+    "default": "'horizontal'",
+    "description": "Side by side (`horizontal`) or one over the other (`vertical`)."
+   },
+   {
+    "name": "onSizesChange",
+    "type": "(sizes: number[]) => void",
+    "description": "Every panel's share, in percent, once a handle has moved them."
+   },
+   {
+    "name": "stackBelow",
+    "type": "number",
+    "description": "Under this width (in pixels), the panels go one under the other and the handles go."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true,
+    "description": "ResizablePanel, ResizableHandle, ResizablePanel…"
+   }
+  ]
+ },
+ "RouterAppShell": {
+  "entry": "ioiti-ui/react-router",
+  "file": "src/react-router/RouterAppShell.tsx",
+  "props": [
+   {
+    "name": "menu",
+    "type": "Menu<S>",
+    "required": true,
+    "description": "The application's menu: the sidebar lists it, the trail of the top bar says where the page is in it."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Classes of the frame, which fills the window (`h-dvh`); drawn in a box of a page (a demo): `h-full`."
+   },
+   {
+    "name": "home",
+    "type": "{ label: string; href: string }",
+    "description": "The first step of the trail."
+   },
+   {
+    "name": "appName",
+    "type": "string",
+    "description": "The name at the top of the sidebar; IoitiProvider's `appName` by default."
+   },
+   {
+    "name": "appDetail",
+    "type": "ReactNode",
+    "description": "A line under the name (a version: `v1.2.0`)."
+   },
+   {
+    "name": "brandMark",
+    "type": "ReactNode",
+    "description": "The square beside the name; the name's first letter by default."
+   },
+   {
+    "name": "sidebarHeader",
+    "type": "ReactNode",
+    "description": "In place of the name and its mark, at the top of the sidebar."
+   },
+   {
+    "name": "sidebarFooter",
+    "type": "ReactNode",
+    "description": "At the bottom of the sidebar, above its Collapse button: a sign-out (SidebarFooterButton)."
+   },
+   {
+    "name": "topBarChips",
+    "type": "ReactNode",
+    "description": "States the user must not miss, after the trail (StateChip); nothing takes room while there is none."
+   },
+   {
+    "name": "topBarEnd",
+    "type": "ReactNode",
+    "description": "The right end of the top bar (search, notifications…): the theme button by default, `null` for nothing."
+   },
+   {
+    "name": "isWide",
+    "type": "(pathname: string) => boolean",
+    "description": "The pages that take the whole width (an editor beside its preview, a chart); the others stop at 80rem."
+   },
+   {
+    "name": "pageOf",
+    "type": "(pathname: string) => string",
+    "description": "Which page an address shows: the page moves (fades out, the next rising in) only between two, and opens at its top. Addresses of one page change it in place, where it was scrolled: its tabs, a record's sheet over its list (`/rules/:id` is `/rules`), a redirect to its first tab. Each address is a page of its own by default."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws the menu's links; the application's (LinkProvider) by default."
+   },
+   {
+    "name": "defaultCollapsed",
+    "type": "boolean"
+   },
+   {
+    "name": "shortcutsDialog",
+    "type": "boolean",
+    "default": "true",
+    "description": "The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "description": "The page; the router's child routes (`<Outlet />`) by default."
+   }
+  ]
+ },
+ "RouterLeaveGuard": {
+  "entry": "ioiti-ui/react-router",
+  "file": "src/react-router/RouterLeaveGuard.tsx",
+  "props": [
+   {
+    "name": "when",
+    "type": "boolean",
+    "required": true,
+    "description": "Whether leaving the page would lose something: changes not saved."
+   },
+   {
+    "name": "within",
+    "type": "string",
+    "description": "The address under which the changes are kept, the page's own views (`/settings` for `/settings/mail` and `/settings/billing`, which share one draft): going from one to another is no leaving."
+   },
+   {
+    "name": "allowed",
+    "type": "(pathname: string) => boolean",
+    "description": "An address the page may go to without asking, whatever is lost: the sign-in page a lapsed session is sent to, where staying would save nothing."
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "default": "'Leave without saving?'"
+   },
+   {
+    "name": "message",
+    "type": "ReactNode",
+    "default": "'The changes on this page are not saved: leaving it loses them.'"
+   },
+   {
+    "name": "stayLabel",
+    "type": "string",
+    "default": "'Stay'"
+   },
+   {
+    "name": "leaveLabel",
+    "type": "string",
+    "default": "'Leave'"
+   }
+  ]
+ },
+ "RouterLink": {
+  "entry": "ioiti-ui/react-router",
+  "file": "src/react-router/RouterLink.tsx",
+  "props": [],
+  "inherits": {
+   "count": 288,
+   "element": "a"
+  }
+ },
+ "RouterRoot": {
+  "entry": "ioiti-ui/react-router",
+  "file": "src/react-router/RouterRoot.tsx",
+  "props": [
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "description": "The pages; the router's child routes (`<Outlet />`) by default."
+   },
+   {
+    "name": "toastWrapperClassName",
+    "type": "string",
+    "description": "Classes of the toasts' frame, to move them (above a bar fixed at the bottom of a page: `bottom-20`)."
+   }
+  ]
+ },
+ "SaveBar": {
+  "entry": "ioiti-ui",
+  "file": "src/components/SaveBar.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean",
+    "required": true,
+    "description": "Shown while there is something to save."
+   },
+   {
+    "name": "message",
+    "type": "ReactNode",
+    "default": "'Unsaved changes'",
+    "description": "What there is to save: \"3 unsaved changes\"."
+   },
+   {
+    "name": "onSave",
+    "type": "() => void",
+    "required": true
+   },
+   {
+    "name": "onDiscard",
+    "type": "() => void",
+    "description": "Gives up the changes; no Discard button without it."
+   },
+   {
+    "name": "saving",
+    "type": "boolean",
+    "default": "false",
+    "description": "The save is on its way."
+   },
+   {
+    "name": "saveDisabled",
+    "type": "boolean",
+    "default": "false",
+    "description": "Save cannot be pressed: what there is to save is not valid yet (say why in `error`)."
+   },
+   {
+    "name": "error",
+    "type": "ReactNode",
+    "description": "Why it cannot be saved, or why the last save failed: said at once to a screen reader."
+   },
+   {
+    "name": "saveLabel",
+    "type": "string",
+    "default": "'Save'"
+   },
+   {
+    "name": "discardLabel",
+    "type": "string",
+    "default": "'Discard'"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "description": "Other actions, before Discard and Save."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Unsaved changes'",
+    "description": "Its name for a screen reader."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "ScrollProgressNav": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/scroll-progress-nav.tsx",
+  "props": [
+   {
+    "name": "sections",
+    "type": "NavSectionItem[]",
+    "default": "defaultSections",
+    "description": "Section navigation items"
+   },
+   {
+    "name": "scrollThreshold",
+    "type": "number",
+    "default": "150",
+    "description": "Threshold in px to morph into floating pill"
+   },
+   {
+    "name": "activeId",
+    "type": "string",
+    "description": "Active section manual override or default"
+   },
+   {
+    "name": "mode",
+    "type": "'fixed' | 'inline' | 'sticky'",
+    "values": [
+     "inline",
+     "fixed",
+     "sticky"
+    ],
+    "default": "'fixed'",
+    "description": "Position mode: 'fixed' attaches to screen viewport, 'inline'/'sticky' stays within parent container"
+   },
+   {
+    "name": "containerRef",
+    "type": "RefObject<HTMLElement | null>",
+    "description": "Optional scroll container reference"
+   },
+   {
+    "name": "onSectionClick",
+    "type": "(id: string) => void",
+    "description": "Callback fired when a section is clicked"
+   },
+   {
+    "name": "position",
+    "type": "'top-center' | 'bottom-center' | 'top-right'",
+    "values": [
+     "top-center",
+     "bottom-center",
+     "top-right"
+    ],
+    "default": "'top-center'",
+    "description": "Position alignment when mode is 'fixed': 'top-center' | 'bottom-center' | 'top-right'"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Table of contents'",
+    "description": "What the nav is called (default 'Table of contents')."
+   }
+  ]
+ },
+ "SegmentedControl": {
+  "entry": "ioiti-ui",
+  "file": "src/components/SegmentedControl.tsx",
+  "props": [
+   {
+    "name": "options",
+    "type": "SegmentedControlOption<T>[]",
+    "required": true
+   },
+   {
+    "name": "value",
+    "type": "T"
+   },
+   {
+    "name": "defaultValue",
+    "type": "T"
+   },
+   {
+    "name": "onChange",
+    "type": "(value: T) => void"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "The group's name for a screen reader: what is chosen (\"Period\"). Or `labelledBy`, a heading's id."
+   },
+   {
+    "name": "labelledBy",
+    "type": "string"
+   },
+   {
+    "name": "size",
+    "type": "'sm' | 'md'",
+    "values": [
+     "sm",
+     "md"
+    ],
+    "default": "'md'"
+   },
+   {
+    "name": "fullWidth",
+    "type": "boolean",
+    "default": "false",
+    "description": "As wide as its container, the segments sharing it."
+   },
+   {
+    "name": "role",
+    "type": "'radiogroup' | 'tablist'",
+    "values": [
+     "radiogroup",
+     "tablist"
+    ],
+    "default": "'radiogroup'",
+    "description": "A choice (`radiogroup`, the default), or the tabs that switch panels (`tablist`)."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Select": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "options",
+    "type": "SelectOption[]",
+    "default": "[]"
+   },
+   {
+    "name": "error",
+    "type": "string | boolean"
+   }
+  ],
+  "inherits": {
+   "count": 288,
+   "element": "select"
+  }
+ },
+ "SelectionBasket": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/selection-basket.tsx",
+  "props": [
+   {
+    "name": "selectedCount",
+    "type": "number",
+    "required": true,
+    "description": "Count of selected items"
+   },
+   {
+    "name": "totalCount",
+    "type": "number",
+    "description": "Total count of all items (for select all calculation)"
+   },
+   {
+    "name": "mode",
+    "type": "'fixed' | 'contained' | 'inline' | 'sticky'",
+    "values": [
+     "inline",
+     "fixed",
+     "sticky",
+     "contained"
+    ],
+    "default": "'fixed'",
+    "description": "Position mode: 'fixed' attaches to browser viewport, 'contained' / 'inline' stays within parent container. ioiti-ui: 'sticky' stays at the bottom of the screen while its list is on it, and rests under the list past it."
+   },
+   {
+    "name": "actions",
+    "type": "SelectionActionItem[]",
+    "default": "defaultActions",
+    "description": "Custom actions list"
+   },
+   {
+    "name": "onClearSelection",
+    "type": "() => void",
+    "description": "Callback to clear all selections"
+   },
+   {
+    "name": "onSelectAll",
+    "type": "() => void",
+    "description": "Callback to select all items"
+   },
+   {
+    "name": "allSelected",
+    "type": "boolean",
+    "description": "Whether every item that can be is selected (EasyUI compares the counts, wrong once a search hides some)."
+   },
+   {
+    "name": "noun",
+    "type": "[string, string]",
+    "default": "['item', 'items']",
+    "description": "What an item is, one and several (\"file\", \"files\")."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws an action that has an `href`; the application's link (LinkProvider) by default."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name"
+   }
+  ]
+ },
+ "SettleModal": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/settle-modal.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean",
+    "required": true
+   },
+   {
+    "name": "onClose",
+    "type": "() => void",
+    "required": true
+   },
+   {
+    "name": "title",
+    "type": "ReactNode"
+   },
+   {
+    "name": "description",
+    "type": "ReactNode"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "Footer area (typically action buttons)"
+   },
+   {
+    "name": "hideCloseButton",
+    "type": "boolean",
+    "default": "false",
+    "description": "Hide the close (X) button in the top-right"
+   },
+   {
+    "name": "closeOnBackdrop",
+    "type": "boolean",
+    "default": "true",
+    "description": "Click on backdrop closes the modal (default true)"
+   },
+   {
+    "name": "size",
+    "type": "'sm' | 'md' | 'lg' | 'xl' | 'full'",
+    "values": [
+     "sm",
+     "md",
+     "lg",
+     "xl",
+     "full"
+    ],
+    "default": "'md'",
+    "description": "Maximum width of the modal (Tailwind class). ioiti-ui: `xl` for a form with rows of fields, `full` for what is read side by side (two versions of a script)."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "ShortcutsDialog": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ShortcutsDialog.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean"
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void"
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "default": "'Keyboard shortcuts'"
+   },
+   {
+    "name": "keys",
+    "type": "string | null",
+    "default": "'?'",
+    "description": "The key that opens it; `null` for none (a button of the application's opens it)."
+   }
+  ]
+ },
+ "Sidebar": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/sidebar.tsx",
+  "props": [
+   {
+    "name": "sections",
+    "type": "SidebarSection[]",
+    "required": true
+   },
+   {
+    "name": "activeId",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "onActiveChange",
+    "type": "(id: string) => void",
+    "description": "Optional; an entry with an `href` leads there by itself."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws an entry that has an `href` (the router's link, given `href`); the application's link (LinkProvider) by default, else `a`."
+   },
+   {
+    "name": "header",
+    "type": "ReactNode"
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode"
+   },
+   {
+    "name": "collapsed",
+    "type": "boolean"
+   },
+   {
+    "name": "defaultCollapsed",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "onCollapsedChange",
+    "type": "(collapsed: boolean) => void"
+   },
+   {
+    "name": "mobileOpen",
+    "type": "boolean"
+   },
+   {
+    "name": "onMobileOpenChange",
+    "type": "(open: boolean) => void"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "SidebarFooterButton": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/AppShell.tsx",
+  "props": [
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "required": true,
+    "description": "An icon of lucide-react, as an element: `<LogOut />`."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true
+   }
+  ],
+  "inherits": {
+   "count": 289,
+   "element": "button",
+   "omit": [
+    "children"
+   ]
+  }
+ },
+ "SidebarTrigger": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/sidebar.tsx",
+  "props": [],
+  "inherits": {
+   "count": 290,
+   "element": "button"
+  }
+ },
+ "SignedValue": {
+  "entry": "ioiti-ui",
+  "file": "src/components/status.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "number | null | undefined",
+    "required": true
+   },
+   {
+    "name": "kind",
+    "type": "'money' | 'percent'",
+    "values": [
+     "money",
+     "percent"
+    ],
+    "required": true
+   },
+   {
+    "name": "currency",
+    "type": "string | null",
+    "description": "For money: the currency's code (EUR by default)."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "animate",
+    "type": "boolean",
+    "default": "false",
+    "description": "Its digits roll to each new value: for a figure that changes in front of the user."
+   },
+   {
+    "name": "stale",
+    "type": "boolean",
+    "default": "false",
+    "description": "The figure is old: what sends it stopped (a live result no longer published). It is muted, as `LiveValue` mutes one, its sign telling a gain from a loss still, and a screen reader hears that it is stale."
+   },
+   {
+    "name": "staleLabel",
+    "type": "string",
+    "default": "'stale'",
+    "description": "The word a screen reader hears for a stale figure."
+   }
+  ]
+ },
+ "SignInProviders": {
+  "entry": "ioiti-ui",
+  "file": "src/components/SignInProviders.tsx",
+  "props": [
+   {
+    "name": "providers",
+    "type": "SignInProvider[]",
+    "required": true,
+    "description": "A button the whole width for each, in this order. Without any, the form alone."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "description": "The form of a password, beside the providers, a line between."
+   },
+   {
+    "name": "placement",
+    "type": "'before' | 'after'",
+    "values": [
+     "before",
+     "after"
+    ],
+    "default": "'before'",
+    "description": "Where the providers stand: before the form, or after it."
+   },
+   {
+    "name": "divider",
+    "type": "ReactNode",
+    "default": "'or'",
+    "description": "The words on the line between the providers and the form; `''` for a line without words, `null` for none."
+   },
+   {
+    "name": "pending",
+    "type": "string | null",
+    "description": "The provider the browser is on its way to, by its id: its button busy, the others disabled. Any other id (the form's own, while it is sent) leaves them all disabled; `null`, none. Left to the component when not given: a plain click on one marks it (one with ⌘ or Ctrl, which opens another tab, does not)."
+   },
+   {
+    "name": "onPendingChange",
+    "type": "(id: string | null) => void",
+    "description": "Told of the provider chosen (its id), so that the form can wait too; and of `null` when the page comes back from the browser's history (Back, from the provider's page) with nothing on its way any more."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Single sign-on'",
+    "description": "The providers' name for a screen reader."
+   },
+   {
+    "name": "variant",
+    "type": "ButtonVariant",
+    "values": [
+     "link",
+     "default",
+     "primary",
+     "secondary",
+     "outline",
+     "ghost",
+     "destructive",
+     "success",
+     "gradient"
+    ],
+    "default": "'outline'",
+    "description": "The look of their buttons."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Skeleton": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/skeleton.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "SkeletonAvatar": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/skeleton.tsx",
+  "props": [
+   {
+    "name": "size",
+    "type": "number",
+    "default": "40"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "SkeletonReveal": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/skeleton.tsx",
+  "props": [
+   {
+    "name": "loading",
+    "type": "boolean",
+    "required": true
+   },
+   {
+    "name": "skeleton",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "SkeletonText": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/skeleton.tsx",
+  "props": [
+   {
+    "name": "lines",
+    "type": "number",
+    "default": "3"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Slider": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Slider.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "number"
+   },
+   {
+    "name": "defaultValue",
+    "type": "number"
+   },
+   {
+    "name": "onChange",
+    "type": "(value: number) => void"
+   },
+   {
+    "name": "showInput",
+    "type": "boolean",
+    "default": "false",
+    "description": "A field beside it, to type the value."
+   },
+   {
+    "name": "label",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What it sets, shown above it: \"Risk per trade\"."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "description": "Its name for a screen reader, where the label is not text."
+   },
+   {
+    "name": "min",
+    "type": "number",
+    "default": "0"
+   },
+   {
+    "name": "max",
+    "type": "number",
+    "default": "100"
+   },
+   {
+    "name": "step",
+    "type": "number",
+    "default": "1"
+   },
+   {
+    "name": "format",
+    "type": "(value: number) => string",
+    "default": "(number) => formatNumber(number, step < 1 ? String(step).split('.')[1]?.length ?? 0 : 0)",
+    "description": "The value in words: \"2.5%\", \"45 min\"."
+   },
+   {
+    "name": "ticks",
+    "type": "boolean | number[] | SliderTick[]",
+    "description": "Marks under the track: at every step (`true`), at the values given, or with their labels."
+   },
+   {
+    "name": "levels",
+    "type": "SliderLevel[]",
+    "default": "[]",
+    "description": "Bands of the track in a tone: where a value is safe, to watch, too far."
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "SmartComparison": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/smart-comparison.tsx",
+  "props": [
+   {
+    "name": "plans",
+    "type": "ComparisonPlan[]",
+    "required": true,
+    "default": "[]"
+   },
+   {
+    "name": "categories",
+    "type": "ComparisonCategory[]",
+    "required": true,
+    "default": "[]"
+   },
+   {
+    "name": "defaultPlanId",
+    "type": "string"
+   },
+   {
+    "name": "enableSearch",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "enableDiffFilter",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Feature and plan comparison'",
+    "description": "What the matrix is called, for screen readers."
+   },
+   {
+    "name": "matrixTitle",
+    "type": "string",
+    "default": "'Feature Matrix'",
+    "description": "The words of the matrix's own column, and of its count of rows."
+   },
+   {
+    "name": "countLabel",
+    "type": "(count: number) => string",
+    "default": "(count) => `${count} specifications`"
+   },
+   {
+    "name": "searchPlaceholder",
+    "type": "string",
+    "default": "'Filter capabilities...'"
+   },
+   {
+    "name": "diffLabel",
+    "type": "string",
+    "default": "'Differences only'"
+   },
+   {
+    "name": "emptyText",
+    "type": "string",
+    "default": "'No features match your current search or difference filters.'"
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws a plan's link; the application's (LinkProvider) by default."
+   }
+  ],
+  "inherits": {
+   "count": 277,
+   "element": "div"
+  }
+ },
+ "SmoothAccordion": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/smooth-accordion.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "AccordionItem[]",
+    "required": true
+   },
+   {
+    "name": "allowMultiple",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "defaultOpen",
+    "type": "string[]",
+    "default": "[]"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Sparkline": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Sparkline.tsx",
+  "props": [
+   {
+    "name": "values",
+    "type": "number[]",
+    "required": true
+   },
+   {
+    "name": "variant",
+    "type": "'line' | 'bars'",
+    "values": [
+     "line",
+     "bars"
+    ],
+    "default": "'line'",
+    "description": "A line (the default), or bars from zero: a gain up, a loss down."
+   },
+   {
+    "name": "tone",
+    "type": "'auto' | Tone",
+    "values": [
+     "neutral",
+     "positive",
+     "negative",
+     "auto"
+    ],
+    "default": "'auto'",
+    "description": "Its colour: `auto` says the direction (a line by its last value against its first, each bar by its sign), a tone says one for all, `neutral` is the series colour (the accent's, where the look has one). Where down is good (a delay), give the tone."
+   },
+   {
+    "name": "width",
+    "type": "number",
+    "default": "96",
+    "description": "In pixels."
+   },
+   {
+    "name": "height",
+    "type": "number",
+    "default": "24"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "What it shows (\"Orders per day\"): a screen reader hears it before its first, last, highest and lowest values."
+   },
+   {
+    "name": "format",
+    "type": "(value: number) => string",
+    "default": "(value) => formatNumber(value, Number.isInteger(value) ? 0 : 2)"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "SplitButton": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/split-button.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "Label for the primary (left) action."
+   },
+   {
+    "name": "onClick",
+    "type": "() => void",
+    "description": "Called when the primary action is pressed."
+   },
+   {
+    "name": "href",
+    "type": "string",
+    "description": "Where the primary action leads: it is then a link."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws the links; the application's (LinkProvider) by default."
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "description": "An icon before the primary label."
+   },
+   {
+    "name": "menuLabel",
+    "type": "string",
+    "description": "The name of the chevron and its menu (EasyUI's \"More <label> options\")."
+   },
+   {
+    "name": "options",
+    "type": "SplitButtonOption[]",
+    "required": true,
+    "description": "Dropdown options revealed by the chevron trigger."
+   },
+   {
+    "name": "size",
+    "type": "SplitButtonSize",
+    "values": [
+     "sm",
+     "md",
+     "lg"
+    ],
+    "default": "'md'"
+   },
+   {
+    "name": "variant",
+    "type": "'primary' | 'secondary' | 'danger' | 'info'",
+    "values": [
+     "primary",
+     "secondary",
+     "danger",
+     "info"
+    ],
+    "default": "'primary'",
+    "description": "`primary` matches the light accent CTA. `secondary` matches the raised control style."
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ],
+  "inherits": {
+   "count": 285,
+   "element": "button",
+   "omit": [
+    "onClick"
+   ]
+  }
+ },
+ "SpotlightSearch": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/spotlight-search.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean",
+    "description": "Controlled open state"
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void",
+    "description": "Callback when open state changes"
+   },
+   {
+    "name": "onClose",
+    "type": "() => void",
+    "description": "Optional close callback"
+   },
+   {
+    "name": "items",
+    "type": "SpotlightSearchItem[]",
+    "description": "Searchable items database override"
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "default": "'Search…'",
+    "description": "Search input placeholder"
+   },
+   {
+    "name": "recentSearches",
+    "type": "string[]",
+    "default": "[]",
+    "description": "Recent searches list"
+   },
+   {
+    "name": "onSelect",
+    "type": "(item: SpotlightSearchItem) => void",
+    "description": "Callback when an item is selected"
+   },
+   {
+    "name": "enableGlobalShortcut",
+    "type": "boolean",
+    "default": "false",
+    "description": "Enable internal global Cmd+K shortcut"
+   },
+   {
+    "name": "onNavigate",
+    "type": "(href: string) => void",
+    "description": "What follows an entry's `href` when Enter chooses it (the router's navigate); the application's (LinkProvider) by default."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws an entry with an `href`; the application's link (LinkProvider) by default."
+   },
+   {
+    "name": "onQueryChange",
+    "type": "(query: string) => void",
+    "description": "Told of what is typed, for entries made from it."
+   },
+   {
+    "name": "limit",
+    "type": "number",
+    "default": "50",
+    "description": "The most entries listed at once; the others are found by typing."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Spotlight Search'",
+    "description": "What the dialog is called."
+   },
+   {
+    "name": "grouped",
+    "type": "boolean",
+    "default": "false",
+    "description": "The entries under a heading for each category, in the order the categories first come."
+   },
+   {
+    "name": "closeOnSelect",
+    "type": "boolean",
+    "default": "true",
+    "description": "`false` keeps it open once an entry is chosen (one without an `href`), to choose another: several things attached, added, ticked. Escape or a click outside closes it."
+   },
+   {
+    "name": "picked",
+    "type": "string[]",
+    "description": "The ids of the entries chosen already, each marked with a tick (and `aria-checked`). Choosing one again calls `onSelect` again: what that means (taking it back) is the application's."
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "Under the list: what was chosen, how to finish."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name"
+   }
+  ]
+ },
+ "SpringSelect": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/spring-select.tsx",
+  "props": [
+   {
+    "name": "options",
+    "type": "SpringSelectOption[]",
+    "required": true,
+    "description": "Option list"
+   },
+   {
+    "name": "value",
+    "type": "string",
+    "description": "Currently selected value (controlled)"
+   },
+   {
+    "name": "defaultValue",
+    "type": "string",
+    "description": "Default selected value (uncontrolled)"
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "default": "'Select…'",
+    "description": "Placeholder when no value is selected"
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string) => void",
+    "description": "Change handler"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "Visible label"
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false",
+    "description": "Disabled state"
+   },
+   {
+    "name": "error",
+    "type": "string",
+    "description": "Error message"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name for the root"
+   }
+  ]
+ },
+ "StatCard": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/stat-card.tsx",
+  "props": [
+   {
+    "name": "label",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "value",
+    "type": "number",
+    "required": true,
+    "description": "The headline number (usually the latest point of `trend`)"
+   },
+   {
+    "name": "trend",
+    "type": "number[]",
+    "required": true,
+    "description": "Points for the sparkline, oldest → newest"
+   },
+   {
+    "name": "trendLabels",
+    "type": "string[]",
+    "description": "Names for each trend point, shown while scrubbing (e.g. \"Oct 12\")"
+   },
+   {
+    "name": "previous",
+    "type": "number",
+    "description": "Previous-period value → the delta is computed from it"
+   },
+   {
+    "name": "delta",
+    "type": "number",
+    "description": "…or give the delta in percent directly"
+   },
+   {
+    "name": "goodWhen",
+    "type": "\"up\" | \"down\"",
+    "values": [
+     "up",
+     "down"
+    ],
+    "default": "\"up\"",
+    "description": "Which direction is good news. Use \"down\" for churn, latency, costs"
+   },
+   {
+    "name": "period",
+    "type": "string",
+    "default": "\"vs previous period\"",
+    "description": "Text under the number, e.g. \"vs last 30 days\""
+   },
+   {
+    "name": "format",
+    "type": "(n: number) => string",
+    "default": "defaultFormat"
+   },
+   {
+    "name": "toneOf",
+    "type": "(n: number) => string | undefined",
+    "description": "A class for the headline by the value shown (a profit green, a loss red), the scrubbed point's too."
+   },
+   {
+    "name": "color",
+    "type": "string",
+    "default": "\"var(--chart-series)\""
+   },
+   {
+    "name": "animated",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "\"\""
+   }
+  ]
+ },
+ "StateChip": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/StateChip.tsx",
+  "props": [
+   {
+    "name": "to",
+    "type": "string",
+    "required": true,
+    "description": "The page where it is dealt with."
+   },
+   {
+    "name": "tone",
+    "type": "keyof typeof CHIP_TONE",
+    "values": [
+     "success",
+     "warning",
+     "danger"
+    ],
+    "required": true,
+    "description": "What it is: something to fix (danger), to watch (warning), or good news (success)."
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "hint",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What it means and what to do, for the tooltip."
+   }
+  ]
+ },
+ "StatGrid": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/stat-card.tsx",
+  "props": [
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "default": "\"\""
+   }
+  ]
+ },
+ "StatusBadge": {
+  "entry": "ioiti-ui",
+  "file": "src/components/status.tsx",
+  "props": [
+   {
+    "name": "status",
+    "type": "HealthStatus",
+    "values": [
+     "disabled",
+     "warning",
+     "down",
+     "ok",
+     "unknown"
+    ],
+    "required": true
+   },
+   {
+    "name": "label",
+    "type": "string"
+   }
+  ]
+ },
+ "StatusHistory": {
+  "entry": "ioiti-ui",
+  "file": "src/components/StatusHistory.tsx",
+  "props": [
+   {
+    "name": "slots",
+    "type": "StatusHistorySlot[]",
+    "required": true,
+    "description": "One slot of time each, the oldest first."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "What the strip is the history of (\"API, the last 24 hours\"): its name for a screen reader."
+   },
+   {
+    "name": "unit",
+    "type": "StatusHistoryUnit",
+    "description": "What one slot is called, and more than one: hour and hours by default."
+   },
+   {
+    "name": "summary",
+    "type": "string",
+    "description": "The strip in words, in place of the one written from its slots (\"23 hours up, 1 degraded at 14:00\")."
+   },
+   {
+    "name": "scale",
+    "type": "[string, string]",
+    "description": "What its two ends stand for, written under it (\"24 h ago\", \"Now\")."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "StepPanels": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/stepper.tsx",
+  "props": [
+   {
+    "name": "current",
+    "type": "number",
+    "required": true
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true,
+    "description": "One child per step, in order."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Stepper": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/stepper.tsx",
+  "props": [
+   {
+    "name": "steps",
+    "type": "Step[]",
+    "required": true
+   },
+   {
+    "name": "current",
+    "type": "number",
+    "required": true,
+    "description": "Zero-based index of the active step."
+   },
+   {
+    "name": "onStepChange",
+    "type": "(index: number) => void",
+    "description": "Makes completed steps clickable (jump back)."
+   },
+   {
+    "name": "orientation",
+    "type": "\"horizontal\" | \"vertical\"",
+    "values": [
+     "horizontal",
+     "vertical"
+    ],
+    "default": "\"horizontal\""
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "StretchSwitch": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/stretch-switch.tsx",
+  "props": [
+   {
+    "name": "checked",
+    "type": "boolean"
+   },
+   {
+    "name": "defaultChecked",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "onChange",
+    "type": "(checked: boolean) => void"
+   },
+   {
+    "name": "label",
+    "type": "ReactNode"
+   },
+   {
+    "name": "description",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Switch": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "checked",
+    "type": "boolean"
+   },
+   {
+    "name": "defaultChecked",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "disabled",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "onChange",
+    "type": "(checked: boolean) => void"
+   },
+   {
+    "name": "label",
+    "type": "ReactNode"
+   },
+   {
+    "name": "description",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "Table": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Table.tsx",
+  "props": [
+   {
+    "name": "density",
+    "type": "TableDensity",
+    "values": [
+     "compact",
+     "dense"
+    ],
+    "default": "'compact'"
+   },
+   {
+    "name": "wrapperClassName",
+    "type": "string",
+    "description": "The classes of the frame that scrolls sideways (`hidden sm:block`)."
+   }
+  ],
+  "inherits": {
+   "count": 289,
+   "element": "table"
+  }
+ },
+ "TableBody": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Table.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "tbody"
+  }
+ },
+ "TableCell": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Table.tsx",
+  "props": [
+   {
+    "name": "numeric",
+    "type": "boolean",
+    "default": "false",
+    "description": "A figure: on the right, in digits of one width, so that a column of them lines up."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   }
+  ],
+  "inherits": {
+   "count": 288,
+   "element": "td"
+  }
+ },
+ "TableHead": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Table.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "thead"
+  }
+ },
+ "TableHeaderCell": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Table.tsx",
+  "props": [
+   {
+    "name": "numeric",
+    "type": "boolean",
+    "default": "false",
+    "description": "A figure: on the right, in digits of one width, so that a column of them lines up."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   }
+  ],
+  "inherits": {
+   "count": 285,
+   "element": "th"
+  }
+ },
+ "TableRow": {
+  "entry": "ioiti-ui",
+  "file": "src/components/Table.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "tr"
+  }
+ },
+ "Textarea": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/form.tsx",
+  "props": [
+   {
+    "name": "error",
+    "type": "string | boolean"
+   }
+  ],
+  "inherits": {
+   "count": 294,
+   "element": "textarea"
+  }
+ },
+ "TextLink": {
+  "entry": "ioiti-ui",
+  "file": "src/components/TextLink.tsx",
+  "props": [
+   {
+    "name": "to",
+    "type": "string",
+    "required": true,
+    "description": "Where it leads."
+   },
+   {
+    "name": "reloadDocument",
+    "type": "boolean",
+    "default": "false",
+    "description": "Its page is loaded from the server: a plain `<a>`, not the application's link, as `ButtonLink`'s. For an address the server answers and the router does not know (a sign-out, a file); followed as written."
+   },
+   {
+    "name": "variant",
+    "type": "keyof typeof LOOK",
+    "values": [
+     "inline",
+     "hover",
+     "quiet"
+    ],
+    "default": "'inline'"
+   }
+  ],
+  "inherits": {
+   "count": 287,
+   "element": "a",
+   "omit": [
+    "href"
+   ]
+  }
+ },
+ "ThemeProvider": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ThemeProvider.tsx",
+  "props": [
+   {
+    "name": "storageKey",
+    "type": "string",
+    "description": "Where the choice is kept in this browser: one key per application. By default the key the pre-paint script was given (its tag's `data-storage-key`), else `ioiti.theme`."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "ThemeToggle": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ThemeToggle.tsx",
+  "props": [
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "TimeRangePicker": {
+  "entry": "ioiti-ui",
+  "file": "src/components/TimeRangePicker.tsx",
+  "props": [
+   {
+    "name": "value",
+    "type": "TimeRange",
+    "description": "The range applied: each end `now`, `now` moved and rounded (`now-15m`, `now/d`), or an ISO moment."
+   },
+   {
+    "name": "defaultValue",
+    "type": "TimeRange",
+    "default": "{ from: 'now-15m', to: 'now' }"
+   },
+   {
+    "name": "onChange",
+    "type": "(range: TimeRange) => void",
+    "description": "A new range applied (quick select, a range commonly used, or Update)."
+   },
+   {
+    "name": "onRefresh",
+    "type": "(range: TimeRange) => void",
+    "description": "Asked for fresh data: on Refresh, on each new range, and on the timer where there is one."
+   },
+   {
+    "name": "isLoading",
+    "type": "boolean",
+    "default": "false",
+    "description": "Data is on its way: Refresh shows it."
+   },
+   {
+    "name": "commonlyUsed",
+    "type": "CommonRange[]",
+    "default": "COMMONLY_USED",
+    "description": "The ranges offered at once, in place of the usual ones."
+   },
+   {
+    "name": "refresh",
+    "type": "RefreshSettings",
+    "description": "Refreshing on a timer: shown in the quick select when given with `onRefreshChange`."
+   },
+   {
+    "name": "onRefreshChange",
+    "type": "(settings: RefreshSettings) => void"
+   },
+   {
+    "name": "locale",
+    "type": "string",
+    "default": "'en-GB'"
+   },
+   {
+    "name": "weekStartsOn",
+    "type": "0 | 1",
+    "values": [
+     "0",
+     "1"
+    ],
+    "default": "1"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "ToastProvider": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ToastProvider.tsx",
+  "props": [
+   {
+    "name": "wrapperClassName",
+    "type": "string",
+    "description": "Classes of the toast's frame, to move it: above a bar fixed at the bottom of a page (`bottom-20`), for instance."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "TopBarTrail": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/PageTrail.tsx",
+  "props": [
+   {
+    "name": "home",
+    "type": "{ label: string; href: string }",
+    "default": "DEFAULT_HOME"
+   }
+  ]
+ },
+ "UndoToast": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/undo-toast.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean",
+    "default": "true",
+    "description": "Visibility state"
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "default": "'Project archived'",
+    "description": "Toast message title (e.g. \"File deleted\")"
+   },
+   {
+    "name": "description",
+    "type": "string",
+    "default": "'Changes will be permanent in a few seconds'",
+    "description": "Secondary description or metadata"
+   },
+   {
+    "name": "undoLabel",
+    "type": "string",
+    "default": "'Undo'",
+    "description": "Undo action button label"
+   },
+   {
+    "name": "restoredMessage",
+    "type": "string",
+    "default": "'Restored successfully'",
+    "description": "Restored state message when Undo is triggered"
+   },
+   {
+    "name": "duration",
+    "type": "number",
+    "default": "5000",
+    "description": "Duration in milliseconds before automatic dismissal"
+   },
+   {
+    "name": "variant",
+    "type": "UndoToastVariant",
+    "values": [
+     "default",
+     "success",
+     "warning",
+     "error",
+     "info"
+    ],
+    "default": "'default'",
+    "description": "Toast variant visual tone"
+   },
+   {
+    "name": "position",
+    "type": "UndoToastPosition",
+    "values": [
+     "top-center",
+     "bottom-center",
+     "top-right",
+     "top-left",
+     "bottom-left",
+     "bottom-right"
+    ],
+    "default": "'bottom-center'",
+    "description": "Toast screen placement"
+   },
+   {
+    "name": "onUndo",
+    "type": "() => void",
+    "description": "Callback fired when user clicks Undo"
+   },
+   {
+    "name": "onDismiss",
+    "type": "() => void",
+    "description": "Callback fired when toast finishes timer or is closed"
+   },
+   {
+    "name": "showProgress",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether to show the countdown bar"
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "description": "Custom icon"
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name"
+   },
+   {
+    "name": "wrapperClassName",
+    "type": "string",
+    "description": "Classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom (as velocity-toast's)."
+   }
+  ]
+ },
+ "UserMenu": {
+  "entry": "ioiti-ui",
+  "file": "src/components/UserMenu.tsx",
+  "props": [
+   {
+    "name": "name",
+    "type": "string",
+    "required": true,
+    "description": "Who is signed in: beside the avatar from 640 px up, and its initials where there is no picture."
+   },
+   {
+    "name": "detail",
+    "type": "ReactNode",
+    "description": "A second line, under the name: their role (\"Analyst\"), their team."
+   },
+   {
+    "name": "avatarSrc",
+    "type": "string",
+    "description": "Their picture, from the application's own origin; their initials without one, or where it fails."
+   },
+   {
+    "name": "items",
+    "type": "DropdownMenuItem[]",
+    "default": "[]",
+    "description": "What the menu offers before signing out, as `DropdownMenu` takes it: a link leads somewhere through the application's link (a profile, the settings), an action does something."
+   },
+   {
+    "name": "appearance",
+    "type": "boolean",
+    "default": "false",
+    "description": "The look of the interface in the menu, after the items: the theme (system, light, dark), then a sub-menu of the accent and the material (`useAppearanceItems`), each person's own, kept in this browser. In place of `ThemeToggle` and `LookPicker` in the top bar."
+   },
+   {
+    "name": "onSignOut",
+    "type": "() => void",
+    "description": "Signs out in code (a request, then the sign-in page): an action, the menu's last item."
+   },
+   {
+    "name": "signOutHref",
+    "type": "string",
+    "description": "Signs out at an address the server answers (`/api/v1/auth/logout`): a link, the menu's last item, its page loaded from the server, so that nothing of the session stays in the page. In place of `onSignOut`."
+   },
+   {
+    "name": "signOutLabel",
+    "type": "string",
+    "default": "'Sign out'",
+    "description": "The words of the last item."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'Account'",
+    "description": "The menu's name for a screen reader. Its button is named by what it shows: the name and the detail."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "VelocityToast": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/velocity-toast.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean",
+    "required": true
+   },
+   {
+    "name": "onDismiss",
+    "type": "() => void"
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "description",
+    "type": "string"
+   },
+   {
+    "name": "duration",
+    "type": "number",
+    "default": "4000"
+   },
+   {
+    "name": "variant",
+    "type": "VelocityToastVariant",
+    "values": [
+     "default",
+     "success",
+     "warning",
+     "error",
+     "info"
+    ],
+    "default": "'default'"
+   },
+   {
+    "name": "position",
+    "type": "VelocityToastPosition",
+    "values": [
+     "top-center",
+     "bottom-center",
+     "top-right",
+     "top-left",
+     "bottom-left",
+     "bottom-right"
+    ],
+    "default": "'bottom-center'"
+   },
+   {
+    "name": "showProgress",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "wrapperClassName",
+    "type": "string",
+    "description": "Classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom."
+   },
+   {
+    "name": "wrapperStyle",
+    "type": "CSSProperties",
+    "description": "The positioned wrapper's style: lifted above a bar at the bottom of the page (ToastProvider)."
+   },
+   {
+    "name": "onExitComplete",
+    "type": "() => void",
+    "description": "Once it has left, its exit played: a queue shows the next one then (ToastProvider)."
+   },
+   {
+    "name": "action",
+    "type": "VelocityToastAction",
+    "description": "One thing to do from the toast, beside its words: a link or a button. Using it closes the toast."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws the action's link; the application's (LinkProvider) by default."
+   }
+  ]
+ }
+}
