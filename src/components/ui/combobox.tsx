@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronsUpDown, Search } from "lucide-react";
+import { useAnchoredLayer } from "../../lib/anchor.js";
+import { invalidOf } from "../../lib/field-border.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 
@@ -31,61 +34,8 @@ function useControllableState<T>(
   return [current, set];
 }
 
-type Side = "bottom" | "top";
-type CloseReason = "escape" | "outside";
-
-function usePopover({
-  open,
-  onClose,
-  rootRef,
-  height = 340,
-}: {
-  open: boolean;
-  onClose: (reason: CloseReason) => void;
-  rootRef: React.RefObject<HTMLElement | null>;
-  height?: number;
-}) {
-  const [side, setSide] = React.useState<Side>("bottom");
-
-  React.useLayoutEffect(() => {
-    if (!open || !rootRef.current) return;
-    const rect = rootRef.current.getBoundingClientRect();
-    const below = window.innerHeight - rect.bottom;
-    setSide(below < height && rect.top > below ? "top" : "bottom");
-  }, [open, height, rootRef]);
-
-  React.useEffect(() => {
-    if (!open) return;
-    const onDown = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) onClose("outside");
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose("escape");
-    };
-    document.addEventListener("pointerdown", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open, onClose, rootRef]);
-
-  return side;
-}
-
-const popoverMotion = (side: Side, align: "start" | "end" = "start") =>
-  ({
-    initial: { opacity: 0, scale: 0.96 },
-    animate: { opacity: 1, scale: 1 },
-    // ioiti-ui: the motion of everything that floats: springSnappy arriving, easeExit leaving.
-    exit: { opacity: 0, scale: 0.97, transition: motionTransitions.easeExit },
-    transition: motionTransitions.springSnappy,
-    style: {
-      transformOrigin: `${side === "top" ? "bottom" : "top"} ${align === "end" ? "right" : "left"}`,
-    },
-  }) as const;
-
-const spring = { type: "spring", stiffness: 520, damping: 40, mass: 0.6 } as const;
+// ioiti-ui: the design's spring for what moves within a layer (springSnappy), not one written here.
+const spring = motionTransitions.springSnappy;
 
 export interface ComboboxOption {
   value: string;
@@ -110,6 +60,14 @@ export interface ComboboxProps {
   "aria-label"?: string;
   /** ioiti-ui: the trigger's id, for a `<label htmlFor>`. */
   id?: string;
+  /** ioiti-ui: the id of what names it. */
+  "aria-labelledby"?: string;
+  /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
+  "aria-describedby"?: string;
+  /** ioiti-ui: marked invalid, as a Field with an error marks it: drawn as `error`. */
+  "aria-invalid"?: boolean | "true" | "false";
+  /** ioiti-ui: the choice is wrong (or missing): the trigger's border in the error's colour, and said. */
+  error?: boolean;
 }
 
 const filterOptions = (options: ComboboxOption[], q: string) =>
@@ -132,27 +90,39 @@ export function Combobox({
   className,
   "aria-label": ariaLabel,
   id,
+  "aria-labelledby": labelledBy,
+  "aria-describedby": describedBy,
+  "aria-invalid": ariaInvalid,
+  error,
 }: ComboboxProps) {
   const [selected, setSelected] = useControllableState<string | null>(value, defaultValue, onValueChange);
   const [open, setOpen] = React.useState(false);
-  const rootRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const layerRef = React.useRef<HTMLDivElement>(null);
   const listId = React.useId();
+  const invalid = invalidOf(error, ariaInvalid);
 
-  const side = usePopover({
+  // ioiti-ui: a layer in document.body, placed beside its trigger and following it (useAnchoredLayer), its keys its
+  // own: EasyUI's was placed by hand inside the combobox, cut by a parent that hides what overflows it.
+  const layer = useAnchoredLayer({
     open,
-    rootRef,
-    height: 330,
-    onClose: (reason) => {
-      setOpen(false);
-      if (reason === "escape") triggerRef.current?.focus();
-    },
+    onClose: () => setOpen(false),
+    triggerRef,
+    layerRef,
+    align,
+    offset: 8,
+    initialFocus: () => layerRef.current?.querySelector<HTMLElement>("input") ?? null,
   });
+  // The list as wide as the trigger at least, read as it opens.
+  const [width, setWidth] = React.useState<number>();
+  React.useLayoutEffect(() => {
+    if (open) setWidth(triggerRef.current?.offsetWidth);
+  }, [open]);
 
   const current = options.find((o) => o.value === selected);
 
   return (
-    <div ref={rootRef} className={cn("relative w-64", className)}>
+    <div className={cn("relative w-64", className)}>
       <button
         ref={triggerRef}
         id={id}
@@ -162,6 +132,9 @@ export function Combobox({
         aria-haspopup="listbox"
         // ioiti-ui: named by its label when it has one (a wrapping <label>, or htmlFor), not by its placeholder.
         aria-label={ariaLabel}
+        aria-labelledby={labelledBy}
+        aria-describedby={describedBy}
+        aria-invalid={invalid || undefined}
         aria-controls={open ? listId : undefined}
         disabled={disabled}
         onClick={() => setOpen((o) => !o)}
@@ -169,12 +142,19 @@ export function Combobox({
           if (e.key === "ArrowDown" || e.key === "ArrowUp") {
             e.preventDefault();
             setOpen(true);
-          }
+          } else layer.onTriggerKeyDown(e);
         }}
         className={cn(
-          "flex h-10 w-full items-center gap-2.5 rounded-lg border border-neutral-200 bg-white px-3 text-sm outline-none transition-colors hover:border-neutral-300 disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700",
-          // ioiti-ui: open, the option under the pointer and the one chosen in the accent, where the theme has one (accent:).
-          open && "border-neutral-400 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-600 accent:border-brand accent:hover:border-brand"
+          "flex h-10 w-full items-center gap-2.5 rounded-lg border bg-white px-3 text-sm outline-none transition-colors disabled:pointer-events-none disabled:opacity-50 dark:bg-neutral-950",
+          // ioiti-ui: its border, or the error's (never both); open, the option under the pointer and the one chosen in
+          // the accent, where the theme has one (accent:).
+          invalid
+            ? "border-negative/60 hover:border-negative"
+            : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700",
+          open &&
+            (invalid
+              ? "border-negative hover:border-negative"
+              : "border-neutral-400 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-600 accent:border-brand accent:hover:border-brand")
         )}
       >
         {current?.icon && (
@@ -193,32 +173,47 @@ export function Combobox({
         <ChevronsUpDown className="size-4 shrink-0 text-neutral-400" />
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            {...popoverMotion(side, align)}
-            className={cn(
-              // ioiti-ui: glass under the glass material (glass-float).
-              "absolute z-50 w-full min-w-[14rem] overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg shadow-neutral-900/5 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-black/40 glass-float",
-              side === "top" ? "bottom-full mb-2" : "top-full mt-2",
-              align === "end" ? "right-0" : "left-0"
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                ref={layerRef}
+                onKeyDown={layer.onLayerKeyDown}
+                // A click on its empty space keeps the focus in it, and its keys (Escape) with it.
+                tabIndex={-1}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                // ioiti-ui: the motion of everything that floats: springSnappy arriving, easeExit leaving.
+                exit={{ opacity: 0, scale: 0.97, transition: motionTransitions.easeExit }}
+                transition={motionTransitions.springSnappy}
+                style={{
+                  ...layer.style,
+                  minWidth: width,
+                  transformOrigin: `${layer.side === "top" ? "bottom" : "top"} ${align === "end" ? "right" : "left"}`,
+                }}
+                className={cn(
+                  // ioiti-ui: glass under the glass material (glass-float).
+                  "z-50 min-w-[14rem] overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg shadow-neutral-900/5 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-black/40 glass-float"
+                )}
+              >
+                <Panel
+                  id={listId}
+                  options={options}
+                  selected={selected}
+                  searchPlaceholder={searchPlaceholder}
+                  emptyText={emptyText}
+                  onSelect={(v) => {
+                    setSelected(v);
+                    setOpen(false);
+                    triggerRef.current?.focus();
+                  }}
+                />
+              </motion.div>
             )}
-          >
-            <Panel
-              id={listId}
-              options={options}
-              selected={selected}
-              searchPlaceholder={searchPlaceholder}
-              emptyText={emptyText}
-              onSelect={(v) => {
-                setSelected(v);
-                setOpen(false);
-                triggerRef.current?.focus();
-              }}
-            />
-          </motion.div>
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </div>
   );
 }
