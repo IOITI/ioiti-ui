@@ -212,8 +212,10 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
   return (
     <span className={cn('relative inline-flex', wrapperClassName)}>
       {trigger}
+      {/* ioiti-ui: hidden, not sr-only: aria-describedby reads it all the same, and a label around the trigger (a
+          Field's) no longer takes its words into the control's name ("Seats Decrease Increase"). */}
       {!empty && (
-        <span id={descriptionId} className="sr-only">
+        <span id={descriptionId} hidden>
           {content}
         </span>
       )}

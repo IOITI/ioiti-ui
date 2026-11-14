@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom'
 
 import { useAnchoredLayer } from '../lib/anchor.js'
 import { useControllableState } from '../lib/controllable.js'
+import { fieldBorder, invalidOf } from '../lib/field-border.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
@@ -37,8 +38,14 @@ interface MultiSelectProps {
   onCreateOption?: (text: string) => MultiSelectOption | string | void
   /** Chips shown before "+N" says how many more. */
   maxChips?: number
+  /** At most this many values: past it, the options not chosen cannot be, and the list says why. */
+  max?: number
   disabled?: boolean
   error?: boolean
+  /** Read out with it: what a Field around it says under it (its description, its error). */
+  'aria-describedby'?: string
+  /** Marked invalid, as a Field with an error marks it: drawn as `error`. */
+  'aria-invalid'?: boolean | 'true' | 'false'
   /** What the list says when nothing matches. */
   emptyText?: string
   className?: string
@@ -65,11 +72,15 @@ export function MultiSelect({
   placeholder = 'Choose…',
   onCreateOption,
   maxChips,
+  max,
   disabled = false,
   error = false,
   emptyText = 'Nothing matches',
   className,
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
 }: MultiSelectProps) {
+  const invalid = invalidOf(error, ariaInvalid)
   const [chosen, setChosen] = useControllableState(value, defaultValue, onChange)
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
@@ -97,6 +108,9 @@ export function MultiSelect({
   ]
   const groups = Array.from(new Set(rows.map((row) => (row.create ? '' : (row.option.group ?? '')))))
   const labelOf = (each: string) => options.find((option) => option.value === each)?.label ?? each
+  // As many as it takes: what is not chosen yet waits for one to be removed.
+  const full = max !== undefined && chosen.length >= max
+  const blocked = (row: Row) => !!row.option.disabled || (full && (row.create || !chosen.includes(row.option.value)))
   const at = Math.min(active, Math.max(rows.length - 1, 0))
 
   // The option the arrows are on stays in sight.
@@ -106,7 +120,7 @@ export function MultiSelect({
   }, [open, at, listId])
 
   const toggle = (row: Row) => {
-    if (row.option.disabled) return
+    if (blocked(row)) return
     if (row.create) {
       const made = onCreateOption?.(row.option.label)
       const madeValue = typeof made === 'string' ? made : (made?.value ?? row.option.value)
@@ -158,9 +172,7 @@ export function MultiSelect({
           // Room for the arrow that says it opens a list, and the clear button before it, both keeping to the first
           // line's end however many lines the chips take.
           chosen.length > 0 && !disabled ? 'pr-16' : 'pr-8',
-          'border-neutral-300 hover:border-neutral-500 dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A]',
-          'focus-within:border-neutral-500 dark:focus-within:border-[#4A4A4A] accent:focus-within:border-brand',
-          error && 'border-negative/60 focus-within:border-negative',
+          fieldBorder(invalid, 'focus-within'),
           disabled && 'cursor-not-allowed opacity-30',
         )}
       >
@@ -190,7 +202,8 @@ export function MultiSelect({
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={open && rows.length ? `${listId}-${at}` : undefined}
-          aria-invalid={error || undefined}
+          aria-invalid={invalid || undefined}
+          aria-describedby={describedBy}
           autoComplete="off"
           disabled={disabled}
           value={text}
@@ -239,6 +252,11 @@ export function MultiSelect({
                 transition={motionTransitions.springSnappy}
                 className="z-50 overflow-auto rounded-xl border border-border bg-surface p-1 shadow-lg glass-float"
               >
+                {full && (
+                  <p role="status" className="px-2.5 pb-1 pt-1.5 text-xs text-muted-foreground">
+                    {max} at most: remove one to choose another.
+                  </p>
+                )}
                 <ul id={listId} role="listbox" aria-multiselectable="true" aria-label={label} className="text-sm">
                   {rows.length === 0 && <li className="px-2.5 py-2 text-xs text-muted-foreground">{emptyText}</li>}
                   {groups.map((group) => (
@@ -254,7 +272,7 @@ export function MultiSelect({
                               id={`${listId}-${index}`}
                               role="option"
                               aria-selected={ticked}
-                              aria-disabled={row.option.disabled || undefined}
+                              aria-disabled={blocked(row) || undefined}
                               // The focus stays in the field.
                               onPointerDown={(event) => event.preventDefault()}
                               onClick={() => toggle(row)}
@@ -262,7 +280,7 @@ export function MultiSelect({
                               className={cn(
                                 'flex cursor-default select-none items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-text-primary',
                                 index === at && 'bg-surface-hover accent:bg-brand-soft accent:text-brand-text',
-                                row.option.disabled && 'cursor-not-allowed opacity-50',
+                                blocked(row) && 'cursor-not-allowed opacity-50',
                               )}
                             >
                               <span className="grid size-4 shrink-0 place-items-center [&>svg]:size-3.5">

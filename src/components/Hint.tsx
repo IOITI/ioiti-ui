@@ -29,7 +29,8 @@ export function Hint({ content, children, side = 'top', wrap = false, className 
   return (
     <DirectionalTooltip content={content} side={side} wrapperClassName={className}>
       {wrap && said ? (
-        <span tabIndex={0} className="inline-flex min-w-0 rounded-md [&>:disabled]:pointer-events-none">
+        // It grows in a wrapper that does (`className="flex w-full"`): a full-width field it holds keeps its width.
+        <span tabIndex={0} className="inline-flex min-w-0 grow rounded-md [&>:disabled]:pointer-events-none">
           {children}
         </span>
       ) : (

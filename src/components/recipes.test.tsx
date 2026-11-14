@@ -21,10 +21,25 @@ describe('a field', () => {
       </Field>,
     )
 
-    const input = screen.getByRole('textbox', { name: /Seed/ })
+    // Named by its label alone: the error describes it, out of the label, and marks it invalid.
+    const input = screen.getByRole('textbox', { name: 'Seed' })
     expect(input.closest('label')).toHaveClass('flex', 'flex-col', 'gap-1')
     expect(screen.getByText('Seed')).toHaveClass('text-xs', 'font-semibold', 'text-text-primary')
     expect(screen.getByText('A whole number')).toHaveClass('text-xs', 'text-negative')
+    expect(input).toHaveAccessibleDescription('A whole number')
+    expect(input).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('marks a control beside its label invalid too, its error read out with it', () => {
+    render(
+      <Field label="Asset" htmlFor="asset3" error="Choose one">
+        <button type="button" id="asset3" role="combobox" aria-expanded="false" />
+      </Field>,
+    )
+
+    const control = screen.getByRole('combobox', { name: 'Asset' })
+    expect(control).toHaveAccessibleDescription('Choose one')
+    expect(control).toHaveAttribute('aria-invalid', 'true')
   })
 
   it('puts its label beside a control that must not be inside one, naming it by its id', () => {

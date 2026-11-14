@@ -11,6 +11,8 @@ export interface DrawCheckboxProps
   description?: string;
   /** Indeterminate visual state */
   indeterminate?: boolean;
+  /** ioiti-ui: it must be ticked (terms to accept): an empty box's border in the error's colour, and said (`aria-invalid`). */
+  error?: boolean;
 }
 
 /**
@@ -28,6 +30,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
       defaultChecked,
       disabled,
       indeterminate = false,
+      error = false,
       id,
       onChange,
       ...props
@@ -36,6 +39,8 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
   ) => {
     const generatedId = useId();
     const inputId = id || generatedId;
+    // ioiti-ui: in error by its own prop, or marked invalid (a Field around it).
+    const invalid = error || props['aria-invalid'] === true || props['aria-invalid'] === 'true';
     const [isChecked, setIsChecked] = useState(defaultChecked || false);
     // ioiti-ui: drawn at once, without the pop, where motion is reduced.
     const reduceMotion = useReducedMotion() ?? false;
@@ -87,6 +92,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
             aria-describedby={description ? `${inputId}-description` : undefined}
             className="peer absolute inset-0 m-0 appearance-none rounded-[4px] bg-transparent cursor-pointer disabled:cursor-not-allowed"
             {...props}
+            aria-invalid={invalid || undefined}
           />
 
           {/* Box: a tiny "pop" via scale 0.9 -> 1.04 -> 1.0 when checked */}
@@ -108,7 +114,9 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
               'w-4 h-4 rounded-[4px] border flex items-center justify-center pointer-events-none transition-colors duration-300',
               showCheck
                 ? 'bg-accent border-accent accent:bg-brand accent:border-brand'
-                : 'bg-surface-raised border-border'
+                : invalid
+                  ? 'bg-surface-raised border-negative'
+                  : 'bg-surface-raised border-border'
             )}
           >
             {/* Path-draw checkmark with overshoot on stroke-dashoffset */}

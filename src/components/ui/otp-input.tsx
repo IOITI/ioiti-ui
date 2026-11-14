@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { cn } from '../../lib/utils.js';
 
 export interface OTPInputProps {
@@ -11,9 +12,15 @@ export interface OTPInputProps {
   onComplete?: (value: string) => void;
   autoFocus?: boolean;
   disabled?: boolean;
+  /** ioiti-ui: the code is wrong or incomplete: every box's border in the error's colour, and said (`aria-invalid`). */
+  error?: boolean;
   className?: string;
   boxClassName?: string;
   'aria-label'?: string;
+  /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
+  'aria-describedby'?: string;
+  /** ioiti-ui: marked invalid, as a Field with an error marks it: drawn as `error`. */
+  'aria-invalid'?: boolean | 'true' | 'false';
   /** ioiti-ui: the id of the first box, so that a `<label htmlFor>` leads to it. */
   id?: string;
 }
@@ -27,11 +34,16 @@ export const OTPInput: React.FC<OTPInputProps> = ({
   onComplete,
   autoFocus = false,
   disabled = false,
+  error = false,
   className,
   boxClassName,
   'aria-label': ariaLabel = 'One-time passcode',
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
   id,
 }) => {
+  // ioiti-ui: in error by its own prop, or marked invalid (a Field around it).
+  const invalid = invalidOf(error, ariaInvalid);
   const isControlled = value !== undefined;
   const [digits, setDigits] = useState<string[]>(() =>
     Array.from({ length }, (_, i) => value?.[i] ?? '')
@@ -147,6 +159,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
     <div
       role="group"
       aria-label={ariaLabel}
+      aria-describedby={describedBy}
       className={cn('flex gap-2', className)}
     >
       {Array.from({ length }).map((_, i) => (
@@ -162,6 +175,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
           value={digits[i] ?? ''}
           disabled={disabled}
           aria-label={`Digit ${i + 1} of ${length}`}
+          aria-invalid={invalid || undefined}
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
@@ -177,10 +191,10 @@ export const OTPInput: React.FC<OTPInputProps> = ({
             // ioiti-ui: the look of the form's Input (its border, its surface, its text, in both themes), where
             // EasyUI's boxes were grey with a violet focus: a code's boxes under a password field look like it.
             'h-12 w-10 rounded-lg border bg-white text-neutral-900 dark:bg-[#141414] dark:text-[#FAFAFA]',
-            'border-neutral-300 hover:border-neutral-500 dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A]',
+            // ioiti-ui: the Input's border, or the error's; the box in focus in the accent, where the theme has one.
+            fieldBorder(invalid),
             'text-center text-lg font-medium transition-colors duration-150',
-            // ioiti-ui: the box in focus in the accent, where the theme has one (accent:).
-            'outline-none focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand placeholder:text-muted-foreground',
+            'outline-none placeholder:text-muted-foreground',
             'disabled:cursor-not-allowed disabled:opacity-50',
             boxClassName
           )}

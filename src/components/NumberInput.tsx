@@ -3,6 +3,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
+import { fieldBorder, invalidOf } from '../lib/field-border.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 
@@ -31,6 +32,10 @@ interface NumberInputProps {
   disabled?: boolean
   /** A value that is wrong: its border in the negative colour. */
   error?: boolean
+  /** Read out with it: what a Field around it says under it (its description, its error). */
+  'aria-describedby'?: string
+  /** Marked invalid, as a Field with an error marks it: drawn as `error`. */
+  'aria-invalid'?: boolean | 'true' | 'false'
   /** The − and + buttons beside it. */
   steppers?: boolean
   className?: string
@@ -70,7 +75,10 @@ export function NumberInput({
   error = false,
   steppers = true,
   className,
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
 }: NumberInputProps) {
+  const invalid = invalidOf(error, ariaInvalid)
   const [held, setCurrent] = useControllableState<number | null>(value, defaultValue, onChange)
   // NaN is none, as null: stepped from its minimum, or 0. Never equal to itself, it would be a new value at
   // every render, each asking for another.
@@ -159,7 +167,8 @@ export function NumberInput({
         aria-valuemin={min}
         aria-valuemax={max}
         aria-valuetext={current === null ? undefined : `${lead}${toText(current)}${unit}`}
-        aria-invalid={error || undefined}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
         value={text}
         placeholder={placeholder}
         disabled={disabled}
@@ -170,9 +179,8 @@ export function NumberInput({
         // The look of the form's Input.
         className={cn(
           'h-10 w-full rounded-lg border bg-white px-3.5 text-xs tabular-nums text-neutral-900 transition-all duration-150 placeholder:text-muted-foreground dark:bg-[#141414] dark:text-[#FAFAFA]',
-          'border-neutral-300 hover:border-neutral-500 dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A]',
-          'focus:border-neutral-500 focus:outline-none dark:focus:border-[#4A4A4A] accent:focus:border-brand',
-          error && 'border-negative/60 focus:border-negative',
+          fieldBorder(invalid),
+          'focus:outline-none',
           disabled && 'cursor-not-allowed bg-neutral-100 opacity-30 dark:bg-[#0E0E0E]',
         )}
       />
