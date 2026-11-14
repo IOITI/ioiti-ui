@@ -7,7 +7,7 @@ export default function CopyButtonInARow() {
       items={[
         {
           term: 'Reference',
-          detail: (
+          details: (
             <span className="inline-flex items-center gap-2">
               <span className="font-mono">IT-1042</span>
               <CopyButton value="IT-1042" label="Copy the reference" size="sm" />
@@ -16,7 +16,7 @@ export default function CopyButtonInARow() {
         },
         {
           term: 'Tracking',
-          detail: (
+          details: (
             <span className="inline-flex items-center gap-2">
               <span className="font-mono">1Z 999 AA1 01 2345 6784</span>
               <CopyButton value="1Z 999 AA1 01 2345 6784" label="Copy the tracking number" size="sm" />
