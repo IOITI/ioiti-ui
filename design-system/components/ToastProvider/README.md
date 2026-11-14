@@ -2,7 +2,7 @@
 
 Toasts: one at a time at the bottom centre, each for its whole time, shown with `useToast()` from inside `ToastProvider`.
 
-**You provide** `ToastProvider` once around the application (`IoitiProvider` and `RouterRoot` include it); then `toast({ title, description?, variant?, action? })`, `variant` being `default` · `success` · `warning` · `error` · `info`, `action` a link or a button.
+**You provide** `ToastProvider` once around the application (`RouterRoot` includes it); then `toast({ title, description?, variant?, action? })`, `variant` being `default` · `success` · `warning` · `error` · `info`, `action` a link or a button.
 
 ```tsx
 const toast = useToast()

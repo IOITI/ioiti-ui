@@ -14,6 +14,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   - `hash`, the part of the page the address shows (`#rules`; `RouterAppShell` gives the router's): the page
     scrolls to it once it is there, for a link from another page too, as the browser does for a page it loads.
   - `className`, on the frame, which fills the window (`h-dvh`): `h-full` draws it in a box of a page.
+- **`ShortcutsDialog`** lists once the same keys registered twice for the same thing (a second sidebar's ⌘B):
+  React warned of two rows with one key.
 - **The gallery, a page per component**: 119 pages in 16 groups (the frame, page layout, the top bar, actions,
   forms, choices, dates and time, feedback, loading and empty, overlays, navigation, tables and lists, figures,
   charts, code, AI), each with its examples (more of them: states, sizes, errors, empty), the code of each, its

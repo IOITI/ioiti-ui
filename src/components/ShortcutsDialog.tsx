@@ -24,8 +24,15 @@ export function ShortcutsDialog({ open, onOpenChange, title = 'Keyboard shortcut
   const [shown, setShown] = useControllableState(open, false, onOpenChange)
   const registry = useShortcutRegistry()
   const all = useSyncExternalStore(registry.subscribe, registry.list, registry.list)
-  // What it lists: every shortcut described, but the one that opens it.
-  const listed = all.filter((shortcut) => shortcut.description && shortcut.keys !== keys)
+  // What it lists: every shortcut described, but the one that opens it; once, when two parts register the same
+  // keys for the same thing (a second sidebar's ⌘B).
+  const seen = new Set<string>()
+  const listed = all.filter((shortcut) => {
+    const id = `${shortcut.keys}\n${shortcut.description}`
+    if (!shortcut.description || shortcut.keys === keys || seen.has(id)) return false
+    seen.add(id)
+    return true
+  })
 
   useShortcut(keys ?? '', () => listed.length > 0 && setShown(!shown), {
     description: listed.length > 0 ? 'Show the keyboard shortcuts' : undefined,
@@ -47,7 +54,7 @@ export function ShortcutsDialog({ open, onOpenChange, title = 'Keyboard shortcut
             <h3 className="mb-2 text-xs font-medium text-text-secondary">{group}</h3>
             <dl className="flex flex-col divide-y divide-border text-sm">
               {shortcuts.map((shortcut) => (
-                <div key={shortcut.keys} className="flex items-center justify-between gap-4 py-2">
+                <div key={`${shortcut.keys}\n${shortcut.description}`} className="flex items-center justify-between gap-4 py-2">
                   <dt className="text-text-primary">{shortcut.description}</dt>
                   <dd>
                     <Kbd keys={shortcut.keys} />
