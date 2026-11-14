@@ -81,7 +81,7 @@ const states: CategoryInfo = {
       names: ['NotFoundState', 'NotFoundPage', 'NotFound'],
       keywords: ['404', 'not found', 'missing', 'catch-all'],
       examples: [
-        { id: 'record', title: 'A record that is not there', description: 'A page whose record does not exist (its API answered 404): what is missing, pages it may have been, the way home and back.' },
+        { id: 'record', title: 'A record that is not there', description: 'A page whose record does not exist (its API answered 404): what is missing, pages it may have been, the way home and back. Its heading takes the focus on a page of its own; drawn in a part of a page, as here, focusOnMount={false} leaves it.' },
         { id: 'catch-all', title: 'An address that is no page', description: 'NotFoundPage, the router’s catch-all: an address under an entry of the menu suggests that entry.' },
         { id: 'outside-the-shell', title: 'Outside the shell', description: 'NotFound, the page under both, for a 404 with no shell around it: its own actions, a line at its foot.' },
       ],

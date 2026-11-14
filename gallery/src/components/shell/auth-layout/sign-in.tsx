@@ -18,8 +18,9 @@ export default function AuthLayoutSignIn() {
   }
   return (
     // In a box of this page: an application gives it the whole screen, where it centres its card.
-    <div className="h-[38rem] overflow-y-auto rounded-xl border border-border [&>main]:min-h-full">
+    <div className="h-[38rem] overflow-y-auto rounded-xl border border-border">
       <AuthLayout
+        className="min-h-full"
         title="My App"
         description="Sign in with your username and password."
         logo={

@@ -2,7 +2,7 @@
 
 A sign-in page, outside the shell: one card in the middle of the screen, the application's mark above its name, a notice above the form, help at the card's foot, the theme button in its corner.
 
-**You provide** `title` (the application's name), `description` (what signing in asks for), `logo` (its mark, `alt=""`) or `icon` (in the tile, a lock by default), `notice` (an `Alert`: what the last attempt came to), `footer` (help: "Need an account? Ask an administrator."), the form as `children`; `themeToggle` (`true`; `false` for none), `tabTitle` (the heading by default).
+**You provide** `title` (the application's name), `description` (what signing in asks for), `logo` (its mark, `alt=""`) or `icon` (in the tile, a lock by default), `notice` (an `Alert`: what the last attempt came to), `footer` (help: "Need an account? Ask an administrator."), the form as `children`; `themeToggle` (`true`; `false` for none), `tabTitle` (the heading by default), `className` (`min-h-full` to draw it in a box).
 
 ```tsx
 <AuthLayout title="My App" logo={<img src="/logo.svg" alt="" className="h-10" />}

@@ -13,7 +13,7 @@ export default function TextareaCounted() {
         description={`${text.length} of ${LIMIT} characters`}
         error={over > 0 ? `${over} characters too many: a longer message is sent as two` : undefined}
       >
-        <Textarea rows={3} value={text} onChange={(event) => setText(event.target.value)} error={over > 0} />
+        <Textarea rows={3} value={text} onChange={(event) => setText(event.target.value)} />
       </Field>
     </div>
   )

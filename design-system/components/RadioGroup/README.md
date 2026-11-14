@@ -2,7 +2,7 @@
 
 One of two to five choices shown at once, each with its words: options given as data (`RadioGroup`), or its items laid out by hand (`RadioGroupItem`).
 
-**You provide** for `RadioGroup`: `name`, `options` (`[{ value, label, description?, disabled? }]`), `value` / `defaultValue`, `onChange` (the value); or `RadioGroupItem`s as children. For `RadioGroupItem`: `name`, `value`, `label`, `description`, `checked`, `onChange`, `disabled`.
+**You provide** for `RadioGroup`: `name`, `options` (`[{ value, label, description?, disabled? }]`), `value` / `defaultValue`, `onChange` (the value), its name (`aria-label`, or `aria-labelledby` the id of what asks the question); or `RadioGroupItem`s as children. For `RadioGroupItem`: `name`, `value`, `label`, `description`, `checked`, `onChange`, `disabled`.
 
 ```tsx
 <fieldset>

@@ -12,11 +12,13 @@ export default function RadioGroupDescribed() {
   const [delivery, setDelivery] = useState('standard')
   return (
     <div className="flex flex-col gap-4">
-      {/* The legend names the group. */}
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-xs font-semibold text-text-primary">Delivery</legend>
-        <RadioGroup name="delivery" value={delivery} onChange={setDelivery} options={DELIVERIES} />
-      </fieldset>
+      <div className="flex flex-col gap-2">
+        {/* The question its choices answer names the group. */}
+        <h3 id="delivery-question" className="text-xs font-semibold text-text-primary">
+          Delivery
+        </h3>
+        <RadioGroup name="delivery" aria-labelledby="delivery-question" value={delivery} onChange={setDelivery} options={DELIVERIES} />
+      </div>
       <p className="text-sm text-muted-foreground" aria-live="polite">
         Chosen: {DELIVERIES.find((option) => option.value === delivery)?.label}.
       </p>

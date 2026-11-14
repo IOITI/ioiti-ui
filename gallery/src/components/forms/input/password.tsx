@@ -28,7 +28,6 @@ export default function InputPassword() {
           showPasswordToggle
           value={again}
           onChange={(event) => setAgain(event.target.value)}
-          error={different}
         />
       </Field>
     </div>

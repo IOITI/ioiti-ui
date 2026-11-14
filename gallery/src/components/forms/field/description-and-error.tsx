@@ -16,7 +16,7 @@ export default function FieldDescriptionAndError() {
         <Input inputMode="numeric" defaultValue="250" suffix="ms" />
       </Field>
       <Field label="Quantity" error={error}>
-        <Input inputMode="numeric" value={quantity} onChange={(event) => setQuantity(event.target.value)} error={Boolean(error)} />
+        <Input inputMode="numeric" value={quantity} onChange={(event) => setQuantity(event.target.value)} />
       </Field>
       <Field label="Reference" description="As printed on the delivery note" error="Two letters, then six digits: AB123456">
         <Input defaultValue="AB12-34" error />

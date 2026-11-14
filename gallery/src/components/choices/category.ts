@@ -35,8 +35,8 @@ const choices: CategoryInfo = {
       names: ['RadioGroup', 'RadioGroupItem'],
       keywords: ['radio', 'option', 'one of'],
       examples: [
-        { id: 'described', title: 'Choices described', description: 'One of two to five choices that each need a sentence: options given as data, one of them disabled; the page holds the value and says it.' },
-        { id: 'items', title: 'Items laid out by hand', description: 'RadioGroupItem in a row, for short choices beside one another: the page says which one is checked.' },
+        { id: 'described', title: 'Choices described', description: 'One of two to five choices that each need a sentence: options given as data, one of them disabled, the group named by its question (aria-labelledby); the page holds the value and says it.' },
+        { id: 'items', title: 'Items laid out by hand', description: 'RadioGroupItem in a row, for short choices beside one another, the group named where no heading is (aria-label): the page says which one is checked.' },
       ],
     },
     {
@@ -59,7 +59,7 @@ const choices: CategoryInfo = {
       examples: [
         { id: 'customers', title: 'Grouped, with a second line', description: 'Several values from a list, each a chip: typing filters the list, the arrows move, Enter ticks or unticks, Backspace in an empty field removes the last chip. Two chips shown, then “+N”.' },
         { id: 'tags', title: 'Tags typed as they come', description: 'What is typed and is not in the list becomes a value of its own, a tag.' },
-        { id: 'many', title: 'A long list, three at most', description: 'Forty cities, found by typing; the page keeps to three and says so when a fourth is ticked.' },
+        { id: 'many', title: 'A long list, three at most', description: 'Forty cities, found by typing; three at most (max): past it the others wait, and the list says why.' },
         { id: 'states', title: 'Disabled and wrong', description: 'Disabled, its chips stay readable and cannot be removed; wrong, its border is in the negative colour and its Field says why.' },
       ],
     },

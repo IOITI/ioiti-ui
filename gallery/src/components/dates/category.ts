@@ -25,7 +25,7 @@ const dates: CategoryInfo = {
       names: ['DatePicker', 'DateRangePicker'],
       keywords: ['date input', 'date field', 'range picker'],
       examples: [
-        { id: 'day', title: 'A day from a field', description: 'The field says the day as en-GB writes it, its calendar opens under it. Empty, its placeholder says what is asked.' },
+        { id: 'day', title: 'A day from a field', description: 'In a Field, as any control: the field says the day as en-GB writes it, its calendar opens over the page under it, the focus on the day to choose. Empty, its placeholder says what is asked; a day that cannot be is an error.' },
         { id: 'range', title: 'A range from a field', description: 'DateRangePicker: two presses in its calendar, the range written in the field; rangeParams gives its days for an API.' },
         { id: 'limits', title: 'Bounded, or disabled', description: 'Only the days that can be chosen are offered: weekdays, between a first and a last day. Disabled, its range stays readable.' },
       ],

@@ -359,13 +359,13 @@
    {
     "name": "inputLabel",
     "type": "string",
-    "default": "'Parameters'",
+    "default": "'Asked'",
     "description": "See the context."
    },
    {
     "name": "outputLabel",
     "type": "string",
-    "default": "'Output Result'"
+    "default": "'Answer'"
    },
    {
     "name": "summary",
@@ -975,7 +975,8 @@
      "glass",
      "pill"
     ],
-    "default": "'default'"
+    "default": "'default'",
+    "description": "`default`, a row under a line; `pill`, a rounded track; `glass`, the same as `pill` (kept for EasyUI's)."
    },
    {
     "name": "linkComponent",
@@ -1104,6 +1105,11 @@
     "name": "className",
     "type": "string",
     "description": "Classes of the frame, which fills the window (`h-dvh`); drawn in a box of a page (a demo): `h-full`."
+   },
+   {
+    "name": "tabTitle",
+    "type": "boolean",
+    "description": "Whether its pages name the browser's tab (PageHeader): yes, unless it is drawn inside another shell (a demo in a page, which names the tab itself)."
    }
   ]
  },
@@ -1214,6 +1220,11 @@
     "name": "tabTitle",
     "type": "string",
     "description": "The tab's title; the heading by default."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "description": "Classes of the page, which fills the window (`min-h-dvh`); drawn in a box of a page (a demo): `min-h-full`."
    },
    {
     "name": "children",
@@ -1838,6 +1849,12 @@
     "type": "boolean",
     "default": "false",
     "description": "Indeterminate visual state"
+   },
+   {
+    "name": "error",
+    "type": "boolean",
+    "default": "false",
+    "description": "It must be ticked (terms to accept): an empty box's border in the error's colour, and said (`aria-invalid`)."
    }
   ],
   "inherits": {
@@ -2133,6 +2150,26 @@
     "name": "id",
     "type": "string",
     "description": "The trigger's id, for a `<label htmlFor>`."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | \"true\" | \"false\"",
+    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
+   },
+   {
+    "name": "error",
+    "type": "boolean",
+    "description": "The choice is wrong (or missing): the trigger's border in the error's colour, and said."
    }
   ]
  },
@@ -2602,6 +2639,36 @@
    {
     "name": "locale",
     "type": "string"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The trigger's id, for a `<label htmlFor>` (a Field's `htmlFor`)."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, where no label names it."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | \"true\" | \"false\"",
+    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
+   },
+   {
+    "name": "error",
+    "type": "boolean",
+    "description": "The date chosen is wrong (or missing): the trigger's border in the error's colour, and said."
    }
   ]
  },
@@ -2721,6 +2788,36 @@
    {
     "name": "locale",
     "type": "string"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The trigger's id, for a `<label htmlFor>` (a Field's `htmlFor`)."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, where no label names it."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | \"true\" | \"false\"",
+    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
+   },
+   {
+    "name": "error",
+    "type": "boolean",
+    "description": "The date chosen is wrong (or missing): the trigger's border in the error's colour, and said."
    }
   ]
  },
@@ -3456,12 +3553,12 @@
    {
     "name": "description",
     "type": "ReactNode",
-    "description": "What the value is for, or how to write it: under the control, in muted text, read out with it (`aria-describedby`, when the control is one element). The label alone names the control then; the error describes it too."
+    "description": "What the value is for, or how to write it: under the control, in muted text, read out with it (`aria-describedby`, when the control is one element). The label alone names the control."
    },
    {
     "name": "error",
     "type": "ReactNode",
-    "description": "What is wrong with the value, under the control."
+    "description": "What is wrong with the value, under the control: read out with it (`aria-describedby`), and the control marked invalid (`aria-invalid`), which the package's fields draw in the error's colour."
    },
    {
     "name": "htmlFor",
@@ -4669,6 +4766,11 @@
     "description": "Chips shown before \"+N\" says how many more."
    },
    {
+    "name": "max",
+    "type": "number",
+    "description": "At most this many values: past it, the options not chosen cannot be, and the list says why."
+   },
+   {
     "name": "disabled",
     "type": "boolean",
     "default": "false"
@@ -4677,6 +4779,16 @@
     "name": "error",
     "type": "boolean",
     "default": "false"
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
    },
    {
     "name": "emptyText",
@@ -4784,6 +4896,12 @@
     "name": "className",
     "type": "string",
     "default": "\"\""
+   },
+   {
+    "name": "focusOnMount",
+    "type": "boolean",
+    "default": "true",
+    "description": "Its heading takes the focus as it appears, so that a screen reader says the page is none: right for a page that replaces the page (the router's catch-all, a record the server does not have), wrong for one drawn in a part of a page (a tab, a sheet), where the focus is someone else's. `true` by default."
    }
   ]
  },
@@ -4831,6 +4949,11 @@
     "name": "back",
     "type": "{ label: string } | null",
     "description": "The way back, a step back in this tab's history; `null` for none."
+   },
+   {
+    "name": "focusOnMount",
+    "type": "boolean",
+    "description": "Its heading takes the focus as it appears, which a screen reader says: for a page that is none. `false` where it is drawn in a part of a page (a tab, a sheet), the focus left where it is. `true` by default."
    }
   ]
  },
@@ -4881,6 +5004,12 @@
     "type": "{ label: string } | null",
     "default": "BACK",
     "description": "The way back, a step back in this tab's history; `null` for none."
+   },
+   {
+    "name": "focusOnMount",
+    "type": "boolean",
+    "default": "true",
+    "description": "Its heading takes the focus as it appears, which a screen reader says: for a page that is none. `false` where it is drawn in a part of a page (a tab, a sheet), the focus left where it is. `true` by default."
    }
   ]
  },
@@ -5041,6 +5170,16 @@
     "description": "A value that is wrong: its border in the negative colour."
    },
    {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
+   },
+   {
     "name": "steppers",
     "type": "boolean",
     "default": "true",
@@ -5084,6 +5223,12 @@
     "default": "false"
    },
    {
+    "name": "error",
+    "type": "boolean",
+    "default": "false",
+    "description": "The code is wrong or incomplete: every box's border in the error's colour, and said (`aria-invalid`)."
+   },
+   {
     "name": "className",
     "type": "string"
    },
@@ -5094,6 +5239,16 @@
    {
     "name": "aria-label",
     "type": "string"
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
    },
    {
     "name": "id",
@@ -5144,6 +5299,11 @@
     "name": "pathname",
     "type": "string",
     "required": true
+   },
+   {
+    "name": "tabTitle",
+    "type": "boolean",
+    "description": "Whether its pages name the browser's tab (PageHeader): yes, unless it is inside another (a shell drawn in a page, a demo: the page around it names the tab)."
    },
    {
     "name": "children",
@@ -5631,6 +5791,31 @@
    {
     "name": "children",
     "type": "ReactNode"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The group's id, for a `<label htmlFor>`… or `aria-labelledby` elsewhere."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, the question its choices answer, where no element names it (`aria-labelledby`)."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it: a heading, a Field's label."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it."
    }
   ]
  },
@@ -6079,6 +6264,11 @@
     "type": "boolean",
     "default": "true",
     "description": "The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none."
+   },
+   {
+    "name": "tabTitle",
+    "type": "boolean",
+    "description": "Whether its pages name the browser's tab (PageHeader): yes, unless it is drawn inside another shell (a demo in a page, which names the tab itself)."
    },
    {
     "name": "children",

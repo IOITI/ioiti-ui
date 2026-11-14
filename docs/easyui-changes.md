@@ -456,6 +456,36 @@ otherwise).
   was `z-50`, theirs): a sheet or a dialog, put in `document.body` after the page the toast is in, covered it with
   its scrim, its action out of reach. Still under the hints (`z-[60]`).
 
+- `form` (0.18.0): `Input`, `Textarea` and `Select` draw their own border or the error's, never both
+  (`fieldBorder`, `src/lib/field-border.ts`): the error's `border-rose-500/50` added over the others lost to their
+  `dark:` and `accent:` variants, and an error showed no red in dark. The error is `negative`, said
+  (`aria-invalid`), and `aria-invalid` given by a `Field` reads as one. `RadioGroup` takes `id`, `aria-label`,
+  `aria-labelledby`, `aria-describedby` and `aria-invalid` (it could not be named); its radio lies over its circle,
+  transparent, as the checkbox's, so that the design's focus ring is seen (it was `sr-only`).
+- `otp-input`, `draw-checkbox` (0.18.0): `error` (and `aria-invalid`, as a `Field` gives it): the boxes' border, or an
+  empty box's, in `negative`; `otp-input` takes `aria-describedby` on its group.
+- `date-picker`, `combobox` (0.18.0): their popup is a layer in `document.body`, placed by `useAnchoredLayer`, its
+  keys its own, the focus in it (the day to choose, the search): EasyUI's was placed by hand inside the picker, cut
+  by a parent that clips and held by a `Field`'s label around it, whose click on the calendar's empty space opened or
+  closed it again. Both take `id`, `aria-label`, `aria-labelledby`, `aria-describedby` and `error`. Their own springs
+  are `springSnappy`, as `calendar`'s.
+- `directional-tooltip` (0.18.0): its description is `hidden` (aria-describedby reads it all the same), not
+  `sr-only`: a label around the trigger took its words into the control's name ("Seats Decrease Increase").
+- `not-found` (0.18.0): `focusOnMount` (`true`): one drawn in a part of a page leaves the focus where it is. The
+  whole address in a `Hint`, not a `title`.
+- `alert` (0.18.0): it leaves with `easeExit` (EasyUI's curve was written by hand).
+- `scroll-progress-nav` (0.18.0): with a `containerRef`, a part is scrolled to in it alone (`scrollIntoView` moved
+  the page around it too), less its `scroll-margin-top`; reduced motion is IoitiProvider's too
+  (`useReducedMotionConfig`).
+- `advanced-data-table` (0.18.0): its loading rows are `skeleton`s, said ("Loading the records"; `surface-raised` is
+  darker than the frame in dark, and they were not seen); its paging says "Loading…" and waits.
+- `animated-tabs` (0.18.0): no `backdrop-blur-xl` (it blurred nothing seen, and the design blurs a tile and what
+  floats only); `glass` is `pill`, as EasyUI drew them.
+- `ai-agent-activity` (0.18.0): `inputLabel` "Asked" and `outputLabel` "Answer" by default (EasyUI's "Parameters",
+  "Output Result"); its header says "N of M done", or "Not started" with no step (it said "0 of 0 completed").
+- `dependency-trace` (0.18.0): never wider than its canvas (`max-width`): on a wide page it grew, its words with it.
+- `live-line-chart` (0.18.0): with a `domain`, its scale is written from the first frame (it waited for two readings).
+
 ## ioiti-ui's own changes
 
 What the package changed in the copies, beyond the original interface:

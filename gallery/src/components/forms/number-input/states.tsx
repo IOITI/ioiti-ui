@@ -9,7 +9,7 @@ export default function NumberInputStates() {
   return (
     <div className="grid w-full gap-4 sm:grid-cols-2">
       <Field label="Quantity" htmlFor="number-quantity" error={tooMany ? `Only ${IN_STOCK} in stock: order ${IN_STOCK} at most` : undefined}>
-        <NumberInput id="number-quantity" value={quantity} onChange={setQuantity} min={1} max={500} integer error={tooMany} />
+        <NumberInput id="number-quantity" value={quantity} onChange={setQuantity} min={1} max={500} integer />
       </Field>
       <Field label="Free units" htmlFor="number-free" description="Set by the offer, not by hand">
         <NumberInput id="number-free" defaultValue={2} min={0} integer disabled />

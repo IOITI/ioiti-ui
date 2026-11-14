@@ -2,7 +2,7 @@
 
 One value from a list long enough to search: typing filters it, the arrows move, Enter chooses; an option may have a second line and an icon.
 
-**You provide** `options` (`[{ value, label, description?, icon?, keywords?, disabled? }]`), `value` / `defaultValue`, `onValueChange` (the value, or `null`); `id` for its `Field htmlFor`, or `aria-label`; `placeholder`, `searchPlaceholder`, `emptyText`, `align` (`start` · `end`), `disabled`, `className` (`w-full` in a form, 256px wide otherwise).
+**You provide** `options` (`[{ value, label, description?, icon?, keywords?, disabled? }]`), `value` / `defaultValue`, `onValueChange` (the value, or `null`); `id` for its `Field htmlFor`, or `aria-label` / `aria-labelledby`; `error`; `placeholder`, `searchPlaceholder`, `emptyText`, `align` (`start` · `end`), `disabled`, `className` (`w-full` in a form, 256px wide otherwise).
 
 ```tsx
 <Field label="Country" htmlFor="country">

@@ -12,8 +12,9 @@ export default function AuthLayoutNotice() {
   }
   return (
     <div className="flex flex-col gap-3">
-      <div className="h-[34rem] overflow-y-auto rounded-xl border border-border [&>main]:min-h-full">
+      <div className="h-[34rem] overflow-y-auto rounded-xl border border-border">
         <AuthLayout
+          className="min-h-full"
           title="Invoicing"
           description="Your password, to go on as Léa Brun."
           themeToggle={false}

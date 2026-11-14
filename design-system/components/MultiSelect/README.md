@@ -2,7 +2,7 @@
 
 Several values from a list, each a chip in the field: typing filters the list; options may be in groups, with a second line; what is typed may become a value of its own, a tag.
 
-**You provide** `options` (`[{ value, label, description?, group?, disabled? }]`), `value` / `defaultValue` / `onChange` (an array of values); `id` for a `Field htmlFor`, or `label` where no label names it; `placeholder`, `maxChips` (chips shown before "+N"), `onCreateOption` (given the text typed, it gives the option made, or its value), `emptyText`, `disabled`, `error`.
+**You provide** `options` (`[{ value, label, description?, group?, disabled? }]`), `value` / `defaultValue` / `onChange` (an array of values); `id` for a `Field htmlFor`, or `label` where no label names it; `placeholder`, `maxChips` (chips shown before "+N"), `max` (values at most: the list says so past it), `onCreateOption` (given the text typed, it gives the option made, or its value), `emptyText`, `disabled`, `error`.
 
 ```tsx
 <Field label="Customers" htmlFor="customers">
