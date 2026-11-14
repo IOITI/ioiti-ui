@@ -1,4 +1,4 @@
-import { PageHeader, TextLink } from 'ioiti-ui'
+import { PageHeader, TextLink, useTabTitle } from 'ioiti-ui'
 import { Navigate, useLocation } from 'react-router'
 
 import { exampleKey, familyPath, summaryOfFamily } from './catalogue'
@@ -11,6 +11,8 @@ import type { CategoryInfo, Examples } from './types'
 export function CategoryPage({ category, examples }: { category: CategoryInfo; examples: Examples }) {
   // A link to a part of the former page at this address, which is none of its components now, leads to its page.
   const { pathname, hash } = useLocation()
+  // The page's own, after every example's: an example that draws a PageHeader names the tab first.
+  useTabTitle(category.label)
   const part = decodeURIComponent(hash.replace(/^#/, ''))
   const moved = part && !category.families.some((family) => family.slug === part) ? movedTo(pathname, hash) : undefined
   if (moved) return <Navigate replace to={moved} />
