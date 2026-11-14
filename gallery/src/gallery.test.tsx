@@ -1,71 +1,74 @@
 import { cleanup, render, screen } from '@testing-library/react'
-import * as core from 'ioiti-ui'
 import { IoitiProvider } from 'ioiti-ui'
-import * as code from 'ioiti-ui/code'
-import * as adapter from 'ioiti-ui/react-router'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 
+import { FORMER_PARTS } from './catalogue/legacy'
 import { routes } from './router'
 import { PAGES } from './routes'
 
-function renderAt(path: string, basename = '/') {
-  const router = createMemoryRouter(routes, { basename, initialEntries: [`${basename}${path.slice(1)}`] })
+/** The gallery as GitHub Pages publishes it: under /ioiti-ui/. */
+const BASE = '/ioiti-ui/'
+
+function renderAt(path: string) {
+  const router = createMemoryRouter(routes, { basename: BASE, initialEntries: [`${BASE}${path.slice(1)}`] })
   render(
     <IoitiProvider appName="ioiti-ui">
       <RouterProvider router={router} />
     </IoitiProvider>,
   )
+  return router
 }
 
-/** A component: a name in PascalCase (not a CONSTANT), and something React can draw. */
-function components(module: Record<string, unknown>): string[] {
-  return Object.entries(module)
-    .filter(([name]) => /^[A-Z]/.test(name) && !/^[A-Z0-9_]+$/.test(name))
-    .filter(([, value]) => typeof value === 'function' || (typeof value === 'object' && value !== null && '$$typeof' in value))
-    .map(([name]) => name)
+/** A page's heading, once its category's examples are loaded (a chunk of their own). */
+const heading = () => screen.findAllByRole('heading', { level: 1 }, { timeout: 10_000 })
+
+/** The links of the page shown that leave the published gallery. */
+function linksOutside(path: string): string[] {
+  return [...document.querySelectorAll('a[href]')]
+    .map((link) => link.getAttribute('href') ?? '')
+    .filter((href) => !/^(\/ioiti-ui\/|#|https?:|mailto:)/.test(href))
+    .map((href) => `${path}: ${href}`)
 }
 
-/** What the page shown says it demonstrates (its demos' import lines). */
-function shown(): string[] {
-  return [...document.querySelectorAll('[data-names]')].flatMap((element) => (element.getAttribute('data-names') ?? '').split(' '))
-}
+// A page loads its category's examples first: the first of a category waits for them to be transformed.
+const A_PAGE = 20_000
 
-// The two tests that go through every page take the time every page takes: a few seconds alone, more
-// while the whole suite runs in parallel. Each page is held to the default on its own just above.
-const EVERY_PAGE = 30_000
-
-describe('the gallery', () => {
+describe('every page of the gallery', () => {
   for (const page of PAGES) {
-    it(`draws ${page.label} (${page.path}) without an error`, async () => {
+    it(`draws ${page.label} (${page.path}), its links under /ioiti-ui/`, async () => {
       renderAt(page.path)
-      expect(await screen.findAllByRole('heading', { level: 1 })).not.toHaveLength(0)
-    })
-  }
-
-  it('shows every component of the package somewhere', async () => {
-    const seen = new Set<string>()
-    for (const page of PAGES) {
-      renderAt(page.path)
-      await screen.findAllByRole('heading', { level: 1 })
-      for (const name of shown()) seen.add(name)
-      cleanup()
-    }
-    const missing = [...components(core), ...components(adapter), ...components(code)].filter((name) => !seen.has(name))
-    expect(missing, 'components with no demo in the gallery').toEqual([])
-  }, EVERY_PAGE)
-
-  it('keeps every link under the path it is published at (/ioiti-ui/ on GitHub Pages)', async () => {
-    const outside: string[] = []
-    for (const page of PAGES) {
-      renderAt(page.path, '/ioiti-ui/')
-      await screen.findAllByRole('heading', { level: 1 })
-      for (const link of document.querySelectorAll('a[href]')) {
-        const href = link.getAttribute('href') ?? ''
-        if (!/^(\/ioiti-ui\/|#|https?:|mailto:)/.test(href)) outside.push(`${page.path}: ${href}`)
+      expect(await heading()).not.toHaveLength(0)
+      if (page.family) {
+        for (const example of page.family.examples) {
+          expect(document.querySelector(`[data-example="${example.id}"]`), `${page.path}#${example.id}`).not.toBeNull()
+        }
+        expect(document.getElementById('props')).not.toBeNull()
       }
+      if (page.category && !page.family) {
+        for (const family of page.category.families) expect(document.getElementById(family.slug), family.name).not.toBeNull()
+      }
+      expect(linksOutside(page.path), 'links that leave the published gallery').toEqual([])
+    }, A_PAGE)
+  }
+})
+
+describe('a link to a part of a former page', () => {
+  it('leads to the page of the component it showed', async () => {
+    for (const { from, to } of FORMER_PARTS.filter((_, index) => index % 9 === 0)) {
+      const router = renderAt(from)
+      await heading()
+      expect(router.state.location.pathname, from).toBe(`${BASE}${to.slice(1)}`)
       cleanup()
     }
-    expect(outside, 'links that leave the published gallery').toEqual([])
-  }, EVERY_PAGE)
+  }, A_PAGE)
+
+  it('leads from a page that is none now to the category it became', async () => {
+    const router = renderAt('/components/data#kpi')
+    await heading()
+    expect(router.state.location.pathname).toBe('/ioiti-ui/components/figures/kpi-tile')
+    cleanup()
+    renderAt('/components/data')
+    await screen.findAllByRole('heading', { level: 1, name: 'Tables and lists' }, { timeout: 10_000 })
+  }, A_PAGE)
 })

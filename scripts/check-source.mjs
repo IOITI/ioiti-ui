@@ -65,7 +65,27 @@ for (const file of filesUnder(join('gallery', 'src'))) {
   }
 }
 
-for (const file of [...filesUnder('src'), ...filesUnder('gallery'), ...filesUnder('templates')]) {
+// The gallery's examples are what an application writes, and the code their page shows: they import the
+// package's entries, React, lucide-react and the gallery's sample data; the router only for the shell's own.
+const SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(?\s*)(['"])([^'"]+)\1/g
+const EXAMPLES = join('gallery', 'src', 'components')
+for (const file of filesUnder(EXAMPLES)) {
+  if (!file.endsWith('.tsx')) continue
+  const router = file.startsWith(join(EXAMPLES, 'shell'))
+  for (const [, , specifier] of readFileSync(join(root, file), 'utf8').matchAll(SPECIFIER)) {
+    const allowed =
+      /^(ioiti-ui|ioiti-ui\/react-router|ioiti-ui\/code|react|react-dom|lucide-react)$/.test(specifier) ||
+      /^(\.\.\/)+samples\/[\w-]+$/.test(specifier) ||
+      (router && specifier === 'react-router')
+    if (!allowed) problems.push(`${file}: an example imports "${specifier}": the package's entries, react, lucide-react or the samples only`)
+  }
+}
+
+// The guidelines are shipped with the gallery too.
+const GUIDELINES = join('design-system', 'components')
+const guidelines = readdirSync(join(root, GUIDELINES)).map((name) => join(GUIDELINES, name, 'README.md'))
+
+for (const file of [...filesUnder('src'), ...filesUnder('gallery'), ...filesUnder('templates'), ...guidelines]) {
   const lines = readFileSync(join(root, file), 'utf8').split('\n')
   lines.forEach((line, index) => {
     if (ORIGIN.test(line)) problems.push(`${relative(root, join(root, file))}:${index + 1}: names ${line.match(ORIGIN)[0]}`)
@@ -77,4 +97,4 @@ if (problems.length) {
   console.error(`\ncheck-source: ${problems.length} problem${problems.length === 1 ? '' : 's'}`)
   process.exit(1)
 }
-console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, no name of the original application')
+console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, examples import what an application would, no name of the original application')

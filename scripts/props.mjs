@@ -152,6 +152,34 @@ function inheritsOf(texts) {
   return { element, component, motion, omit }
 }
 
+/** The values of a union of literals in the order the source writes them (`'xs' | 'sm' | 'md'`), through an alias. */
+function writtenValues(node, depth = 0) {
+  if (!node || depth > 3) return undefined
+  if (ts.isParenthesizedTypeNode(node)) return writtenValues(node.type, depth + 1)
+  if (ts.isLiteralTypeNode(node)) {
+    const literal = node.literal
+    if (ts.isStringLiteral(literal) || ts.isNumericLiteral(literal)) return [literal.text]
+    return undefined
+  }
+  if (ts.isUnionTypeNode(node)) {
+    const values = []
+    for (const member of node.types) {
+      if (member.kind === ts.SyntaxKind.UndefinedKeyword || member.kind === ts.SyntaxKind.NullKeyword) continue
+      const found = writtenValues(member, depth + 1)
+      if (!found) return undefined
+      values.push(...found)
+    }
+    return values
+  }
+  if (ts.isTypeReferenceNode(node)) {
+    const symbol = checker.getSymbolAtLocation(node.typeName)
+    const target = symbol && symbol.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(symbol) : symbol
+    const alias = target?.getDeclarations()?.find(ts.isTypeAliasDeclaration)
+    return alias ? writtenValues(alias.type, depth + 1) : undefined
+  }
+  return undefined
+}
+
 function literalValues(type) {
   const kept = checker.getNonNullableType(type)
   if (kept.isStringLiteral() || kept.isNumberLiteral()) return [String(kept.value)]
@@ -180,7 +208,10 @@ function describeProp(symbol, required, defaults, location) {
     .trim()
     .replace(/^[a-z]/, (letter) => letter.toUpperCase())
   const prop = { name: symbol.getName(), type: oneLine(typeText) }
-  const values = literalValues(type)
+  const typeNode = declaration && (ts.isPropertySignature(declaration) || ts.isPropertyDeclaration(declaration)) ? declaration.type : undefined
+  const resolved = literalValues(type)
+  const written = resolved && writtenValues(typeNode)
+  const values = written && written.length === resolved.length ? written : resolved
   if (values && values.length > 1) prop.values = values
   if (required) prop.required = true
   const fallback = tagged ? oneLine(ts.displayPartsToString(tagged.text)) : defaults.get(symbol.getName())

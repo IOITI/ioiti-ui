@@ -177,8 +177,8 @@
     "name": "defaultViewMode",
     "type": "DataTableViewMode",
     "values": [
-     "table",
      "auto",
+     "table",
      "cards"
     ]
    },
@@ -665,8 +665,8 @@
     "name": "size",
     "type": "'md' | 'sm'",
     "values": [
-     "sm",
-     "md"
+     "md",
+     "sm"
     ],
     "default": "'md'",
     "description": "'sm', a board for the side of a page's header (EasyUI's characters are up to 20 px wide)."
@@ -686,11 +686,11 @@
     "name": "tone",
     "type": "AlertTone",
     "values": [
+     "neutral",
+     "info",
      "success",
      "warning",
-     "danger",
-     "neutral",
-     "info"
+     "danger"
     ],
     "default": "\"neutral\""
    },
@@ -783,8 +783,8 @@
     "name": "variant",
     "type": "'standard' | 'compact'",
     "values": [
-     "compact",
-     "standard"
+     "standard",
+     "compact"
     ],
     "default": "'standard'",
     "description": "Layout mode: standard full-size or compact inline"
@@ -1151,8 +1151,8 @@
     "name": "tone",
     "type": "'neutral' | 'danger'",
     "values": [
-     "danger",
-     "neutral"
+     "neutral",
+     "danger"
     ],
     "default": "'neutral'",
     "description": "`danger`: it could not be taken, `detail` says why."
@@ -1334,9 +1334,9 @@
     "name": "variant",
     "type": "BadgeVariant",
     "values": [
-     "outline",
      "soft",
-     "solid"
+     "solid",
+     "outline"
     ],
     "default": "\"soft\""
    },
@@ -1344,10 +1344,10 @@
     "name": "tone",
     "type": "BadgeTone",
     "values": [
+     "neutral",
      "success",
      "warning",
-     "danger",
-     "neutral"
+     "danger"
     ],
     "default": "\"neutral\""
    },
@@ -1576,7 +1576,6 @@
     "name": "variant",
     "type": "ButtonVariant",
     "values": [
-     "link",
      "default",
      "primary",
      "secondary",
@@ -1584,6 +1583,7 @@
      "ghost",
      "destructive",
      "success",
+     "link",
      "gradient"
     ],
     "default": "'primary'",
@@ -1659,7 +1659,6 @@
     "name": "variant",
     "type": "ButtonVariant",
     "values": [
-     "link",
      "default",
      "primary",
      "secondary",
@@ -1667,6 +1666,7 @@
      "ghost",
      "destructive",
      "success",
+     "link",
      "gradient"
     ],
     "default": "'primary'"
@@ -1917,7 +1917,6 @@
     "name": "language",
     "type": "CodeLanguage",
     "values": [
-     "text",
      "json",
      "js",
      "jsx",
@@ -1928,7 +1927,8 @@
      "toml",
      "yaml",
      "diff",
-     "python"
+     "python",
+     "text"
     ],
     "default": "'text'",
     "description": "How it is coloured: `text` not at all."
@@ -1996,12 +1996,12 @@
     "name": "language",
     "type": "CodeEditorLanguage",
     "values": [
-     "text",
-     "json",
      "toml",
      "yaml",
+     "json",
+     "markdown",
      "python",
-     "markdown"
+     "text"
     ],
     "default": "'text'",
     "description": "How it is coloured (and indented): `text` not at all. Loaded when first used."
@@ -2108,8 +2108,8 @@
     "name": "align",
     "type": "\"start\" | \"end\"",
     "values": [
-     "end",
-     "start"
+     "start",
+     "end"
     ],
     "default": "\"start\""
    },
@@ -2167,8 +2167,8 @@
     "name": "gesture",
     "type": "'slide' | 'button'",
     "values": [
-     "button",
-     "slide"
+     "slide",
+     "button"
     ],
     "default": "'slide'",
     "description": "How it is confirmed. The slide is for what puts something at risk or cannot be taken back. A plain button is for the protective direction (pausing), which has to be quick: `confirmLabel` is then the text of that button."
@@ -2352,8 +2352,8 @@
     "name": "defaultViewMode",
     "type": "DataTableViewMode",
     "values": [
-     "table",
      "auto",
+     "table",
      "cards"
     ],
     "default": "'auto'"
@@ -2550,16 +2550,16 @@
     "name": "align",
     "type": "\"start\" | \"end\"",
     "values": [
-     "end",
-     "start"
+     "start",
+     "end"
     ]
    },
    {
     "name": "side",
     "type": "Side | \"auto\"",
     "values": [
-     "top",
      "bottom",
+     "top",
      "auto"
     ]
    },
@@ -2669,16 +2669,16 @@
     "name": "align",
     "type": "\"start\" | \"end\"",
     "values": [
-     "end",
-     "start"
+     "start",
+     "end"
     ]
    },
    {
     "name": "side",
     "type": "Side | \"auto\"",
     "values": [
-     "top",
      "bottom",
+     "top",
      "auto"
     ]
    },
@@ -2868,12 +2868,12 @@
     "name": "language",
     "type": "CodeEditorLanguage",
     "values": [
-     "text",
-     "json",
      "toml",
      "yaml",
+     "json",
+     "markdown",
      "python",
-     "markdown"
+     "text"
     ],
     "default": "'text'"
    },
@@ -2969,9 +2969,9 @@
     "type": "TooltipSide",
     "values": [
      "top",
+     "right",
      "bottom",
-     "left",
-     "right"
+     "left"
     ],
     "default": "'top'",
     "description": "Preferred side; may be flipped if there's no space (auto by default)"
@@ -2980,9 +2980,9 @@
     "name": "align",
     "type": "TooltipAlign",
     "values": [
+     "start",
      "center",
-     "end",
-     "start"
+     "end"
     ],
     "default": "'center'",
     "description": "Alignment along the side"
@@ -3154,10 +3154,10 @@
     "name": "actionType",
     "type": "DragConfirmActionType",
     "values": [
-     "submit",
      "delete",
      "archive",
      "confirm",
+     "submit",
      "unlock",
      "continue"
     ],
@@ -3169,10 +3169,10 @@
     "type": "DragConfirmVariant",
     "values": [
      "default",
-     "success",
-     "warning",
      "danger",
-     "info"
+     "warning",
+     "info",
+     "success"
     ],
     "description": "Visual variant tone override"
    },
@@ -3281,9 +3281,9 @@
     "name": "align",
     "type": "AnchorAlign",
     "values": [
+     "start",
      "center",
-     "end",
-     "start"
+     "end"
     ],
     "default": "'start'"
    }
@@ -3357,10 +3357,10 @@
     "name": "headingLevel",
     "type": "1 | 2 | 3 | 4 | 5 | 6",
     "values": [
+     "1",
      "2",
      "3",
      "4",
-     "1",
      "5",
      "6"
     ],
@@ -3527,10 +3527,10 @@
     "name": "side",
     "type": "FlysheetSide",
     "values": [
-     "top",
-     "bottom",
+     "right",
      "left",
-     "right"
+     "top",
+     "bottom"
     ],
     "default": "\"right\"",
     "description": "The side it comes from. A child takes its parent's."
@@ -3594,10 +3594,10 @@
     "name": "padding",
     "type": "FlysheetPadding",
     "values": [
+     "none",
      "sm",
      "md",
-     "lg",
-     "none"
+     "lg"
     ],
     "default": "\"md\"",
     "description": "The padding of its header, body and footer (`md`, EasyUI's)."
@@ -3825,9 +3825,9 @@
     "type": "TooltipSide",
     "values": [
      "top",
+     "right",
      "bottom",
-     "left",
-     "right"
+     "left"
     ],
     "default": "'top'"
    },
@@ -3905,8 +3905,8 @@
     "name": "variant",
     "type": "'text' | 'title'",
     "values": [
-     "title",
-     "text"
+     "text",
+     "title"
     ],
     "default": "'text'",
     "description": "`text` in a sentence's size; `title` a heading's (`as` says which)."
@@ -4473,9 +4473,9 @@
     "name": "variant",
     "type": "'arc' | 'dots' | 'line' | 'rings'",
     "values": [
-     "line",
      "arc",
      "dots",
+     "line",
      "rings"
     ],
     "default": "'arc'",
@@ -4597,9 +4597,9 @@
     "name": "tone",
     "type": "MeterTone",
     "values": [
-     "warning",
      "neutral",
      "positive",
+     "warning",
      "negative"
     ],
     "default": "'neutral'"
@@ -5350,9 +5350,9 @@
     "name": "align",
     "type": "AnchorAlign",
     "values": [
+     "start",
      "center",
-     "end",
-     "start"
+     "end"
     ],
     "default": "'start'"
    },
@@ -5432,9 +5432,9 @@
     "name": "tone",
     "type": "MeterTone",
     "values": [
-     "warning",
      "neutral",
      "positive",
+     "warning",
      "negative"
     ],
     "default": "'neutral'"
@@ -5803,8 +5803,8 @@
     "name": "variant",
     "type": "'timeline' | 'compact'",
     "values": [
-     "compact",
-     "timeline"
+     "timeline",
+     "compact"
     ],
     "default": "'timeline'",
     "description": "Visual presentation mode. Default is 'timeline'."
@@ -5851,11 +5851,11 @@
     "name": "status",
     "type": "RequestLifecycleStatus",
     "values": [
-     "success",
-     "unknown",
      "processing",
      "verifying",
-     "failed"
+     "success",
+     "failed",
+     "unknown"
     ],
     "default": "'processing'",
     "description": "Where the request stands."
@@ -6244,8 +6244,8 @@
     "name": "mode",
     "type": "'fixed' | 'inline' | 'sticky'",
     "values": [
-     "inline",
      "fixed",
+     "inline",
      "sticky"
     ],
     "default": "'fixed'",
@@ -6384,10 +6384,10 @@
     "name": "mode",
     "type": "'fixed' | 'contained' | 'inline' | 'sticky'",
     "values": [
-     "inline",
      "fixed",
-     "sticky",
-     "contained"
+     "contained",
+     "inline",
+     "sticky"
     ],
     "default": "'fixed'",
     "description": "Position mode: 'fixed' attaches to browser viewport, 'contained' / 'inline' stays within parent container. ioiti-ui: 'sticky' stays at the bottom of the screen while its list is on it, and rests under the list past it."
@@ -6708,7 +6708,6 @@
     "name": "variant",
     "type": "ButtonVariant",
     "values": [
-     "link",
      "default",
      "primary",
      "secondary",
@@ -6716,6 +6715,7 @@
      "ghost",
      "destructive",
      "success",
+     "link",
      "gradient"
     ],
     "default": "'outline'",
@@ -6992,10 +6992,10 @@
     "name": "tone",
     "type": "'auto' | Tone",
     "values": [
-     "neutral",
+     "auto",
      "positive",
      "negative",
-     "auto"
+     "neutral"
     ],
     "default": "'auto'",
     "description": "Its colour: `auto` says the direction (a line by its last value against its first, each bar by its sign), a tone says one for all, `neutral` is the series colour (the accent's, where the look has one). Where down is good (a delay), give the tone."
@@ -7407,11 +7407,11 @@
     "name": "status",
     "type": "HealthStatus",
     "values": [
-     "disabled",
+     "ok",
      "warning",
      "down",
-     "ok",
-     "unknown"
+     "unknown",
+     "disabled"
     ],
     "required": true
    },
@@ -7901,11 +7901,11 @@
     "name": "position",
     "type": "UndoToastPosition",
     "values": [
-     "top-center",
-     "bottom-center",
-     "top-right",
      "top-left",
+     "top-center",
+     "top-right",
      "bottom-left",
+     "bottom-center",
      "bottom-right"
     ],
     "default": "'bottom-center'",
@@ -8047,11 +8047,11 @@
     "name": "position",
     "type": "VelocityToastPosition",
     "values": [
-     "top-center",
-     "bottom-center",
-     "top-right",
      "top-left",
+     "top-center",
+     "top-right",
      "bottom-left",
+     "bottom-center",
      "bottom-right"
     ],
     "default": "'bottom-center'"
