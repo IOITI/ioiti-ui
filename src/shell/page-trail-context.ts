@@ -21,6 +21,8 @@ export const PublisherContext = createContext<Publisher | null>(null)
 export const NamedContext = createContext<Named | null>(null)
 /** The menu, and the address of the page shown: what the trail is made from. */
 export const TrailContext = createContext<{ menu: Menu; pathname: string } | null>(null)
+/** Whether the pages here name the browser's tab: not those of a shell drawn in a page (a demo, a preview). */
+export const TabTitleContext = createContext(true)
 
 /**
  * Gives the trail of the top bar the name of the page and the pages between
@@ -43,17 +45,21 @@ export function usePageName(title: string, parents?: Crumb[]) {
 /**
  * The tab says which page it is: several are often open side by side. Its title is the page's,
  * then the application's name when IoitiProvider was given one ("Orders · My App"); a page named
- * as the application (its sign-in page) says the name once.
+ * as the application (its sign-in page) says the name once. Not a page of a shell drawn in a page
+ * (`tabTitle={false}`, the default of a shell inside another).
  */
 export function useTabTitle(title: string) {
   const appName = useAppName()
+  const names = useContext(TabTitleContext)
   useEffect(() => {
+    // A page of a shell drawn in a page leaves the tab to the page around it.
+    if (!names) return
     const before = document.title
     document.title = appName && appName !== title ? `${title} · ${appName}` : title
     return () => {
       document.title = appName ?? before
     }
-  }, [title, appName])
+  }, [title, appName, names])
 }
 
 /** The menu and the address of the page shown; null outside the shell. */

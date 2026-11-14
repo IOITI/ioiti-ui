@@ -146,7 +146,9 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
       )}
     >
       <svg
-        className="w-full h-auto"
+        // ioiti-ui: as wide as its box, never wider than its canvas: on a wide page it grew, its words with it.
+        className="mx-auto block w-full h-auto"
+        style={{ maxWidth: width }}
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="xMidYMid meet"
       >

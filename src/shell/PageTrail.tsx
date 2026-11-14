@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, House } from 'lucide-react'
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode, RefObject } from 'react'
 
 import { useLinkComponent } from '../components/link-context.js'
@@ -8,23 +8,38 @@ import type { BreadcrumbItem } from '../components/ui/breadcrumb.js'
 import { cn } from '../lib/utils.js'
 import { DEFAULT_HOME } from './navigation.js'
 import type { Menu } from './navigation.js'
-import { NamedContext, PublisherContext, TrailContext, usePageTrail } from './page-trail-context.js'
+import { NamedContext, PublisherContext, TabTitleContext, TrailContext, usePageTrail } from './page-trail-context.js'
 import type { Named } from './page-trail-context.js'
 import { wholeTrailFits } from './trail-fit.js'
+
+interface PageTrailProviderProps {
+  menu: Menu
+  pathname: string
+  /**
+   * Whether its pages name the browser's tab (PageHeader): yes, unless it is inside another (a shell drawn in a
+   * page, a demo: the page around it names the tab).
+   */
+  tabTitle?: boolean
+  children: ReactNode
+}
 
 /**
  * Keeps the name the page shown gives itself (usePageName), for the trail of
  * the top bar. A name is kept with its address and only read for it: the page
  * left behind takes its name away after the next page is drawn, never before.
  */
-export function PageTrailProvider({ menu, pathname, children }: { menu: Menu; pathname: string; children: ReactNode }) {
+export function PageTrailProvider({ menu, pathname, tabTitle, children }: PageTrailProviderProps) {
+  const outer = useContext(TrailContext)
+  const names = tabTitle ?? outer === null
   const [named, publish] = useState<Named | null>(null)
   const publisher = useMemo(() => ({ pathname, publish }), [pathname])
   const trail = useMemo(() => ({ menu, pathname }), [menu, pathname])
   return (
     <TrailContext.Provider value={trail}>
       <PublisherContext.Provider value={publisher}>
-        <NamedContext.Provider value={named?.pathname === pathname ? named : null}>{children}</NamedContext.Provider>
+        <NamedContext.Provider value={named?.pathname === pathname ? named : null}>
+          <TabTitleContext.Provider value={names}>{children}</TabTitleContext.Provider>
+        </NamedContext.Provider>
       </PublisherContext.Provider>
     </TrailContext.Provider>
   )

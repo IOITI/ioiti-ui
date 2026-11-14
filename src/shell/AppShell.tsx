@@ -59,6 +59,11 @@ export interface AppShellProps<S extends string = string> {
   shortcutsDialog?: boolean
   /** Classes of the frame, which fills the window (`h-dvh`); drawn in a box of a page (a demo): `h-full`. */
   className?: string
+  /**
+   * Whether its pages name the browser's tab (PageHeader): yes, unless it is drawn inside another shell (a demo in
+   * a page, which names the tab itself).
+   */
+  tabTitle?: boolean
 }
 
 /**
@@ -68,7 +73,7 @@ export interface AppShellProps<S extends string = string> {
  */
 export function AppShell<S extends string = string>(props: AppShellProps<S>) {
   return (
-    <PageTrailProvider menu={props.menu} pathname={props.pathname}>
+    <PageTrailProvider menu={props.menu} pathname={props.pathname} tabTitle={props.tabTitle}>
       <Shell {...props} />
     </PageTrailProvider>
   )
