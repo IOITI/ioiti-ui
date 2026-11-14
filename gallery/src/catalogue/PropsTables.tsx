@@ -1,5 +1,6 @@
 import { Badge, Code, Disclosure, EmptyText, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
 
+import { InlineMarkdown } from './Markdown'
 import { COMPONENT_PROPS, type ComponentProps, type Inherits } from './props'
 
 /** "…and the attributes of `<button>`": what a component takes from elsewhere, in a line. */
@@ -68,13 +69,15 @@ function PropsTable({ name, component }: { name: string; component: ComponentPro
                   )}
                 </span>
               </TableCell>
-              <TableCell className="align-top">
-                <div className="flex max-w-xs flex-wrap gap-1">
+              <TableCell className="align-top whitespace-normal">
+                <div className="flex max-w-xs flex-wrap gap-1 [&_code]:whitespace-normal [&_code]:break-words">
                   {prop.values ? prop.values.map((value) => <Code key={value}>{`'${value}'`}</Code>) : <Code>{prop.type}</Code>}
                 </div>
               </TableCell>
               <TableCell className="align-top">{prop.default !== undefined ? <Code>{prop.default}</Code> : <span className="text-muted-foreground">–</span>}</TableCell>
-              <TableCell className="min-w-56 align-top text-muted-foreground">{prop.description ?? ''}</TableCell>
+              <TableCell className="min-w-64 align-top whitespace-normal text-muted-foreground">
+                {prop.description ? <InlineMarkdown text={prop.description} /> : null}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
