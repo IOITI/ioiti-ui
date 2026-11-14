@@ -13,6 +13,7 @@ import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent } from '../link-context.js';
 import { DirectionalTooltip } from './directional-tooltip.js';
+import { Hint } from '../Hint.js';
 
 export interface SelectionActionItem {
   id: string;
@@ -176,16 +177,18 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
             </div>
 
             {/* Clear selection close button */}
+            {/* ioiti-ui: what it does in a Hint, shown on hover, keyboard focus and a tap, not a title. */}
             {onClearSelection && (
+              <Hint content="Clear the selection">
               <button
                 type="button"
                 onClick={onClearSelection}
                 className="w-7 h-7 rounded-lg bg-neutral-100 hover:bg-white border border-neutral-200 hover:border-neutral-400 flex items-center justify-center text-muted-foreground hover:text-neutral-900 transition-colors focus-ring shrink-0 ml-1 cursor-pointer dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:hover:text-[#FAFAFA]"
-                title="Clear selection"
-                aria-label="Clear selection"
+                aria-label="Clear the selection"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
+              </Hint>
             )}
           </motion.div>
         </div>

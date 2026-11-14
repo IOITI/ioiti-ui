@@ -339,7 +339,8 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
           transition={motionTransitions.springSnappy}
           className={cn(
             currentSize.thumbClass,
-            'rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing z-20 relative select-none touch-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-500 transition-[background-color,border-color,box-shadow]',
+            // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+            'rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing z-20 relative select-none touch-none transition-[background-color,border-color,box-shadow]',
             isConfirmed
               ? tone.confirmedHandle
               : 'bg-white dark:bg-[#1C1C20] border border-neutral-200/90 dark:border-[#2C2C32] text-neutral-800 dark:text-neutral-200 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.4)] hover:border-neutral-300 dark:hover:border-[#3A3A42]',

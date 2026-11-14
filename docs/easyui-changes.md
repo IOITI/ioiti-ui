@@ -30,7 +30,11 @@ otherwise).
   a darker step. Nothing dark was changed by this.
 - **One focus ring.** The keyboard's focus is the global rule of `design.css`, outside any layer so that it
   wins over the components' `outline-none`. The components' own rings (white ones, made for a dark page)
-  are gone where they hid it. A field that takes text has none: its caret and its border show its focus.
+  are gone, and since 0.18.0 the grey ones too, which drew a second ring beside the design's (`sidebar`,
+  `breadcrumb`, `calendar`, `date-picker`, `alert`, `stepper`, `drag-to-confirm`); `check-source` holds it. A
+  field that takes text has none: its caret and its border show its focus. A control's `title`s are Hints
+  (`interactive-timeline`, `advanced-data-table`, `notification-bell`, `scroll-progress-nav`, `selection-basket`,
+  `not-found`), named by `aria-label` where the title was their only name.
 - **Links are links.** A component that leads somewhere draws a real link, which a ⌘-click, a middle click
   or a right click opens in another tab (`isPlainClick` leaves such a click to the browser). The link is
   drawn by a component the caller gives (`linkComponent`, `as` for the breadcrumb, `LinkComponent` for the

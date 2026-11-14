@@ -11,6 +11,7 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent } from '../link-context.js';
 // ioiti-ui: a moment is said from now, its full date in a hint.
 import { RelativeTime } from '../RelativeTime.js';
+import { Hint } from '../Hint.js';
 import { Skeleton } from './skeleton.js';
 
 /** ioiti-ui: what kind of news an entry is, for its dot. */
@@ -235,16 +236,18 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               </div>
 
               <div className="flex items-center gap-1">
+                {/* ioiti-ui: what it does in a Hint, not a title. */}
                 {unreadCount > 0 && onMarkAllAsRead && (
-                  <button
-                    type="button"
-                    onClick={onMarkAllAsRead}
-                    className="p-1 rounded-lg text-[10px] text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors flex items-center gap-1 cursor-pointer dark:hover:text-white dark:hover:bg-[#141414]"
-                    title="Mark all as read"
-                  >
-                    <CheckCheck className="w-3.5 h-3.5" />
-                    <span>Read all</span>
-                  </button>
+                  <Hint content="Mark them all as read">
+                    <button
+                      type="button"
+                      onClick={onMarkAllAsRead}
+                      className="p-1 rounded-lg text-[10px] text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors flex items-center gap-1 cursor-pointer dark:hover:text-white dark:hover:bg-[#141414]"
+                    >
+                      <CheckCheck className="w-3.5 h-3.5" />
+                      <span>Read all</span>
+                    </button>
+                  </Hint>
                 )}
                 <button
                   type="button"
@@ -342,16 +345,18 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                         </span>
                       </div>
 
+                      {/* ioiti-ui: what it does in a Hint, not a title. */}
                       {!item.read && (
-                        <button
-                          type="button"
-                          onClick={() => onMarkAsRead(item.id)}
-                          className="p-1 rounded text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer dark:hover:text-white dark:hover:bg-[#0E0E0E]"
-                          title="Mark as read"
-                          aria-label="Mark notification as read"
-                        >
-                          <CheckCheck className="w-3.5 h-3.5" />
-                        </button>
+                        <Hint content="Mark as read">
+                          <button
+                            type="button"
+                            onClick={() => onMarkAsRead(item.id)}
+                            className="p-1 rounded text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer dark:hover:text-white dark:hover:bg-[#0E0E0E]"
+                            aria-label="Mark notification as read"
+                          >
+                            <CheckCheck className="w-3.5 h-3.5" />
+                          </button>
+                        </Hint>
                       )}
                     </motion.div>
                   );

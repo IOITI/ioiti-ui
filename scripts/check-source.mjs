@@ -56,6 +56,24 @@ for (const file of filesUnder('src')) {
   }
 }
 
+// One focus ring, the design's (design.css): no component draws one of its own beside it. What a control means is a
+// Hint, never a title (a title shows on none of a phone, a keyboard or a disabled control): ThemeToggle's is the
+// original's, kept on purpose.
+const OWN_RING = /focus-visible:ring|focus-visible:outline-none/
+const TITLE_ON_CONTROL = /<(?:button|a|motion\.button)\b[^>]*?\stitle=/s
+for (const file of filesUnder('src')) {
+  if (!/\.tsx$/.test(file) || /\.test\.tsx$/.test(file)) continue
+  const text = readFileSync(join(root, file), 'utf8')
+  text.split('\n').forEach((line, index) => {
+    if (OWN_RING.test(line)) problems.push(`${file}:${index + 1}: draws a focus ring of its own (the design's is the one)`)
+  })
+  if (file.endsWith(join('components', 'ThemeToggle.tsx'))) continue
+  for (const match of text.matchAll(new RegExp(TITLE_ON_CONTROL, 'gs'))) {
+    const line = text.slice(0, match.index).split('\n').length
+    problems.push(`${file}:${line}: a title on a control: say it in a Hint`)
+  }
+}
+
 // The gallery is an application made with the package: it imports `ioiti-ui`, never the package's source.
 for (const file of filesUnder(join('gallery', 'src'))) {
   const text = readFileSync(join(root, file), 'utf8')
@@ -99,4 +117,4 @@ if (problems.length) {
   console.error(`\ncheck-source: ${problems.length} problem${problems.length === 1 ? '' : 's'}`)
   process.exit(1)
 }
-console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, examples import what an application would, no name of the original application')
+console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, examples import what an application would, no name of the original application')

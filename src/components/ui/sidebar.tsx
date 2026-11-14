@@ -360,7 +360,8 @@ function Panel({
             aria-expanded={hasChildren && !linked ? isOpen : undefined}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "relative flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:focus-visible:ring-neutral-600/60",
+              // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+              "relative flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm outline-none transition-colors",
               chevron && "pr-9",
               isActive || childActive
                 ? // ioiti-ui: the page shown, in the accent when the theme has one (accent:), as its pill below.
@@ -452,7 +453,8 @@ function Panel({
                       }}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-[13px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:focus-visible:ring-neutral-600/60",
+                        // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-[13px] outline-none transition-colors",
                         active
                           ? // ioiti-ui: the page shown, and its dot, in the accent (accent:).
                             "text-neutral-900 dark:text-white accent:text-brand-text"
@@ -538,7 +540,8 @@ function Panel({
                       onClick={() => toggleSection(key)}
                       aria-expanded={!folded}
                       aria-controls={folded ? undefined : listId}
-                      className="flex w-full items-center gap-1.5 rounded-md px-2.5 pb-1 pt-4 text-left text-xs text-neutral-500 outline-none transition-colors hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:text-neutral-400 dark:hover:text-white dark:focus-visible:ring-neutral-600/60"
+                      // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                      className="flex w-full items-center gap-1.5 rounded-md px-2.5 pb-1 pt-4 text-left text-xs text-neutral-500 outline-none transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                     >
                       <span className="truncate">{section.title}</span>
                       <ChevronRight
@@ -596,7 +599,8 @@ function Panel({
                 onMouseLeave={() => setTip(null)}
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                 aria-keyshortcuts={ariaKeyShortcuts(TOGGLE_KEYS)}
-                className="flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-500 outline-none transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white dark:focus-visible:ring-neutral-600/60"
+                // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                className="flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-500 outline-none transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white"
               >
                 <span className="grid size-5 shrink-0 place-items-center">
                   <PanelLeft className="size-[18px]" />

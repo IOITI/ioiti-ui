@@ -253,7 +253,8 @@ export function SidebarFooterButton({ icon, label, className, ...props }: Sideba
       type="button"
       aria-label={label}
       className={cn(
-        'flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-600 outline-none transition-colors hover:bg-neutral-200/70 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-400/60 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white dark:focus-visible:ring-neutral-600/60',
+        // The design's focus ring alone (design.css), not one of its own beside it.
+        'flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-600 outline-none transition-colors hover:bg-neutral-200/70 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white',
         className,
       )}
       {...props}

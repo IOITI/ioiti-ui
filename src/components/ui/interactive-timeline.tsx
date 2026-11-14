@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Clock, AlertCircle, AlertTriangle, Loader2, GitCommit, Copy, CheckCheck, ChevronDown } from 'lucide-react';
 import { cn, copyToClipboard } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { Hint } from '../Hint.js';
 
 // ioiti-ui: `warning`, a step that went on but not as it should (amber).
 export type TimelineStatus = 'completed' | 'in-progress' | 'pending' | 'failed' | 'warning';
@@ -189,23 +190,27 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                 role="listitem"
                 className="relative flex items-start gap-4 group"
               >
-                {/* Status Indicator Node */}
+                {/* Status Indicator Node. ioiti-ui: named by its step and its state (aria-label), shown in a Hint on
+                    hover, keyboard focus and a tap: its title was its only name, and showed on none of them. */}
+                <Hint content={`${item.title}: ${item.statusLabel ?? item.status}`} side="right">
                 <button
                   type="button"
+                  aria-label={`${item.title}: ${item.statusLabel ?? item.status}`}
                   onClick={() => handleToggleExpand(item)}
                   aria-expanded={collapsible && details ? isExpanded : undefined}
                   aria-controls={collapsible && details ? itemId : undefined}
                   className={cn(
-                    'relative z-10 w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-200 shrink-0 focus-visible:outline-none cursor-pointer',
+                    // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                    'relative z-10 w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-200 shrink-0 cursor-pointer',
                     getStatusNodeStyle(item.status, isSelected)
                   )}
-                  title={`${item.title} - ${item.statusLabel ?? item.status}`}
                 >
                   {getStatusIcon(item.status)}
                   {item.status === 'in-progress' && (
                     <span className="absolute inset-0 rounded-full animate-ping bg-[#3B82F6]/20 accent:bg-brand/20 -z-10" />
                   )}
                 </button>
+                </Hint>
 
                 {/* Content Card */}
                 <div
@@ -310,11 +315,14 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                               )}
 
                               {item.commitHash && (
+                                // ioiti-ui: what it does in a Hint, not a title.
+                                <Hint content={copiedHash === item.commitHash ? 'Copied' : 'Copy the commit hash'}>
                                 <button
                                   type="button"
+                                  aria-label={`Copy the commit hash ${item.commitHash.slice(0, 7)}`}
                                   onClick={(e) => handleCopyHash(e, item.commitHash!)}
-                                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-600 hover:text-neutral-900 transition-colors focus-visible:outline-none cursor-pointer dark:bg-[#0E0E0E] dark:hover:bg-[#141414] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA]"
-                                  title="Copy commit hash"
+                                  // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer dark:bg-[#0E0E0E] dark:hover:bg-[#141414] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA]"
                                 >
                                   <GitCommit className="w-3 h-3" />
                                   <span>{item.commitHash.slice(0, 7)}</span>
@@ -324,6 +332,7 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                                     <Copy className="w-3 h-3 text-muted-foreground" />
                                   )}
                                 </button>
+                                </Hint>
                               )}
                             </div>
                           )}

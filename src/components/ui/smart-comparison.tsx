@@ -180,7 +180,8 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder:text-muted-foreground focus-visible:outline-none dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#FAFAFA] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
+                // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder:text-muted-foreground dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#FAFAFA] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
               />
             </div>
           )}
@@ -307,7 +308,8 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                       plan.onCtaClick?.();
                     }}
                     className={cn(
-                      'w-full py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer focus-visible:outline-none',
+                      // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                      'w-full py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer',
                       plan.featured
                         ? 'bg-neutral-900 text-white hover:bg-neutral-800 font-semibold dark:bg-[#FAFAFA] dark:text-[#050505] dark:hover:bg-white accent:bg-brand accent:hover:bg-brand/90 accent:text-brand-foreground'
                         : 'bg-neutral-50 hover:bg-white text-neutral-600 hover:text-neutral-900 border border-neutral-200 dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA] dark:border-[#1F1F1F]'
@@ -339,7 +341,8 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                   type="button"
                   onClick={() => toggleCategory(category.id)}
                   aria-expanded={!isCollapsed}
-                  className="w-full flex items-center justify-between py-2 text-left group cursor-pointer focus-visible:outline-none"
+                  // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                  className="w-full flex items-center justify-between py-2 text-left group cursor-pointer"
                 >
                   <span className="text-xs font-semibold uppercase tracking-wider text-neutral-900 group-hover:text-black transition-colors flex items-center gap-2 dark:text-[#FAFAFA] dark:group-hover:text-white">
                     <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 dark:bg-white/70" />

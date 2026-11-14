@@ -108,7 +108,8 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
             type="button"
             onClick={() => onStepChange!(i)}
             className={cn(
-              "flex gap-3 rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/50 dark:focus-visible:ring-neutral-600/60",
+              // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+              "flex gap-3 rounded-lg text-left outline-none",
               vertical ? "items-start" : "items-center"
             )}
           >
