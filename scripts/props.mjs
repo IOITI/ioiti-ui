@@ -229,20 +229,33 @@ function propsOf(type, defaults, location) {
       const name = symbol.getName()
       const optional = (symbol.flags & ts.SymbolFlags.Optional) !== 0
       const known = byName.get(name)
-      if (known) known.required = known.required && !optional
-      else byName.set(name, { symbol, required: !optional, count: 0 })
+      if (known) {
+        known.required = known.required && !optional
+        known.others.push(symbol)
+      } else byName.set(name, { symbol, others: [], required: !optional, count: 0 })
       byName.get(name).count += 1
     }
   }
   const props = []
   let inherited = 0
-  for (const { symbol, required, count } of byName.values()) {
+  for (const { symbol, others, required, count } of byName.values()) {
     const isOwn = symbol.getDeclarations()?.some(own) ?? false
     if (!isOwn) {
       inherited += 1
       continue
     }
-    props.push(describeProp(symbol, required && count === members.length, defaults, location))
+    const prop = describeProp(symbol, required && count === members.length, defaults, location)
+    // A prop of each member of a union of props (`mode: 'single'` or `mode: 'range'`): its types, each once.
+    if (others.length) {
+      const all = [prop, ...others.map((other) => describeProp(other, false, defaults, location))]
+      const literal = (each) => each.values ?? (/^(['"])[^'"]*\1$/.test(each.type) ? [each.type.slice(1, -1)] : undefined)
+      const values = all.map(literal)
+      if (values.every(Boolean)) prop.values = [...new Set(values.flat())]
+      const types = [...new Set(all.map((each) => each.type))]
+      prop.type = types.map((type) => (types.length > 1 && type.includes('=>') ? `(${type})` : type)).join(' | ')
+      prop.description ??= all.find((each) => each.description)?.description
+    }
+    props.push(prop)
   }
   return { props, inherited }
 }

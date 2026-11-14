@@ -1711,19 +1711,23 @@
   "props": [
    {
     "name": "mode",
-    "type": "\"single\""
+    "type": "\"single\" | \"range\"",
+    "values": [
+     "single",
+     "range"
+    ]
    },
    {
     "name": "value",
-    "type": "Date | null"
+    "type": "Date | null | DateRange"
    },
    {
     "name": "defaultValue",
-    "type": "Date | null"
+    "type": "Date | null | DateRange"
    },
    {
     "name": "onChange",
-    "type": "(date: Date | null) => void"
+    "type": "((date: Date | null) => void) | ((range: DateRange) => void)"
    },
    {
     "name": "defaultMonth",
@@ -4206,11 +4210,12 @@
    },
    {
     "name": "tone",
-    "type": "undefined"
+    "type": "undefined | 'warning' | 'negative'"
    },
    {
     "name": "toneLabel",
-    "type": "undefined"
+    "type": "undefined | string",
+    "description": "What the tone says, in a word or two: \"Near the limit\", \"Failing\"."
    }
   ]
  },

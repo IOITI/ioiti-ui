@@ -67,12 +67,14 @@ for (const file of filesUnder(join('gallery', 'src'))) {
 
 // The gallery's examples are what an application writes, and the code their page shows: they import the
 // package's entries, React, lucide-react and the gallery's sample data; the router only for the shell's own.
-const SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(?\s*)(['"])([^'"]+)\1/g
+// An import statement (from the start of a line), a side effect's or a dynamic import, never words in a string.
+const SPECIFIER = /^\s*(?:import|export)\b[^'";]*?\bfrom\s*(['"])([^'"]+)\1|^\s*import\s*(['"])([^'"]+)\3|\bimport\(\s*(['"])([^'"]+)\5\s*\)/gm
 const EXAMPLES = join('gallery', 'src', 'components')
 for (const file of filesUnder(EXAMPLES)) {
   if (!file.endsWith('.tsx')) continue
   const router = file.startsWith(join(EXAMPLES, 'shell'))
-  for (const [, , specifier] of readFileSync(join(root, file), 'utf8').matchAll(SPECIFIER)) {
+  for (const match of readFileSync(join(root, file), 'utf8').matchAll(SPECIFIER)) {
+    const specifier = match[2] ?? match[4] ?? match[6]
     const allowed =
       /^(ioiti-ui|ioiti-ui\/react-router|ioiti-ui\/code|react|react-dom|lucide-react)$/.test(specifier) ||
       /^(\.\.\/)+samples\/[\w-]+$/.test(specifier) ||

@@ -11,6 +11,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     css: false,
+    // Not kept between runs: a file transformed with its import.meta.glob (the gallery's examples, its categories)
+    // would not see a file added or removed since.
+    fsModuleCache: false,
     include: ['src/**/*.test.{ts,tsx}', 'gallery/src/**/*.test.{ts,tsx}'],
   },
 })
