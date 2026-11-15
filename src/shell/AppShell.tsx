@@ -112,7 +112,12 @@ function Shell<S extends string>({
   // keyed by the page, which enters and leaves, and never animates as it updates: an update of the page after
   // it arrived (a part of it loading, a redirect to its first tab) moved the whole page again, a step after the
   // first. A new frame also opens the page at its top.
+  // Every frame of this shell has one name, the shell's own: the frame leaving and the one arriving are a pair,
+  // one picture each in one group (share). Each frame of its own name (React's, kept by a frame from its arrival
+  // to its leaving), WebKit (Safari, every browser of an iPhone) drew the page left a second time from the
+  // second change of page on, as arriving, under the name it had arrived with: both pages at full strength.
   const page = pageOf ? pageOf(pathname) : pathname
+  const frameName = `ioiti-page-${useId()}`
 
   useScrollToPart(main, page, hash)
 
@@ -166,7 +171,7 @@ function Shell<S extends string>({
         {/* Positioned, so that what it scrolls stays in it: text for screen readers placed
             against the page would otherwise make the window itself scroll, onto nothing. The
             transition takes it whole, cut to what it shows. */}
-        <ViewTransition key={page} default="none" enter="ioiti-page" exit="ioiti-page">
+        <ViewTransition key={page} name={frameName} default="none" enter="ioiti-page" exit="ioiti-page" share="ioiti-page">
           <main ref={main} id={mainId} className="relative flex-1 overflow-y-auto">
             {/* The page never scrolls sideways: what is wider than the screen scrolls in a frame of its
                 own (Table), and what would still stand beyond the page (text for screen readers placed

@@ -6,9 +6,14 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 ## [0.18.1] - Unreleased
 
 - **A change of page in Safari, and in every browser of an iPhone**, showed both pages at full strength over each
-  other for up to a second, then the new one at once. WebKit draws the transition's pictures before their
-  animations reach the screen, and meanwhile draws each as it rests: both were shown. The new page's picture now
-  rests hidden, as its animation starts (`motion.css`); the fade is the same.
+  other, then the new one at once. Two causes, both WebKit's:
+  - It draws the transition's pictures before their animations reach the screen, and meanwhile draws each as it
+    rests: both were shown. The new page's picture now rests hidden, as its animation starts (`motion.css`).
+  - From the second change of page on, it drew the page left a second time, as arriving, under the name that
+    page's frame had arrived with: each frame had a name of its own. Every frame of a shell now has the shell's
+    name (`AppShell`), the frame leaving and the one arriving a pair in one group, one picture each.
+
+  The fade is the same.
 
 ## [0.18.0] - 2026-11-15
 
