@@ -3,6 +3,13 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.18.1] - Unreleased
+
+- **A change of page in Safari, and in every browser of an iPhone**, showed both pages at full strength over each
+  other for up to a second, then the new one at once. WebKit draws the transition's pictures before their
+  animations reach the screen, and meanwhile draws each as it rests: both were shown. The new page's picture now
+  rests hidden, as its animation starts (`motion.css`); the fade is the same.
+
 ## [0.18.0] - 2026-11-15
 
 - **Four accents more, gradients as Bloom's**: `lagoon`, `aurora`, `dusk` and `golden` (Golden hour). Each puts a

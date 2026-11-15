@@ -216,6 +216,13 @@ describe('the motion, as an application builds it', () => {
 
     expect(rule(css, '::view-transition-old(.ioiti-page)')).toContain(`${length(motionTransitions.easeExit)} var(--ease-exit) both ioiti-fade-out`)
     expect(rule(css, '::view-transition-new(.ioiti-page)')).toContain('var(--ease-soft) both ioiti-rise-in')
+    // Each picture rests as its animation starts, the page left shown and the new one hidden: WebKit draws them
+    // so until their animations reach the screen, and two shown pages stood over each other meanwhile.
+    expect(rule(css, '::view-transition-new(.ioiti-page)')).toContain('opacity: 0')
+    expect(rule(css, '::view-transition-old(.ioiti-page)')).not.toContain('opacity')
+    // Hidden at rest, the new page is shown by its animation's end, kept to the end of the transition.
+    expect(css).toMatch(/@keyframes ioiti-rise-in \{[^@]*to \{\s*opacity: 1;/)
+    expect(css).toMatch(/@keyframes ioiti-fade-in \{[^@]*to \{\s*opacity: 1;/)
     expect(rule(css, '::view-transition')).toContain('pointer-events: none')
     expect(rule(css, ':root:not([data-look-change])::view-transition-old(root)')).toContain('display: none')
     expect(rule(css, ':root:not([data-look-change])::view-transition-old(.ioiti-layer)')).toContain('display: none')

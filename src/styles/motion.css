@@ -89,12 +89,19 @@
 }
 
 /* easeExit's length and curve: the page left goes first. Both start at once, so that the background
-   never shows between them. */
+   never shows between them.
+
+   Each picture rests as its animation starts: the page left shown, the new one hidden. WebKit (Safari, every
+   browser of an iPhone) draws the pictures before their animations reach the screen, which plays them apart
+   from the page, and meanwhile draws each as it rests: resting shown, both pages stood at full strength over
+   each other, up to a second, until the page changed at once. The new page's animation ends where it is
+   shown, kept to the end of the transition (both), when the pictures go. */
 ::view-transition-old(.ioiti-page) {
   animation: 150ms var(--ease-exit) both ioiti-fade-out;
 }
 
 ::view-transition-new(.ioiti-page) {
+  opacity: 0;
   animation: 240ms var(--ease-soft) both ioiti-rise-in;
 }
 
@@ -109,11 +116,20 @@
     opacity: 0;
     translate: 0 6px;
   }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 @keyframes ioiti-fade-in {
   from {
     opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 
