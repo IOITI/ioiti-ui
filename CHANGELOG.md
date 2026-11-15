@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [0.18.1] - Unreleased
+## [0.18.1] - 2026-11-15
 
 - **A change of page in Safari, and in every browser of an iPhone**, showed both pages at full strength over each
   other, then the new one at once. Two causes, both WebKit's:
