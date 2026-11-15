@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [0.18.0] - Unreleased
+## [0.18.0] - 2026-11-15
 
 - **Four accents more, gradients as Bloom's**: `lagoon`, `aurora`, `dusk` and `golden` (Golden hour). Each puts a
   colour of its own on what is chosen, current or primary, on links, the focus ring and one-series charts. Its
