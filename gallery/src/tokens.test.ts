@@ -187,8 +187,8 @@ describe('the contrast of text', () => {
 })
 
 describe('every look: a theme, an accent, a material', () => {
-  it('is 20 of them, and neutral and flat are the design as it was', () => {
-    expect(LOOKS).toHaveLength(20)
+  it('is 36 of them, and neutral and flat are the design as it was', () => {
+    expect(LOOKS).toHaveLength(36)
     for (const theme of ['light', 'dark'] as const) {
       expect(lookTokens(SHEETS, { theme, accent: 'neutral', material: 'flat' })).toEqual(themeTokens(SHEETS, theme))
     }

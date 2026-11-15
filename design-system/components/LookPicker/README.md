@@ -2,7 +2,7 @@
 
 The accent and the material, each person's own: a button beside the theme's that opens the choices, a choice shown at once and kept in this browser.
 
-**You provide** its place, `topBarEnd={<><LookPicker /><ThemeToggle /></>}`, and `className`; nothing else. The accents are `neutral` · `violet` · `indigo` · `blue` · `bloom`, the materials `flat` · `glass`; until one is chosen, the page shows the application's (`ioiti({ accent, material })` in the Vite config).
+**You provide** its place, `topBarEnd={<><LookPicker /><ThemeToggle /></>}`, and `className`; nothing else. The accents are `neutral` · `violet` · `indigo` · `blue` · `bloom` · `lagoon` · `aurora` · `dusk` · `golden` (Golden hour), the materials `flat` · `glass`; until one is chosen, the page shows the application's (`ioiti({ accent, material })` in the Vite config).
 
 ```tsx
 <AppShell menu={MENU} pathname={pathname} topBarEnd={<><LookPicker /><ThemeToggle /></>}>

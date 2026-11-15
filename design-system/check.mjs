@@ -2,7 +2,7 @@
 // bundle.css, React, the bundle, data-theme on <html>), in both themes, and reports errors and empty cards.
 // Screenshots go to design-system/out/check/. Needs Playwright and its Chromium (not a dependency of the package).
 //
-//   node design-system/check.mjs [Card…] [--theme=light|dark] [--accent=violet|indigo|blue|bloom] [--material=glass]
+//   node design-system/check.mjs [Card…] [--theme=light|dark] [--accent=violet|indigo|blue|bloom|lagoon|aurora|dusk|golden] [--material=glass]
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'

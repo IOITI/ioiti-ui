@@ -5,6 +5,17 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
 ## [0.18.0] - Unreleased
 
+- **Four accents more, gradients as Bloom's**: `lagoon`, `aurora`, `dusk` and `golden` (Golden hour). Each puts a
+  colour of its own on what is chosen, current or primary, on links, the focus ring and one-series charts. Its
+  gradient goes on a filled button and the application's mark, under Bloom's grains, with the page's ink on it
+  in both themes, and with glass its three washes make the backdrop. Lagoon is a sea (cerulean; periwinkle, sky,
+  aqua; sky, aqua and sand behind), Aurora the northern lights (fuchsia; sky, violet, magenta), Dusk the sky
+  after sunset (a quiet slate violet; lavender, mauve, peach), Golden hour the light before it (a dusky rose;
+  gold, apricot, rose). No mark or text is green, red, amber, orange or teal: those colours are in the gradients
+  and washes only. Text holds 4.5:1 on every surface of the 36 looks, on every point of each gradient, the
+  grain's strongest speck included; the funnel ramps passed the dataviz validator. `ACCENTS`, `Accent`,
+  `ACCENT_LABEL`, the pre-paint script and `ioiti({ accent })` take them. An application changes nothing:
+  `ioiti({ accent: 'lagoon' })` makes one its own.
 - **Entries under another** (`MenuEntry.parent`, the `id` of an entry of the same section): the sidebar lists
   them under it, and the trail goes through it, a link ("Home › Work › Orders › Returns"). One level.
 - **`Sidebar`**: an entry with children and an `href` is a link to its page, a chevron beside it opening it on its

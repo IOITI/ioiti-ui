@@ -54,13 +54,17 @@ const DESIGN = [
   ':focus-visible:not([tabindex="-1"]){outline:2px solid var(--focus-ring);outline-offset:2px}',
   ':root[data-accent=violet]:not(.dark){--brand:#7c3aed;',
   ':root[data-accent=bloom]:not(.dark){--brand:#c2398b;',
+  ':root[data-accent=lagoon]:not(.dark){--brand:#0369a1;',
+  ':root[data-accent=aurora]:not(.dark){--brand:#a21caf;',
+  ':root[data-accent=dusk]:not(.dark){--brand:#5b4b8a;',
+  ':root[data-accent=golden]:not(.dark){--brand:#b0436e;',
   '.glass-float:is(:root[data-material=glass] *){background-color:var(--glass-float);',
   ':root[data-reduced-motion=always]{--animate-spin:none;',
   '::view-transition-new(.ioiti-page){',
   '.over-page:is(:root:active-view-transition:not([data-look-change]) *){view-transition-name:match-element;',
 ]
 
-// The images the stylesheets name: the grains of the bloom accent, and the glass backdrop's.
+// The images the stylesheets name: the grains of the gradient accents, and the glass backdrop's.
 const GRAINS = ['grain-white', 'grain-black', 'grain-overlay']
 
 const FILES = [

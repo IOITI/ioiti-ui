@@ -59,7 +59,7 @@ describe('the accent and material picker', () => {
     expect(trigger()).toHaveAttribute('aria-controls', choices()?.id)
     expect(screen.getByRole('radio', { name: 'Indigo' })).toBeChecked()
     expect(screen.getByRole('radio', { name: 'Flat' })).toBeChecked()
-    expect(screen.getAllByRole('radio')).toHaveLength(7)
+    expect(screen.getAllByRole('radio')).toHaveLength(11)
   })
 
   it('shows a choice at once and keeps it, open for another', async () => {
@@ -125,7 +125,7 @@ describe('the accent and material picker', () => {
         for (const [part, stop] of [['from', from], ['via', via], ['to', to]]) expect(swatch, accent).toContain(`${prefix}${part}-[${stop}]`)
       }
     }
-    expect(gradients).toEqual(['bloom', 'bloom'])
+    expect(gradients).toEqual(['bloom', 'lagoon', 'aurora', 'dusk', 'golden'].flatMap((accent) => [accent, accent]))
   })
 
   it('is a layer in document.body: a top bar that blurs or stands above the page does not hold it', async () => {

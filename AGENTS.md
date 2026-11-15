@@ -8,7 +8,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 
 | Path | Content |
 |---|---|
-| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `grain-*.png` (bloom's grains, the glass backdrop's) |
+| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `grain-*.png` (the gradient accents' grains, the glass backdrop's) |
 | `src/theme.js` | the pre-paint theme script, a file of its own (no inline script under a strict CSP) |
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
@@ -40,7 +40,7 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   gallery's test the contrast table. A change on purpose is a new reference (`scripts/golden-from.mjs`) and a
   line of CHANGELOG.md. `design.css`'s import order is load-bearing (`--border` and `--accent` are set twice).
 - **Two values for every colour** (`light dark:dark`, or a token with both); text at 4.5:1 on every surface of
-  every look (a theme, an accent, a material: 20). The one known exception is pinned in
+  every look (a theme, an accent, a material: 36). The one known exception is pinned in
   `gallery/src/tokens.test.ts`, which composites glass over its backdrop, and a grain at its strongest speck,
   before measuring.
 - **Accents and glass only add.** A look's tokens are in its own file, in blocks of one selector:
@@ -49,7 +49,7 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   layer whole), never an edit to a block of the design. A component keeps its classes and adds `accent:` ones
   after them (the `brand` tokens), or `glass-bar`, `glass-card`, `glass-tile`, `glass-float` (and `glass-edge`). A filled, primary control adds
   `accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground`, the accent's gradient where it has one
-  (bloom): an image as `bg-(image:…)`, since tailwind-merge takes any other `bg-brand-…` for a colour and drops
+  (bloom, lagoon, aurora, dusk, golden): an image as `bg-(image:…)`, since tailwind-merge takes any other `bg-brand-…` for a colour and drops
   `bg-brand`. A grain is a PNG beside `accents.css`, made by `scripts/grains.mjs` (an SVG filter's noise
   vanishes or turns to moiré at some screens and zooms), never a `data:` URI; `GRAINS` in
   `gallery/src/tokens.ts` reads it (the backdrop's, an overlay: `OVERLAY_GRAIN`). Two blur: `glass-tile` (KpiTile)

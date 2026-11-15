@@ -35,10 +35,10 @@
    Fields, rows and buttons stay solid. A dialog's scrim is lighter than the
    design's (--glass-scrim): the dialog's glass shows what is under it. With an
    accent, the backdrop's first wash, the reflection and the floats' glow take
-   its colour (accents.css); an accent that gives the other washes too (bloom)
-   is the whole backdrop, its grain over it. A faint grain of its own lies over
-   every backdrop (--glass-grain-opacity, blended as an overlay): the steps of a
-   dark gradient do not show.
+   its colour (accents.css); an accent that gives the other washes too (bloom,
+   lagoon, aurora, dusk, golden) is the whole backdrop, its grain over it. A
+   faint grain of its own lies over every backdrop (--glass-grain-opacity,
+   blended as an overlay): the steps of a dark gradient do not show.
 
    Light values under :root[data-material="glass"]:not(.dark), dark ones under
    :root[data-material="glass"].dark, what both share under
@@ -154,7 +154,7 @@
 }
 
 /* A grain over every backdrop, faint, blended as an overlay: a speck darkens or lightens what is under it,
-   and the steps of a gradient in the dark do not show. Its tile at 2x, as bloom's (scripts/grains.mjs).
+   and the steps of a gradient in the dark do not show. Its tile at 2x, as the gradient accents' (scripts/grains.mjs).
    Blended once, as the layer is painted (background-blend-mode), over a copy of the backdrop, the whole laid
    over the backdrop at the grain's opacity: the colours of the grain alone blended over it at that opacity
    (mix-blend-mode), which the browser blends again at every frame something moves on the page, a change of

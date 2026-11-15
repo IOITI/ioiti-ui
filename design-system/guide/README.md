@@ -1,6 +1,6 @@
 Ink on paper, for the admin interfaces of IOITI's applications: dense pages of figures, tables and states that are read every day and must never be misread. A neutral palette in two themes, one typeface for what is read and one for what is typed exactly, one radius, soft corners, a hairline around every section, and a shadow only on what floats. Colour is spent on meaning: a status, a gain or a loss, the one thing chosen. Everything else is grey.
 
-Three choices combine into a **look**: a theme (`light` or `dark`), an accent (`neutral`, `violet`, `indigo`, `blue` or `bloom`) and a material (`flat` or `glass`). Neutral and flat are the design itself; the others only add. Every look keeps text at 4.5:1 on every surface.
+Three choices combine into a **look**: a theme (`light` or `dark`), an accent (`neutral`, `violet`, `indigo`, `blue`, `bloom`, `lagoon`, `aurora`, `dusk` or `golden`) and a material (`flat` or `glass`). Neutral and flat are the design itself; the others only add. Every look keeps text at 4.5:1 on every surface.
 
 ## Content fundamentals
 
@@ -27,9 +27,10 @@ Three choices combine into a **look**: a theme (`light` or `dark`), an accent (`
 
 An accent colours what is **chosen, current or primary**: a filled primary button, a checked box, a switch that is on, the day picked, the page in the menu, a progress, links, the focus ring and one-series charts. It writes `data-accent="<id>"` on `<html>`, which maps the preset's tokens onto `brand`, `brand-foreground`, `brand-soft`, `brand-text`, `brand-glow` and `brand-wash`, and sets `primary`, `focus-ring` and `chart-series` to them.
 
-- `violet-brand`, `indigo-brand`, `blue-brand` and `bloom-brand` are the fills; white (`…-brand-foreground`) is on them in light, the dark page's ink in dark.
+- `violet-brand`, `indigo-brand`, `blue-brand`, `bloom-brand`, `lagoon-brand`, `aurora-brand`, `dusk-brand` and `golden-brand` are the fills; white (`…-brand-foreground`) is on them in light, the dark page's ink in dark.
 - `…-brand-soft` is the tint of a chosen row or range; `…-brand-text` is the accent as text, 4.5:1 on every surface and on its tint.
 - **Bloom** is a printed flyer's colours: the orchid `bloom-brand` on all of the above, and on a filled primary button and the application's mark only, a 110° gradient (`bloom-gradient-1` lilac → `bloom-gradient-2` pink at 50% → `bloom-gradient-3` tangerine) under a fine grain (Textures), with `bloom-brand-fill-foreground` on it. Its tangerine and mustard (`bloom-brand-wash-2`, `bloom-brand-wash-3`) are the backdrop's only, never a mark's or a text's.
+- **Lagoon**, **Aurora**, **Dusk** and **Golden hour** (`golden`) are made as Bloom is: `<id>-brand` on all of the above, and on a filled primary button and the mark only a 110° gradient (`<id>-gradient-1` → `-2` at 50% → `-3`) under the same grain, with `<id>-brand-fill-foreground` (the dark page's ink) on it. Lagoon is a sea: cerulean; periwinkle → sky → aqua; under glass sky, aqua and sand. Aurora is the northern lights: fuchsia; sky → violet → magenta; under glass magenta, cyan and violet. Dusk is the sky after sunset: a quiet slate violet; lavender → mauve → peach. Golden hour is the light before it: a dusky rose; gold → apricot → rose; under glass rose, apricot and gold. Their `-wash-2` and `-wash-3`, and the gradients' gold, apricot, aqua and peach, are never a mark's or a text's.
 - In a component, keep the neutral classes and add the accent's **after** them: `bg-primary text-primary-foreground accent:bg-brand accent:text-brand-foreground`; on a filled primary control also `accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground`. With the neutral accent nothing changes.
 
 ### Glass
@@ -106,6 +107,6 @@ The stylesheet is Tailwind CSS 4: the tokens are classes (`bg-surface`, `text-mu
 
 ## Not synced
 
-- Values the token format cannot hold stay in `components/bundle.css`: the glass blurs and composite shadows (`--glass-blur`, `--glass-tile-blur`, `--glass-card-shadow`, `--glass-edge-shadow`, `--glass-float-shadow`, `--glass-glow`, `--glass-sheen`, `--glass-reflection`, `--glass-tile-light`, `--glass-tile-glow`), the backdrop's layers (`--glass-backdrop`), its grain and its `--glass-grain-opacity`, Bloom's `--brand-fill` and grain, the motion curves (`--ease-soft`, `--ease-fast`, `--ease-exit`) and Tailwind's own colour scales (emerald, red, amber, sky…), which some components use with their dark values beside them.
+- Values the token format cannot hold stay in `components/bundle.css`: the glass blurs and composite shadows (`--glass-blur`, `--glass-tile-blur`, `--glass-card-shadow`, `--glass-edge-shadow`, `--glass-float-shadow`, `--glass-glow`, `--glass-sheen`, `--glass-reflection`, `--glass-tile-light`, `--glass-tile-glow`), the backdrop's layers (`--glass-backdrop`), its grain and its `--glass-grain-opacity`, the gradient accents' `--brand-fill` and grain, the motion curves (`--ease-soft`, `--ease-fast`, `--ease-exit`) and Tailwind's own colour scales (emerald, red, amber, sky…), which some components use with their dark values beside them.
 - The radius scale is derived: the classes compute `rounded-*` from `radius`, so change `radius` to change them all; `radius-sm…4xl` record the results.
 - Not in the bundle: the code editors (`ioiti-ui/code`, CodeMirror), the React Router adapter (`ioiti-ui/react-router`) and the Vite plugin. Components without a card are still in `window.IoitiUI`.

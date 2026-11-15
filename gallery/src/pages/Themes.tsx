@@ -70,7 +70,7 @@ export function Themes() {
 
       <Panel
         title="The accents"
-        description="Neutral is ink, as the design was. A preset puts its colour on what is chosen, current or primary, on links, the focus ring and one-series charts; the tones of gain, loss and warning keep theirs, which is why no preset's colour is green, red, amber, orange or teal. Bloom is a flyer's grainy gradient: its orchid on all of these, the gradient itself on a filled button and the application's mark, and under glass the flyer as the backdrop; its tangerine and mustard are never a mark's."
+        description="Neutral is ink, as the design was. A preset puts its colour on what is chosen, current or primary, on links, the focus ring and one-series charts; the tones of gain, loss and warning keep theirs, which is why no preset's colour is green, red, amber, orange or teal. Bloom, Lagoon, Aurora, Dusk and Golden hour are grainy gradients: a colour of their own on all of these, the gradient itself on a filled button and the application's mark, and under glass three washes as the backdrop. Bloom is a printed flyer, Lagoon a sea, Aurora the northern lights, Dusk the sky after sunset, Golden hour the light before it; the gradients' warm and green-blue colours are never a mark's."
       >
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {ACCENTS.flatMap((preset) => (['light', 'dark'] as const).map((mode) => <AccentPreview key={`${preset}-${mode}`} accent={preset} theme={mode} />))}

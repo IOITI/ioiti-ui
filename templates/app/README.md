@@ -21,7 +21,7 @@ npm run preview    # serves dist/
   `index.html`, the `name` of `package.json`, `title` in `src/pages/LoginPage.tsx`.
 - **The theme's key**: `themeStorageKey` in `vite.config.ts`. One key per application, or two
   applications on one site share the theme chosen.
-- **The look**: an accent (`neutral`, `violet`, `indigo`, `blue`, `bloom`) and a material (`flat`,
+- **The look**: an accent (`neutral`, `violet`, `indigo`, `blue`, `bloom`, `lagoon`, `aurora`, `dusk`, `golden`) and a material (`flat`,
   `glass`), given beside the key, `ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material:
   'glass' })`: the application's own, from the first paint. Each person can pick another with the palette
   button of the top bar (`LookPicker`, in `src/router.tsx`), kept in their browser; take it out for one

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import {
+  ACCENT_LABEL,
   ACCENTS,
   Button,
   cn,
@@ -102,7 +103,7 @@ function LookTrial() {
         size="sm"
         value={accent}
         onChange={setAccent}
-        options={ACCENTS.map((value) => ({ value, label: value[0].toUpperCase() + value.slice(1) }))}
+        options={ACCENTS.map((value) => ({ value, label: ACCENT_LABEL[value] }))}
       />
     </div>
   )

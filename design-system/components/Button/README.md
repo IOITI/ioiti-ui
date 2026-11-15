@@ -9,7 +9,7 @@ An action: primary for the one thing a page or a dialog is for, outline and ghos
 <Button variant="outline" isLoading loadingText="Saving">Save</Button>
 ```
 
-- One primary button per page or dialog. Its fill is `primary` (ink), the accent's `brand` where one is chosen, Bloom's gradient for Bloom.
+- One primary button per page or dialog. Its fill is `primary` (ink), the accent's `brand` where one is chosen, its gradient for a gradient accent (Bloom, Lagoon, Aurora, Dusk, Golden hour).
 - What leads somewhere is a link drawn as a button (`ButtonLink`, or `buttonClassName()` on a link), never a button that navigates.
 - Its words say what it does ("Pause the imports"). An icon-only button is `size="icon"` with an `aria-label`, or an `IconButton`.
 - `xs` sits on a line of text or a table's row; `sm` beside a section's heading; `md` on its own.

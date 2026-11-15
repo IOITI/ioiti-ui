@@ -84,7 +84,7 @@ const BRAND: Token[] = [
   {
     name: '--brand-gradient',
     utility: 'accent:bg-(image:--brand-fill)',
-    use: 'A filled button and the application\'s mark, under the grain, where the accent has one (bloom); its text is --brand-fill-foreground.',
+    use: 'A filled button and the application\'s mark, under the grain, where the accent has one (bloom, lagoon, aurora, dusk, golden); its text is --brand-fill-foreground.',
   },
 ]
 

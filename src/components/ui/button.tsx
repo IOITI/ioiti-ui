@@ -40,7 +40,7 @@ export interface ButtonProps
 }
 
 // ioiti-ui: under a theme with an accent (accent:), a filled button is the accent's, a soft glow of it under
-// it, its gradient and grain over the fill where the accent has them (bloom), with the text they take; a link
+// it, its gradient and grain over the fill where the accent has them (bloom and the others), with the text they take; a link
 // is in its colour. Under the glass material, the glass's glow (the accent's where there is one).
 const FILLED_THEMED =
   'accent:bg-brand accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground accent:shadow-[0_4px_14px_-6px_var(--brand-glow)] glass:shadow-[var(--glass-glow)]';

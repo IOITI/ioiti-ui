@@ -1,4 +1,4 @@
-// Writes the grains of the bloom accent, src/styles/grain-white.png and grain-black.png, and the glass
+// Writes the grains of the gradient accents (bloom, lagoon, aurora, dusk, golden), src/styles/grain-white.png and grain-black.png, and the glass
 // backdrop's, grain-overlay.png:
 //
 //   node scripts/grains.mjs

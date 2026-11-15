@@ -4,7 +4,7 @@ IOITI's design system: the design tokens, the React components and the applicati
 interface, as a package any application can install. React 19, Tailwind CSS 4, framer-motion, lucide-react.
 
 - **Themes**: light and dark, each a full set of tokens; with them an accent (neutral, the design as it was,
-  or violet, indigo, blue, bloom: a printed flyer's grainy gradient) and a material (flat, or glass). The page
+  or violet, indigo, blue; or a grainy gradient: bloom, lagoon, aurora, dusk, golden hour) and a material (flat, or glass). The page
   follows the system until a theme is chosen, shows the application's accent and material until a person
   picks others, and is painted in its look from the first frame.
 - **Motion**: calm and the same everywhere, framer-motion's springs and the stylesheets' curves alike. A page
@@ -159,10 +159,12 @@ it was, and the default.
 
 - **An accent** colours what is chosen, current or primary (a filled button, a checked box, a switch on, the
   day picked, the page in the menu, a progress), links, the focus ring and one-series charts: `violet`,
-  `indigo`, `blue` or `bloom`. The tones of gain, loss and warning keep their colours. Bloom is a printed
-  flyer's grainy gradient: its orchid on all of these, the gradient itself (lilac, pink, tangerine) under a
-  grain on a filled button and the application's mark, and with glass the flyer's pink, tangerine and mustard
-  as the backdrop.
+  `indigo`, `blue`, `bloom`, `lagoon`, `aurora`, `dusk` or `golden` (Golden hour). The tones of gain, loss and
+  warning keep their colours. The last five are grainy gradients: a colour of their own on all of these, the
+  gradient itself under a grain on a filled button and the application's mark, and with glass three washes as
+  the backdrop. Bloom is a printed flyer (orchid; lilac, pink, tangerine), Lagoon a sea (cerulean; periwinkle,
+  sky, aqua), Aurora the northern lights (fuchsia; sky, violet, magenta), Dusk the sky after sunset (slate
+  violet; lavender, mauve, peach), Golden hour the light before it (dusky rose; gold, apricot, rose).
 - **The glass material** turns the sidebar and the top bar, the panels and cards, and what floats over the page
   (popovers, menus, dialogs, toasts, tooltips) to glass, over a still backdrop of colour washes. Only what
   floats is blurred; fields, rows and buttons stay solid.

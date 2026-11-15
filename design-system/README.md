@@ -49,6 +49,6 @@ build reads `cards.json` only, and leaves them out.
 
 ## Assets
 
-The mark (`gallery/public/favicon.svg`) and Bloom's grains (`src/styles/grain-*.png`) are uploads of the artifact:
+The mark (`gallery/public/favicon.svg`) and the gradient accents' grains (`src/styles/grain-*.png`) are uploads of the artifact:
 `config.json` holds their records. A changed file is uploaded again (Claude Code: an asset upload to the
 artifact) and its new id written in `config.json`; the grains' ids are also the ones `bundle.css` loads.
