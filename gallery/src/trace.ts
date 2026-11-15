@@ -10,16 +10,30 @@ const FRAMES_FOR = 1500
 type Update = () => unknown
 type Start = (this: Document, arg?: Update | { update?: Update; types?: string[] }) => ViewTransition
 
-function wanted(): boolean {
+// Two trials, named after `trace=` (`?trace=slow`, `?trace=through`, `?trace=slow,through`):
+// - slow: the transition's pictures ten times slower, the page left tinted red and the new one blue, to see on
+//   the screen what each picture holds;
+// - through: the page left fades out first, the new one fades in after it (no text of the two at once).
+const SLOW = `
+::view-transition-old(*) { outline: 6px solid red; outline-offset: -6px; filter: sepia(1) saturate(4) hue-rotate(-40deg); }
+::view-transition-new(*) { outline: 6px solid #08f; outline-offset: -12px; filter: sepia(1) saturate(4) hue-rotate(170deg); }`
+const THROUGH = `
+::view-transition-old(.ioiti-page) { animation: 90ms var(--ease-exit) both ioiti-fade-out; }
+::view-transition-new(.ioiti-page) { animation: 210ms var(--ease-soft) 90ms both ioiti-rise-in; }`
+
+/** The trials asked for, or null when the trace is off. */
+function wanted(): string[] | null {
   const asked = new URLSearchParams(window.location.search).get('trace')
+  let value: string | null = null
   try {
     if (asked === 'off') window.sessionStorage.removeItem(KEY)
-    else if (asked !== null) window.sessionStorage.setItem(KEY, '1')
-    return window.sessionStorage.getItem(KEY) === '1'
+    else if (asked !== null) window.sessionStorage.setItem(KEY, asked)
+    value = window.sessionStorage.getItem(KEY)
   } catch {
     // No storage: the address alone says it.
-    return asked !== null && asked !== 'off'
+    value = asked === 'off' ? null : asked
   }
+  return value === null ? null : value.split(',').filter(Boolean)
 }
 
 /** The panel: the last lines, Copy and Clear. Drawn live, outside the page's frame. */
@@ -101,9 +115,18 @@ function panel() {
 }
 
 export function installTrace(): void {
-  if (!wanted()) return
+  const trials = wanted()
+  if (!trials) return
   const write = panel()
   write(navigator.userAgent)
+  const slow = trials.includes('slow')
+  const style = [slow ? SLOW : '', trials.includes('through') ? THROUGH : ''].join('')
+  if (style) {
+    const element = document.createElement('style')
+    element.textContent = style
+    document.head.append(element)
+  }
+  write(`trials: ${trials.join(', ') || 'none'}`)
   const start = Document.prototype.startViewTransition as Start | undefined
   if (typeof start !== 'function') {
     write('no startViewTransition: pages change at once')
@@ -163,6 +186,7 @@ export function installTrace(): void {
           return `${effect.pseudoElement?.replace('::view-transition', '')} ${(animation as CSSAnimation).animationName ?? ''} ${Math.round(Number(effect.getComputedTiming().duration))}ms ${animation.playState}`
         })
         log(`ready; ${document.querySelectorAll('main').length} main; ${listed.join(' | ') || 'no animation'}`)
+        if (slow) for (const animation of pictures()) animation.playbackRate = 0.1
         window.setTimeout(() => opacities('ready+60'), 60)
         window.setTimeout(() => opacities('ready+150'), 150)
       },
