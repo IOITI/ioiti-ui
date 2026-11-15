@@ -15,7 +15,7 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   and washes only. Text holds 4.5:1 on every surface of the 36 looks, on every point of each gradient, the
   grain's strongest speck included; the funnel ramps passed the dataviz validator. `ACCENTS`, `Accent`,
   `ACCENT_LABEL`, the pre-paint script and `ioiti({ accent })` take them. An application changes nothing:
-  `ioiti({ accent: 'lagoon' })` makes one its own.
+  `ioiti({ accent: 'lagoon' })` makes one its own. `LookPicker`'s panel is a little wider (`w-72`), for "Golden hour".
 - **Entries under another** (`MenuEntry.parent`, the `id` of an entry of the same section): the sidebar lists
   them under it, and the trail goes through it, a link ("Home › Work › Orders › Returns"). One level.
 - **`Sidebar`**: an entry with children and an `href` is a link to its page, a chevron beside it opening it on its

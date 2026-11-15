@@ -75,7 +75,7 @@ export function LookPicker({ className }: { className?: string }) {
                 exit={{ opacity: 0, scale: 0.97, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springSnappy}
                 style={{ ...layer.style, transformOrigin: layer.side === 'top' ? 'bottom right' : 'top right' }}
-                className="z-50 w-64 space-y-3 overflow-auto rounded-xl border border-border bg-surface p-3 text-foreground shadow-elevated outline-none glass-float"
+                className="z-50 w-72 space-y-3 overflow-auto rounded-xl border border-border bg-surface p-3 text-foreground shadow-elevated outline-none glass-float"
               >
                 <Choices legend="Accent">
                   {ACCENTS.map((value) => (
