@@ -21,7 +21,8 @@ function Palette() {
           { id: 'o42', title: 'Order 2026-0042', category: 'Orders', description: 'Acme · 1,840.00 €', href: '#order-2026-0042', keywords: ['acme'], icon: <Receipt /> },
           { id: 'o41', title: 'Order 2026-0041', category: 'Orders', description: 'Globex · 960.50 €', href: '#order-2026-0041', icon: <Receipt /> },
           { id: 'c1', title: 'Acme', category: 'Customers', href: '#acme', icon: <Building2 /> },
-          { id: 'p1', title: 'Forms', category: 'Pages', href: '#forms', icon: <TextCursorInput />, shortcut: ['G', 'F'] },
+          { id: 'c2', title: 'Brasserie Lefèvre', category: 'Customers', href: '#brasserie-lefevre', icon: <Building2 /> },
+          { id: 'p1', title: 'Forms', category: 'Pages', href: '#forms', icon: <TextCursorInput />, shortcut: 'g f' },
         ]}
       />
     </>
@@ -65,6 +66,6 @@ createRoot(document.getElementById('root')!).render(
       <Palette />
       <PickSeveral />
     </div>
-    <span className="text-xs text-muted-foreground">Press one: the palette opens over the page, the focus in its field. The arrows move, Enter follows, Escape closes.</span>
+    <span className="text-xs text-muted-foreground">Press one: the palette opens over the page, the focus in its field. Type “lefevre”: accents aside, the best first. The arrows move, Enter follows, Escape closes.</span>
   </div>,
 )

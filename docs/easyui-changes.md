@@ -501,7 +501,10 @@ otherwise).
   scrolled under it), the entry chosen kept by its key as the entries change. The listbox holds options alone, in
   groups named by their headings; a status in the dialog says how many are found; nothing is drawn under an empty
   field without entries. `onQueryChange` is told from the change, and of `''` as it opens. The page under it holds
-  still, as under `settle-modal`.
+  still, as under `settle-modal`. Every word typed is found whatever its case and accents (`src/lib/search.ts`),
+  the best entries first (the title, then a keyword, the category, the description; EasyUI's kept the order given,
+  `limit` cutting off the best), marked where found (`<mark>`); `filter={false}` lists the entries as given; an
+  entry's `shortcut` may be keys for `Kbd`; its `category` is a `string` (EasyUI's type named its own site's).
 
 ## ioiti-ui's own changes
 

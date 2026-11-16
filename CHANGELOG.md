@@ -24,14 +24,26 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
     said `No results found for ""`).
   - `onQueryChange` is told as the query changes, and of `''` as the palette opens. EasyUI's effect told it again
     at each render of a caller that wrote the function in place.
+- **`SpotlightSearch` finds words whatever their accents, and lists the best first.**
+  - "resume" finds "Résumé", "strasse" "Straße", "lefevre" "Lefèvre": case and accents aside, the letters without
+    a decomposition written out (ß, æ, œ, ø, ł…).
+  - An entry whose title holds the words comes first: the whole title, then its start, then a word in it
+    (IconButton). Then an entry found by a keyword, its category, its description; the others in the order given.
+    Grouped, the category of the best entry comes first.
+  - `limit` keeps the best: in the gallery, "button" listed fifty components that speak of buttons, and Button was
+    cut off.
+  - The words found are underlined in an entry's title and description (`<mark>`, in the text's own colour).
+  - `filter={false}` lists the entries as given, neither filtered nor ranked: what a server found.
+  - An entry's `shortcut` may be keys (`'g o'`), drawn as this computer writes them (`Kbd keys`). Its `category`
+    is a `string`: EasyUI's type named the categories of its own site.
 - **`SpotlightSearch`'s `enableGlobalShortcut` is a `useShortcut`**: ⌘K on an Apple computer, Ctrl K elsewhere (it
   heard both on both), listed by `?` under Navigation as the palette's `label`, waiting while another dialog is
   open. Pressed in the palette, it closes it; in the gallery, the browser's own Ctrl K took it. The gallery's
   palette uses it.
 
-Nothing to change in an application. One that registers ⌘K for its palette (`useShortcut('mod+k', …)`) may pass
-`enableGlobalShortcut` instead, never both: the first registered wins. A test that moved the palette's highlight
-with `mouseenter` moves the pointer (`hover`).
+Nothing to change in an application. A palette lists what is typed in another order, the best first. One that
+registers ⌘K for its palette (`useShortcut('mod+k', …)`) may pass `enableGlobalShortcut` instead, never both: the
+first registered wins. A test that moved the palette's highlight with `mouseenter` moves the pointer (`hover`).
 
 ## [0.18.1] - 2026-11-15
 

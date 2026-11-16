@@ -76,9 +76,9 @@ const topBar: CategoryInfo = {
       slug: 'spotlight-search',
       name: 'SpotlightSearch',
       names: ['SpotlightSearch'],
-      keywords: ['command palette', 'search', 'cmd k', 'go to', 'quick open'],
+      keywords: ['command palette', 'search', 'cmd k', 'go to', 'quick open', 'fuzzy', 'accents'],
       examples: [
-        { id: 'go-to', title: 'A palette that goes somewhere', description: 'Every word typed must be in an entry, Enter follows it. Its entries under their categories (grouped), each with its icon and its keys; the searches made before, while nothing is typed.' },
+        { id: 'go-to', title: 'A palette that goes somewhere', description: 'Every word typed is found whatever its case and accents, the best entry first (its title before its description), what matches marked; Enter follows it. Its entries under their categories (grouped), each with its icon and its keys; the searches made before, while nothing is typed.' },
         { id: 'actions', title: 'Actions too', description: 'An entry can do something rather than lead somewhere (action); onSelect is told of each choice.' },
         { id: 'pick-several', title: 'Choosing several', description: 'closeOnSelect={false}: it stays open, each entry ticked once chosen (picked), chosen again taken back; Escape when done.' },
       ],

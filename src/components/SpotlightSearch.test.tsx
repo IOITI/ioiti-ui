@@ -380,6 +380,49 @@ describe('SpotlightSearch', () => {
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('No results'))
   })
 
+  it('finds the words typed whatever their case and accents, the best first, and marks them', async () => {
+    const user = userEvent.setup()
+    const many: SpotlightSearchItem[] = [
+      ...Array.from({ length: 60 }, (_, index): SpotlightSearchItem => ({ id: `panel-${index}`, title: `Panel ${index}`, category: 'Panels', description: 'Opens with a button' })),
+      { id: 'button', title: 'Button', category: 'Components' },
+      { id: 'cv', title: 'Résumé', category: 'Files', description: 'Brasserie Lefèvre' },
+    ]
+    render(<SpotlightSearch open onOpenChange={() => {}} items={many} grouped label="Go to" />)
+    const field = screen.getByRole('combobox', { name: 'Search' })
+    await waitFor(() => expect(field).toHaveFocus())
+    await user.keyboard('button')
+    const options = screen.getAllByRole('option')
+    expect(options[0]).toHaveTextContent('Button')
+    expect(options).toHaveLength(50)
+    expect(screen.getByText('11 more: type to narrow them down.')).toBeInTheDocument()
+    expect(within(screen.getByRole('listbox')).getAllByRole('group')[0]).toHaveAccessibleName('Components')
+
+    await user.clear(field)
+    await user.keyboard('resume lefevre')
+    const cv = screen.getByRole('option', { name: /Résumé/ })
+    expect(Array.from(cv.querySelectorAll('mark')).map((mark) => mark.textContent)).toEqual(['Résumé', 'Lefèvre'])
+    expect(screen.getAllByRole('option')).toHaveLength(1)
+  })
+
+  it('lists the entries as given with filter={false} (what a server found), the words typed marked in them', async () => {
+    const user = userEvent.setup()
+    const found: SpotlightSearchItem[] = [
+      { id: 'o41', title: 'Order 2026-0041', category: 'Orders', description: 'Acme' },
+      { id: 'o42', title: 'Order 2026-0042', category: 'Orders', description: 'Brasserie Lefèvre' },
+    ]
+    render(<SpotlightSearch open onOpenChange={() => {}} filter={false} items={found} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('lefevre')
+    const options = screen.getAllByRole('option')
+    expect(options.map((option) => option.textContent)).toEqual(['Order 2026-0041AcmeOrders', 'Order 2026-0042Brasserie LefèvreOrders'])
+    expect(options[1].querySelector('mark')).toHaveTextContent('Lefèvre')
+  })
+
+  it("draws an entry's keys as this computer writes them, given as a shortcut's", () => {
+    render(<SpotlightSearch open onOpenChange={() => {}} items={[{ id: 'orders', title: 'Orders', category: 'Pages', shortcut: 'g o' }]} label="Go to" />)
+    expect(screen.getByRole('option', { name: /Orders/ }).querySelector('kbd')).toHaveTextContent(/G.*then.*O/)
+  })
+
   it('draws nothing under its field while it has no entries and nothing is typed', () => {
     render(<SpotlightSearch open onOpenChange={() => {}} label="Go to" />)
     expect(screen.queryByText(/No results/)).toBeNull()

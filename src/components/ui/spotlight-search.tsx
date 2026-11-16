@@ -8,6 +8,7 @@ import { focusables } from '../../lib/anchor.js';
 import { useControllableState } from '../../lib/controllable.js';
 import { matchesStroke, parseKeys } from '../../lib/keys.js';
 import { isPlainClick } from '../../lib/links.js';
+import { matchRanges, rank, searchIndex, searchWords } from '../../lib/search.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
@@ -16,15 +17,22 @@ import { Kbd } from '../Kbd.js';
 
 export interface SpotlightSearchItem {
   id: string;
+  /** ioiti-ui: what it is, found first by the words typed. */
   title: string;
-  category: 'Components' | 'Documentation' | 'Actions' | 'Navigation' | string;
+  /** ioiti-ui: its heading where the entries are `grouped`, said beside it otherwise; found by the words typed too. */
+  category: string;
+  /** ioiti-ui: a second line under its title, found by the words typed after its title, its keywords, its category. */
   description?: string;
   icon?: React.ReactNode;
-  shortcut?: string[];
+  /**
+   * ioiti-ui: its keys, drawn beside it: `'g o'` as `Kbd` writes them on this computer (`mod` for ⌘ or Ctrl), or each
+   * key as given (`['G', 'O']`). The palette does not listen for them.
+   */
+  shortcut?: string | string[];
   action?: () => void;
   /** ioiti-ui: where it leads: the entry is then a link (opened elsewhere with ⌘ or Ctrl), followed with Enter too. */
   href?: string;
-  /** ioiti-ui: more words it is found by. */
+  /** ioiti-ui: more words it is found by, after its title. */
   keywords?: string[];
 }
 
@@ -35,7 +43,7 @@ export interface SpotlightSearchProps {
   onOpenChange?: (open: boolean) => void;
   /** ioiti-ui: told once each time it closes, after `onOpenChange(false)`. */
   onClose?: () => void;
-  /** ioiti-ui: the entries, listed in this order while nothing is typed. */
+  /** ioiti-ui: the entries, listed in this order while nothing is typed, and where they are worth the same. */
   items?: SpotlightSearchItem[];
   /** ioiti-ui: the field's words while nothing is typed. */
   placeholder?: string;
@@ -60,11 +68,19 @@ export interface SpotlightSearchProps {
   linkComponent?: React.ElementType;
   /** ioiti-ui: told of what is typed, as it is typed, and of `''` as it opens: for entries made from it. */
   onQueryChange?: (query: string) => void;
-  /** ioiti-ui: the most entries listed at once; the others are found by typing. */
+  /**
+   * ioiti-ui: `false` lists the entries as given, neither filtered nor ranked, the words typed still marked in them:
+   * what a server found for the query (`onQueryChange`).
+   */
+  filter?: boolean;
+  /** ioiti-ui: the most entries listed at once, the best first; the others are found by typing. */
   limit?: number;
   /** ioiti-ui: what the dialog is called. */
   label?: string;
-  /** ioiti-ui: the entries under a heading for each category, in the order the categories first come. */
+  /**
+   * ioiti-ui: the entries under a heading for each category, in the order the categories first come: while
+   * something is typed, the category of the best entry first.
+   */
   grouped?: boolean;
   /**
    * ioiti-ui: `false` keeps it open once an entry is chosen (one without an `href`), to choose another: several
@@ -98,13 +114,29 @@ interface Section {
   rows: Row[];
 }
 
-/** ioiti-ui: every word typed is somewhere in the entry: "ema us100" finds "EMA cross on US100". */
-function matches(item: SpotlightSearchItem, words: string[]): boolean {
-  const text = [item.title, item.category, item.description ?? '', ...(item.keywords ?? [])].join(' ').toLowerCase();
-  return words.every((word) => text.includes(word));
-}
-
 const entryRow = (item: SpotlightSearchItem): Row => ({ kind: 'entry', key: `entry:${item.id}`, item });
+
+/**
+ * ioiti-ui: a text, the words typed marked in it where the search found them (`<mark>`): underlined, in the text's
+ * own colour or the strongest (no tint, which a theme or a material would have to hold at 4.5:1 again).
+ */
+function Marked({ text, words }: { text: string; words: string[] }) {
+  const ranges = words.length === 0 ? [] : matchRanges(text, words);
+  if (ranges.length === 0) return <>{text}</>;
+  const parts: React.ReactNode[] = [];
+  let at = 0;
+  for (const [start, end] of ranges) {
+    if (start > at) parts.push(text.slice(at, start));
+    parts.push(
+      <mark key={start} className="bg-transparent text-text-primary underline decoration-text-muted underline-offset-[3px] accent:decoration-brand">
+        {text.slice(start, end)}
+      </mark>
+    );
+    at = end;
+  }
+  if (at < text.length) parts.push(text.slice(at));
+  return <>{parts}</>;
+}
 
 /** ioiti-ui: the palette's own props, its defaults given: what an opening of it draws. */
 interface PaletteProps {
@@ -117,6 +149,7 @@ interface PaletteProps {
   onNavigate?: (href: string) => void;
   linkComponent?: React.ElementType;
   onQueryChange?: (query: string) => void;
+  filter: boolean;
   limit: number;
   label: string;
   grouped: boolean;
@@ -138,6 +171,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   onNavigate,
   linkComponent,
   onQueryChange,
+  filter = true,
   limit = 50,
   label = 'Spotlight Search',
   grouped = false,
@@ -196,6 +230,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
           onNavigate={onNavigate}
           linkComponent={linkComponent}
           onQueryChange={onQueryChange}
+          filter={filter}
           limit={limit}
           label={label}
           grouped={grouped}
@@ -221,6 +256,7 @@ function Palette({
   onNavigate,
   linkComponent,
   onQueryChange,
+  filter,
   limit,
   label,
   grouped,
@@ -262,12 +298,12 @@ function Palette({
     };
   }, []);
 
-  // ioiti-ui: the entries every word typed finds, the first `limit`; the searches made before while nothing is
-  // typed; the entries under their categories when grouped, each category where its first entry comes.
-  const matching = useMemo(() => {
-    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-    return words.length === 0 ? items : items.filter((item) => matches(item, words));
-  }, [items, query]);
+  // ioiti-ui: the entries every word typed finds, whatever its case and accents, the best first (lib/search.ts), the
+  // first `limit`; the searches made before while nothing is typed; the entries under their categories when
+  // grouped, each category where its first (best) entry comes.
+  const index = useMemo(() => searchIndex(items), [items]);
+  const words = useMemo(() => searchWords(query), [query]);
+  const matching = useMemo(() => (filter && words.length > 0 ? rank(index, words) : items), [filter, index, words, items]);
   const shown = useMemo(() => matching.slice(0, limit), [matching, limit]);
   const more = matching.length - shown.length;
   const sections = useMemo<Section[]>(() => {
@@ -467,17 +503,30 @@ function Palette({
             </span>
           )}
           <span className="min-w-0">
-            <span className="block font-medium truncate">{item.title}</span>
-            {item.description && <span className="block truncate text-xs text-text-muted">{item.description}</span>}
+            {/* ioiti-ui: the words typed marked where they are found. */}
+            <span className="block font-medium truncate">
+              <Marked text={item.title} words={words} />
+            </span>
+            {item.description && (
+              <span className="block truncate text-xs text-text-muted">
+                <Marked text={item.description} words={words} />
+              </span>
+            )}
           </span>
         </span>
         <span className="flex shrink-0 items-center gap-2">
-          {item.shortcut && item.shortcut.length > 0 && (
-            <span className="inline-flex items-center gap-0.5">
-              {item.shortcut.map((key) => (
-                <Kbd key={key}>{key}</Kbd>
-              ))}
-            </span>
+          {/* ioiti-ui: keys as this computer writes them (`Kbd keys`), or each as given. */}
+          {typeof item.shortcut === 'string' ? (
+            <Kbd keys={item.shortcut} />
+          ) : (
+            item.shortcut &&
+            item.shortcut.length > 0 && (
+              <span className="inline-flex items-center gap-0.5">
+                {item.shortcut.map((key) => (
+                  <Kbd key={key}>{key}</Kbd>
+                ))}
+              </span>
+            )
           )}
           {!grouped && <span className="text-[11px] text-text-muted">{item.category}</span>}
           {/* ioiti-ui: chosen already. */}

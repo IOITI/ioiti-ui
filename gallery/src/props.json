@@ -7325,7 +7325,7 @@
    {
     "name": "items",
     "type": "SpotlightSearchItem[]",
-    "description": "The entries, listed in this order while nothing is typed."
+    "description": "The entries, listed in this order while nothing is typed, and where they are worth the same."
    },
    {
     "name": "placeholder",
@@ -7366,10 +7366,16 @@
     "description": "Told of what is typed, as it is typed, and of `''` as it opens: for entries made from it."
    },
    {
+    "name": "filter",
+    "type": "boolean",
+    "default": "true",
+    "description": "`false` lists the entries as given, neither filtered nor ranked, the words typed still marked in them: what a server found for the query (`onQueryChange`)."
+   },
+   {
     "name": "limit",
     "type": "number",
     "default": "50",
-    "description": "The most entries listed at once; the others are found by typing."
+    "description": "The most entries listed at once, the best first; the others are found by typing."
    },
    {
     "name": "label",
@@ -7381,7 +7387,7 @@
     "name": "grouped",
     "type": "boolean",
     "default": "false",
-    "description": "The entries under a heading for each category, in the order the categories first come."
+    "description": "The entries under a heading for each category, in the order the categories first come: while something is typed, the category of the best entry first."
    },
    {
     "name": "closeOnSelect",
