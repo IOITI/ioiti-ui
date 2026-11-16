@@ -3546,6 +3546,103 @@
    }
   ]
  },
+ "FanChart": {
+  "entry": "ioiti-ui",
+  "file": "src/components/FanChart.tsx",
+  "props": [
+   {
+    "name": "data",
+    "type": "FanPoint[]",
+    "required": true,
+    "description": "Sorted by `x`."
+   },
+   {
+    "name": "bands",
+    "type": "FanBand[]",
+    "required": true,
+    "description": "The ranges expected, widest first: each a filled band between two keys."
+   },
+   {
+    "name": "lines",
+    "type": "FanLine[]",
+    "required": true,
+    "description": "Lines over the bands: what was expected (dashed), what happened."
+   },
+   {
+    "name": "references",
+    "type": "FanReference[]",
+    "default": "[]",
+    "description": "Horizontal lines: a limit, zero."
+   },
+   {
+    "name": "markers",
+    "type": "FanMarker[]",
+    "default": "[]",
+    "description": "Places marked across the chart: when something changed."
+   },
+   {
+    "name": "zero",
+    "type": "boolean",
+    "default": "false",
+    "description": "Zero kept on the value axis, or the axis fitted to the values."
+   },
+   {
+    "name": "height",
+    "type": "number",
+    "default": "260"
+   },
+   {
+    "name": "formatValue",
+    "type": "(value: number) => string",
+    "default": "defaultFormat"
+   },
+   {
+    "name": "formatTick",
+    "type": "(value: number) => string",
+    "default": "defaultTick"
+   },
+   {
+    "name": "formatX",
+    "type": "(x: number) => string",
+    "default": "(value: number) => defaultFormat(value)",
+    "description": "A place on the x axis in words: \"Trade 12\"."
+   },
+   {
+    "name": "formatXTick",
+    "type": "(x: number) => string",
+    "description": "A place on the x axis on its ticks: \"12\"; `formatX` otherwise."
+   },
+   {
+    "name": "xLabel",
+    "type": "string",
+    "description": "What the x axis counts, under it: \"Trades\"."
+   },
+   {
+    "name": "details",
+    "type": "(point: FanPoint, index: number) => ChartDetail[]",
+    "description": "More to say of a place, in the tooltip and the table."
+   },
+   {
+    "name": "showLegend",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "animated",
+    "type": "boolean",
+    "default": "true",
+    "description": "Lines drawn in when they first show (not where motion is reduced)."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
  "Field": {
   "entry": "ioiti-ui",
   "file": "src/components/Field.tsx",

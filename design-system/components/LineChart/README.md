@@ -12,3 +12,20 @@ Values over time: up to four series compared in `chart-compare-1…4`, or one se
 
 - A gap in the data is a gap in the line. A benchmark is `dashed`. A fifth series has no colour: compare four at most.
 - The pointer or the arrow keys read a moment; a table gives screen readers every point.
+
+## FanChart
+
+What was expected as ranges that widen, and what happened over them: a simulation's or a forecast's bands (where 90 % and half of its paths went), its median dashed, the actual line drawn as far as it goes. Its x axis is a count or a measure (trades, months from now), never a time.
+
+**You provide** `ariaLabel`, `data` (`[{ x, <key>: number | null }]`, sorted by `x`), `bands` (`[{ lower, upper, label }]`, widest first), `lines` (`[{ key, label, dashed? }]`), `formatValue`, `formatX` (a place in words: "After trade 12") and `formatXTick`, `xLabel`; `references`, `markers` (`[{ x, label }]`), `zero`, `height`, `details(point)`.
+
+```tsx
+<FanChart ariaLabel="Real trades against the backtest" data={cone}
+  bands={[{ lower: 'p5', upper: 'p95', label: '90 % of the paths' }, { lower: 'p25', upper: 'p75', label: 'Half of the paths' }]}
+  lines={[{ key: 'median', label: 'Expected', dashed: true }, { key: 'actual', label: 'Real trades' }]}
+  xLabel="Trades" formatX={(n) => `After trade ${n}`} formatValue={(v) => `${v.toFixed(1)}%`} />
+```
+
+- Bands take the charts' muted colour, one over the other deepening it; the lines take the series colour, or the compare colours when there are more.
+- A line stops where its values stop (`null`): the actual line ends at the last place known.
+- The pointer or the arrow keys read a place, each line's value and each band's range there; a table gives screen readers every place. Its legend shows and hides a line or a band, one kept shown.

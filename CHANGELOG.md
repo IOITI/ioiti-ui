@@ -3,6 +3,15 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.21.0] - 2026-11-16
+
+- **`FanChart`**, new: what was expected as ranges that widen, and what happened over them. A simulation's or a
+  forecast's bands (`bands`, each filled between two keys, widest first), its median dashed and the actual line
+  as far as it goes (`lines`), references and marked places, over an x axis that counts (trades, months from
+  now: `formatX`, `formatXTick`, `xLabel`) where `LineChart`'s is time. Read by pointer and keys (each line's
+  value and each band's range at a place), given to screen readers as a table, its legend showing and hiding a
+  line or a band. Types `FanBand`, `FanChartProps`, `FanLine`, `FanMarker`, `FanPoint`, `FanReference`.
+
 ## [0.20.3] - 2026-11-16
 
 - **`FlysheetBody` fades out under the header as it scrolls.** What goes under a sheet's header no longer stops at a

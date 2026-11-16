@@ -11,13 +11,15 @@ const charts: CategoryInfo = {
     {
       slug: 'line-chart',
       name: 'LineChart',
-      names: ['LineChart'],
-      keywords: ['time series', 'trend', 'compare', 'area', 'limit'],
+      names: ['LineChart', 'FanChart'],
+      keywords: ['time series', 'trend', 'compare', 'area', 'limit', 'forecast', 'simulation', 'cone', 'bands', 'percentiles'],
       examples: [
         { id: 'compared', title: 'Things compared', description: 'Up to four series, in the compare colours in their order; a benchmark dashed. Its legend under it; the pointer or the arrow keys read a moment, and a table gives screen readers every one.' },
         { id: 'limit-and-moments', title: 'One series, its limit and moments', description: 'One series in the series colour, an area under it, the limit it must not cross and the moments that matter (a restart). A gap in the data is a gap in the line; a moment may say more (details).' },
         { id: 'gaps', title: 'Gaps, or joined across', description: 'A gap stays a gap; series measured on days of their own are joined across the days they were not (connectGaps).' },
         { id: 'narrow-and-empty', title: 'Narrow, or with nothing', description: 'Narrow, it names fewer moments on its axis; with no data, it says so in place of an empty frame.' },
+        { id: 'fan-expected-and-actual', title: 'FanChart: what was expected, and what happened', description: 'The ranges a simulation’s paths went through (90 % and half of them), its median dashed, the actual line as far as it goes over them. Its x axis counts steps, not times; the pointer or the arrow keys read a place, and a table gives screen readers every one.' },
+        { id: 'fan-forecast-and-limit', title: 'FanChart: a forecast against a limit', description: 'One band and its median over months to come, the limit not to cross in its tone and the place something changes marked; without an actual line, a forecast alone.' },
       ],
     },
     {
