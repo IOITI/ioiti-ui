@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [Unreleased]
+## [0.20.0] - 2026-11-16
 
 - **The menu says a page's tab kept in the query.** An entry's `path` may say values of the query
   (`/ops?tab=history`): it is the page only when the address has them, the others aside. The longest path wins as
