@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [0.19.0] - Unreleased
+## [0.19.0] - 2026-11-16
 
 - **`SpotlightSearch` keeps the focus, and its keys.**
   - The focus stays in it: Tab goes round its own controls (its field, a button of its `footer`), where it went on
