@@ -1,4 +1,4 @@
-import { IconButton, Kbd, LookPicker, SidebarFooterButton, SpotlightSearch, ThemeToggle, useShortcut, useTheme } from 'ioiti-ui'
+import { IconButton, Kbd, LookPicker, SidebarFooterButton, SpotlightSearch, ThemeToggle, useTheme } from 'ioiti-ui'
 import { RotateCcw, Search } from 'lucide-react'
 import { useState } from 'react'
 
@@ -41,7 +41,6 @@ const ITEMS = [
 /** ⌘K, and a button for it: every page, component and example of the gallery. Then the accent and material, and the theme. */
 export function GallerySearch() {
   const [open, setOpen] = useState(false)
-  useShortcut('mod+k', () => setOpen(true), { description: 'Go to a page', group: 'Navigation' })
   return (
     <>
       <IconButton
@@ -56,10 +55,14 @@ export function GallerySearch() {
       />
       <LookPicker />
       <ThemeToggle />
+      {/* Its ⌘K a shortcut of the application's (listed by ?, as its label), pressed in it closing it; the pages
+          chosen last offered first. */}
       <SpotlightSearch
         open={open}
         onOpenChange={setOpen}
-        label="Go to"
+        enableGlobalShortcut
+        remember="go-to"
+        label="Go to a page"
         placeholder="A component, an example, a page…"
         grouped
         items={ITEMS}

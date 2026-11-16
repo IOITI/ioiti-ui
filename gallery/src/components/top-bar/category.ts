@@ -76,11 +76,14 @@ const topBar: CategoryInfo = {
       slug: 'spotlight-search',
       name: 'SpotlightSearch',
       names: ['SpotlightSearch'],
-      keywords: ['command palette', 'search', 'cmd k', 'go to', 'quick open'],
+      keywords: ['command palette', 'search', 'cmd k', 'go to', 'quick open', 'fuzzy', 'accents', 'async', 'server', 'recent', 'history', 'nested', 'scope'],
       examples: [
-        { id: 'go-to', title: 'A palette that goes somewhere', description: 'Every word typed must be in an entry, Enter follows it. Its entries under their categories (grouped), each with its icon and its keys; the searches made before, while nothing is typed.' },
+        { id: 'go-to', title: 'A palette that goes somewhere', description: 'Every word typed is found whatever its case and accents, the best entry first (its title before its description), what matches marked; Enter follows it. Its entries under their categories (grouped), each with its icon and its keys; the searches made before, while nothing is typed.' },
         { id: 'actions', title: 'Actions too', description: 'An entry can do something rather than lead somewhere (action); onSelect is told of each choice.' },
         { id: 'pick-several', title: 'Choosing several', description: 'closeOnSelect={false}: it stays open, each entry ticked once chosen (picked), chosen again taken back; Escape when done.' },
+        { id: 'fetched', title: 'Found as it is typed', description: 'filter={false}: onQueryChange asks a server, loading from the moment the query changes (never “No results” before it knows), an answer to an older query dropped. An error with a Try again, the last entries kept under it; the entry chosen stays as new ones arrive.' },
+        { id: 'remembered', title: 'What was chosen, first', description: 'remember: the entries chosen are kept in this browser, under the application’s key, the five latest offered first while nothing is typed (Recent); Shift+Delete forgets the one chosen. Forget them, as an application does as someone signs out.' },
+        { id: 'lists', title: 'A list in an entry', description: 'An entry with items opens its own list, its title before the field with its placeholder, searched alone; Backspace in the empty field, Escape or its title goes back, what was typed above typed again. It leads nowhere itself.' },
       ],
     },
     {

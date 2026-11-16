@@ -7310,45 +7310,50 @@
    {
     "name": "open",
     "type": "boolean",
-    "description": "Controlled open state"
+    "description": "Open, held by the caller with `onOpenChange`; left to the palette without it."
    },
    {
     "name": "onOpenChange",
     "type": "(open: boolean) => void",
-    "description": "Callback when open state changes"
+    "description": "Told when it opens and when it closes."
    },
    {
     "name": "onClose",
     "type": "() => void",
-    "description": "Optional close callback"
+    "description": "Told once each time it closes, after `onOpenChange(false)`."
    },
    {
     "name": "items",
     "type": "SpotlightSearchItem[]",
-    "description": "Searchable items database override"
+    "description": "The entries, listed in this order while nothing is typed, and where they are worth the same."
    },
    {
     "name": "placeholder",
     "type": "string",
     "default": "'Search…'",
-    "description": "Search input placeholder"
+    "description": "The field's words while nothing is typed."
    },
    {
     "name": "recentSearches",
     "type": "string[]",
     "default": "[]",
-    "description": "Recent searches list"
+    "description": "Searches made before, offered while nothing is typed: one chosen is typed again."
+   },
+   {
+    "name": "remember",
+    "type": "string",
+    "description": "The name of a list of the entries chosen, kept in this browser under the application's key (`<themeStorageKey()>.spotlight.<name>`): the five latest, offered first while nothing is typed; Shift+Delete forgets the one chosen. They outlive a sign-out: where a browser is shared, name who is signed in."
    },
    {
     "name": "onSelect",
     "type": "(item: SpotlightSearchItem) => void",
-    "description": "Callback when an item is selected"
+    "description": "Told of each entry chosen; not of one opened elsewhere (⌘ or Ctrl and a click, ⌘↵)."
    },
    {
     "name": "enableGlobalShortcut",
     "type": "boolean",
     "default": "false",
-    "description": "Enable internal global Cmd+K shortcut"
+    "description": "⌘K (Ctrl K elsewhere) opens it from any page, and closes it: a `useShortcut`, listed by `?` under Navigation as its `label`, waiting while another dialog is open. For a palette that only leads somewhere."
    },
    {
     "name": "onNavigate",
@@ -7362,14 +7367,36 @@
    },
    {
     "name": "onQueryChange",
-    "type": "(query: string) => void",
-    "description": "Told of what is typed, for entries made from it."
+    "type": "(query: string, scope?: SpotlightSearchItem) => void",
+    "description": "Told of what is typed, as it is typed, and of `''` as it opens or as a list of an entry opens: for entries made from it. `scope`: the entry whose `items` are listed, `undefined` at the top."
+   },
+   {
+    "name": "filter",
+    "type": "boolean",
+    "default": "true",
+    "description": "`false` lists the entries as given, neither filtered nor ranked, the words typed still marked in them: what a server found for the query (`onQueryChange`)."
+   },
+   {
+    "name": "loading",
+    "type": "boolean",
+    "default": "false",
+    "description": "Entries are being found: said in place of the list while there is none (never \"No results\", not known yet), the entries shown kept until new ones come. Set it as the query changes (in `onQueryChange`), before a request waits."
+   },
+   {
+    "name": "error",
+    "type": "ReactNode",
+    "description": "They could not be found: what went wrong (`true`: \"The search failed.\"), in place of the list while there is none, above it otherwise (the last entries found)."
+   },
+   {
+    "name": "onRetry",
+    "type": "() => void",
+    "description": "Searches again: a \"Try again\" beside the error."
    },
    {
     "name": "limit",
     "type": "number",
     "default": "50",
-    "description": "The most entries listed at once; the others are found by typing."
+    "description": "The most entries listed at once, the best first; the others are found by typing."
    },
    {
     "name": "label",
@@ -7381,7 +7408,7 @@
     "name": "grouped",
     "type": "boolean",
     "default": "false",
-    "description": "The entries under a heading for each category, in the order the categories first come."
+    "description": "The entries under a heading for each category, in the order the categories first come: while something is typed, the category of the best entry first."
    },
    {
     "name": "closeOnSelect",
@@ -7402,7 +7429,7 @@
    {
     "name": "className",
     "type": "string",
-    "description": "Custom class name"
+    "description": "Classes for the palette itself (its panel)."
    }
   ]
  },

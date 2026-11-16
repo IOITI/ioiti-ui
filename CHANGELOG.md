@@ -3,6 +3,66 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.19.0] - 2026-11-16
+
+- **`SpotlightSearch` keeps the focus, and its keys.**
+  - The focus stays in it: Tab goes round its own controls (its field, a button of its `footer`), where it went on
+    to the page under it. A press on an entry or on a search made before leaves the focus in the field: it went to
+    the page, and the keys with it.
+  - Its keys are its own. Over a dialog, Escape closes the palette alone (it closed both), and once: `onClose` was
+    told twice with `enableGlobalShortcut`. A key that composes a character (an IME's Enter, its Escape) chooses
+    and closes nothing.
+  - The arrows scroll its list to the entry they choose; they went past the list's end, out of sight. The pointer
+    chooses where it moves, not where the list scrolls under it.
+  - The entry chosen stays chosen as the entries change (found as they are typed), the first one once it is gone.
+  - Its highlight is measured where the list scrolls, and glides with `springSnappy`, as Combobox's
+    (`springGentle` took half a second).
+  - The focus goes back to what opened it, unless what an entry did took it elsewhere: an entry's `action` runs
+    once the palette is closed. The page under it holds still, as under every dialog.
+  - A screen reader hears its headings as groups of options, and how many entries are found once typing pauses.
+    "No results" and "N more" are said outside the list, and nothing under an empty field without entries (it
+    said `No results found for ""`).
+  - `onQueryChange` is told as the query changes, and of `''` as the palette opens. EasyUI's effect told it again
+    at each render of a caller that wrote the function in place.
+- **`SpotlightSearch` finds words whatever their accents, and lists the best first.**
+  - "resume" finds "Résumé", "strasse" "Straße", "lefevre" "Lefèvre": case and accents aside, the letters without
+    a decomposition written out (ß, æ, œ, ø, ł…).
+  - An entry whose title holds the words comes first: the whole title, then its start, then a word in it
+    (IconButton). Then an entry found by a keyword, its category, its description; the others in the order given.
+    Grouped, the category of the best entry comes first.
+  - `limit` keeps the best: in the gallery, "button" listed fifty components that speak of buttons, and Button was
+    cut off.
+  - The words found are underlined in an entry's title and description (`<mark>`, in the text's own colour).
+  - `filter={false}` lists the entries as given, neither filtered nor ranked: what a server found.
+  - An entry's `shortcut` may be keys (`'g o'`), drawn as this computer writes them (`Kbd keys`). Its `category`
+    is a `string`: EasyUI's type named the categories of its own site.
+- **`SpotlightSearch` says what it does with entries found as they are typed**, as `NotificationBell` does with its
+  own. `loading`: it says it is searching in place of the list (entries to come, "Searching…" for a screen reader),
+  never "No results" before it knows, and keeps the entries shown until new ones come; its search icon turns.
+  `error` (`true`: "The search failed.", or your words): in place of the list, or above the last entries found,
+  with a Try again for `onRetry`. The gallery's example asks a server as it is typed (`filter={false}`).
+- **`SpotlightSearch` remembers the entries chosen**, given a name (`remember`): the five chosen last, kept in this
+  browser under the application's key (`<themeStorageKey()>.spotlight.<name>`), are offered first while nothing is
+  typed (Recent). One that leads somewhere is kept as it was (it may have been found by a search); one that acts is
+  offered while it is among the entries. Shift+Delete forgets the one chosen. Only an entry's id, title, category and
+  `href` are kept; they outlive a sign-out, so an application whose browser is shared names who is signed in, and
+  removes the key as they sign out. The gallery's palette remembers the pages chosen.
+- **`SpotlightSearch`: ⌘↵ (Ctrl ↵ elsewhere)** opens an entry that leads somewhere in another tab, as ⌘ and a click
+  do, the palette left open.
+- **`SpotlightSearch`: an entry may hold a list of its own** (`items`, with the field's `placeholder` for it):
+  chosen, the palette lists them, the entry's title before the field, searched alone. Backspace in the empty field,
+  Escape or the title goes back, what was typed above typed again and the entry chosen. It leads nowhere itself.
+  `onQueryChange` is told of the entry whose list is shown (`scope`, a second argument), to fill it as it is
+  searched. A screen reader hears the entry as one that opens its list, then the list's title and how many it holds.
+- **`SpotlightSearch`'s `enableGlobalShortcut` is a `useShortcut`**: ⌘K on an Apple computer, Ctrl K elsewhere (it
+  heard both on both), listed by `?` under Navigation as the palette's `label`, waiting while another dialog is
+  open. Pressed in the palette, it closes it; in the gallery, the browser's own Ctrl K took it. The gallery's
+  palette uses it.
+
+Nothing to change in an application. A palette lists what is typed in another order, the best first. One that
+registers ⌘K for its palette (`useShortcut('mod+k', …)`) may pass `enableGlobalShortcut` instead, never both: the
+first registered wins. A test that moved the palette's highlight with `mouseenter` moves the pointer (`hover`).
+
 ## [0.18.1] - 2026-11-15
 
 - **A change of page in Safari, and in every browser of an iPhone**, showed both pages at full strength over each
