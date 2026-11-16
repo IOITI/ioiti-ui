@@ -49,6 +49,11 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   removes the key as they sign out. The gallery's palette remembers the pages chosen.
 - **`SpotlightSearch`: ⌘↵ (Ctrl ↵ elsewhere)** opens an entry that leads somewhere in another tab, as ⌘ and a click
   do, the palette left open.
+- **`SpotlightSearch`: an entry may hold a list of its own** (`items`, with the field's `placeholder` for it):
+  chosen, the palette lists them, the entry's title before the field, searched alone. Backspace in the empty field,
+  Escape or the title goes back, what was typed above typed again and the entry chosen. It leads nowhere itself.
+  `onQueryChange` is told of the entry whose list is shown (`scope`, a second argument), to fill it as it is
+  searched. A screen reader hears the entry as one that opens its list, then the list's title and how many it holds.
 - **`SpotlightSearch`'s `enableGlobalShortcut` is a `useShortcut`**: ⌘K on an Apple computer, Ctrl K elsewhere (it
   heard both on both), listed by `?` under Navigation as the palette's `label`, waiting while another dialog is
   open. Pressed in the palette, it closes it; in the gallery, the browser's own Ctrl K took it. The gallery's

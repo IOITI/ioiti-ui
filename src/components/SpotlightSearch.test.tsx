@@ -12,6 +12,21 @@ import { SettleModal } from './ui/settle-modal.js'
 import { SpotlightSearch } from './ui/spotlight-search.js'
 import type { SpotlightSearchItem } from './ui/spotlight-search.js'
 
+const LISTS: SpotlightSearchItem[] = [
+  {
+    id: 'orders',
+    title: 'Orders',
+    category: 'Lists',
+    placeholder: 'An order…',
+    items: [
+      { id: 'o42', title: 'Order 2026-0042', category: 'Orders', description: 'Acme', href: '/orders/2026-0042' },
+      { id: 'o41', title: 'Order 2026-0041', category: 'Orders', description: 'Globex', href: '/orders/2026-0041' },
+    ],
+  },
+  { id: 'customers', title: 'Customers', category: 'Lists', href: '/customers', items: [] },
+  { id: 'charts', title: 'Charts', category: 'Pages', href: '/charts' },
+]
+
 const ITEMS: SpotlightSearchItem[] = [
   { id: 'orders', title: 'Orders', category: 'Pages', href: '/orders', icon: <Receipt />, shortcut: ['G', 'O'] },
   { id: 'it-1042', title: 'IT-1042', category: 'Orders', description: 'Atelier Brun', href: '/orders/IT-1042' },
@@ -551,6 +566,127 @@ describe('SpotlightSearch', () => {
     expect(chosen).not.toHaveBeenCalled()
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(within(screen.getByRole('group', { name: 'Recent' })).getByRole('option')).toHaveTextContent('Orders')
+  })
+
+  it('opens the list of an entry, its title before the field, searched alone, telling where', async () => {
+    const user = userEvent.setup()
+    const told = vi.fn()
+    const chosen = vi.fn()
+    render(
+      <SpotlightSearch
+        open
+        onOpenChange={() => {}}
+        items={LISTS}
+        onQueryChange={(query, scope) => told(query, scope?.id)}
+        onSelect={chosen}
+        onNavigate={() => {}}
+        label="Go to"
+      />,
+    )
+    const orders = screen.getByRole('option', { name: /Orders/ })
+    expect(orders).toHaveAccessibleDescription('Opens its list')
+    expect(orders.querySelector('svg.lucide-chevron-right')).not.toBeNull()
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('ord{Enter}')
+    expect(chosen).not.toHaveBeenCalled()
+    expect(told).toHaveBeenLastCalledWith('', 'orders')
+    const field = screen.getByRole('combobox', { name: 'Search Orders' })
+    expect(field).toHaveValue('')
+    expect(field).toHaveAttribute('placeholder', 'An order…')
+    expect(screen.getByRole('button', { name: 'Back from Orders' })).toBeInTheDocument()
+    expect(screen.getByRole('listbox', { name: 'Orders' })).toBeInTheDocument()
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Order 2026-0042AcmeOrders', 'Order 2026-0041GlobexOrders'])
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Orders: 2 results'))
+
+    await user.keyboard('globex')
+    expect(told).toHaveBeenLastCalledWith('globex', 'orders')
+    expect(screen.getAllByRole('option')).toHaveLength(1)
+    await user.keyboard('{Enter}')
+    expect(chosen).toHaveBeenCalledWith(expect.objectContaining({ id: 'o41' }))
+  })
+
+  it('goes back from a list with Backspace in its empty field, once as it is held, what was typed above typed again', async () => {
+    const user = userEvent.setup()
+    render(<SpotlightSearch open onOpenChange={() => {}} items={LISTS} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('ord{Enter}')
+    const field = screen.getByRole('combobox', { name: 'Search Orders' })
+    fireEvent.keyDown(field, { key: 'Backspace', repeat: true })
+    expect(screen.getByRole('combobox', { name: 'Search Orders' })).toBeInTheDocument()
+    await user.keyboard('{Backspace}')
+    expect(screen.getByRole('combobox', { name: 'Search' })).toHaveValue('ord')
+    expect(screen.getByRole('option', { name: /Orders/ })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('goes back from a list with Escape, then closes; its title, pressed, goes back too, the focus in the field', async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    render(<SpotlightSearch open onOpenChange={onOpenChange} items={LISTS} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('ord{Enter}{Escape}')
+    expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus()
+    expect(onOpenChange).not.toHaveBeenCalled()
+    await user.keyboard('{Enter}')
+    await user.click(screen.getByRole('button', { name: 'Back from Orders' }))
+    expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus()
+    await user.keyboard('{Escape}')
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it('shows the entries of a list as they are found, and opens the list of an entry that leads somewhere too', async () => {
+    const user = userEvent.setup()
+    const navigate = vi.fn()
+    const { rerender } = render(<SpotlightSearch open onOpenChange={() => {}} items={LISTS} onNavigate={navigate} label="Go to" />)
+    expect(screen.getByRole('option', { name: /Customers/ }).tagName).not.toBe('A')
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('cust{Enter}')
+    expect(navigate).not.toHaveBeenCalled()
+    expect(screen.queryAllByRole('option')).toHaveLength(0)
+    const filled = LISTS.map((entry) => (entry.id === 'customers' ? { ...entry, items: [{ id: 'acme', title: 'Acme', category: 'Customers', href: '/customers/acme' }] } : entry))
+    rerender(<SpotlightSearch open onOpenChange={() => {}} items={filled} onNavigate={navigate} label="Go to" />)
+    expect(screen.getByRole('option', { name: /Acme/ })).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Customers: 1 result'))
+  })
+
+  it('chooses several in a list, each ticked, Escape going back before it closes', async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    // Things to attach, which lead nowhere: an entry that leads somewhere closes the palette.
+    const things: SpotlightSearchItem[] = [
+      {
+        id: 'orders',
+        title: 'Orders',
+        category: 'Lists',
+        items: [
+          { id: 'o42', title: 'Order 2026-0042', category: 'Orders' },
+          { id: 'o41', title: 'Order 2026-0041', category: 'Orders' },
+        ],
+      },
+    ]
+    function Picker() {
+      const [picked, setPicked] = useState<string[]>([])
+      return (
+        <SpotlightSearch
+          open
+          onOpenChange={onOpenChange}
+          items={things}
+          label="Attach"
+          closeOnSelect={false}
+          picked={picked}
+          onSelect={(item) => setPicked((was) => (was.includes(item.id) ? was.filter((id) => id !== item.id) : [...was, item.id]))}
+        />
+      )
+    }
+    render(<Picker />)
+    expect(screen.getByRole('option', { name: /Orders/ })).not.toHaveAttribute('aria-checked')
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('ord{Enter}{Enter}{ArrowDown}{Enter}')
+    expect(screen.getByRole('option', { name: /2026-0042/ })).toHaveAttribute('aria-checked', 'true')
+    expect(screen.getByRole('option', { name: /2026-0041/ })).toHaveAttribute('aria-checked', 'true')
+    await user.keyboard('{Escape}')
+    expect(onOpenChange).not.toHaveBeenCalled()
+    await user.keyboard('{Escape}')
+    expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
   it('draws nothing under its field while it has no entries and nothing is typed', () => {

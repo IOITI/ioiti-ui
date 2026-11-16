@@ -22,6 +22,17 @@ function Palette() {
           { id: 'o41', title: 'Order 2026-0041', category: 'Orders', description: 'Globex · 960.50 €', href: '#order-2026-0041', icon: <Receipt /> },
           { id: 'c1', title: 'Acme', category: 'Customers', href: '#acme', icon: <Building2 /> },
           { id: 'c2', title: 'Brasserie Lefèvre', category: 'Customers', href: '#brasserie-lefevre', icon: <Building2 /> },
+          {
+            id: 'all-customers',
+            title: 'All customers',
+            category: 'Lists',
+            icon: <Building2 />,
+            placeholder: 'A customer…',
+            items: [
+              { id: 'c3', title: 'Globex', category: 'Customers', href: '#globex', icon: <Building2 /> },
+              { id: 'c4', title: 'Initech', category: 'Customers', href: '#initech', icon: <Building2 /> },
+            ],
+          },
           { id: 'p1', title: 'Forms', category: 'Pages', href: '#forms', icon: <TextCursorInput />, shortcut: 'g f' },
         ]}
       />
@@ -66,6 +77,6 @@ createRoot(document.getElementById('root')!).render(
       <Palette />
       <PickSeveral />
     </div>
-    <span className="text-xs text-muted-foreground">Press one: the palette opens over the page, the focus in its field. Type “lefevre”: accents aside, the best first. The arrows move, Enter follows, Escape closes.</span>
+    <span className="text-xs text-muted-foreground">Press one: the palette opens over the page, the focus in its field. Type “lefevre”: accents aside, the best first. The arrows move, Enter follows (All customers opens its list), Escape closes.</span>
   </div>,
 )

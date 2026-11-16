@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { findEntry, forgetEntry, readRemembered, REMEMBERED, rememberedKey, rememberEntry } from './spotlight.js'
+import { findEntry, forgetEntry, readRemembered, REMEMBERED, rememberedKey, rememberEntry, scopeTrail } from './spotlight.js'
 import { THEME_KEY_ATTRIBUTE } from './theme.js'
 
 const KEY = 'my-app.theme.spotlight.go-to'
@@ -72,5 +72,18 @@ describe('findEntry', () => {
     expect(findEntry(entries, 'customers')).toBe(entries[1])
     expect(findEntry(entries, 'line-1')).toEqual({ id: 'line-1' })
     expect(findEntry(entries, 'nothing')).toBeUndefined()
+  })
+})
+
+describe('scopeTrail', () => {
+  it('follows the lists opened from the top, as far as each is still there with a list', () => {
+    const lines = { id: 'o41', items: [{ id: 'line-1' }] }
+    const orders = { id: 'orders', items: [{ id: 'o42' }, lines] }
+    const entries = [orders, { id: 'customers' }]
+    expect(scopeTrail(entries, [])).toEqual([])
+    expect(scopeTrail(entries, ['orders', 'o41'])).toEqual([orders, lines])
+    expect(scopeTrail(entries, ['orders', 'o42'])).toEqual([orders])
+    expect(scopeTrail(entries, ['customers'])).toEqual([])
+    expect(scopeTrail(entries, ['gone', 'o41'])).toEqual([])
   })
 })

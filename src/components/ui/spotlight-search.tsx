@@ -3,16 +3,17 @@
 import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useIsPresent, useReducedMotionConfig } from 'framer-motion';
-import { AlertCircle, Check, History, Loader2, Search } from 'lucide-react';
+import { AlertCircle, Check, ChevronLeft, ChevronRight, History, Loader2, Search } from 'lucide-react';
 import { focusables } from '../../lib/anchor.js';
 import { useControllableState } from '../../lib/controllable.js';
 import { matchesStroke, parseKeys } from '../../lib/keys.js';
 import { isPlainClick } from '../../lib/links.js';
 import { matchRanges, rank, searchIndex, searchWords } from '../../lib/search.js';
-import { findEntry, forgetEntry, readRemembered, rememberEntry, rememberedKey } from '../../lib/spotlight.js';
+import { findEntry, forgetEntry, readRemembered, rememberEntry, rememberedKey, scopeTrail } from '../../lib/spotlight.js';
 import type { RememberedEntry } from '../../lib/spotlight.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { Hint } from '../Hint.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
 import { useShortcut } from '../shortcuts-context.js';
 import { Kbd } from '../Kbd.js';
@@ -37,6 +38,14 @@ export interface SpotlightSearchItem {
   href?: string;
   /** ioiti-ui: more words it is found by, after its title. */
   keywords?: string[];
+  /**
+   * ioiti-ui: a list of its own ("Orders ›"): chosen, the palette lists these, its title before the field, until
+   * Backspace in the empty field, Escape or its title goes back. It leads nowhere itself (its `href` and `action`
+   * are not followed). Filled as they are found: `onQueryChange` names the entry whose list is shown.
+   */
+  items?: SpotlightSearchItem[];
+  /** ioiti-ui: the field's words while its `items` are listed. */
+  placeholder?: string;
 }
 
 export interface SpotlightSearchProps {
@@ -75,8 +84,11 @@ export interface SpotlightSearchProps {
   onNavigate?: (href: string) => void;
   /** ioiti-ui: what draws an entry with an `href`; the application's link (LinkProvider) by default. */
   linkComponent?: React.ElementType;
-  /** ioiti-ui: told of what is typed, as it is typed, and of `''` as it opens: for entries made from it. */
-  onQueryChange?: (query: string) => void;
+  /**
+   * ioiti-ui: told of what is typed, as it is typed, and of `''` as it opens or as a list of an entry opens: for
+   * entries made from it. `scope`: the entry whose `items` are listed, `undefined` at the top.
+   */
+  onQueryChange?: (query: string, scope?: SpotlightSearchItem) => void;
   /**
    * ioiti-ui: `false` lists the entries as given, neither filtered nor ranked, the words typed still marked in them:
    * what a server found for the query (`onQueryChange`).
@@ -174,7 +186,7 @@ interface PaletteProps {
   onSelect?: (item: SpotlightSearchItem) => void;
   onNavigate?: (href: string) => void;
   linkComponent?: React.ElementType;
-  onQueryChange?: (query: string) => void;
+  onQueryChange?: (query: string, scope?: SpotlightSearchItem) => void;
   filter: boolean;
   loading: boolean;
   error?: React.ReactNode;
@@ -315,6 +327,15 @@ function Palette({
   const present = useIsPresent();
 
   const [query, setQuery] = useState('');
+  // ioiti-ui: the lists of entries opened, from the top (an entry's `items`), each with what was typed above it
+  // (typed again on going back); found again in the entries at each render, which a search may fill meanwhile.
+  const [path, setPath] = useState<{ id: string; query: string }[]>([]);
+  const trail = useMemo(() => scopeTrail(items, path.map((step) => step.id)), [items, path]);
+  const scope: SpotlightSearchItem | undefined = trail[trail.length - 1];
+  const depth = trail.length;
+  const level = scope?.items ?? items;
+  // ioiti-ui: which way a list arrives: from the end going into one, from the start going back.
+  const direction = useRef(0);
   // ioiti-ui: the row chosen, by what it is, not where it is: it stays chosen as the entries change (found as they
   // are typed); gone, the first row is.
   const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -340,8 +361,8 @@ function Palette({
   }, []);
 
   // ioiti-ui: the entries chosen last (`remember`), read as it opens: one that leads somewhere as it was kept (it may
-  // have been found by a search, gone from the entries since), one that acts while it is among the entries (what
-  // it does is theirs).
+  // have been found by a search, or in a list, gone from the entries since), one that acts while it is among the
+  // entries or their lists (what it does is theirs).
   const keptAt = remember ? rememberedKey(remember) : undefined;
   const [remembered, setRemembered] = useState<RememberedEntry[]>(() => (keptAt ? readRemembered(keptAt) : []));
   const keepInMind = (item: SpotlightSearchItem) => {
@@ -359,18 +380,20 @@ function Palette({
 
   // ioiti-ui: the entries every word typed finds, whatever its case and accents, the best first (lib/search.ts), the
   // first `limit`; the entries chosen last and the searches made before while nothing is typed; the entries under
-  // their categories when grouped, each category where its first (best) entry comes.
-  const index = useMemo(() => searchIndex(items), [items]);
+  // their categories when grouped, each category where its first (best) entry comes. In a list, its entries only,
+  // and nothing chosen or searched before (they are the palette's own).
+  const index = useMemo(() => searchIndex(level), [level]);
   const words = useMemo(() => searchWords(query), [query]);
-  const matching = useMemo(() => (filter && words.length > 0 ? rank(index, words) : items), [filter, index, words, items]);
+  const matching = useMemo(() => (filter && words.length > 0 ? rank(index, words) : level), [filter, index, words, level]);
   const shown = useMemo(() => matching.slice(0, limit), [matching, limit]);
   const more = matching.length - shown.length;
   const sections = useMemo<Section[]>(() => {
     const result: Section[] = [];
-    if (query === '' && rememberedItems.length > 0) {
+    const top = query === '' && depth === 0;
+    if (top && rememberedItems.length > 0) {
       result.push({ key: 'remembered', heading: 'Recent', rows: rememberedItems.map((item): Row => ({ kind: 'remembered', key: `remembered:${item.id}`, item })) });
     }
-    if (query === '' && recentSearches.length > 0) {
+    if (top && recentSearches.length > 0) {
       const searches = Array.from(new Set(recentSearches));
       result.push({ key: 'searches', heading: 'Recent searches', rows: searches.map((text): Row => ({ kind: 'search', key: `search:${text}`, text })) });
     }
@@ -386,7 +409,7 @@ function Palette({
       result.push({ key: 'entries', rows: shown.map(entryRow) });
     }
     return result;
-  }, [query, rememberedItems, recentSearches, grouped, shown]);
+  }, [query, depth, rememberedItems, recentSearches, grouped, shown]);
   const rows = useMemo(() => sections.flatMap((section) => section.rows), [sections]);
   const activeIndex = Math.max(0, rows.findIndex((row) => row.key === activeKey));
   const active: Row | undefined = rows[activeIndex];
@@ -403,6 +426,7 @@ function Palette({
     return id;
   };
   const listId = `${uniqueId}-list`;
+  const listOpensId = `${uniqueId}-opens`;
 
   // ioiti-ui: one highlight under the row chosen, measured (it glides there, and holds where the list scrolls), and
   // the list's own scroll following the row the keys choose, never the page's (no scrollIntoView).
@@ -439,18 +463,21 @@ function Palette({
 
   // ioiti-ui: what it says to a screen reader once typing pauses: that the search failed, that it is searching,
   // how many entries are found.
+  // In a list, its title first: what is listed changed, though nothing was typed.
   const shownCount = rows.filter((row) => row.kind === 'entry').length;
+  const counted =
+    shownCount === 0 ? 'No results' : `${shownCount === 1 ? '1 result' : `${shownCount} results`}${more > 0 ? `, ${more} more` : ''}`;
   const message = failed
     ? typeof failedSaid === 'string'
       ? failedSaid
       : 'The search failed.'
     : loading
       ? 'Searching…'
-      : query.trim() === ''
-        ? ''
-        : shownCount === 0
-          ? 'No results'
-          : `${shownCount === 1 ? '1 result' : `${shownCount} results`}${more > 0 ? `, ${more} more` : ''}`;
+      : scope
+        ? `${scope.title}: ${counted}`
+        : query.trim() === ''
+          ? ''
+          : counted;
   const [said, setSaid] = useState('');
   useEffect(() => {
     const timer = setTimeout(() => setSaid(message), 500);
@@ -461,9 +488,31 @@ function Palette({
     setQuery(text);
     setActiveKey(null);
     follow.current = true;
-    // ioiti-ui: told as it is typed (EasyUI's effect told it again at each render with a new function).
-    onQueryChange?.(text);
+    // ioiti-ui: told as it is typed (EasyUI's effect told it again at each render with a new function), and where.
+    onQueryChange?.(text, scope);
   };
+
+  // ioiti-ui: an entry's list opened, nothing typed in it; and closed again, what was typed above it typed again,
+  // the entry it was opened from chosen.
+  const enter = (item: SpotlightSearchItem) => {
+    direction.current = 1;
+    setPath([...path.slice(0, depth), { id: item.id, query }]);
+    setQuery('');
+    setActiveKey(null);
+    follow.current = true;
+    onQueryChange?.('', item);
+  };
+  const back = () => {
+    const step = path[depth - 1];
+    if (!step) return;
+    direction.current = -1;
+    setPath(path.slice(0, depth - 1));
+    setQuery(step.query);
+    setActiveKey(`entry:${step.id}`);
+    follow.current = true;
+    onQueryChange?.(step.query, trail[depth - 2]);
+  };
+  const opens = (item: SpotlightSearchItem) => item.items !== undefined;
 
   const finish = () => {
     if (present) close();
@@ -472,6 +521,11 @@ function Palette({
   // ioiti-ui: an entry that leads somewhere closes it, and so does another one, unless it stays open to choose
   // more; closed first, so that a dialog its action opens finds the focus where it was before the palette.
   const choose = (item: SpotlightSearchItem) => {
+    // ioiti-ui: an entry with a list opens it, and is neither followed nor told of.
+    if (opens(item)) {
+      enter(item);
+      return;
+    }
     keepInMind(item);
     if (closeOnSelect || item.href !== undefined) finish();
     item.action?.();
@@ -506,6 +560,13 @@ function Palette({
     // shortcuts; and a key that composes a character (an IME's Enter, its Escape) is the composition's.
     event.stopPropagation();
     if (!present || event.nativeEvent.isComposing || event.keyCode === 229) return;
+    // ioiti-ui: Escape goes back from a list, then closes; ⌘K closes from anywhere.
+    if (event.key === 'Escape' && scope) {
+      event.preventDefault();
+      back();
+      inputRef.current?.focus({ preventScroll: true });
+      return;
+    }
     if (event.key === 'Escape' || matchesStroke(event, CLOSE_KEYS)) {
       event.preventDefault();
       finish();
@@ -516,7 +577,14 @@ function Palette({
       return;
     }
     // ioiti-ui: the list's keys in its field only: Enter on a button of the footer is the button's.
-    if (event.target !== inputRef.current || rows.length === 0) return;
+    if (event.target !== inputRef.current) return;
+    // ioiti-ui: Backspace in the empty field goes back from a list, once (not again as it is held).
+    if (event.key === 'Backspace' && scope && query === '') {
+      event.preventDefault();
+      if (!event.repeat) back();
+      return;
+    }
+    if (rows.length === 0) return;
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
       const step = event.key === 'ArrowDown' ? 1 : -1;
@@ -527,7 +595,7 @@ function Palette({
       if (!active) return;
       // ioiti-ui: ⌘↵ (Ctrl ↵ elsewhere) opens an entry that leads somewhere in another tab, as ⌘ and a click do: by
       // the address its link was drawn with (the router's base in it), the palette left open.
-      if (active.kind !== 'search' && active.item.href !== undefined && matchesStroke(event, OPEN_KEYS)) {
+      if (active.kind !== 'search' && active.item.href !== undefined && !opens(active.item) && matchesStroke(event, OPEN_KEYS)) {
         const link = document.getElementById(idFor(active.key));
         window.open(link instanceof HTMLAnchorElement ? link.href : active.item.href, '_blank', 'noopener');
         keepInMind(active.item);
@@ -594,6 +662,7 @@ function Palette({
 
     const item = row.item;
     const isPicked = pickedIds.has(item.id);
+    const isList = opens(item);
     // ioiti-ui: one chosen before, kept without its icon, is drawn with a clock; its category said beside it.
     const icon = item.icon ?? (row.kind === 'remembered' ? <History /> : undefined);
     const content = (
@@ -634,11 +703,13 @@ function Palette({
           {(!grouped || row.kind === 'remembered') && <span className="text-[11px] text-text-muted">{item.category}</span>}
           {/* ioiti-ui: chosen already. */}
           {isPicked && <Check aria-hidden className="size-4 shrink-0 text-text-primary accent:text-brand" />}
+          {/* ioiti-ui: a list of its own, opened when chosen. */}
+          {isList && <ChevronRight aria-hidden className="size-4 shrink-0 text-text-muted" />}
         </span>
       </>
     );
 
-    if (item.href !== undefined) {
+    if (item.href !== undefined && !isList) {
       return (
         <LinkComponent
           key={row.key}
@@ -670,8 +741,9 @@ function Palette({
         id={idFor(row.key)}
         role="option"
         aria-selected={isActive}
-        aria-checked={picked ? isPicked : undefined}
+        aria-checked={picked && !isList ? isPicked : undefined}
         aria-keyshortcuts={row.kind === 'remembered' ? 'Shift+Delete' : undefined}
+        aria-describedby={isList ? listOpensId : undefined}
         onClick={() => choose(item)}
         onPointerMove={point(row)}
         className={rowClass}
@@ -728,14 +800,38 @@ function Palette({
           ) : (
             <Search aria-hidden className="w-4 h-4 text-text-subtle shrink-0" />
           )}
-          {/* ioiti-ui: a combobox over a listbox, the entry shown named for screen readers. */}
+          {/* ioiti-ui: the list shown, its title: pressed, back to the entries it is in, the focus in the field. */}
+          {scope && (
+            <Hint
+              className="min-w-0 max-w-[45%] shrink-0"
+              content={
+                <span className="inline-flex items-center gap-1.5">
+                  Back <Kbd keys="backspace" />
+                </span>
+              }
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  back();
+                  inputRef.current?.focus({ preventScroll: true });
+                }}
+                aria-label={`Back from ${scope.title}`}
+                className="inline-flex min-w-0 max-w-full cursor-pointer items-center gap-1 rounded-md border border-border bg-surface px-1.5 py-0.5 text-xs font-medium text-text-secondary transition-colors hover:text-text-primary"
+              >
+                <ChevronLeft aria-hidden className="size-3.5 shrink-0" />
+                <span className="truncate">{scope.title}</span>
+              </button>
+            </Hint>
+          )}
+          {/* ioiti-ui: a combobox over a listbox, the entry shown named for screen readers; in a list, named by it. */}
           <input
             ref={inputRef}
             value={query}
             onChange={(event) => type(event.target.value)}
-            placeholder={placeholder}
-            className="flex-1 bg-transparent text-[16px] text-text-primary placeholder-text-muted focus:outline-none"
-            aria-label="Search"
+            placeholder={scope?.placeholder ?? placeholder}
+            className="min-w-0 flex-1 bg-transparent text-[16px] text-text-primary placeholder-text-muted focus:outline-none"
+            aria-label={scope ? `Search ${scope.title}` : 'Search'}
             role="combobox"
             aria-expanded="true"
             aria-controls={listId}
@@ -768,13 +864,19 @@ function Palette({
 
         {/* Search Results List (ioiti-ui: what scrolls is a box of its own, its end not passing the scroll on to the page) */}
         <div ref={scrollRef} className="relative max-h-[340px] overflow-y-auto overscroll-contain">
-          {/* ioiti-ui: options only, under their headings as groups; what is said of the list is outside it. */}
-          <div
+          {/* ioiti-ui: options only, under their headings as groups; what is said of the list is outside it. A list of
+              an entry arrives from the side it is gone into, a few pixels (faded only where motion is reduced), with
+              no leaving: two listboxes never stand together. */}
+          <motion.div
+            key={depth}
             ref={listRef}
             id={listId}
             role="listbox"
-            aria-label={label}
+            aria-label={scope ? scope.title : label}
             aria-multiselectable={picked ? true : undefined}
+            initial={direction.current === 0 ? false : { opacity: 0, x: direction.current * 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={motionTransitions.springSnappy}
             className="relative p-1.5 space-y-0.5 empty:hidden"
           >
             {box && active && (
@@ -801,7 +903,7 @@ function Palette({
                 </div>
               );
             })}
-          </div>
+          </motion.div>
           {/* ioiti-ui: with no entry to show: that the search failed, entries to come while it searches (never "No
               results" before it knows), or that nothing is found; nothing while nothing is typed. */}
           {rows.length === 0 &&
@@ -837,6 +939,10 @@ function Palette({
           )}
         </div>
         {footer && <div className="border-t border-border px-4 py-2.5 text-xs text-text-muted">{footer}</div>}
+        {/* ioiti-ui: what an entry with a list says of itself (aria-describedby). */}
+        <span id={listOpensId} hidden>
+          Opens its list
+        </span>
         {/* ioiti-ui: said once typing pauses, in the dialog (a screen reader may hear nothing outside it). */}
         <p role="status" className="sr-only">
           {said}

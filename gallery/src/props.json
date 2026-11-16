@@ -7367,8 +7367,8 @@
    },
    {
     "name": "onQueryChange",
-    "type": "(query: string) => void",
-    "description": "Told of what is typed, as it is typed, and of `''` as it opens: for entries made from it."
+    "type": "(query: string, scope?: SpotlightSearchItem) => void",
+    "description": "Told of what is typed, as it is typed, and of `''` as it opens or as a list of an entry opens: for entries made from it. `scope`: the entry whose `items` are listed, `undefined` at the top."
    },
    {
     "name": "filter",

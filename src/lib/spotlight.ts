@@ -77,3 +77,19 @@ export function findEntry<T extends { id: string; items?: readonly T[] }>(entrie
   }
   return undefined
 }
+
+/**
+ * The entries whose lists are open, from the top, by their ids: as far as each is still found, and still has a list
+ * (`items`), in the one before it.
+ */
+export function scopeTrail<T extends { id: string; items?: readonly T[] }>(top: readonly T[], path: readonly string[]): T[] {
+  const trail: T[] = []
+  let level = top
+  for (const id of path) {
+    const entry = level.find((each) => each.id === id)
+    if (!entry?.items) break
+    trail.push(entry)
+    level = entry.items
+  }
+  return trail
+}

@@ -509,6 +509,8 @@ otherwise).
   results" before it knows, the last entries kept under an error, a Try again.
   `remember` keeps the entries chosen last in the browser (`src/lib/spotlight.ts`, under the application's key) and
   offers them first, Shift+Delete forgetting one; ⌘↵ opens an entry that leads somewhere in another tab.
+  An entry's `items` are a list of its own, opened in the palette (its title before the field; Backspace, Escape or
+  the title going back), `onQueryChange` told which (`src/lib/spotlight.ts` finds it again at each render).
 
 ## ioiti-ui's own changes
 
