@@ -72,6 +72,9 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
     controlledActiveId || sections[0]?.id || ''
   );
   const [isExpanded, setIsExpanded] = useState(false);
+  // ioiti-ui: the part clicked, marked until the reader scrolls on their own: one the page can't bring to its top
+  // (near its end) was otherwise unmarked as soon as the page moved, for the part above it.
+  const clicked = useRef<string | null>(null);
 
   useEffect(() => {
     if (controlledActiveId) {
@@ -101,14 +104,19 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
       setIsFloating(currentScroll > scrollThreshold);
     }
 
-    if (!controlledActiveId) {
+    if (!controlledActiveId && clicked.current) {
+      setActiveSection(clicked.current);
+    } else if (!controlledActiveId) {
+      // ioiti-ui: at the end of the page, the last part begun on the screen: the parts near the end never reach the
+      // top, and the last one was never marked.
+      const atEnd = totalHeight > 0 && currentScroll >= totalHeight - 2;
       if (containerRef && containerRef.current) {
         const containerRect = containerRef.current.getBoundingClientRect();
         for (let i = sections.length - 1; i >= 0; i--) {
           const el = partIn(containerRef.current, sections[i].id);
           if (el) {
             const rect = el.getBoundingClientRect();
-            if (rect.top - containerRect.top <= 120) {
+            if (rect.top - containerRect.top <= 120 || (atEnd && rect.top < containerRect.bottom)) {
               setActiveSection(sections[i].id);
               break;
             }
@@ -119,7 +127,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
           const el = document.getElementById(sections[i].id);
           if (el) {
             const rect = el.getBoundingClientRect();
-            if (rect.top <= window.innerHeight * 0.4) {
+            if (rect.top <= window.innerHeight * 0.4 || (atEnd && rect.top < window.innerHeight)) {
               setActiveSection(sections[i].id);
               break;
             }
@@ -134,10 +142,22 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
     if (!target) return;
     target.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => target.removeEventListener('scroll', handleScroll);
+    // ioiti-ui: the reader scrolling on their own (wheel, touch, keys, the scroll bar): the part clicked is no longer kept.
+    const release = () => {
+      clicked.current = null;
+    };
+    const own = ['wheel', 'touchmove', 'pointerdown'] as const;
+    own.forEach((type) => target.addEventListener(type, release, { passive: true }));
+    window.addEventListener('keydown', release);
+    return () => {
+      target.removeEventListener('scroll', handleScroll);
+      own.forEach((type) => target.removeEventListener(type, release));
+      window.removeEventListener('keydown', release);
+    };
   }, [handleScroll, containerRef, mode]);
 
   const scrollToSection = (id: string) => {
+    clicked.current = id;
     setActiveSection(id);
     onSectionClick?.(id);
     // ioiti-ui: brought into view, its scroll-margin-top keeping it clear of a sticky nav (20 px put the part's
@@ -178,6 +198,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
   }, [activeSection]);
 
   const scrollToTop = () => {
+    clicked.current = null;
     const behavior = reduceMotion ? 'auto' : 'smooth';
     if (containerRef && containerRef.current) {
       containerRef.current.scrollTo({ top: 0, behavior });

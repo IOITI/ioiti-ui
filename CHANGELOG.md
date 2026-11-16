@@ -3,6 +3,15 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.20.2] - 2026-11-16
+
+- **`ScrollProgressNav` marks the parts near the end of a page.** At the end of the page, the part marked is the last
+  one begun on the screen: a part the page can't bring to its top (the last ones, when they are short) was never
+  marked. A part clicked stays marked while the page goes there, and until the reader scrolls on their own (wheel,
+  touch, keys, the scroll bar, *Back to the top*): it was unmarked at once for the part above it.
+
+An application changes nothing.
+
 ## [0.20.1] - 2026-11-16
 
 - **`ScrollProgressNav` follows parts whose id is no CSS selector**: one that starts with a digit (a heading's

@@ -10,6 +10,6 @@ const main = useMainScroll()
   sections={[{ id: 'tabs', label: 'Tabs', href: '#tabs' }, { id: 'stepper', label: 'Stepper', href: '#stepper' }]} />
 ```
 
-- It follows the scroll of `containerRef` (the window's with `fixed`): the part marked is the last whose top is within 120 px of the container's top. With `sticky` or `inline` and no `containerRef`, it follows nothing.
+- It follows the scroll of `containerRef` (the window's with `fixed`): the part marked is the last whose top is within 120 px of the container's top; at the end of the page, the last one begun on the screen. A part clicked stays marked until the reader scrolls on their own (wheel, touch, keys, the scroll bar), though the page can't bring it to its top. With `sticky` or `inline` and no `containerRef`, it follows nothing.
 - A part with `href` is a link: a plain click scrolls to it and writes it in the address in place; with ⌘ or Ctrl it opens in another tab. Give each part a `scroll-margin-top` so it lands clear of the bar.
 - On a phone, its parts are a menu under a pill. The line and the current part are ink (the accent's `brand`, `brand-soft` and `brand-text` with one); `glass-float` under glass.

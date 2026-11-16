@@ -96,6 +96,64 @@ describe('a nav of parts whose ids are no selectors', () => {
   })
 })
 
+describe('a nav of parts the page cannot bring to its top', () => {
+  // A box of 400 px scrolling 1000 px; its parts' tops as the test says, the box's at 0.
+  function Short() {
+    const box = useRef<HTMLDivElement>(null)
+    return (
+      <div ref={box} data-testid="short">
+        <ScrollProgressNav
+          mode="sticky"
+          containerRef={box}
+          sections={[
+            { id: 'first', label: 'First' },
+            { id: 'middle', label: 'Middle' },
+            { id: 'last', label: 'Last' },
+          ]}
+        />
+        <section id="first">First</section>
+        <section id="middle">Middle</section>
+        <section id="last">Last</section>
+      </div>
+    )
+  }
+
+  function place(box: HTMLElement, scrollTop: number, tops: Record<string, number>) {
+    Object.defineProperty(box, 'scrollHeight', { configurable: true, value: 1000 })
+    Object.defineProperty(box, 'clientHeight', { configurable: true, value: 400 })
+    box.scrollTop = scrollTop
+    box.getBoundingClientRect = () => ({ top: 0, bottom: 400 }) as DOMRect
+    for (const [id, top] of Object.entries(tops)) document.getElementById(id)!.getBoundingClientRect = () => ({ top }) as DOMRect
+    fireEvent.scroll(box)
+  }
+
+  const marked = () => screen.getAllByRole('button').find((item) => item.hasAttribute('aria-current'))?.textContent
+
+  it('marks the last part at the end of the page, though its top never reaches the top', () => {
+    render(<Short />)
+    const box = screen.getByTestId('short')
+    place(box, 300, { first: -300, middle: 100, last: 250 })
+    expect(marked()).toMatch(/Middle/)
+    place(box, 600, { first: -600, middle: -200, last: 150 })
+    expect(marked()).toMatch(/Last/)
+  })
+
+  it('keeps the part clicked marked while the page goes there, until the reader scrolls', async () => {
+    const user = userEvent.setup()
+    render(<Short />)
+    const box = screen.getByTestId('short')
+    box.scrollTo = (() => {}) as typeof box.scrollTo
+    place(box, 0, { first: 0, middle: 300, last: 600 })
+    await user.click(screen.getByRole('button', { name: /Middle/ }))
+    // The page can bring it no higher than 150 px from the top: the part above would be the one marked.
+    place(box, 450, { first: -450, middle: 150, last: 300 })
+    expect(marked()).toMatch(/Middle/)
+    fireEvent.wheel(box)
+    place(box, 400, { first: -400, middle: 200, last: 350 })
+    expect(marked()).toMatch(/First/)
+  })
+})
+
 describe('a data table loading its records', () => {
   it('says so, shows rows to come in both themes, and counts nothing yet', () => {
     render(
