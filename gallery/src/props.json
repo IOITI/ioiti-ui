@@ -7372,6 +7372,22 @@
     "description": "`false` lists the entries as given, neither filtered nor ranked, the words typed still marked in them: what a server found for the query (`onQueryChange`)."
    },
    {
+    "name": "loading",
+    "type": "boolean",
+    "default": "false",
+    "description": "Entries are being found: said in place of the list while there is none (never \"No results\", not known yet), the entries shown kept until new ones come. Set it as the query changes (in `onQueryChange`), before a request waits."
+   },
+   {
+    "name": "error",
+    "type": "ReactNode",
+    "description": "They could not be found: what went wrong (`true`: \"The search failed.\"), in place of the list while there is none, above it otherwise (the last entries found)."
+   },
+   {
+    "name": "onRetry",
+    "type": "() => void",
+    "description": "Searches again: a \"Try again\" beside the error."
+   },
+   {
     "name": "limit",
     "type": "number",
     "default": "50",

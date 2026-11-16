@@ -505,6 +505,8 @@ otherwise).
   the best entries first (the title, then a keyword, the category, the description; EasyUI's kept the order given,
   `limit` cutting off the best), marked where found (`<mark>`); `filter={false}` lists the entries as given; an
   entry's `shortcut` may be keys for `Kbd`; its `category` is a `string` (EasyUI's type named its own site's).
+  `loading`, `error` and `onRetry` say what is found as it is typed, as `notification-bell` says its own: never "No
+  results" before it knows, the last entries kept under an error, a Try again.
 
 ## ioiti-ui's own changes
 

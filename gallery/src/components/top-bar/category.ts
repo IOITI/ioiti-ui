@@ -76,11 +76,12 @@ const topBar: CategoryInfo = {
       slug: 'spotlight-search',
       name: 'SpotlightSearch',
       names: ['SpotlightSearch'],
-      keywords: ['command palette', 'search', 'cmd k', 'go to', 'quick open', 'fuzzy', 'accents'],
+      keywords: ['command palette', 'search', 'cmd k', 'go to', 'quick open', 'fuzzy', 'accents', 'async', 'server'],
       examples: [
         { id: 'go-to', title: 'A palette that goes somewhere', description: 'Every word typed is found whatever its case and accents, the best entry first (its title before its description), what matches marked; Enter follows it. Its entries under their categories (grouped), each with its icon and its keys; the searches made before, while nothing is typed.' },
         { id: 'actions', title: 'Actions too', description: 'An entry can do something rather than lead somewhere (action); onSelect is told of each choice.' },
         { id: 'pick-several', title: 'Choosing several', description: 'closeOnSelect={false}: it stays open, each entry ticked once chosen (picked), chosen again taken back; Escape when done.' },
+        { id: 'fetched', title: 'Found as it is typed', description: 'filter={false}: onQueryChange asks a server, loading from the moment the query changes (never “No results” before it knows), an answer to an older query dropped. An error with a Try again, the last entries kept under it; the entry chosen stays as new ones arrive.' },
       ],
     },
     {

@@ -36,6 +36,11 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   - `filter={false}` lists the entries as given, neither filtered nor ranked: what a server found.
   - An entry's `shortcut` may be keys (`'g o'`), drawn as this computer writes them (`Kbd keys`). Its `category`
     is a `string`: EasyUI's type named the categories of its own site.
+- **`SpotlightSearch` says what it does with entries found as they are typed**, as `NotificationBell` does with its
+  own. `loading`: it says it is searching in place of the list (entries to come, "Searching…" for a screen reader),
+  never "No results" before it knows, and keeps the entries shown until new ones come; its search icon turns.
+  `error` (`true`: "The search failed.", or your words): in place of the list, or above the last entries found,
+  with a Try again for `onRetry`. The gallery's example asks a server as it is typed (`filter={false}`).
 - **`SpotlightSearch`'s `enableGlobalShortcut` is a `useShortcut`**: ⌘K on an Apple computer, Ctrl K elsewhere (it
   heard both on both), listed by `?` under Navigation as the palette's `label`, waiting while another dialog is
   open. Pressed in the palette, it closes it; in the gallery, the browser's own Ctrl K took it. The gallery's

@@ -3,7 +3,7 @@
 import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useIsPresent, useReducedMotionConfig } from 'framer-motion';
-import { Check, History, Search } from 'lucide-react';
+import { AlertCircle, Check, History, Loader2, Search } from 'lucide-react';
 import { focusables } from '../../lib/anchor.js';
 import { useControllableState } from '../../lib/controllable.js';
 import { matchesStroke, parseKeys } from '../../lib/keys.js';
@@ -14,6 +14,7 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
 import { useShortcut } from '../shortcuts-context.js';
 import { Kbd } from '../Kbd.js';
+import { Skeleton } from './skeleton.js';
 
 export interface SpotlightSearchItem {
   id: string;
@@ -73,6 +74,19 @@ export interface SpotlightSearchProps {
    * what a server found for the query (`onQueryChange`).
    */
   filter?: boolean;
+  /**
+   * ioiti-ui: entries are being found: said in place of the list while there is none (never "No results", not known
+   * yet), the entries shown kept until new ones come. Set it as the query changes (in `onQueryChange`), before a
+   * request waits.
+   */
+  loading?: boolean;
+  /**
+   * ioiti-ui: they could not be found: what went wrong (`true`: "The search failed."), in place of the list while
+   * there is none, above it otherwise (the last entries found).
+   */
+  error?: React.ReactNode;
+  /** ioiti-ui: searches again: a "Try again" beside the error. */
+  onRetry?: () => void;
   /** ioiti-ui: the most entries listed at once, the best first; the others are found by typing. */
   limit?: number;
   /** ioiti-ui: what the dialog is called. */
@@ -150,6 +164,9 @@ interface PaletteProps {
   linkComponent?: React.ElementType;
   onQueryChange?: (query: string) => void;
   filter: boolean;
+  loading: boolean;
+  error?: React.ReactNode;
+  onRetry?: () => void;
   limit: number;
   label: string;
   grouped: boolean;
@@ -172,6 +189,9 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   linkComponent,
   onQueryChange,
   filter = true,
+  loading = false,
+  error,
+  onRetry,
   limit = 50,
   label = 'Spotlight Search',
   grouped = false,
@@ -231,6 +251,9 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
           linkComponent={linkComponent}
           onQueryChange={onQueryChange}
           filter={filter}
+          loading={loading}
+          error={error}
+          onRetry={onRetry}
           limit={limit}
           label={label}
           grouped={grouped}
@@ -257,6 +280,9 @@ function Palette({
   linkComponent,
   onQueryChange,
   filter,
+  loading,
+  error,
+  onRetry,
   limit,
   label,
   grouped,
@@ -371,14 +397,24 @@ function Palette({
     else if (top + h > scroller.scrollTop + scroller.clientHeight) scroller.scrollTop = top + h - scroller.clientHeight + 4;
   });
 
-  // ioiti-ui: what it says to a screen reader once typing pauses: how many entries are found.
+  // ioiti-ui: the entries could not be found (NotificationBell's words for it, and its Try again).
+  const failed = error !== undefined && error !== null && error !== false && error !== '';
+  const failedSaid = error === true ? 'The search failed.' : error;
+
+  // ioiti-ui: what it says to a screen reader once typing pauses: that the search failed, that it is searching,
+  // how many entries are found.
   const shownCount = rows.filter((row) => row.kind === 'entry').length;
-  const message =
-    query.trim() === ''
-      ? ''
-      : shownCount === 0
-        ? 'No results'
-        : `${shownCount === 1 ? '1 result' : `${shownCount} results`}${more > 0 ? `, ${more} more` : ''}`;
+  const message = failed
+    ? typeof failedSaid === 'string'
+      ? failedSaid
+      : 'The search failed.'
+    : loading
+      ? 'Searching…'
+      : query.trim() === ''
+        ? ''
+        : shownCount === 0
+          ? 'No results'
+          : `${shownCount === 1 ? '1 result' : `${shownCount} results`}${more > 0 ? `, ${more} more` : ''}`;
   const [said, setSaid] = useState('');
   useEffect(() => {
     const timer = setTimeout(() => setSaid(message), 500);
@@ -464,6 +500,20 @@ function Palette({
   };
 
   const pickedIds = useMemo(() => new Set(picked ?? []), [picked]);
+
+  // ioiti-ui: Try again searches again, the focus back in the field (the button goes once it is done).
+  const retry = failed && onRetry && (
+    <button
+      type="button"
+      onClick={() => {
+        onRetry();
+        inputRef.current?.focus({ preventScroll: true });
+      }}
+      className="shrink-0 cursor-pointer rounded-md px-1.5 py-0.5 text-xs font-medium text-text-primary underline-offset-2 hover:underline"
+    >
+      Try again
+    </button>
+  );
 
   const renderRow = (row: Row) => {
     const isActive = row.key === activeRowKey;
@@ -616,7 +666,12 @@ function Palette({
       >
         {/* Top Search Input Bar with ESC */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-          <Search aria-hidden className="w-4 h-4 text-text-subtle shrink-0" />
+          {/* ioiti-ui: searching, it turns (still where motion is reduced: --animate-spin). */}
+          {loading ? (
+            <Loader2 aria-hidden className="w-4 h-4 text-text-subtle shrink-0 animate-spin" />
+          ) : (
+            <Search aria-hidden className="w-4 h-4 text-text-subtle shrink-0" />
+          )}
           {/* ioiti-ui: a combobox over a listbox, the entry shown named for screen readers. */}
           <input
             ref={inputRef}
@@ -646,6 +701,14 @@ function Palette({
             <Kbd>Esc</Kbd>
           </button>
         </div>
+
+        {/* ioiti-ui: the last entries found stay under an error, which says they are not the query's. */}
+        {failed && rows.length > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-2 text-xs text-negative">
+            <span className="min-w-0">{failedSaid}</span>
+            {retry}
+          </div>
+        )}
 
         {/* Search Results List (ioiti-ui: what scrolls is a box of its own, its end not passing the scroll on to the page) */}
         <div ref={scrollRef} className="relative max-h-[340px] overflow-y-auto overscroll-contain">
@@ -683,11 +746,34 @@ function Palette({
               );
             })}
           </div>
-          {rows.length === 0 && query !== '' && (
-            <div className="py-10 text-center text-xs text-text-muted">
-              No results found for <span className="text-text-primary">"{query}"</span>
-            </div>
-          )}
+          {/* ioiti-ui: with no entry to show: that the search failed, entries to come while it searches (never "No
+              results" before it knows), or that nothing is found; nothing while nothing is typed. */}
+          {rows.length === 0 &&
+            (failed ? (
+              <div className="py-8 px-4 text-center">
+                <AlertCircle aria-hidden className="mx-auto mb-2 size-6 text-negative" />
+                <p className="text-xs text-negative">{failedSaid}</p>
+                {retry && <div className="mt-3 flex justify-center">{retry}</div>}
+              </div>
+            ) : loading ? (
+              <div aria-hidden className="space-y-0.5 p-1.5">
+                {[0, 1, 2].map((row) => (
+                  <div key={row} className="flex items-center gap-3 px-3.5 py-2.5">
+                    <Skeleton className="size-7 shrink-0 rounded-lg" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-3 w-3/5" />
+                      <Skeleton className="h-2.5 w-2/5" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              query !== '' && (
+                <div className="py-10 text-center text-xs text-text-muted">
+                  No results found for <span className="text-text-primary">"{query}"</span>
+                </div>
+              )
+            ))}
           {more > 0 && (
             <p className="px-3.5 py-2 text-xs text-text-muted">
               {more} more: type to narrow them down.

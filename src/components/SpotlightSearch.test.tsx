@@ -423,6 +423,42 @@ describe('SpotlightSearch', () => {
     expect(screen.getByRole('option', { name: /Orders/ }).querySelector('kbd')).toHaveTextContent(/G.*then.*O/)
   })
 
+  it('says it is searching while entries are found, never that there are none, and keeps those shown', async () => {
+    const user = userEvent.setup()
+    const found: SpotlightSearchItem[] = [{ id: 'o42', title: 'Order 2026-0042', category: 'Orders', description: 'Acme' }]
+    const { rerender } = render(<SpotlightSearch open onOpenChange={() => {}} filter={false} loading label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('acme')
+    expect(screen.queryAllByRole('option')).toHaveLength(0)
+    expect(screen.queryByText(/No results/)).toBeNull()
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Searching…'))
+
+    rerender(<SpotlightSearch open onOpenChange={() => {}} filter={false} items={found} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('1 result'))
+    rerender(<SpotlightSearch open onOpenChange={() => {}} filter={false} items={found} loading label="Go to" />)
+    expect(screen.getAllByRole('option')).toHaveLength(1)
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Searching…'))
+  })
+
+  it('says the search failed, in place of the list or above the last entries found, with a Try again', async () => {
+    const user = userEvent.setup()
+    const onRetry = vi.fn()
+    const found: SpotlightSearchItem[] = [{ id: 'o42', title: 'Order 2026-0042', category: 'Orders', description: 'Acme' }]
+    const { rerender } = render(<SpotlightSearch open onOpenChange={() => {}} filter={false} error onRetry={onRetry} label="Go to" />)
+    const field = screen.getByRole('combobox', { name: 'Search' })
+    expect(screen.getByText('The search failed.')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Try again' }))
+    expect(onRetry).toHaveBeenCalledOnce()
+    expect(field).toHaveFocus()
+
+    rerender(<SpotlightSearch open onOpenChange={() => {}} filter={false} items={found} error="The orders could not be searched." onRetry={onRetry} label="Go to" />)
+    const banner = screen.getByText('The orders could not be searched.')
+    expect(screen.getAllByRole('option')).toHaveLength(1)
+    expect(screen.getByRole('listbox')).not.toContainElement(banner)
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('The orders could not be searched.'))
+  })
+
   it('draws nothing under its field while it has no entries and nothing is typed', () => {
     render(<SpotlightSearch open onOpenChange={() => {}} label="Go to" />)
     expect(screen.queryByText(/No results/)).toBeNull()
