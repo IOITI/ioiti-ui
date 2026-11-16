@@ -19,8 +19,16 @@ export interface Publisher {
 export const PublisherContext = createContext<Publisher | null>(null)
 /** The name the page shown gave, read by the top bar. */
 export const NamedContext = createContext<Named | null>(null)
+/** The menu, and the address of the page shown (its query too): what the trail is made from. */
+export interface Trail {
+  menu: Menu
+  pathname: string
+  /** The address's query (`?tab=open`), for a menu whose entries say some (`/orders?tab=open`); `''` without. */
+  search: string
+}
+
 /** The menu, and the address of the page shown: what the trail is made from. */
-export const TrailContext = createContext<{ menu: Menu; pathname: string } | null>(null)
+export const TrailContext = createContext<Trail | null>(null)
 /** Whether the pages here name the browser's tab: not those of a shell drawn in a page (a demo, a preview). */
 export const TabTitleContext = createContext(true)
 
@@ -63,7 +71,7 @@ export function useTabTitle(title: string) {
 }
 
 /** The menu and the address of the page shown; null outside the shell. */
-export function useTrail(): { menu: Menu; pathname: string } | null {
+export function useTrail(): Trail | null {
   return useContext(TrailContext)
 }
 
@@ -71,5 +79,5 @@ export function useTrail(): { menu: Menu; pathname: string } | null {
 export function usePageTrail(): Crumb[] {
   const trail = useContext(TrailContext)
   const named = useContext(NamedContext)
-  return trail ? trailFor(trail.menu, trail.pathname, named) : []
+  return trail ? trailFor(trail.menu, trail.pathname, named, trail.search) : []
 }

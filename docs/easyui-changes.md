@@ -158,7 +158,12 @@ otherwise).
 - `sidebar`: an entry with children and an `href` is a link, as one without, and a chevron beside it (a button
   of its own, `aria-expanded`, `aria-controls`) opens it on its children; EasyUI's was a button that only opened.
   The entry that is, or holds, the page shown opens at each page shown (EasyUI's, at the first), those the reader
-  opened staying open; in the rail, the entry is its link alone.
+  opened staying open. In the rail, the entry is a button that shows its pages in a menu beside it (`DropdownMenu`,
+  its own page first unless a child is at its address, the page shown `current`), and keeps the pill while it
+  holds the page shown (0.20.0; 0.18.0 made it its link alone, EasyUI's unfolded the sidebar). Closed, it shows a
+  dot when a child has a badge, in the gravest tone among them.
+- `sidebar`: a section placed at the foot (`place: "footer"`) is drawn above Collapse, without a heading; its
+  entries are lit by their own hover (the sliding hover box is measured in the list).
 - `sidebar`: `badgeTone` on an entry and a child (`SidebarBadgeTone`: `neutral`, `warning`, `negative`): a badge
   that says a state ("Degraded", "2 open") is in its tone's text colour with a dot, without the count's grey
   pill. The tip naming an entry of the folded sidebar is drawn in `document.body`, as every layer: a sidebar

@@ -1031,6 +1031,11 @@
     "description": "The part of the page the address shows (the router's `useLocation().hash`: `#rules`; RouterAppShell gives it): the page scrolls to it once it is there, as the browser does for a page it loads, for a link from another page too (a part the page draws late is waited for, 3 s at most)."
    },
    {
+    "name": "search",
+    "type": "string",
+    "description": "The address's query (the router's `useLocation().search`: `?tab=open`; RouterAppShell gives it): which entry of the menu the page is, for a menu whose entries say values of the query (a page's tab, `/orders?tab=open`)."
+   },
+   {
     "name": "children",
     "type": "ReactNode",
     "required": true,
@@ -5299,6 +5304,12 @@
     "name": "pathname",
     "type": "string",
     "required": true
+   },
+   {
+    "name": "search",
+    "type": "string",
+    "default": "''",
+    "description": "The address's query (`?tab=open`), for a menu whose entries say some."
    },
    {
     "name": "tabTitle",

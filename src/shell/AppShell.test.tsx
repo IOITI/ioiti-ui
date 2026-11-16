@@ -610,3 +610,30 @@ describe('the frame', () => {
     expect(container.firstElementChild).not.toHaveClass('h-dvh')
   })
 })
+
+/** The test menu, a tab of Orders kept in the query under it. */
+const TABBED: Menu = {
+  ...MENU,
+  entries: [...MENU.entries, { id: 'late', path: '/orders?tab=late', label: 'Late orders', section: 'Work', parent: 'orders' }],
+}
+
+describe("a page's tab kept in the query", () => {
+  it("is the entry of the menu the router's query says, in the sidebar and in the trail", async () => {
+    const user = userEvent.setup()
+    renderShell({ menu: TABBED, path: '/orders?tab=late' })
+    const menu = within(await screen.findByRole('navigation', { name: 'Main' }))
+
+    const late = menu.getByRole('link', { name: 'Late orders' })
+    expect(late).toHaveAttribute('href', '/orders?tab=late')
+    expect(late).toHaveAttribute('aria-current', 'page')
+    expect(menu.getByRole('link', { name: 'Orders' })).not.toHaveAttribute('aria-current')
+    expect(isCurrent(await wholeTrail().findByText('Late orders'))).toBe(true)
+    expect(wholeTrail().getByRole('link', { name: 'Orders' })).toHaveAttribute('href', '/orders')
+
+    // The page without the tab is its parent's.
+    await user.click(menu.getByRole('link', { name: 'Orders' }))
+    expect(screen.getByRole('status', { name: 'address' }).textContent).toBe('/orders')
+    expect(menu.getByRole('link', { name: 'Orders' })).toHaveAttribute('aria-current', 'page')
+    expect(menu.getByRole('link', { name: 'Late orders' })).not.toHaveAttribute('aria-current')
+  })
+})

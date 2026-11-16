@@ -51,6 +51,7 @@ const shell: CategoryInfo = {
         { id: 'in-a-box', title: 'A shell in a box', description: 'Given the menu and the address, it draws the sidebar, the top bar with the trail and the page. An entry under another (parent) is listed under it; a section has no heading, or folds (foldable: folded, a dot says an entry in it has a count); an entry ends with a count, or a state in its tone. Its links here change its own address, not the gallery’s.' },
         { id: 'folded', title: 'Folded at first', description: 'defaultCollapsed: the sidebar is a rail of icons, its brand the mark alone, its footer’s action an icon; each entry named in a tip. ⌘B folds the application’s own sidebar, here the gallery’s.' },
         { id: 'ends', title: 'The sidebar’s ends', description: 'The application’s name and its mark at the top (the mark alone once folded; a long name ends in an ellipsis); an action at the foot, its icon alone once folded.' },
+        { id: 'tabs-and-foot', title: 'Tabs in the query, a page at the foot', description: 'An entry may say values of the query (path: \'/ops?tab=history\'): it is the page only with them, and search, the address’s query (RouterAppShell gives the router’s), says which. An entry at its parent’s address is the parent’s first page: the parent leads there, the trail says it without a link. A section placed at the foot (place: \'footer\') is drawn above Collapse.' },
       ],
     },
     {
@@ -61,6 +62,7 @@ const shell: CategoryInfo = {
       examples: [
         { id: 'sections', title: 'Sections, badges and children', description: 'The menu alone, as AppShell draws it: an entry with children opens on them, a section folds, a badge counts or says a state. Without an href an entry is a button, and onActiveChange says which. Beside the page from 768 px up only (hidden md:block).' },
         { id: 'folded', title: 'Folded to its icons', description: 'collapsed and onCollapsedChange: its own Collapse button and a switch beside it agree. Folded, each entry is named in a tip, the header and the footer keep their first part.' },
+        { id: 'rail-pages', title: 'Folded, an entry’s pages beside it', description: 'In the rail, an entry with pages under it shows them in a menu beside it: its own page first unless one of them is at its address, the page shown marked, the arrows and Escape as in DropdownMenu. The entry holding the page shown keeps the pill. A section placed at the foot (place: \'footer\') is drawn above Collapse.' },
         { id: 'drawer', title: 'A drawer on a phone', description: 'Below 768 px it is a drawer over the page, opened by SidebarTrigger (shown only there), closed by a choice, Escape, the scrim or a swipe. From 768 px up it stands beside the page and the trigger is hidden.' },
       ],
     },

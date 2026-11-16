@@ -3,6 +3,33 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [Unreleased]
+
+- **The menu says a page's tab kept in the query.** An entry's `path` may say values of the query
+  (`/ops?tab=history`): it is the page only when the address has them, the others aside. The longest path wins as
+  before, then the entry that says more of the query. `AppShell` takes `search`, the address's query
+  (`RouterAppShell` gives the router's), as `PageTrailProvider` does; `menuEntry` and `trailFor` take it last. The
+  sidebar's link to such an entry keeps its query.
+- **An entry at its parent's address is its first page** ("Rules › Library", both `/rules`): it is the page there,
+  in whichever order the menu lists them, and the parent leads to it. The trail then says the parent without a
+  link (two links to one page); a parent with a page of its own is a link, as before.
+- **A deeper page named as the step before it** is that step, said once ("Settings › Users", not "Settings › Users ›
+  Users").
+- **A section at the foot of the sidebar** (`MenuSection.place: 'footer'`, `SidebarSection.place`): drawn above
+  Collapse, without a heading, which the trail does not say either. Its entries are entries as the others: a link,
+  the page shown marked, a tip in the rail.
+- **`Sidebar`, folded to the rail**: an entry with entries under it shows its pages in a menu beside it, its own page
+  first unless one of them is at its address, the page shown marked with a dot, the badges in their tones; the arrows, a letter, Escape and Tab as in
+  `DropdownMenu`. No tip while it is open. The entry that holds the page shown keeps the pill (its pages are out of
+  sight). In 0.18 and 0.19 it was its link alone.
+- **`Sidebar`**: an entry closed on its children shows a dot when one of them has a badge, in the gravest tone among
+  them, and says ", with counts", as a folded section does.
+- **`DropdownMenu`**: a link may be the page shown (`current`): `aria-current="page"`, its words weightier, in the
+  accent where the look has one.
+
+An application changes nothing. One whose pages keep a tab in the query may name the tab in its menu, and give
+`search` where it draws `AppShell` without `RouterAppShell`.
+
 ## [0.19.0] - 2026-11-16
 
 - **`SpotlightSearch` keeps the focus, and its keys.**

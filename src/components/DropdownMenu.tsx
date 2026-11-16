@@ -45,6 +45,8 @@ export interface DropdownMenuLink extends ItemBase {
    * address the server answers and the router does not know (a sign-out, a file); followed as written.
    */
   reloadDocument?: boolean
+  /** The page shown is this link's (a menu of pages: the sidebar's, folded): said so, and marked. */
+  current?: boolean
 }
 
 /** On or off: the menu stays open. */
@@ -342,6 +344,7 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
             href={item.disabled ? undefined : item.href}
             role="menuitem"
             aria-disabled={item.disabled || undefined}
+            aria-current={item.current ? 'page' : undefined}
             tabIndex={-1}
             data-menu-row=""
             data-menu-text={textOf(item)}
@@ -354,7 +357,8 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
               // browser's: the menu closes either way.
               close(isPlainClick(event) ? false : true)
             }}
-            className={ROW}
+            // The page shown: its words weigh more, in the accent where the look has one (as the sidebar's).
+            className={cn(ROW, item.current && 'font-medium accent:text-brand-text')}
           >
             {item.icon}
             <Content label={item.label} description={item.description} />

@@ -10,6 +10,10 @@ import type { SidebarBadgeTone, SidebarSection } from '../components/ui/sidebar.
 /** A page of the menu, under its section. */
 export interface MenuEntry<S extends string = string> {
   id: string
+  /**
+   * Its address, and the pages deeper than it (`/orders/42` is under `/orders`). It may say values of the query
+   * (`/orders?tab=open`): a tab of a page kept in the query, which is this entry's page only with those values.
+   */
   path: string
   label: string
   section: S
@@ -23,6 +27,9 @@ export interface MenuEntry<S extends string = string> {
    * The entry this one is under (its `id`), in the same section: the sidebar lists it under its parent, which
    * opens on its pages and is a page itself, and the trail goes through the parent ("Home › Work › Orders ›
    * Returns"). One level: a parent has no parent.
+   *
+   * An entry may have its parent's address: it is the parent's first page, the one its address shows ("Rules ›
+   * Library", both `/rules`). The parent leads there, and the trail says it without a link of its own.
    */
   parent?: string
 }
@@ -30,13 +37,18 @@ export interface MenuEntry<S extends string = string> {
 /**
  * A section of the menu, said more of than its name: drawn without a heading (`title: false`, a menu's first
  * section often), or folded by the reader (`foldable`: folded until it is unfolded, or until the page shown is in
- * it; each reader's choice is kept by the browser).
+ * it; each reader's choice is kept by the browser), or at the foot of the sidebar (`place: 'footer'`).
  */
 export interface MenuSection<S extends string = string> {
   id: S
   /** Its heading in the sidebar and its step in the trail: its id by default; `false`, none. */
   title?: string | false
   foldable?: boolean
+  /**
+   * `'footer'`: drawn at the foot of the sidebar, above its Collapse button (pages one goes to now and then: the
+   * documentation), without its heading. In the list of pages by default.
+   */
+  place?: 'footer'
 }
 
 /** The sections, in the order the sidebar shows them, and the pages under them. */
@@ -92,16 +104,39 @@ function isUnder(path: string, entryPath: string): boolean {
   return entryPath === '/' ? path === '/' : path === entryPath || path.startsWith(`${entryPath}/`)
 }
 
+/** An entry's address, apart: its path, and the values of the query it says (none, most often). */
+function addressOf(path: string): { path: string; query: [string, string][] } {
+  const at = path.indexOf('?')
+  if (at < 0) return { path: withoutTrailingSlash(path), query: [] }
+  return { path: withoutTrailingSlash(path.slice(0, at)), query: [...new URLSearchParams(path.slice(at + 1))] }
+}
+
+/** Which of two ranks is the higher: the first value that differs says. */
+function outranks(rank: number[], other: number[]): boolean {
+  const at = rank.findIndex((value, index) => value !== other[index])
+  return at >= 0 && rank[at] > other[at]
+}
+
 /**
  * The entry of the menu a page is under: its own, or the one of the page it was reached from
  * (`/orders/42` is under Orders). The longest path wins, for a menu that has `/items` and
- * `/items/archive`.
+ * `/items/archive`; then the entry that says more of the query, whose values the address has (`search`, the
+ * address's query: `?tab=open`); then an entry under another over that other, at the same address.
  */
-export function menuEntry<S extends string>(menu: Menu<S>, pathname: string): MenuEntry<S> | undefined {
+export function menuEntry<S extends string>(menu: Menu<S>, pathname: string, search = ''): MenuEntry<S> | undefined {
   const path = withoutTrailingSlash(pathname)
+  const query = new URLSearchParams(search)
   let found: MenuEntry<S> | undefined
+  let best: number[] = []
   for (const entry of menu.entries) {
-    if (isUnder(path, entry.path) && (!found || entry.path.length > found.path.length)) found = entry
+    const address = addressOf(entry.path)
+    if (!isUnder(path, address.path)) continue
+    if (!address.query.every(([key, value]) => query.getAll(key).includes(value))) continue
+    const rank = [address.path.length, address.query.length, parentOf(menu, entry) ? 1 : 0]
+    if (!found || outranks(rank, best)) {
+      found = entry
+      best = rank
+    }
   }
   return found
 }
@@ -112,27 +147,26 @@ export function menuEntry<S extends string>(menu: Menu<S>, pathname: string): Me
  * than the menu, the entry becomes a link and the page adds its parents and
  * its name. The page at `/` is Home itself: nothing comes after it. No section
  * step for a section without a heading, nor in a menu whose trail says none
- * (`trailSections: false`).
+ * (`trailSections: false`), nor for a section at the foot of the sidebar. An entry under another goes through it: a link to
+ * its page, unless that page is one of its entries' (it is said, not linked).
+ * A deeper page named as the step before it is that step, said once.
  */
-export function trailFor(menu: Menu, pathname: string, page?: PageName | null): Crumb[] {
-  const entry = menuEntry(menu, pathname)
+export function trailFor(menu: Menu, pathname: string, page?: PageName | null, search = ''): Crumb[] {
+  const entry = menuEntry(menu, pathname, search)
   if (!entry) return [{ label: page?.title ?? PAGE_NOT_FOUND }]
   if (entry.path === '/') return []
-  const heading =
-    menu.trailSections === false
-      ? undefined
-      : headingOf(menuSections(menu).find((section) => section.id === entry.section), entry.section)
+  const sectionOf = menuSections(menu).find((section) => section.id === entry.section)
+  // A section at the foot of the sidebar has no heading there: none in the trail either.
+  const heading = menu.trailSections === false || sectionOf?.place === 'footer' ? undefined : headingOf(sectionOf, entry.section)
   const section: Crumb[] = heading ? [{ label: heading }] : []
-  // An entry under another goes through it: a page, so a link.
+  // An entry under another goes through it: a page, so a link, unless its page is one of its entries'.
   const parent = parentOf(menu, entry)
-  if (parent) section.push({ label: parent.label, href: parent.path })
-  if (withoutTrailingSlash(pathname) === entry.path) return [...section, { label: entry.label }]
-  return [
-    ...section,
-    { label: entry.label, href: entry.path },
-    ...(page?.parents ?? []),
-    { label: page?.title ?? UNNAMED },
-  ]
+  if (parent) section.push(ownsItsPage(menu, parent) ? { label: parent.label, href: parent.path } : { label: parent.label })
+  if (withoutTrailingSlash(pathname) === addressOf(entry.path).path) return [...section, { label: entry.label }]
+  const steps: Crumb[] = [...section, { label: entry.label, href: entry.path }, ...(page?.parents ?? [])]
+  const title = page?.title ?? UNNAMED
+  if (steps.at(-1)?.label === title) return [...steps.slice(0, -1), { label: title }]
+  return [...steps, { label: title }]
 }
 
 /** The entry another is under, when it names one of the same section (a parent has no parent of its own). */
@@ -142,17 +176,23 @@ function parentOf<S extends string>(menu: Menu<S>, entry: MenuEntry<S>): MenuEnt
   return parent && parent.section === entry.section && parent.parent === undefined ? parent : undefined
 }
 
+/** Whether a parent's address is a page of its own, not the one of an entry under it (its first page). */
+function ownsItsPage<S extends string>(menu: Menu<S>, parent: MenuEntry<S>): boolean {
+  return !menu.entries.some((child) => child.path === parent.path && parentOf(menu, child)?.id === parent.id)
+}
+
 /**
  * The menu as the sidebar draws it: each entry a link, which can be opened in another tab as well as followed;
- * the entries under another (`parent`) listed under it.
+ * the entries under another (`parent`) listed under it; the sections at the foot (`place: 'footer'`) said so.
  */
 export function sidebarSections(menu: Menu): SidebarSection[] {
   return menuSections(menu).map((section) => {
     const entries = menu.entries.filter((entry) => entry.section === section.id)
     return {
       id: section.id,
-      title: headingOf(section, section.id),
-      ...(section.foldable ? { foldable: true } : {}),
+      title: section.place === 'footer' ? undefined : headingOf(section, section.id),
+      ...(section.foldable && section.place !== 'footer' ? { foldable: true } : {}),
+      ...(section.place === 'footer' ? { place: 'footer' as const } : {}),
       items: entries
         .filter((entry) => !parentOf(menu, entry))
         .map(({ id, label, icon, badge, badgeTone, path }) => {

@@ -8,8 +8,9 @@ import { ariaKeyShortcuts, keysText } from "../../lib/keys.js";
 import { isPlainClick } from "../../lib/links.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
+import { DropdownMenu, type DropdownMenuItem } from "../DropdownMenu.js";
 import { Kbd } from "../Kbd.js";
-import { useLinkComponent } from "../link-context.js";
+import { LinkContext, useLinkComponent } from "../link-context.js";
 import { useShortcut } from "../shortcuts-context.js";
 
 function useControllableState<T>(
@@ -64,8 +65,9 @@ export type SidebarItem = {
   href?: string;
 };
 // ioiti-ui: `foldable`, a section the reader folds under its heading (folded until then, or until the page shown is
-// in it): each reader's choice is kept by the browser, by the section's `id` (else its title).
-export type SidebarSection = { id?: string; title?: string; foldable?: boolean; items: SidebarItem[] };
+// in it): each reader's choice is kept by the browser, by the section's `id` (else its title). `place: "footer"`, a
+// section drawn at the foot of the sidebar, above Collapse, without a heading.
+export type SidebarSection = { id?: string; title?: string; foldable?: boolean; place?: "footer"; items: SidebarItem[] };
 
 // ioiti-ui: the sections each reader folded (true) or unfolded (false), by key. The browser may refuse to keep them
 // (a private window, blocked storage): the sidebar then forgets them, and works the same.
@@ -117,6 +119,18 @@ const BADGE_TONE: Record<Exclude<SidebarBadgeTone, "neutral">, string> = {
   warning: "text-warning",
   negative: "text-negative",
 };
+
+/**
+ * ioiti-ui: what the badges of an entry's children say, while they are out of sight (the entry closed): nothing, a
+ * count (neutral), or the gravest state among them.
+ */
+function childrenBadge(item: SidebarItem): SidebarBadgeTone | null {
+  const badged = item.children?.filter((c) => c.badge !== undefined) ?? [];
+  if (!badged.length) return null;
+  if (badged.some((c) => c.badgeTone === "negative")) return "negative";
+  if (badged.some((c) => c.badgeTone === "warning")) return "warning";
+  return "neutral";
+}
 
 const SidebarContext = React.createContext({ collapsed: false });
 /** Use inside `header` / `footer` to adapt to the icon-only state. */
@@ -313,63 +327,123 @@ function Panel({
     });
   };
 
+  // ioiti-ui: the entry of the rail whose pages are shown beside it (its flyout), if one is.
+  const [flyout, setFlyout] = React.useState<string | null>(null);
+  // ioiti-ui: the flyout's links are the sidebar's (`linkComponent`), the application's way to navigate kept.
+  const links = React.useContext(LinkContext);
+  const flyoutLinks = React.useMemo(() => ({ ...links, component: LinkComponent }), [links, LinkComponent]);
+
+  // ioiti-ui: the rail's tip, beside an entry; none while a flyout shows its pages.
+  const tipAt = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>, label: string) => {
+    if (!collapsed || flyout !== null) {
+      setTip(null);
+      return;
+    }
+    const r = e.currentTarget.getBoundingClientRect();
+    setTip({ label, x: r.right + 10, y: r.top + r.height / 2 });
+  };
+
   const enter = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>, label: string) => {
     const el = e.currentTarget;
     setHoverBox({ y: el.offsetTop, h: el.offsetHeight });
     setHovering(true);
-    if (collapsed) {
-      const r = el.getBoundingClientRect();
-      setTip({ label, x: r.right + 10, y: r.top + r.height / 2 });
-    } else setTip(null);
+    tipAt(e, label);
   };
 
-  const renderItem = (item: SidebarItem) => {
+  /** ioiti-ui: the pages of an entry, in its flyout: its own first (unless one of its children's), then theirs. */
+  const flyoutItems = (item: SidebarItem): DropdownMenuItem[] => {
+    const children = item.children ?? [];
+    const own = item.href !== undefined && !children.some((c) => c.href === item.href);
+    // Its badge, as the sidebar says it: a count quiet, a state in its tone.
+    const named = (label: string, badge?: string | number, tone?: SidebarBadgeTone): React.ReactNode =>
+      badge === undefined ? (
+        label
+      ) : (
+        <span className="flex items-center gap-2">
+          <span className="truncate">{label}</span>
+          <span className={cn("text-[11px] tabular-nums", tone && tone !== "neutral" ? cn("font-medium", BADGE_TONE[tone]) : "text-text-muted")}>
+            {badge}
+          </span>
+        </span>
+      );
+    // The page shown, a dot before it, as the sidebar marks it under its entry (and a radio item its choice).
+    const mark = (current: boolean) => (
+      <span aria-hidden className="grid size-4 place-items-center">
+        {current && <span className="size-1.5 rounded-full bg-current" />}
+      </span>
+    );
+    return [
+      ...(own
+        ? [
+            { type: "link" as const, label: item.label, icon: mark(activeId === item.id), href: item.href!, current: activeId === item.id },
+            { type: "separator" as const },
+          ]
+        : []),
+      ...children.map((c): DropdownMenuItem => {
+        const label = named(c.label, c.badge, c.badgeTone);
+        return c.href !== undefined
+          ? { type: "link", label, icon: mark(c.id === activeId), textValue: c.label, href: c.href, current: c.id === activeId }
+          : { label, icon: mark(c.id === activeId), textValue: c.label, onSelect: () => onActiveChange?.(c.id) };
+      }),
+    ];
+  };
+
+  // ioiti-ui: the entries of the sections at the foot of the sidebar, above Collapse.
+  const footItems = sections.filter((section) => section.place === "footer").flatMap((section) => section.items);
+
+  const renderItem = (item: SidebarItem, place: "list" | "footer" = "list") => {
     const hasChildren = !!item.children?.length;
     const isOpen = hasChildren && open.has(item.id) && !collapsed;
     const childActive = !!item.children?.some((c) => c.id === activeId);
     // ioiti-ui: an entry with children and an `href` is a page too, and a link (its chevron opens it apart); in the
-    // rail, a link alone.
+    // rail, a button that shows its pages beside it (its flyout).
     const isActive = activeId === item.id && (!hasChildren || item.href !== undefined);
-    const linked = item.href !== undefined;
+    const flies = hasChildren && collapsed;
+    const linked = item.href !== undefined && !flies;
     const chevron = hasChildren && linked && !collapsed;
     const childrenId = `${uid}-children-${item.id}`;
     const Entry: React.ElementType = linked ? LinkComponent : "button";
+    // ioiti-ui: in the rail, the entry that holds the page shown has the pill: its pages are out of sight.
+    const pilled = isActive || (collapsed && childActive);
+    // ioiti-ui: closed, an entry says that a page under it has a badge to read, in the gravest tone among them.
+    const unseen = hasChildren && !isOpen && !collapsed && item.badge === undefined ? childrenBadge(item) : null;
+    // ioiti-ui: the hover box is measured in the list; at the foot, an entry is lit by its own hover.
+    const point = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>) =>
+      place === "footer" ? tipAt(e, item.label) : enter(e, item.label);
 
     const onClick = (e: React.MouseEvent) => {
+      // In the rail, the flyout's (DropdownMenu's own click, after this one).
+      if (flies) return;
       if (linked && !isPlainClick(e)) return;
       if (!hasChildren || linked) {
         onActiveChange?.(item.id);
         onNavigate?.();
-      } else if (collapsed) {
-        onToggle?.();
-        toggleOpen(item.id, true);
       } else {
         toggleOpen(item.id);
       }
     };
 
-    return (
-      <div key={item.id}>
-        <div className="flex items-center">
+    const entry = (
           <Entry
             {...(linked ? { href: item.href } : { type: "button" })}
             onClick={onClick}
-            onMouseEnter={(e: React.MouseEvent<HTMLElement>) => enter(e, item.label)}
-            onFocus={(e: React.FocusEvent<HTMLElement>) => enter(e, item.label)}
+            onMouseEnter={point}
+            onFocus={point}
             aria-label={collapsed ? item.label : undefined}
-            aria-expanded={hasChildren && !linked ? isOpen : undefined}
+            aria-expanded={hasChildren && !linked && !flies ? isOpen : undefined}
             aria-current={isActive ? "page" : undefined}
             className={cn(
               // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
               "relative flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm outline-none transition-colors",
               chevron && "pr-9",
-              isActive || childActive
+              place === "footer" && !pilled && "hover:bg-neutral-100 dark:hover:bg-neutral-900",
+              pilled || childActive
                 ? // ioiti-ui: the page shown, in the accent when the theme has one (accent:), as its pill below.
                   "text-neutral-900 dark:text-white accent:text-brand-text"
                 : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
             )}
           >
-            {isActive && (
+            {pilled && (
               <motion.span
                 layoutId={`${uid}-active`}
                 transition={spring}
@@ -399,6 +473,18 @@ function Panel({
                 {item.badge}
               </motion.span>
             )}
+            {unseen && (
+              <>
+                <span
+                  aria-hidden
+                  className={cn(
+                    "relative size-1.5 shrink-0 rounded-full",
+                    unseen === "neutral" ? "bg-neutral-500 dark:bg-neutral-400 accent:bg-brand" : cn("bg-current", BADGE_TONE[unseen])
+                  )}
+                />
+                <span className="sr-only">, with counts</span>
+              </>
+            )}
             {!collapsed && hasChildren && !linked && (
               <ChevronRight
                 className={cn(
@@ -408,6 +494,29 @@ function Panel({
               />
             )}
           </Entry>
+    );
+
+    return (
+      <div key={item.id}>
+        <div className="flex items-center">
+          {flies ? (
+            <LinkContext.Provider value={flyoutLinks}>
+              <DropdownMenu
+                trigger={entry}
+                items={flyoutItems(item)}
+                label={item.label}
+                side="right"
+                align="start"
+                open={flyout === item.id}
+                onOpenChange={(opening) => {
+                  setFlyout(opening ? item.id : null);
+                  if (opening) setTip(null);
+                }}
+              />
+            </LinkContext.Provider>
+          ) : (
+            entry
+          )}
           {chevron && (
             <button
               type="button"
@@ -523,6 +632,8 @@ function Panel({
           )}
 
           {sections.map((section, i) => {
+            // ioiti-ui: a section at the foot is drawn there, above Collapse.
+            if (section.place === "footer") return null;
             const key = sectionKey(section, i);
             // ioiti-ui: the rail shows every icon; folding is for the open sidebar.
             const foldable = !!section.foldable && !collapsed;
@@ -572,20 +683,25 @@ function Panel({
                         transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
                         className="space-y-0.5 overflow-hidden"
                       >
-                        {section.items.map(renderItem)}
+                        {section.items.map((item) => renderItem(item))}
                       </motion.div>
                     )}
                   </AnimatePresence>
                 ) : (
-                  section.items.map(renderItem)
+                  section.items.map((item) => renderItem(item))
                 )}
               </div>
             );
           })}
         </nav>
 
-        {(footer || onToggle) && (
-          <div className="shrink-0 space-y-1 border-t border-neutral-200 p-2 dark:border-neutral-800">
+        {(footer || onToggle || footItems.length > 0) && (
+          <div
+            onMouseLeave={() => setTip(null)}
+            className="shrink-0 space-y-1 border-t border-neutral-200 p-2 dark:border-neutral-800"
+          >
+            {/* ioiti-ui: the entries of the sections at the foot (place: "footer"), then the application's own. */}
+            {footItems.map((item) => renderItem(item, "footer"))}
             {footer}
             {onToggle && (
               <button

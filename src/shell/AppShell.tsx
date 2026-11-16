@@ -23,6 +23,11 @@ export interface AppShellProps<S extends string = string> {
    * too (a part the page draws late is waited for, 3 s at most).
    */
   hash?: string
+  /**
+   * The address's query (the router's `useLocation().search`: `?tab=open`; RouterAppShell gives it): which entry of
+   * the menu the page is, for a menu whose entries say values of the query (a page's tab, `/orders?tab=open`).
+   */
+  search?: string
   /** The page. */
   children: ReactNode
   /** The name at the top of the sidebar; IoitiProvider's `appName` by default. */
@@ -73,7 +78,7 @@ export interface AppShellProps<S extends string = string> {
  */
 export function AppShell<S extends string = string>(props: AppShellProps<S>) {
   return (
-    <PageTrailProvider menu={props.menu} pathname={props.pathname} tabTitle={props.tabTitle}>
+    <PageTrailProvider menu={props.menu} pathname={props.pathname} search={props.search} tabTitle={props.tabTitle}>
       <Shell {...props} />
     </PageTrailProvider>
   )
@@ -83,6 +88,7 @@ function Shell<S extends string>({
   menu,
   pathname,
   hash,
+  search,
   children,
   appName,
   appDetail,
@@ -121,7 +127,7 @@ function Shell<S extends string>({
 
   useScrollToPart(main, page, hash)
 
-  const current = menuEntry(menu, pathname)
+  const current = menuEntry(menu, pathname, search)
   const sections = useMemo(() => sidebarSections(menu), [menu])
 
   // Past the menu to the page: the page takes the focus for as long as it keeps it, without the address

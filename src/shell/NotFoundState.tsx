@@ -85,7 +85,8 @@ export function NotFoundPage({
 }: Partial<NotFoundStateProps>) {
   const trail = useTrail()
   const path = props.pathname ?? trail?.pathname ?? window.location.pathname
-  const entry = trail ? menuEntry(trail.menu, path) : undefined
+  // The shell's query goes with the shell's address, not with another one given.
+  const entry = trail ? menuEntry(trail.menu, path, props.pathname === undefined ? trail.search : '') : undefined
   return (
     <NotFoundState
       title={title}

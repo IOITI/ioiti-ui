@@ -172,3 +172,89 @@ describe('entries under another', () => {
     expect(trailFor(NESTED, '/stray')).toEqual([{ label: 'Reports' }, { label: 'Stray' }])
   })
 })
+
+/** A page whose tabs are in its query, its first tab at its address, and a page of its own above its pages. */
+const TABBED: Menu = {
+  sections: [{ id: 'Main', title: false }, { id: 'Foot', place: 'footer' }],
+  entries: [
+    { id: 'home', path: '/', label: 'Home', section: 'Main' },
+    { id: 'deploys', path: '/ops', label: 'Deployments', section: 'Main' },
+    { id: 'jobs', path: '/ops', label: 'Jobs', section: 'Main', parent: 'deploys' },
+    { id: 'history', path: '/ops?tab=history', label: 'History', section: 'Main', parent: 'deploys' },
+    { id: 'settings', path: '/admin', label: 'Settings', section: 'Main' },
+    { id: 'users', path: '/admin/users', label: 'Users', section: 'Main', parent: 'settings' },
+    { id: 'docs', path: '/docs', label: 'Documentation', section: 'Foot' },
+  ],
+}
+
+describe('entries that say values of the query', () => {
+  const at = (pathname: string, search?: string) => menuEntry(TABBED, pathname, search)?.id
+
+  it('are the page only with those values, the others of the address aside', () => {
+    expect(at('/ops', '?tab=history')).toBe('history')
+    expect(at('/ops', '?customer=1&tab=history')).toBe('history')
+    expect(at('/ops', '?tab=jobs')).toBe('jobs')
+    expect(at('/ops')).toBe('jobs')
+    // A deeper page, opened from the tab, stays under it.
+    expect(at('/ops/jobs/42', '?tab=history')).toBe('history')
+    expect(at('/ops/jobs/42')).toBe('jobs')
+  })
+
+  it('reach the sidebar with their query, to be followed as they are', () => {
+    const [main] = sidebarSections(TABBED)
+    expect(main.items[1].children?.map((child) => child.href)).toEqual(['/ops', '/ops?tab=history'])
+  })
+
+  it('are said in the trail, the query of the address given', () => {
+    expect(trailFor(TABBED, '/ops', null, '?tab=history')).toEqual([{ label: 'Deployments' }, { label: 'History' }])
+    expect(trailFor(TABBED, '/ops/jobs/42', { title: 'Build 42' }, '?tab=history')).toEqual([
+      { label: 'Deployments' },
+      { label: 'History', href: '/ops?tab=history' },
+      { label: 'Build 42' },
+    ])
+  })
+})
+
+describe('an entry at its parent\'s address', () => {
+  it('is the page there, its parent leading to it', () => {
+    expect(menuEntry(TABBED, '/ops')?.id).toBe('jobs')
+    // In whichever order the menu lists them.
+    expect(menuEntry({ ...TABBED, entries: [...TABBED.entries].reverse() }, '/ops')?.id).toBe('jobs')
+  })
+
+  it('makes its parent a step of the trail said, not linked: its page is this one', () => {
+    expect(trailFor(TABBED, '/ops')).toEqual([{ label: 'Deployments' }, { label: 'Jobs' }])
+    expect(trailFor(TABBED, '/ops/jobs/42', { title: 'Build 42' })).toEqual([
+      { label: 'Deployments' },
+      { label: 'Jobs', href: '/ops' },
+      { label: 'Build 42' },
+    ])
+    // A parent with a page of its own is a link.
+    expect(trailFor(TABBED, '/admin/users')).toEqual([{ label: 'Settings', href: '/admin' }, { label: 'Users' }])
+    expect(trailFor(TABBED, '/admin')).toEqual([{ label: 'Settings' }])
+  })
+})
+
+describe('a deeper page named as the step before it', () => {
+  it('is that step, said once', () => {
+    expect(trailFor(TABBED, '/admin/users/new', { title: 'Users' })).toEqual([{ label: 'Settings', href: '/admin' }, { label: 'Users' }])
+    expect(trailFor(TABBED, '/admin/users/7', { title: 'Ada', parents: [{ label: 'Ada', href: '/admin/users/7' }] })).toEqual([
+      { label: 'Settings', href: '/admin' },
+      { label: 'Users', href: '/admin/users' },
+      { label: 'Ada' },
+    ])
+  })
+})
+
+describe('a section at the foot of the sidebar', () => {
+  it('reaches the sidebar said so, without a heading, which the trail does not say', () => {
+    const foot = sidebarSections(TABBED)[1]
+    expect(foot).toMatchObject({ id: 'Foot', title: undefined, place: 'footer' })
+    expect(foot.items.map((item) => item.id)).toEqual(['docs'])
+    // Its heading is not drawn: the trail does not say it either.
+    expect(trailFor(TABBED, '/docs/guide', { title: 'Guide' })).toEqual([
+      { label: 'Documentation', href: '/docs' },
+      { label: 'Guide' },
+    ])
+  })
+})

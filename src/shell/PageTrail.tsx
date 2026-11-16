@@ -15,6 +15,8 @@ import { wholeTrailFits } from './trail-fit.js'
 interface PageTrailProviderProps {
   menu: Menu
   pathname: string
+  /** The address's query (`?tab=open`), for a menu whose entries say some. */
+  search?: string
   /**
    * Whether its pages name the browser's tab (PageHeader): yes, unless it is inside another (a shell drawn in a
    * page, a demo: the page around it names the tab).
@@ -28,12 +30,12 @@ interface PageTrailProviderProps {
  * the top bar. A name is kept with its address and only read for it: the page
  * left behind takes its name away after the next page is drawn, never before.
  */
-export function PageTrailProvider({ menu, pathname, tabTitle, children }: PageTrailProviderProps) {
+export function PageTrailProvider({ menu, pathname, search = '', tabTitle, children }: PageTrailProviderProps) {
   const outer = useContext(TrailContext)
   const names = tabTitle ?? outer === null
   const [named, publish] = useState<Named | null>(null)
   const publisher = useMemo(() => ({ pathname, publish }), [pathname])
-  const trail = useMemo(() => ({ menu, pathname }), [menu, pathname])
+  const trail = useMemo(() => ({ menu, pathname, search }), [menu, pathname, search])
   return (
     <TrailContext.Provider value={trail}>
       <PublisherContext.Provider value={publisher}>

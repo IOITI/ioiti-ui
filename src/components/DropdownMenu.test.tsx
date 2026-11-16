@@ -149,6 +149,22 @@ describe('DropdownMenu', () => {
     expect(download).not.toHaveAttribute('data-link')
     expect(download).toHaveAttribute('href', '/api/v1/audit.log')
   })
+
+  it('says which of its links is the page shown (current), a menu of pages', async () => {
+    const user = userEvent.setup()
+    render(
+      <Actions
+        items={[
+          { type: 'link', label: 'Jobs', href: '/ops' },
+          { type: 'link', label: 'History', href: '/ops?tab=history', current: true },
+        ]}
+      />,
+    )
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    expect(screen.getByRole('menuitem', { name: 'History' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('menuitem', { name: 'History' })).toHaveClass('font-medium')
+    expect(screen.getByRole('menuitem', { name: 'Jobs' })).not.toHaveAttribute('aria-current')
+  })
 })
 
 describe('ContextMenu', () => {
