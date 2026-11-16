@@ -1,4 +1,4 @@
-import { plain, summaryOf } from './markdown'
+import { plain, summaryOf } from './markdown-blocks'
 import type { CategoryInfo, ExampleInfo, FamilyInfo } from './types'
 
 /** The categories, in the order of the sidebar: the frame first, then what a page is made of, then its content. */

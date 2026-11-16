@@ -7,7 +7,7 @@ import * as adapter from 'ioiti-ui/react-router'
 import { describe, expect, it } from 'vitest'
 
 import { CATEGORIES, exampleKey, FAMILIES, ORDER, readmeOf } from './catalogue'
-import { blocks, summaryOf } from './markdown'
+import { blocks, summaryOf } from './markdown-blocks'
 import { COMPONENT_PROPS } from './props'
 import type { Entry, Examples } from './types'
 

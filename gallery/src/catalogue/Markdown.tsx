@@ -1,6 +1,6 @@
 import { Code, CodeBlock } from 'ioiti-ui'
 
-import { guidelinesOf, inline, type Block } from './markdown'
+import { guidelinesOf, inline, type Block } from './markdown-blocks'
 
 const LANGUAGES = new Set(['text', 'json', 'js', 'jsx', 'ts', 'tsx', 'css', 'shell', 'toml', 'yaml', 'diff', 'python'])
 
