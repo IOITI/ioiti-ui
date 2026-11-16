@@ -1,9 +1,12 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Receipt } from 'lucide-react'
-import { useState } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { useRef, useState, useSyncExternalStore } from 'react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { IoitiProvider } from './IoitiProvider.js'
+import { useShortcutRegistry } from './shortcuts-context.js'
+import { SettleModal } from './ui/settle-modal.js'
 import { SpotlightSearch } from './ui/spotlight-search.js'
 import type { SpotlightSearchItem } from './ui/spotlight-search.js'
 
@@ -123,4 +126,267 @@ describe('SpotlightSearch', () => {
     await user.click(close)
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
+
+  it('keeps the focus in its field: Tab goes round its own controls, and a search made before is typed there', async () => {
+    const user = userEvent.setup()
+    render(
+      <SpotlightSearch
+        open
+        onOpenChange={() => {}}
+        items={ITEMS}
+        recentSearches={['brun']}
+        label="Go to"
+        footer={<button type="button">Done</button>}
+      />,
+    )
+    const field = screen.getByRole('combobox', { name: 'Search' })
+    await waitFor(() => expect(field).toHaveFocus())
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Done' })).toHaveFocus()
+    await user.tab()
+    expect(field).toHaveFocus()
+    await user.tab({ shift: true })
+    expect(screen.getByRole('button', { name: 'Done' })).toHaveFocus()
+
+    await user.click(field)
+    await user.click(screen.getByRole('option', { name: 'brun' }))
+    expect(field).toHaveValue('brun')
+    expect(field).toHaveFocus()
+  })
+
+  it('gives the focus back to what opened it, unless what an entry did took it elsewhere', async () => {
+    const user = userEvent.setup()
+    function Page() {
+      const [open, setOpen] = useState(false)
+      const note = useRef<HTMLInputElement>(null)
+      return (
+        <>
+          <button type="button" onClick={() => setOpen(true)}>
+            Open
+          </button>
+          <input aria-label="Note" ref={note} />
+          <SpotlightSearch
+            open={open}
+            onOpenChange={setOpen}
+            label="Do"
+            items={[
+              { id: 'orders', title: 'Orders', category: 'Pages' },
+              { id: 'note', title: 'Write a note', category: 'Actions', action: () => note.current?.focus() },
+            ]}
+          />
+        </>
+      )
+    }
+    render(<Page />)
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('{Escape}')
+    expect(screen.getByRole('button', { name: 'Open' })).toHaveFocus()
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('note{Enter}')
+    expect(screen.getByRole('textbox', { name: 'Note' })).toHaveFocus()
+  })
+
+  it('opens with ⌘K (Ctrl K here) when asked, held by its caller or not, closes with it, and is listed', async () => {
+    const user = userEvent.setup()
+    function Listed() {
+      const registry = useShortcutRegistry()
+      const shortcuts = useSyncExternalStore(registry.subscribe, registry.list)
+      return <p data-testid="listed">{shortcuts.map((shortcut) => `${shortcut.keys} ${shortcut.description} ${shortcut.group}`).join(', ')}</p>
+    }
+    function Held() {
+      const [open, setOpen] = useState(false)
+      return <SpotlightSearch open={open} onOpenChange={setOpen} enableGlobalShortcut items={ITEMS} label="Go to a page" />
+    }
+    for (const palette of [<Held key="held" />, <SpotlightSearch key="own" enableGlobalShortcut items={ITEMS} label="Go to a page" />]) {
+      const { unmount } = render(
+        <IoitiProvider>
+          {palette}
+          <Listed />
+        </IoitiProvider>,
+      )
+      expect(screen.queryByRole('dialog')).toBeNull()
+      await user.keyboard('{Control>}k{/Control}')
+      const field = await screen.findByRole('combobox', { name: 'Search' })
+      await waitFor(() => expect(field).toHaveFocus())
+      await user.keyboard('{Control>}k{/Control}')
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+      unmount()
+    }
+
+    render(
+      <IoitiProvider>
+        <SpotlightSearch enableGlobalShortcut items={ITEMS} label="Go to a page" />
+        <Listed />
+      </IoitiProvider>,
+    )
+    expect(screen.getByTestId('listed')).toHaveTextContent('mod+k Go to a page Navigation')
+  })
+
+  it('is not opened by ⌘K unless asked', async () => {
+    const user = userEvent.setup()
+    render(<SpotlightSearch items={ITEMS} label="Go to" />)
+    await user.keyboard('{Control>}k{/Control}')
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('is closed once by Escape, its shortcut asked for too', async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    const onClose = vi.fn()
+    render(<SpotlightSearch open onOpenChange={onOpenChange} onClose={onClose} enableGlobalShortcut items={ITEMS} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('{Escape}')
+    expect(onOpenChange).toHaveBeenCalledOnce()
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(onClose).toHaveBeenCalledOnce()
+  })
+
+  it('keeps its keys from a dialog under it: its Escape closes it alone, its Tab stays in it', async () => {
+    const user = userEvent.setup()
+    function Both() {
+      const [modal, setModal] = useState(true)
+      const [palette, setPalette] = useState(false)
+      return (
+        <>
+          <SettleModal open={modal} onClose={() => setModal(false)} title="Edit">
+            <button type="button" onClick={() => setPalette(true)}>
+              Attach
+            </button>
+          </SettleModal>
+          <SpotlightSearch open={palette} onOpenChange={setPalette} items={ITEMS} label="Attach" />
+        </>
+      )
+    }
+    render(<Both />)
+    await user.click(screen.getByRole('button', { name: 'Attach' }))
+    const field = screen.getByRole('combobox', { name: 'Search' })
+    await waitFor(() => expect(field).toHaveFocus())
+    await user.tab()
+    expect(field).toHaveFocus()
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Attach' })).toBeNull())
+    expect(screen.getByRole('dialog', { name: 'Edit' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Attach' })).toHaveFocus()
+  })
+
+  it('leaves the keys that compose a character to the composition (an IME)', () => {
+    const chosen = vi.fn()
+    const onOpenChange = vi.fn()
+    render(<SpotlightSearch open onOpenChange={onOpenChange} onSelect={chosen} onNavigate={() => {}} items={ITEMS} label="Go to" />)
+    const field = screen.getByRole('combobox', { name: 'Search' })
+    fireEvent.keyDown(field, { key: 'Enter', isComposing: true })
+    fireEvent.keyDown(field, { key: 'Enter', keyCode: 229 })
+    fireEvent.keyDown(field, { key: 'Escape', isComposing: true })
+    expect(chosen).not.toHaveBeenCalled()
+    expect(onOpenChange).not.toHaveBeenCalled()
+    fireEvent.keyDown(field, { key: 'Enter' })
+    expect(chosen).toHaveBeenCalledWith(expect.objectContaining({ id: 'orders' }))
+  })
+
+  it('chooses with the pointer where it moves, not where the list scrolls under it, nor a finger scrolling it', () => {
+    render(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} label="Go to" />)
+    const [first, second] = screen.getAllByRole('option')
+    expect(first).toHaveAttribute('aria-selected', 'true')
+    fireEvent.mouseEnter(second)
+    fireEvent.pointerMove(second, { pointerType: 'touch' })
+    expect(first).toHaveAttribute('aria-selected', 'true')
+    fireEvent.pointerMove(second, { pointerType: 'mouse' })
+    expect(second).toHaveAttribute('aria-selected', 'true')
+    expect(first).toHaveAttribute('aria-selected', 'false')
+  })
+
+  it('scrolls its own list to the entry the keys choose, never the page', async () => {
+    const user = userEvent.setup()
+    const ROW = 40
+    vi.spyOn(HTMLElement.prototype, 'offsetTop', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.getAttribute('role') === 'option' ? Array.from(document.querySelectorAll('[role="option"]')).indexOf(this) * ROW : 0
+    })
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.getAttribute('role') === 'option' ? ROW : 0
+    })
+    vi.spyOn(Element.prototype, 'clientHeight', 'get').mockReturnValue(100)
+    const intoView = vi.fn()
+    Element.prototype.scrollIntoView = intoView
+    try {
+      const many = Array.from({ length: 10 }, (_, index): SpotlightSearchItem => ({ id: `e${index}`, title: `Entry ${index}`, category: 'Entries' }))
+      render(<SpotlightSearch open onOpenChange={() => {}} items={many} label="Go to" />)
+      const scroller = screen.getByRole('listbox').parentElement!
+      await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+      await user.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}')
+      expect(screen.getByRole('option', { name: /Entry 3/ })).toHaveAttribute('aria-selected', 'true')
+      expect(scroller.scrollTop).toBe(3 * ROW + ROW - 100 + 4)
+      await user.keyboard('{ArrowUp}{ArrowUp}{ArrowUp}{ArrowUp}')
+      expect(screen.getByRole('option', { name: /Entry 9/ })).toHaveAttribute('aria-selected', 'true')
+      expect(scroller.scrollTop).toBe(9 * ROW + ROW - 100 + 4)
+      await user.keyboard('{ArrowDown}')
+      expect(scroller.scrollTop).toBe(0)
+      expect(intoView).not.toHaveBeenCalled()
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView
+    }
+  })
+
+  it('keeps the entry chosen as the entries change, the first one once it is gone', async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('{ArrowDown}')
+    expect(screen.getByRole('option', { name: /IT-1042/ })).toHaveAttribute('aria-selected', 'true')
+
+    const refund: SpotlightSearchItem = { id: 'refunds', title: 'Refunds', category: 'Pages', href: '/refunds' }
+    rerender(<SpotlightSearch open onOpenChange={() => {}} items={[refund, ...ITEMS]} label="Go to" />)
+    expect(screen.getByRole('option', { name: /IT-1042/ })).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByRole('combobox', { name: 'Search' })).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: /IT-1042/ }).id)
+
+    rerender(<SpotlightSearch open onOpenChange={() => {}} items={[refund, ITEMS[0]]} label="Go to" />)
+    expect(screen.getByRole('option', { name: /Refunds/ })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('tells what is typed as it is typed, and that nothing is as it opens, not at each render', async () => {
+    const user = userEvent.setup()
+    const told = vi.fn()
+    const { rerender } = render(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} label="Go to" onQueryChange={(query) => told(query)} />)
+    expect(told.mock.calls).toEqual([['']])
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('or')
+    expect(told.mock.calls).toEqual([[''], ['o'], ['or']])
+    rerender(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} label="Go to" onQueryChange={(query) => told(query)} />)
+    expect(told).toHaveBeenCalledTimes(3)
+  })
+
+  it('holds options alone, under headings that name their groups; what it says of them is outside, and said once typing pauses', async () => {
+    const user = userEvent.setup()
+    render(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} grouped recentSearches={['brun']} limit={2} label="Go to" />)
+    const list = screen.getByRole('listbox', { name: 'Go to' })
+    for (const child of Array.from(list.children)) {
+      expect(['group', 'option'].includes(child.getAttribute('role') ?? '') || child.getAttribute('aria-hidden') === 'true').toBe(true)
+    }
+    expect(within(within(list).getByRole('group', { name: 'Recent searches' })).getAllByRole('option')).toHaveLength(1)
+    expect(within(within(list).getByRole('group', { name: 'Pages' })).getAllByRole('option')).toHaveLength(1)
+    expect(within(within(list).getByRole('group', { name: 'Orders' })).getAllByRole('option')).toHaveLength(1)
+    const more = screen.getByText('1 more: type to narrow them down.')
+    expect(list).not.toContainElement(more)
+
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('or')
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('2 results'))
+    await user.keyboard('zz')
+    const none = screen.getByText(/No results found for/)
+    expect(list).not.toContainElement(none)
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('No results'))
+  })
+
+  it('draws nothing under its field while it has no entries and nothing is typed', () => {
+    render(<SpotlightSearch open onOpenChange={() => {}} label="Go to" />)
+    expect(screen.queryByText(/No results/)).toBeNull()
+    expect(screen.queryAllByRole('option')).toHaveLength(0)
+  })
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })

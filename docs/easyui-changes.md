@@ -485,6 +485,23 @@ otherwise).
   "Output Result"); its header says "N of M done", or "Not started" with no step (it said "0 of 0 completed").
 - `dependency-trace` (0.18.0): never wider than its canvas (`max-width`): on a wide page it grew, its words with it.
 - `live-line-chart` (0.18.0): with a `domain`, its scale is written from the first frame (it waited for two readings).
+- `spotlight-search` (0.16.0): `closeOnSelect={false}` keeps it open once an entry without an `href` is chosen, the
+  field keeping what was typed and the focus; `picked` ticks the entries chosen already (`aria-checked`, the list
+  `aria-multiselectable`), chosen again to take them back; `footer`, a line under the list; its Escape drawn as
+  every key is (`Kbd`), a button that closes it (EasyUI's `<kbd>` only said it).
+- `spotlight-search` (0.19.0): in two parts, the palette drawn anew at each opening under what holds `open`
+  (`useControllableState`), ⌘K and the focus to give back. The focus stays in it (Tab goes round its controls; a
+  press elsewhere than on a control leaves it in the field) and goes back to what opened it after the commit, while
+  it is in the palette; an entry's `action` runs once it is closed. Its keys are its own (`stopPropagation`: a
+  dialog under it hears neither its Escape nor its Tab), a composition's (an IME's) left to it; ⌘K is a
+  `useShortcut` (`enableGlobalShortcut`: EasyUI's listened to the window, for Ctrl and ⌘ alike, and its Escape closed
+  the palette a second time), closing it when pressed in it. Its highlight is measured (Combobox's, with
+  `springSnappy`: EasyUI's `layoutId` and `springGentle` measured nothing where the list scrolled), the list scrolling
+  itself to the entry the keys choose; the pointer chooses on `pointermove` (`mouseenter` fired where the list
+  scrolled under it), the entry chosen kept by its key as the entries change. The listbox holds options alone, in
+  groups named by their headings; a status in the dialog says how many are found; nothing is drawn under an empty
+  field without entries. `onQueryChange` is told from the change, and of `''` as it opens. The page under it holds
+  still, as under `settle-modal`.
 
 ## ioiti-ui's own changes
 

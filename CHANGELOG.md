@@ -3,6 +3,36 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.19.0] - Unreleased
+
+- **`SpotlightSearch` keeps the focus, and its keys.**
+  - The focus stays in it: Tab goes round its own controls (its field, a button of its `footer`), where it went on
+    to the page under it. A press on an entry or on a search made before leaves the focus in the field: it went to
+    the page, and the keys with it.
+  - Its keys are its own. Over a dialog, Escape closes the palette alone (it closed both), and once: `onClose` was
+    told twice with `enableGlobalShortcut`. A key that composes a character (an IME's Enter, its Escape) chooses
+    and closes nothing.
+  - The arrows scroll its list to the entry they choose; they went past the list's end, out of sight. The pointer
+    chooses where it moves, not where the list scrolls under it.
+  - The entry chosen stays chosen as the entries change (found as they are typed), the first one once it is gone.
+  - Its highlight is measured where the list scrolls, and glides with `springSnappy`, as Combobox's
+    (`springGentle` took half a second).
+  - The focus goes back to what opened it, unless what an entry did took it elsewhere: an entry's `action` runs
+    once the palette is closed. The page under it holds still, as under every dialog.
+  - A screen reader hears its headings as groups of options, and how many entries are found once typing pauses.
+    "No results" and "N more" are said outside the list, and nothing under an empty field without entries (it
+    said `No results found for ""`).
+  - `onQueryChange` is told as the query changes, and of `''` as the palette opens. EasyUI's effect told it again
+    at each render of a caller that wrote the function in place.
+- **`SpotlightSearch`'s `enableGlobalShortcut` is a `useShortcut`**: ⌘K on an Apple computer, Ctrl K elsewhere (it
+  heard both on both), listed by `?` under Navigation as the palette's `label`, waiting while another dialog is
+  open. Pressed in the palette, it closes it; in the gallery, the browser's own Ctrl K took it. The gallery's
+  palette uses it.
+
+Nothing to change in an application. One that registers ⌘K for its palette (`useShortcut('mod+k', …)`) may pass
+`enableGlobalShortcut` instead, never both: the first registered wins. A test that moved the palette's highlight
+with `mouseenter` moves the pointer (`hover`).
+
 ## [0.18.1] - 2026-11-15
 
 - **A change of page in Safari, and in every browser of an iPhone**, showed both pages at full strength over each
