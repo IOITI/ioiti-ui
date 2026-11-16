@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useRef } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -63,6 +63,36 @@ describe('a nav of the parts of a box', () => {
     } finally {
       delete (Element.prototype as Partial<Element>).scrollIntoView
     }
+  })
+})
+
+describe('a nav of parts whose ids are no selectors', () => {
+  function Guide() {
+    const box = useRef<HTMLDivElement>(null)
+    return (
+      <div ref={box} data-testid="guide">
+        <ScrollProgressNav
+          mode="sticky"
+          containerRef={box}
+          sections={[
+            { id: '1-install', label: 'Install' },
+            { id: '2.run', label: 'Run' },
+          ]}
+        />
+        <h2 id="1-install">Install</h2>
+        <h2 id="2.run">Run</h2>
+      </div>
+    )
+  }
+
+  it('marks the part read as the page scrolls, an id starting with a digit or holding a dot', () => {
+    render(<Guide />)
+    const box = screen.getByTestId('guide')
+    box.getBoundingClientRect = () => ({ top: 0 }) as DOMRect
+    const second = document.getElementById('2.run')!
+    second.getBoundingClientRect = () => ({ top: 40 }) as DOMRect
+    expect(() => fireEvent.scroll(box)).not.toThrow()
+    expect(screen.getAllByRole('button', { name: /Run/ }).find((item) => item.hasAttribute('aria-current'))).toBeDefined()
   })
 })
 

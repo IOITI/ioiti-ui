@@ -38,6 +38,12 @@ export interface ScrollProgressNavProps {
   label?: string;
 }
 
+// ioiti-ui: a part in its container, by its id whatever it is. `#id` is a selector: an id that starts with a digit
+// (a heading's anchor, "1-install") or holds a dot threw on every scroll.
+function partIn(container: HTMLElement, id: string): HTMLElement | null {
+  return container.querySelector<HTMLElement>(`[id="${id.replace(/["\\]/g, '\\$&')}"]`);
+}
+
 const defaultSections: NavSectionItem[] = [
   { id: 'overview', index: '01', label: 'Overview' },
   { id: 'features', index: '02', label: 'Features' },
@@ -99,7 +105,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
       if (containerRef && containerRef.current) {
         const containerRect = containerRef.current.getBoundingClientRect();
         for (let i = sections.length - 1; i >= 0; i--) {
-          const el = containerRef.current.querySelector(`#${sections[i].id}`) as HTMLElement | null;
+          const el = partIn(containerRef.current, sections[i].id);
           if (el) {
             const rect = el.getBoundingClientRect();
             if (rect.top - containerRect.top <= 120) {
@@ -139,9 +145,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
     // every box around it too, the page jumping under a nav drawn in a part of it.
     const behavior = reduceMotion ? 'auto' : 'smooth';
     const container = containerRef?.current;
-    const part = container
-      ? container.querySelector<HTMLElement>(`[id="${id.replace(/["\\]/g, '\\$&')}"]`)
-      : document.getElementById(id);
+    const part = container ? partIn(container, id) : document.getElementById(id);
     if (container && part) {
       const margin = parseFloat(getComputedStyle(part).scrollMarginTop) || 0;
       const top =

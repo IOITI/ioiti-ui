@@ -3,6 +3,14 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.20.1] - 2026-11-16
+
+- **`ScrollProgressNav` follows parts whose id is no CSS selector**: one that starts with a digit (a heading's
+  anchor, `1-install`) or holds a dot. With a `containerRef`, it looked each part up as `#id`, which threw on every
+  scroll; it finds them by their `id` now, as a click on a part already did.
+
+An application changes nothing.
+
 ## [0.20.0] - 2026-11-16
 
 - **The menu says a page's tab kept in the query.** An entry's `path` may say values of the query
