@@ -9,6 +9,8 @@ import { useControllableState } from '../../lib/controllable.js';
 import { matchesStroke, parseKeys } from '../../lib/keys.js';
 import { isPlainClick } from '../../lib/links.js';
 import { matchRanges, rank, searchIndex, searchWords } from '../../lib/search.js';
+import { findEntry, forgetEntry, readRemembered, rememberEntry, rememberedKey } from '../../lib/spotlight.js';
+import type { RememberedEntry } from '../../lib/spotlight.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
@@ -53,7 +55,13 @@ export interface SpotlightSearchProps {
    * @default []
    */
   recentSearches?: string[];
-  /** ioiti-ui: told of each entry chosen; not of one opened elsewhere (⌘ or Ctrl and a click). */
+  /**
+   * ioiti-ui: the name of a list of the entries chosen, kept in this browser under the application's key
+   * (`<themeStorageKey()>.spotlight.<name>`): the five latest, offered first while nothing is typed; Shift+Delete
+   * forgets the one chosen. They outlive a sign-out: where a browser is shared, name who is signed in.
+   */
+  remember?: string;
+  /** ioiti-ui: told of each entry chosen; not of one opened elsewhere (⌘ or Ctrl and a click, ⌘↵). */
   onSelect?: (item: SpotlightSearchItem) => void;
   /**
    * ioiti-ui: ⌘K (Ctrl K elsewhere) opens it from any page, and closes it: a `useShortcut`, listed by `?` under
@@ -115,11 +123,14 @@ export interface SpotlightSearchProps {
 // ioiti-ui: stable fallbacks, so that what is worked out from them is not worked out again at each render.
 const NO_ITEMS: SpotlightSearchItem[] = [];
 const NO_SEARCHES: string[] = [];
-// ioiti-ui: ⌘K (Ctrl K elsewhere) pressed in the palette closes it.
+// ioiti-ui: ⌘K (Ctrl K elsewhere) pressed in the palette closes it; ⌘↵ opens the entry chosen elsewhere.
 const CLOSE_KEYS = parseKeys('mod+k')[0];
+const OPEN_KEYS = parseKeys('mod+enter')[0];
 
-/** ioiti-ui: a row of the list: a search made before (typed again when chosen), or an entry. */
-type Row = { kind: 'search'; key: string; text: string } | { kind: 'entry'; key: string; item: SpotlightSearchItem };
+/** ioiti-ui: a row of the list: a search made before (typed again when chosen), an entry, or one chosen before. */
+type Row =
+  | { kind: 'search'; key: string; text: string }
+  | { kind: 'entry' | 'remembered'; key: string; item: SpotlightSearchItem };
 
 /** ioiti-ui: rows under a heading (a group for screen readers), or rows without one. */
 interface Section {
@@ -159,6 +170,7 @@ interface PaletteProps {
   items: SpotlightSearchItem[];
   placeholder: string;
   recentSearches: string[];
+  remember?: string;
   onSelect?: (item: SpotlightSearchItem) => void;
   onNavigate?: (href: string) => void;
   linkComponent?: React.ElementType;
@@ -183,6 +195,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   items,
   placeholder = 'Search…',
   recentSearches = NO_SEARCHES,
+  remember,
   onSelect,
   enableGlobalShortcut = false,
   onNavigate,
@@ -246,6 +259,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
           items={items ?? NO_ITEMS}
           placeholder={placeholder}
           recentSearches={recentSearches}
+          remember={remember}
           onSelect={onSelect}
           onNavigate={onNavigate}
           linkComponent={linkComponent}
@@ -275,6 +289,7 @@ function Palette({
   items,
   placeholder,
   recentSearches,
+  remember,
   onSelect,
   onNavigate,
   linkComponent,
@@ -324,9 +339,27 @@ function Palette({
     };
   }, []);
 
+  // ioiti-ui: the entries chosen last (`remember`), read as it opens: one that leads somewhere as it was kept (it may
+  // have been found by a search, gone from the entries since), one that acts while it is among the entries (what
+  // it does is theirs).
+  const keptAt = remember ? rememberedKey(remember) : undefined;
+  const [remembered, setRemembered] = useState<RememberedEntry[]>(() => (keptAt ? readRemembered(keptAt) : []));
+  const keepInMind = (item: SpotlightSearchItem) => {
+    if (keptAt) setRemembered(rememberEntry(keptAt, { id: item.id, title: item.title, category: item.category, href: item.href }));
+  };
+  const rememberedItems = useMemo(
+    () =>
+      remembered.flatMap((entry): SpotlightSearchItem[] => {
+        const current = findEntry(items, entry.id);
+        if (current) return [current];
+        return entry.href === undefined ? [] : [{ id: entry.id, title: entry.title, category: entry.category, href: entry.href }];
+      }),
+    [remembered, items]
+  );
+
   // ioiti-ui: the entries every word typed finds, whatever its case and accents, the best first (lib/search.ts), the
-  // first `limit`; the searches made before while nothing is typed; the entries under their categories when
-  // grouped, each category where its first (best) entry comes.
+  // first `limit`; the entries chosen last and the searches made before while nothing is typed; the entries under
+  // their categories when grouped, each category where its first (best) entry comes.
   const index = useMemo(() => searchIndex(items), [items]);
   const words = useMemo(() => searchWords(query), [query]);
   const matching = useMemo(() => (filter && words.length > 0 ? rank(index, words) : items), [filter, index, words, items]);
@@ -334,6 +367,9 @@ function Palette({
   const more = matching.length - shown.length;
   const sections = useMemo<Section[]>(() => {
     const result: Section[] = [];
+    if (query === '' && rememberedItems.length > 0) {
+      result.push({ key: 'remembered', heading: 'Recent', rows: rememberedItems.map((item): Row => ({ kind: 'remembered', key: `remembered:${item.id}`, item })) });
+    }
     if (query === '' && recentSearches.length > 0) {
       const searches = Array.from(new Set(recentSearches));
       result.push({ key: 'searches', heading: 'Recent searches', rows: searches.map((text): Row => ({ kind: 'search', key: `search:${text}`, text })) });
@@ -350,7 +386,7 @@ function Palette({
       result.push({ key: 'entries', rows: shown.map(entryRow) });
     }
     return result;
-  }, [query, recentSearches, grouped, shown]);
+  }, [query, rememberedItems, recentSearches, grouped, shown]);
   const rows = useMemo(() => sections.flatMap((section) => section.rows), [sections]);
   const activeIndex = Math.max(0, rows.findIndex((row) => row.key === activeKey));
   const active: Row | undefined = rows[activeIndex];
@@ -436,6 +472,7 @@ function Palette({
   // ioiti-ui: an entry that leads somewhere closes it, and so does another one, unless it stays open to choose
   // more; closed first, so that a dialog its action opens finds the focus where it was before the palette.
   const choose = (item: SpotlightSearchItem) => {
+    keepInMind(item);
     if (closeOnSelect || item.href !== undefined) finish();
     item.action?.();
     onSelect?.(item);
@@ -487,7 +524,21 @@ function Palette({
       setActiveKey(rows[(activeIndex + step + rows.length) % rows.length].key);
     } else if (event.key === 'Enter') {
       event.preventDefault();
-      if (active) chooseRow(active);
+      if (!active) return;
+      // ioiti-ui: ⌘↵ (Ctrl ↵ elsewhere) opens an entry that leads somewhere in another tab, as ⌘ and a click do: by
+      // the address its link was drawn with (the router's base in it), the palette left open.
+      if (active.kind !== 'search' && active.item.href !== undefined && matchesStroke(event, OPEN_KEYS)) {
+        const link = document.getElementById(idFor(active.key));
+        window.open(link instanceof HTMLAnchorElement ? link.href : active.item.href, '_blank', 'noopener');
+        keepInMind(active.item);
+        return;
+      }
+      chooseRow(active);
+    } else if (event.key === 'Delete' && event.shiftKey && query === '' && active?.kind === 'remembered' && keptAt) {
+      // ioiti-ui: Shift+Delete forgets an entry chosen before, as a browser's address bar does, the next one chosen.
+      event.preventDefault();
+      setActiveKey((rows[activeIndex + 1] ?? rows[activeIndex - 1])?.key ?? null);
+      setRemembered(forgetEntry(keptAt, active.item.id));
     }
   };
 
@@ -543,13 +594,15 @@ function Palette({
 
     const item = row.item;
     const isPicked = pickedIds.has(item.id);
+    // ioiti-ui: one chosen before, kept without its icon, is drawn with a clock; its category said beside it.
+    const icon = item.icon ?? (row.kind === 'remembered' ? <History /> : undefined);
     const content = (
       <>
         {/* ioiti-ui: its icon, its words, and its category where the entries are not grouped. */}
         <span className="flex min-w-0 items-center gap-3">
-          {item.icon && (
+          {icon && (
             <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-lg border border-border bg-surface text-text-secondary [&>svg]:size-4">
-              {item.icon}
+              {icon}
             </span>
           )}
           <span className="min-w-0">
@@ -578,7 +631,7 @@ function Palette({
               </span>
             )
           )}
-          {!grouped && <span className="text-[11px] text-text-muted">{item.category}</span>}
+          {(!grouped || row.kind === 'remembered') && <span className="text-[11px] text-text-muted">{item.category}</span>}
           {/* ioiti-ui: chosen already. */}
           {isPicked && <Check aria-hidden className="size-4 shrink-0 text-text-primary accent:text-brand" />}
         </span>
@@ -593,10 +646,12 @@ function Palette({
           role="option"
           aria-selected={isActive}
           aria-checked={picked ? isPicked : undefined}
+          aria-keyshortcuts={row.kind === 'remembered' ? 'Shift+Delete' : undefined}
           href={item.href}
           tabIndex={-1}
           onClick={(event: React.MouseEvent) => {
-            // A click with ⌘ or Ctrl opens it elsewhere and leaves the palette open.
+            // A click with ⌘ or Ctrl opens it elsewhere and leaves the palette open. ioiti-ui: remembered all the same.
+            keepInMind(item);
             if (!isPlainClick(event)) return;
             finish();
             item.action?.();
@@ -616,6 +671,7 @@ function Palette({
         role="option"
         aria-selected={isActive}
         aria-checked={picked ? isPicked : undefined}
+        aria-keyshortcuts={row.kind === 'remembered' ? 'Shift+Delete' : undefined}
         onClick={() => choose(item)}
         onPointerMove={point(row)}
         className={rowClass}

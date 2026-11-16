@@ -507,6 +507,8 @@ otherwise).
   entry's `shortcut` may be keys for `Kbd`; its `category` is a `string` (EasyUI's type named its own site's).
   `loading`, `error` and `onRetry` say what is found as it is typed, as `notification-bell` says its own: never "No
   results" before it knows, the last entries kept under an error, a Try again.
+  `remember` keeps the entries chosen last in the browser (`src/lib/spotlight.ts`, under the application's key) and
+  offers them first, Shift+Delete forgetting one; ⌘↵ opens an entry that leads somewhere in another tab.
 
 ## ioiti-ui's own changes
 

@@ -7340,9 +7340,14 @@
     "description": "Searches made before, offered while nothing is typed: one chosen is typed again."
    },
    {
+    "name": "remember",
+    "type": "string",
+    "description": "The name of a list of the entries chosen, kept in this browser under the application's key (`<themeStorageKey()>.spotlight.<name>`): the five latest, offered first while nothing is typed; Shift+Delete forgets the one chosen. They outlive a sign-out: where a browser is shared, name who is signed in."
+   },
+   {
     "name": "onSelect",
     "type": "(item: SpotlightSearchItem) => void",
-    "description": "Told of each entry chosen; not of one opened elsewhere (⌘ or Ctrl and a click)."
+    "description": "Told of each entry chosen; not of one opened elsewhere (⌘ or Ctrl and a click, ⌘↵)."
    },
    {
     "name": "enableGlobalShortcut",

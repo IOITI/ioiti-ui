@@ -55,11 +55,13 @@ export function GallerySearch() {
       />
       <LookPicker />
       <ThemeToggle />
-      {/* Its ⌘K a shortcut of the application's (listed by ?, as its label), pressed in it closing it. */}
+      {/* Its ⌘K a shortcut of the application's (listed by ?, as its label), pressed in it closing it; the pages
+          chosen last offered first. */}
       <SpotlightSearch
         open={open}
         onOpenChange={setOpen}
         enableGlobalShortcut
+        remember="go-to"
         label="Go to a page"
         placeholder="A component, an example, a page…"
         grouped

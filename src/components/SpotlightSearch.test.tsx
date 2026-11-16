@@ -2,9 +2,11 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event'
 import { Receipt } from 'lucide-react'
 import { useRef, useState, useSyncExternalStore } from 'react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { ComponentProps } from 'react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { IoitiProvider } from './IoitiProvider.js'
+import { LinkProvider } from './LinkProvider.js'
 import { useShortcutRegistry } from './shortcuts-context.js'
 import { SettleModal } from './ui/settle-modal.js'
 import { SpotlightSearch } from './ui/spotlight-search.js'
@@ -459,11 +461,107 @@ describe('SpotlightSearch', () => {
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('The orders could not be searched.'))
   })
 
+  it('offers the entries chosen before first while nothing is typed, kept by name (remember)', async () => {
+    const user = userEvent.setup()
+    function Page() {
+      const [open, setOpen] = useState(false)
+      return (
+        <>
+          <button type="button" onClick={() => setOpen(true)}>
+            Open
+          </button>
+          <SpotlightSearch open={open} onOpenChange={setOpen} remember="go-to" items={ITEMS} onNavigate={() => {}} label="Go to" />
+        </>
+      )
+    }
+    render(<Page />)
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    expect(screen.queryByRole('group', { name: 'Recent' })).toBeNull()
+    await user.keyboard('custo{Enter}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    const recent = await screen.findByRole('group', { name: 'Recent' })
+    expect(within(recent).getAllByRole('option').map((option) => option.textContent)).toEqual(['CustomersPages'])
+    expect(screen.getAllByRole('option')[0]).toHaveAttribute('aria-selected', 'true')
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('c')
+    expect(screen.queryByRole('group', { name: 'Recent' })).toBeNull()
+  })
+
+  it("draws one chosen before that leads somewhere, gone from the entries, with the application's link; one that acts only while it is there", () => {
+    function AppLink(props: ComponentProps<'a'>) {
+      return <a data-link="app" {...props} />
+    }
+    window.localStorage.setItem(
+      'ioiti.theme.spotlight.go-to',
+      JSON.stringify([
+        { id: 'o42', title: 'Order 2026-0042', category: 'Orders', href: '/orders/2026-0042' },
+        { id: 'export', title: 'Export the orders', category: 'Actions' },
+      ]),
+    )
+    render(
+      <LinkProvider component={AppLink}>
+        <SpotlightSearch open onOpenChange={() => {}} remember="go-to" items={ITEMS} label="Go to" />
+      </LinkProvider>,
+    )
+    const options = within(screen.getByRole('group', { name: 'Recent' })).getAllByRole('option')
+    expect(options).toHaveLength(1)
+    expect(options[0]).toHaveAttribute('data-link', 'app')
+    expect(options[0]).toHaveAttribute('href', '/orders/2026-0042')
+    expect(options[0]).toHaveAttribute('aria-keyshortcuts', 'Shift+Delete')
+  })
+
+  it('forgets one chosen before with Shift+Delete, the next one chosen', async () => {
+    const user = userEvent.setup()
+    window.localStorage.setItem(
+      'ioiti.theme.spotlight.go-to',
+      JSON.stringify([
+        { id: 'o42', title: 'Order 2026-0042', category: 'Orders', href: '/orders/2026-0042' },
+        { id: 'customers', title: 'Customers', category: 'Pages', href: '/customers' },
+      ]),
+    )
+    render(<SpotlightSearch open onOpenChange={() => {}} remember="go-to" items={ITEMS} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('{Shift>}{Delete}{/Shift}')
+    const left = within(screen.getByRole('group', { name: 'Recent' })).getAllByRole('option')
+    expect(left.map((option) => option.textContent)).toEqual(['CustomersPages'])
+    expect(left[0]).toHaveAttribute('aria-selected', 'true')
+    expect(JSON.parse(window.localStorage.getItem('ioiti.theme.spotlight.go-to')!).map((entry: { id: string }) => entry.id)).toEqual(['customers'])
+  })
+
+  it('keeps nothing without remember', async () => {
+    const user = userEvent.setup()
+    render(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} onNavigate={() => {}} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('{Enter}')
+    expect(window.localStorage.length).toBe(0)
+  })
+
+  it('opens an entry that leads somewhere in another tab with ⌘↵ (Ctrl ↵ here), remembered, the palette left open', async () => {
+    const user = userEvent.setup()
+    const opened = vi.spyOn(window, 'open').mockImplementation(() => null)
+    const chosen = vi.fn()
+    const onOpenChange = vi.fn()
+    render(<SpotlightSearch open onOpenChange={onOpenChange} onSelect={chosen} remember="go-to" items={ITEMS} label="Go to" />)
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Search' })).toHaveFocus())
+    await user.keyboard('{Control>}{Enter}{/Control}')
+    expect(opened).toHaveBeenCalledWith(expect.stringMatching(/^http.*\/orders$/), '_blank', 'noopener')
+    expect(chosen).not.toHaveBeenCalled()
+    expect(onOpenChange).not.toHaveBeenCalled()
+    expect(within(screen.getByRole('group', { name: 'Recent' })).getByRole('option')).toHaveTextContent('Orders')
+  })
+
   it('draws nothing under its field while it has no entries and nothing is typed', () => {
     render(<SpotlightSearch open onOpenChange={() => {}} label="Go to" />)
     expect(screen.queryByText(/No results/)).toBeNull()
     expect(screen.queryAllByRole('option')).toHaveLength(0)
   })
+})
+
+beforeEach(() => {
+  window.localStorage.clear()
 })
 
 afterEach(() => {

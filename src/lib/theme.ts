@@ -6,6 +6,8 @@
  * `src/theme.js` applies the same rules before the application starts.
  */
 
+import { keep, readKept } from './kept.js'
+
 export type Theme = 'light' | 'dark'
 export type ThemePreference = 'system' | Theme
 
@@ -110,22 +112,6 @@ export const MATERIAL_ATTRIBUTE = 'data-material'
 
 function isOneOf<T extends string>(values: readonly T[], value: string | null): value is T {
   return value !== null && (values as readonly string[]).includes(value)
-}
-
-function readKept(key: string): string | null {
-  try {
-    return window.localStorage.getItem(key)
-  } catch {
-    return null
-  }
-}
-
-function keep(key: string, value: string): void {
-  try {
-    window.localStorage.setItem(key, value)
-  } catch {
-    // A private window, storage refused: the choice holds until the page is closed.
-  }
 }
 
 /** The accent chosen in this browser, or null: none was, or what is kept is no accent. */

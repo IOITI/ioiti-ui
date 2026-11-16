@@ -41,6 +41,14 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   never "No results" before it knows, and keeps the entries shown until new ones come; its search icon turns.
   `error` (`true`: "The search failed.", or your words): in place of the list, or above the last entries found,
   with a Try again for `onRetry`. The gallery's example asks a server as it is typed (`filter={false}`).
+- **`SpotlightSearch` remembers the entries chosen**, given a name (`remember`): the five chosen last, kept in this
+  browser under the application's key (`<themeStorageKey()>.spotlight.<name>`), are offered first while nothing is
+  typed (Recent). One that leads somewhere is kept as it was (it may have been found by a search); one that acts is
+  offered while it is among the entries. Shift+Delete forgets the one chosen. Only an entry's id, title, category and
+  `href` are kept; they outlive a sign-out, so an application whose browser is shared names who is signed in, and
+  removes the key as they sign out. The gallery's palette remembers the pages chosen.
+- **`SpotlightSearch`: ⌘↵ (Ctrl ↵ elsewhere)** opens an entry that leads somewhere in another tab, as ⌘ and a click
+  do, the palette left open.
 - **`SpotlightSearch`'s `enableGlobalShortcut` is a `useShortcut`**: ⌘K on an Apple computer, Ctrl K elsewhere (it
   heard both on both), listed by `?` under Navigation as the palette's `label`, waiting while another dialog is
   open. Pressed in the palette, it closes it; in the gallery, the browser's own Ctrl K took it. The gallery's
