@@ -3,6 +3,14 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.20.3] - 2026-11-16
+
+- **`FlysheetBody` fades out under the header as it scrolls.** What goes under a sheet's header no longer stops at a
+  hard line: the body is masked at its top, the fade as tall as it has scrolled, up to 32 px, on any surface (glass
+  too). At rest, nothing changes. Its `ref` and `onScroll` are the caller's as before.
+
+An application changes nothing.
+
 ## [0.20.2] - 2026-11-16
 
 - **`ScrollProgressNav` marks the parts near the end of a page.** At the end of the page, the part marked is the last

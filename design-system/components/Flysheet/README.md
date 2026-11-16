@@ -16,3 +16,4 @@ A sheet that slides in from a side of the page for a record or a form: over the 
 ```
 
 - One dialog at a time: a sheet keeps the focus and gives it back to its trigger. It slides with `springSheet` and leaves with `easeExit`.
+- Its body scrolls under the header, which stays: scrolled, the body fades out under it, the fade as tall as the body has scrolled, up to 32 px (a mask, so on any surface, glass too). At rest, no fade.

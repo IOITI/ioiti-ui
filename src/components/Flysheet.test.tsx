@@ -272,3 +272,42 @@ describe('the flysheet (EasyUI’s sheet, with Elastic’s flyout)', () => {
     expect(onOpenChange).toHaveBeenLastCalledWith(false, { reason: 'outside-click' })
   })
 })
+
+describe('a flysheet’s body, scrolled', () => {
+  it('fades out under the header as tall as it scrolled, up to 32 px, and not at rest', async () => {
+    const user = userEvent.setup()
+    const scrolls = vi.fn()
+    let held: HTMLDivElement | null = null
+    render(
+      <Flysheet>
+        <FlysheetTrigger>Open the order</FlysheetTrigger>
+        <FlysheetContent>
+          <FlysheetHeader>
+            <FlysheetTitle>Order 2026-0042</FlysheetTitle>
+          </FlysheetHeader>
+          <FlysheetBody data-testid="body" onScroll={scrolls} ref={(node) => void (held = node)}>
+            <p>The order’s lines</p>
+          </FlysheetBody>
+        </FlysheetContent>
+      </Flysheet>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Open the order' }))
+    const body = await screen.findByTestId('body')
+    expect(held).toBe(body) // its ref is the caller's still
+    expect(body).not.toHaveAttribute('data-scrolled')
+
+    const scrollTo = (top: number) => {
+      body.scrollTop = top
+      fireEvent.scroll(body)
+    }
+    scrollTo(10)
+    expect(body).toHaveAttribute('data-scrolled')
+    expect(body.style.getPropertyValue('--flysheet-fade')).toBe('10px')
+    scrollTo(300)
+    expect(body.style.getPropertyValue('--flysheet-fade')).toBe('32px')
+    scrollTo(0)
+    expect(body).not.toHaveAttribute('data-scrolled')
+    expect(body.style.getPropertyValue('--flysheet-fade')).toBe('')
+    expect(scrolls).toHaveBeenCalledTimes(3) // the caller's onScroll still told
+  })
+})

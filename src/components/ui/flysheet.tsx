@@ -773,9 +773,47 @@ export function FlysheetDescription({ className, ...props }: React.ComponentProp
   return <p className={cn("text-sm text-muted-foreground", className)} {...props} id={descId} />;
 }
 
-export function FlysheetBody({ className, ...props }: React.ComponentProps<"div">) {
+/** ioiti-ui: how tall the fade under the header grows, as the body scrolls (px). */
+const BODY_FADE = 32;
+
+// ioiti-ui: scrolled, the body fades out under the header, the fade as tall as it has scrolled up to BODY_FADE: what
+// went under the header no longer stops at a hard line. A mask, so on any surface, glass too; none at rest, where
+// nothing went under it (what a body holds that floats is drawn in the sheet's layer, out of the mask's reach).
+function fadeUnderHeader(body: HTMLElement) {
+  const fade = Math.min(Math.max(body.scrollTop, 0), BODY_FADE);
+  if (fade > 0) {
+    body.dataset.scrolled = "";
+    body.style.setProperty("--flysheet-fade", `${fade}px`);
+  } else {
+    delete body.dataset.scrolled;
+    body.style.removeProperty("--flysheet-fade");
+  }
+}
+
+export function FlysheetBody({ className, onScroll, ref, ...props }: React.ComponentProps<"div">) {
   const pad = usePadding();
-  return <div className={cn("flex-1 overflow-y-auto", pad.body, className)} {...props} />;
+  const body = React.useRef<HTMLDivElement>(null);
+  React.useImperativeHandle(ref, () => body.current as HTMLDivElement);
+  // Opened already scrolled (a body kept between two openings): faded from the start.
+  React.useLayoutEffect(() => {
+    if (body.current) fadeUnderHeader(body.current);
+  }, []);
+  return (
+    <div
+      ref={body}
+      className={cn(
+        "flex-1 overflow-y-auto",
+        "data-[scrolled]:[mask-image:linear-gradient(to_bottom,transparent,#000_var(--flysheet-fade))]",
+        pad.body,
+        className
+      )}
+      onScroll={(event) => {
+        fadeUnderHeader(event.currentTarget);
+        onScroll?.(event);
+      }}
+      {...props}
+    />
+  );
 }
 
 export function FlysheetFooter({ className, ...props }: React.ComponentProps<"div">) {
