@@ -214,11 +214,11 @@ export const UndoToast: React.FC<UndoToastProps> = ({
 
               {/* Text copy */}
               <div className="flex-1 min-w-0 pr-1">
-                <p className="text-xs font-semibold text-neutral-900 truncate dark:text-[#FAFAFA]">
+                <p className="text-sm font-semibold text-neutral-900 truncate dark:text-[#FAFAFA]">
                   {isRestored ? restoredMessage : title}
                 </p>
                 {description && !isRestored && (
-                  <p className="text-[11px] text-neutral-600 truncate mt-0.5 dark:text-[#A1A1A1]">
+                  <p className="text-xs text-neutral-600 truncate mt-0.5 dark:text-[#A1A1A1]">
                     {description}
                   </p>
                 )}
@@ -230,7 +230,7 @@ export const UndoToast: React.FC<UndoToastProps> = ({
                   <button
                     type="button"
                     onClick={handleUndoClick}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-neutral-100 hover:bg-white border border-neutral-200 hover:border-neutral-400 text-xs font-medium text-neutral-900 transition-colors focus-ring cursor-pointer dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:text-[#FAFAFA]"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-neutral-100 hover:bg-white border border-neutral-200 hover:border-neutral-400 text-sm font-medium text-neutral-900 transition-colors focus-ring cursor-pointer dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:text-[#FAFAFA]"
                   >
                     <Undo2 className="w-3 h-3 text-neutral-500 dark:text-[#A1A1A1]" />
                     <span>{undoLabel}</span>

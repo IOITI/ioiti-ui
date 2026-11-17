@@ -295,7 +295,7 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
             <div className="flex items-center gap-2 min-w-0">
               <span
                 className={cn(
-                  'text-xs sm:text-sm tracking-tight transition-colors truncate',
+                  'text-sm tracking-tight transition-colors truncate',
                   activity.status === 'running'
                     ? 'font-medium text-foreground'
                     : 'font-normal text-foreground/90 group-hover/row:text-foreground'
@@ -343,7 +343,7 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
               {/* Input parameters */}
               {activity.details?.input && (
                 <div className="space-y-1">
-                  <div className="text-[11px] font-medium text-muted-foreground">
+                  <div className="text-xs font-medium text-muted-foreground">
                     {inputLabel}
                   </div>
                   {/* ioiti-ui: JSON as written, its lines kept. */}
@@ -358,7 +358,7 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
               {/* Code snippet */}
               {activity.details?.codeSnippet && (
                 <div className="space-y-1">
-                  <div className="text-[11px] font-medium text-muted-foreground">
+                  <div className="text-xs font-medium text-muted-foreground">
                     {activity.details.language || 'Code'}
                   </div>
                   <pre className="p-2.5 sm:p-3 rounded-lg bg-surface-raised/50 dark:bg-surface-raised/20 border border-border/40 text-foreground text-xs leading-relaxed overflow-x-auto select-text font-sans">
@@ -370,7 +370,7 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
               {/* Output Result */}
               {activity.details?.output && (
                 <div className="space-y-1">
-                  <div className="text-[11px] font-medium text-muted-foreground">
+                  <div className="text-xs font-medium text-muted-foreground">
                     {outputLabel}
                   </div>
                   <div className="p-2.5 sm:p-3 rounded-lg bg-surface-raised/50 dark:bg-surface-raised/20 border border-border/40 text-muted-foreground text-xs leading-relaxed overflow-x-auto select-text whitespace-pre-wrap break-words">
@@ -442,7 +442,7 @@ export const AgentActivityNotes: React.FC<AgentActivityNotesProps> = ({ notes, c
         {notes.map((note) => (
           <p
             key={note.id}
-            className="text-xs sm:text-sm leading-relaxed tracking-tight text-muted-foreground whitespace-pre-line break-words"
+            className="text-sm leading-relaxed tracking-tight text-muted-foreground whitespace-pre-line break-words"
           >
             {note.title}
             {note.status === 'running' && <NoteCaret />}

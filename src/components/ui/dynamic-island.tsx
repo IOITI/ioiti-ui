@@ -140,7 +140,7 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
         aria-controls={expanded ? `${instanceId}-panel` : undefined}
         className={cn(
           surface,
-          'inline-flex h-8 items-center gap-2 rounded-full px-3 text-xs font-medium cursor-pointer hover:bg-white dark:hover:bg-[#1A1A1D]',
+          'inline-flex h-8 items-center gap-2 rounded-full px-3 text-sm font-medium cursor-pointer hover:bg-white dark:hover:bg-[#1A1A1D]',
           expanded && 'invisible'
         )}
       >

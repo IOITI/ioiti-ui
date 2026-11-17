@@ -113,7 +113,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
               <span className="min-w-5 h-5 px-1 rounded-full bg-neutral-900 text-white dark:bg-[#FAFAFA] dark:text-[#050505] accent:bg-brand accent:text-brand-foreground text-[11px] font-bold font-mono flex items-center justify-center">
                 {selectedCount}
               </span>
-              <span className="text-xs font-medium text-neutral-900 dark:text-[#FAFAFA] whitespace-nowrap">
+              <span className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] whitespace-nowrap">
                 {selectedCount === 1 ? `${noun[0]} selected` : `${noun[1]} selected`}
               </span>
 
@@ -122,7 +122,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
                 <button
                   type="button"
                   onClick={onSelectAll}
-                  className="text-[11px] font-mono text-muted-foreground hover:text-neutral-900 dark:hover:text-white transition-colors ml-1 underline underline-offset-2 cursor-pointer"
+                  className="text-xs font-mono text-muted-foreground hover:text-neutral-900 dark:hover:text-white transition-colors ml-1 underline underline-offset-2 cursor-pointer"
                 >
                   {isAllSelected ? 'Select none' : `All (${totalCount})`}
                 </button>
@@ -135,7 +135,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
                 const isDanger = action.variant === 'danger';
                 const isPrimary = action.variant === 'primary';
                 const classes = cn(
-                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus-ring whitespace-nowrap cursor-pointer disabled:cursor-not-allowed disabled:opacity-40',
+                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-ring whitespace-nowrap cursor-pointer disabled:cursor-not-allowed disabled:opacity-40',
                   isDanger
                     ? 'bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/30 text-rose-700 dark:text-rose-400 disabled:hover:bg-rose-500/10 disabled:hover:text-rose-700 dark:disabled:hover:text-rose-400'
                     : isPrimary

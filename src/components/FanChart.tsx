@@ -182,7 +182,7 @@ export function FanChart({
   const places = data.map((point) => point.x)
   const n = data.length
 
-  if (n === 0) return <p className="py-10 text-center text-[13px] text-muted-foreground">No data</p>
+  if (n === 0) return <p className="py-10 text-center text-sm text-muted-foreground">No data</p>
 
   const keys = [...shownLines.map((line) => line.key), ...shownBands.flatMap((band) => [band.lower, band.upper])]
   const values = keys.flatMap((key) => data.map((point) => valueOf(point, key))).filter((value): value is number => value !== null)
@@ -311,7 +311,7 @@ export function FanChart({
             return (
               <g key={`${marker.label}-${marker.x}`}>
                 <line x1={at} x2={at} y1={M.top} y2={M.top + ih} stroke={AXIS_COLOUR} strokeDasharray="3 3" />
-                <text x={at + 4} y={M.top + 2} dominantBaseline="hanging" className="fill-muted-foreground text-[10px]">
+                <text x={at + 4} y={M.top + 2} dominantBaseline="hanging" className="fill-muted-foreground text-[11px]">
                   {marker.label}
                 </text>
               </g>
@@ -354,7 +354,7 @@ export function FanChart({
                 strokeWidth={1.25}
               />
               {reference.label && (
-                <text x={width - M.right} y={y(reference.value) - 4} textAnchor="end" className="fill-muted-foreground text-[10px]">
+                <text x={width - M.right} y={y(reference.value) - 4} textAnchor="end" className="fill-muted-foreground text-[11px]">
                   {reference.label}
                 </text>
               )}

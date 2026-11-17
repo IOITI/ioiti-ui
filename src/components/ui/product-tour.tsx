@@ -489,12 +489,12 @@ export function ProductTour({
             animate={{ opacity: ready ? 1 : 0, scale: ready ? 1 : 0.96 }}
             transition={motionTransitions.easeFast}
           >
-            <div className="flex items-center justify-between px-4 pt-3 text-[11px] tabular-nums text-muted-foreground">
+            <div className="flex items-center justify-between px-4 pt-3 text-xs tabular-nums text-muted-foreground">
               <span>
                 {index + 1} of {steps.length}
               </span>
               {/* ioiti-ui: the package's buttons, the global focus ring. */}
-              <Button variant="ghost" size="sm" className="-my-1.5 -mr-2 h-7 px-2 text-[11px]" onClick={() => onClose("skip")}>
+              <Button variant="ghost" size="sm" className="-my-1.5 -mr-2 h-7 px-2 text-xs" onClick={() => onClose("skip")}>
                 Skip
               </Button>
             </div>
@@ -514,10 +514,10 @@ export function ProductTour({
                   transition={motionTransitions.easeFast}
                   className="px-4 pb-1 pt-2"
                 >
-                  <h2 id={titleId} className="text-[15px] font-semibold tracking-tight text-text-primary">
+                  <h2 id={titleId} className="text-base font-semibold tracking-tight text-text-primary">
                     {step.title}
                   </h2>
-                  <div className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{step.body}</div>
+                  <div className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.body}</div>
                 </motion.div>
               </AnimatePresence>
             </motion.div>

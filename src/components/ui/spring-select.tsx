@@ -135,7 +135,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
         onClick={() => !disabled && setOpen((o) => !o)}
         onKeyDown={handleTriggerKey}
         className={cn(
-          'relative w-full h-10 px-3.5 pr-9 text-xs rounded-lg border outline-none text-left flex items-center justify-between transition-colors duration-150 focus-ring',
+          'relative w-full h-10 px-3.5 pr-9 text-base sm:text-sm rounded-lg border outline-none text-left flex items-center justify-between transition-colors duration-150 focus-ring',
           'bg-[var(--surface-raised)]',
           open
             ? // ioiti-ui: open, the option under the pointer and the one chosen in the accent, where the theme has one (accent:).
@@ -188,7 +188,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
                   onMouseEnter={() => setActiveIndex(idx)}
                   onClick={() => handleSelect(opt, idx)}
                   className={cn(
-                    'relative px-3 py-2 mx-1 rounded-md text-xs cursor-pointer flex items-center justify-between gap-2',
+                    'relative px-3 py-2 mx-1 rounded-md text-sm cursor-pointer flex items-center justify-between gap-2',
                     selected ? 'text-[var(--text-primary)] accent:text-brand-text' : 'text-[var(--text-secondary)]',
                     opt.disabled && 'opacity-30 cursor-not-allowed',
                     activeIndex === idx && !opt.disabled && 'bg-[var(--surface-raised)] accent:bg-brand-soft'
@@ -197,7 +197,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
                   <span className="flex flex-col">
                     <span className="leading-tight">{opt.label}</span>
                     {opt.description && (
-                      <span className="text-[10px] text-[var(--text-muted)] mt-0.5">
+                      <span className="text-xs text-[var(--text-muted)] mt-0.5">
                         {opt.description}
                       </span>
                     )}
@@ -215,7 +215,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
           initial={{ opacity: 0, y: -2 }}
           animate={{ opacity: 1, y: 0 }}
           transition={motionTransitions.springSnappy}
-          className="text-[11px] text-rose-700 dark:text-rose-400 font-medium mt-1.5"
+          className="text-xs text-rose-700 dark:text-rose-400 font-medium mt-1.5"
           role="alert"
         >
           {error}

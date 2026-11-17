@@ -57,7 +57,7 @@ const positionClasses: Record<VelocityToastPosition, string> = {
 
 // ioiti-ui: the action's look, UndoToast's Undo in this toast's tokens.
 const ACTION_CLASS =
-  'inline-flex shrink-0 items-center px-2.5 py-1 rounded-md border border-[var(--border)] bg-[var(--surface-raised)] text-xs font-medium text-[var(--text-primary)] hover:border-[var(--text-subtle)] transition-colors focus-ring';
+  'inline-flex shrink-0 items-center px-2.5 py-1 rounded-md border border-[var(--border)] bg-[var(--surface-raised)] text-sm font-medium text-[var(--text-primary)] hover:border-[var(--text-subtle)] transition-colors focus-ring';
 
 const variantIcon = (variant: VelocityToastVariant, custom?: React.ReactNode) => {
   if (custom) return custom;
@@ -215,9 +215,9 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
               </div>
 
               <div className="flex-1 min-w-0 pr-1">
-                <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{title}</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{title}</p>
                 {description && (
-                  <p className="text-[11px] text-[var(--text-secondary)] truncate mt-0.5">{description}</p>
+                  <p className="text-xs text-[var(--text-secondary)] truncate mt-0.5">{description}</p>
                 )}
               </div>
 

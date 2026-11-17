@@ -183,7 +183,7 @@ export function StatCard({
         {hasDelta && (
           <span
             className={cx(
-              "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11.5px] font-medium tabular-nums",
+              "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums",
               // ioiti-ui: the status colours of theme.css, 4.5:1 as text (emerald-600 on its pale pill was 3.6:1).
               good === null && "bg-black/[0.05] text-neutral-500 dark:bg-white/[0.06] dark:text-neutral-400",
               good === true && "bg-emerald-500/10 text-positive",

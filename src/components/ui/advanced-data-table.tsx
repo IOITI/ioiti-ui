@@ -204,7 +204,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={searchPlaceholder}
-              className="w-full pl-8 sm:pl-9 pr-7 sm:pr-8 py-1.5 rounded-lg border border-border/60 bg-surface-raised/20 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-border transition-colors font-sans"
+              className="w-full pl-8 sm:pl-9 pr-7 sm:pr-8 py-1.5 rounded-lg border border-border/60 bg-surface-raised/20 text-base sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-border transition-colors font-sans"
             />
             {searchTerm && (
               <button
@@ -257,7 +257,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                     return (
                       <label
                         key={col.id}
-                        className="flex items-center gap-2 px-2 py-1.5 text-xs text-foreground/80 hover:text-foreground hover:bg-surface-hover/50 rounded-md cursor-pointer select-none font-normal"
+                        className="flex items-center gap-2 px-2 py-1.5 text-sm text-foreground/80 hover:text-foreground hover:bg-surface-hover/50 rounded-md cursor-pointer select-none font-normal"
                       >
                         <DrawCheckbox
                           checked={isVisible}
@@ -294,7 +294,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                     type="button"
                     whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
                     onClick={() => onBulkExport(Array.from(selectedRowIds))}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border/60 hover:bg-surface-hover text-foreground transition-colors text-xs font-normal cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border/60 hover:bg-surface-hover text-foreground transition-colors text-sm font-normal cursor-pointer"
                   >
                     <Download className="w-3 h-3" />
                     <span>Export</span>
@@ -305,7 +305,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                     type="button"
                     whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
                     onClick={() => onBulkDelete(Array.from(selectedRowIds))}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors text-xs font-normal cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors text-sm font-normal cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                     <span>Delete</span>
@@ -351,14 +351,14 @@ function drawnAsToggles(column: ColumnDef<any>): boolean {
 // ioiti-ui: a button of the filter group, as Elastic UI's EuiFilterButton: the group's border around it, a
 // divider between two, its ends rounded as the group is.
 const FILTER_BUTTON =
-  'inline-flex h-8 shrink-0 items-center gap-1.5 px-3 text-xs whitespace-nowrap transition-colors cursor-pointer first:rounded-l-[calc(var(--radius-lg)-1px)] last:rounded-r-[calc(var(--radius-lg)-1px)] hover:bg-surface-hover/60';
+  'inline-flex h-8 shrink-0 items-center gap-1.5 px-3 text-sm whitespace-nowrap transition-colors cursor-pointer first:rounded-l-[calc(var(--radius-lg)-1px)] last:rounded-r-[calc(var(--radius-lg)-1px)] hover:bg-surface-hover/60';
 const FILTER_BUTTON_IDLE = 'text-muted-foreground hover:text-foreground';
 // What is on, in the accent where the theme has one (accent:).
 const FILTER_BUTTON_ON = 'text-foreground font-medium accent:text-brand-text';
 
 // ioiti-ui: how many options a list has (subdued), or how many are ticked (bright): EUI's numFilters and
 // numActiveFilters.
-const FILTER_COUNT = 'inline-grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-medium tabular-nums';
+const FILTER_COUNT = 'inline-grid h-4 min-w-4 place-items-center rounded-full px-1 text-[11px] font-medium tabular-nums';
 const FILTER_COUNT_ALL = 'bg-foreground/10 text-foreground';
 const FILTER_COUNT_TICKED = 'bg-foreground text-background accent:bg-brand accent:text-brand-foreground';
 
@@ -581,7 +581,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                       onChange={(e) => setQuery(e.target.value)}
                       aria-label={`Search the options of ${column.header}`}
                       placeholder="Search…"
-                      className="w-full rounded-lg border border-border/60 bg-surface-raised/20 py-1.5 pl-8 pr-2 text-xs text-foreground placeholder:text-muted-foreground transition-colors focus:border-border"
+                      className="w-full rounded-lg border border-border/60 bg-surface-raised/20 py-1.5 pl-8 pr-2 text-base sm:text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-border"
                     />
                   </div>
                 </div>
@@ -597,7 +597,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                       <label
                         key={option.value}
                         className={cn(
-                          'flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-xs hover:bg-surface-hover/60',
+                          'flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-surface-hover/60',
                           // An option that would leave no row, unless ticked, recedes.
                           count === 0 && !ticked ? 'text-muted-foreground' : 'text-foreground'
                         )}
@@ -618,7 +618,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                   <button
                     type="button"
                     onClick={clearColumn}
-                    className="w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-surface-hover/60 hover:text-foreground"
+                    className="w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-sm text-muted-foreground transition-colors hover:bg-surface-hover/60 hover:text-foreground"
                   >
                     Clear
                   </button>
@@ -777,14 +777,14 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
         <div className="w-9 h-9 rounded-full bg-surface-raised/40 border border-border/50 flex items-center justify-center text-muted-foreground mb-1">
           <Search className="w-4 h-4" />
         </div>
-        <h4 className="text-xs font-medium text-foreground">No matching records found</h4>
+        <h4 className="text-sm font-medium text-foreground">No matching records found</h4>
         <p className="text-xs text-muted-foreground max-w-xs">
           Nothing matches the search or the filters.
         </p>
         <button
           type="button"
           onClick={clearFilters}
-          className="mt-2 px-3 py-1 rounded-md border border-border/60 hover:bg-surface-hover text-xs text-foreground transition-colors cursor-pointer"
+          className="mt-2 px-3 py-1 rounded-md border border-border/60 hover:bg-surface-hover text-sm text-foreground transition-colors cursor-pointer"
         >
           Clear filters
         </button>
@@ -828,7 +828,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                       className="shrink-0"
                     />
                   )}
-                  <span className="font-medium text-xs text-foreground truncate">
+                  <span className="font-medium text-sm text-foreground truncate">
                     {primaryCol?.cell
                       ? primaryCol.cell({ row, value: primaryVal })
                       : String(primaryVal ?? '')}
@@ -851,7 +851,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
               </div>
 
               {remainingCols.length > 0 && (
-                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 pt-2.5 sm:pt-3 border-t border-border/40 text-xs">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 pt-2.5 sm:pt-3 border-t border-border/40 text-sm">
                   {remainingCols.map((col) => {
                     const value = col.accessorKey
                       ? row[col.accessorKey]
@@ -895,7 +895,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     // ioiti-ui: positioned, so that the cells' words for screen readers (sr-only) stay in the frame that scrolls them.
     // ioiti-ui: a thin scrollbar, not none: a table wider than its box says it goes on past the edge.
     <div className={cn('relative overflow-x-auto [scrollbar-width:thin] font-sans', className)}>
-      <table className="w-full border-collapse text-left font-sans text-xs min-w-[500px] sm:min-w-full">
+      <table className="w-full border-collapse text-left font-sans text-sm min-w-[500px] sm:min-w-full">
         <thead>
           <tr className="border-b border-border/50 bg-surface-raised/20 text-xs text-muted-foreground select-none">
             {/* Checkbox Column */}
@@ -1107,7 +1107,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
               setCurrentPage(1);
             }}
             aria-label="Rows per page"
-            className="px-2 py-1 rounded-md border border-border/60 bg-surface-raised/20 text-foreground text-xs focus:outline-none focus:border-border cursor-pointer font-sans"
+            className="px-2 py-1 rounded-md border border-border/60 bg-surface-raised/20 text-foreground text-base sm:text-sm focus:outline-none focus:border-border cursor-pointer font-sans"
           >
             {/* ioiti-ui: the page's size among them, given or not: a select shows its first option for a value it lacks. */}
             {(pageSizeOptions.includes(pageSize) ? pageSizeOptions : [...pageSizeOptions, pageSize].sort((a, b) => a - b)).map((opt) => (

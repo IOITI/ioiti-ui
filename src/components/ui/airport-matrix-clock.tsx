@@ -195,7 +195,7 @@ export function AirportMatrixClock({
       <div>
         {title && (
           <header className={`flex items-center justify-between border-b border-border/70 dark:border-[#363636] ${size === 'sm' ? 'px-3 py-1.5' : 'px-4 py-3 sm:px-6'}`}>
-            <p className="font-mono text-[10px] tracking-[0.18em] text-text-muted dark:text-[#8A8A8A]">{title}</p>
+            <p className="font-mono text-[11px] tracking-[0.18em] text-text-muted dark:text-[#8A8A8A]">{title}</p>
           </header>
         )}
         <ul className="m-0 list-none p-0">
@@ -204,7 +204,7 @@ export function AirportMatrixClock({
           ))}
         </ul>
         {/* ioiti-ui: a light value in front of EasyUI's dark-only footer colours. */}
-        <footer className={`border-t border-border/70 font-mono text-[9px] tracking-[0.12em] text-text-muted dark:border-[#363636] dark:text-[#8A8A8A] ${size === 'sm' ? 'px-3 py-1.5' : 'px-3 py-2 sm:px-5'}`}>
+        <footer className={`border-t border-border/70 font-mono text-[11px] tracking-[0.12em] text-text-muted dark:border-[#363636] dark:text-[#8A8A8A] ${size === 'sm' ? 'px-3 py-1.5' : 'px-3 py-2 sm:px-5'}`}>
           {footer ?? (
             <>
               {rows.length} CITIES <span className="px-1.5 opacity-50">/</span> IANA TIME ZONES

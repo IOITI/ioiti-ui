@@ -78,10 +78,10 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
           onClick={handleToggle}
         >
           {label && (
-            <div id={`${id}-label`} className="text-xs font-medium text-[var(--text-primary)] leading-tight">{label}</div>
+            <div id={`${id}-label`} className="text-sm font-medium text-[var(--text-primary)] leading-tight">{label}</div>
           )}
           {description && (
-            <div id={`${id}-description`} className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
+            <div id={`${id}-description`} className="text-xs text-[var(--text-muted)] mt-0.5 leading-relaxed">
               {description}
             </div>
           )}

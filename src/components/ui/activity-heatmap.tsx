@@ -311,12 +311,12 @@ export function ActivityHeatmap({
       />
 
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <p className="text-[13px] font-medium tabular-nums text-neutral-900 dark:text-neutral-100">{summary}</p>
+        <p className="text-sm font-medium tabular-nums text-neutral-900 dark:text-neutral-100">{summary}</p>
         {/* ioiti-ui: the best and the worst on a signed scale, each value on one line (a phone broke "−877.16 €" after its
             sign). Small text in the muted colour (4.5:1 in both themes). */}
         {diverging ? (
           (model.best?.v ?? 0) > 0 || (model.worst?.v ?? 0) < 0 ? (
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {model.best && model.best.v > 0 && (
                 <>
                   Best {model.best.title} · <span className="whitespace-nowrap tabular-nums">{write(model.best.v)}</span>
@@ -332,7 +332,7 @@ export function ActivityHeatmap({
           ) : null
         ) : (
           model.best && model.best.v > 0 && (
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Peak {model.best.title} · <span className="tabular-nums">{fullFmt.format(model.best.v)}</span>
             </p>
           )
@@ -357,7 +357,7 @@ export function ActivityHeatmap({
             </text>
           ))}
           {rowNames.map((l) => (
-            <text key={l.r} x={0} y={gy(l.r) + ch / 2} dominantBaseline="middle" className="fill-neutral-500 text-[10.5px] dark:fill-neutral-400">
+            <text key={l.r} x={0} y={gy(l.r) + ch / 2} dominantBaseline="middle" className="fill-neutral-500 text-[11px] dark:fill-neutral-400">
               {l.text}
             </text>
           ))}
@@ -447,7 +447,7 @@ export function ActivityHeatmap({
         {cur ? `${cur.title}: ${said(cur)}` : ""}
       </p>
 
-      <div className="mt-3 flex items-center justify-end gap-2 text-[11.5px] text-muted-foreground">
+      <div className="mt-3 flex items-center justify-end gap-2 text-xs text-muted-foreground">
         {legend[0]}
         <span className="flex gap-[3px]" aria-hidden>
           {diverging ? (

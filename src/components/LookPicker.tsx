@@ -114,7 +114,7 @@ function Choices({ legend, children }: { legend: string; children: ReactNode }) 
 /** A radio button the size of its label: the global focus ring goes round the whole choice. */
 function Choice({ name, checked, onSelect, children }: { name: string; checked: boolean; onSelect: () => void; children: ReactNode }) {
   return (
-    <label className="relative flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-border px-2.5 text-[13px] text-text-secondary transition-colors hover:bg-surface-hover hover:text-foreground has-checked:border-border-hover has-checked:bg-surface-raised has-checked:font-medium has-checked:text-foreground accent:has-checked:border-brand">
+    <label className="relative flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-border px-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-hover hover:text-foreground has-checked:border-border-hover has-checked:bg-surface-raised has-checked:font-medium has-checked:text-foreground accent:has-checked:border-brand">
       <input type="radio" name={name} checked={checked} onChange={onSelect} className="absolute inset-0 size-full cursor-pointer appearance-none rounded-lg" />
       {children}
     </label>

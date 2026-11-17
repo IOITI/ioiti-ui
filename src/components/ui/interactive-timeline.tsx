@@ -226,18 +226,18 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="text-xs sm:text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] truncate">
+                        <span className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] truncate">
                           {item.title}
                         </span>
                         {item.tag && (
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 border border-neutral-200 text-neutral-600 dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
+                          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-neutral-100 border border-neutral-200 text-neutral-600 dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
                             {item.tag}
                           </span>
                         )}
                         {item.statusLabel && (
                           <span
                             className={cn(
-                              'text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border',
+                              'text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border',
                               getStatusBadgeStyle(item.status)
                             )}
                           >
@@ -246,7 +246,7 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                         )}
                       </div>
 
-                      <span className="text-[11px] font-mono text-muted-foreground block">
+                      <span className="text-xs font-mono text-muted-foreground block">
                         {item.timestamp}
                       </span>
                     </div>
@@ -277,7 +277,7 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                       >
                         <div className="pt-3 mt-3 border-t border-neutral-200 dark:border-[#1F1F1F] space-y-3">
                           {item.description && (
-                            <p className="text-xs text-neutral-600 dark:text-[#A1A1A1] leading-relaxed [overflow-wrap:anywhere]">
+                            <p className="text-sm text-neutral-600 dark:text-[#A1A1A1] leading-relaxed [overflow-wrap:anywhere]">
                               {item.description}
                             </p>
                           )}
@@ -290,10 +290,10 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                                   key={i}
                                   className="p-2.5 rounded-lg bg-neutral-50 border border-neutral-200 dark:bg-[#0E0E0E] dark:border-[#1F1F1F]"
                                 >
-                                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
+                                  <span className="text-xs font-mono text-muted-foreground block uppercase">
                                     {m.label}
                                   </span>
-                                  <span className="text-xs font-mono font-medium text-neutral-900 dark:text-[#FAFAFA]">
+                                  <span className="text-sm font-mono font-medium text-neutral-900 dark:text-[#FAFAFA]">
                                     {m.value}
                                   </span>
                                 </div>
@@ -303,7 +303,7 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
 
                           {/* Footer Meta: Commit + Author */}
                           {(item.author || item.commitHash) && (
-                            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-[11px] font-mono text-muted-foreground">
+                            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-xs font-mono text-muted-foreground">
                               {item.author && (
                                 <div className="flex items-center gap-1.5">
                                   <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 dark:bg-[#6B6B6B]" />

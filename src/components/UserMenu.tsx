@@ -89,7 +89,7 @@ export function UserMenu({
             {detail && (
               <>
                 <span className="sr-only">,</span>{' '}
-                <span className="block truncate text-[11px] text-muted-foreground">{detail}</span>
+                <span className="block truncate text-xs text-muted-foreground">{detail}</span>
               </>
             )}
           </span>

@@ -142,7 +142,7 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
                 handleTabClick(tab.id);
               }}
               className={cn(
-                'relative text-xs sm:text-sm font-medium transition-colors focus-ring select-none flex items-center gap-2 cursor-pointer',
+                'relative text-sm font-medium transition-colors focus-ring select-none flex items-center gap-2 cursor-pointer',
                 isGlass
                   ? 'px-4 py-1.5 rounded-full'
                   : 'px-3.5 py-1.5 rounded-md',
@@ -174,7 +174,7 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
                     name a screen reader hears ("Lines 4"), which the flex row does not draw. */}
                 {tab.badge !== undefined && tab.badge !== null && tab.badge !== '' && ' '}
                 {tab.badge !== undefined && tab.badge !== null && tab.badge !== '' && (
-                  <span className="px-1.5 py-0.5 text-[10px] font-mono rounded bg-surface-hover border border-border text-text-secondary dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
+                  <span className="px-1.5 py-0.5 text-[11px] font-mono rounded bg-surface-hover border border-border text-text-secondary dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
                     {tab.badge}
                   </span>
                 )}

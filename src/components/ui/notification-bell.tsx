@@ -139,7 +139,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     <button
       type="button"
       onClick={onRetry}
-      className="shrink-0 rounded-md px-1.5 py-0.5 text-xs font-medium text-neutral-900 underline-offset-2 hover:underline focus-ring cursor-pointer dark:text-[#FAFAFA]"
+      className="shrink-0 rounded-md px-1.5 py-0.5 text-sm font-medium text-neutral-900 underline-offset-2 hover:underline focus-ring cursor-pointer dark:text-[#FAFAFA]"
     >
       Try again
     </button>
@@ -193,7 +193,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               className={cn(
                 'absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-rose-600 text-white font-mono font-bold border-2 border-background',
                 showCount
-                  ? 'min-w-[18px] h-[18px] px-1 text-[9px]'
+                  ? 'min-w-[18px] h-[18px] px-1 text-[11px]'
                   : 'w-2.5 h-2.5'
               )}
             >
@@ -227,9 +227,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 bg-neutral-50 dark:border-[#1F1F1F] dark:bg-[#141414] glass:bg-transparent">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-neutral-900 dark:text-[#FAFAFA]">Notifications</span>
+                <span className="text-sm font-semibold text-neutral-900 dark:text-[#FAFAFA]">Notifications</span>
                 {unreadCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-rose-500/10 text-rose-700 border border-rose-500/20 text-[10px] font-mono dark:text-rose-400">
+                  <span className="px-1.5 py-0.5 rounded-full bg-rose-500/10 text-rose-700 border border-rose-500/20 text-[11px] font-mono dark:text-rose-400">
                     {unreadCount} new
                   </span>
                 )}
@@ -242,7 +242,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                     <button
                       type="button"
                       onClick={onMarkAllAsRead}
-                      className="p-1 rounded-lg text-[10px] text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors flex items-center gap-1 cursor-pointer dark:hover:text-white dark:hover:bg-[#141414]"
+                      className="p-1 rounded-lg text-xs text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors flex items-center gap-1 cursor-pointer dark:hover:text-white dark:hover:bg-[#141414]"
                     >
                       <CheckCheck className="w-3.5 h-3.5" />
                       <span>Read all</span>
@@ -262,7 +262,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
             {/* ioiti-ui: the last list read stays under an error, which says it is not up to date. */}
             {failed && notifications.length > 0 && (
-              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-neutral-200 px-4 py-2 text-xs text-negative dark:border-[#1F1F1F]">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-neutral-200 px-4 py-2 text-sm text-negative dark:border-[#1F1F1F]">
                 <span className="min-w-0">{failedSaid}</span>
                 {retry}
               </div>
@@ -274,7 +274,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 // ioiti-ui: what is true when nothing could be read: not "No notifications right now".
                 <div className="py-8 px-4 text-center">
                   <AlertCircle aria-hidden="true" className="w-6 h-6 text-negative mx-auto mb-2" />
-                  <p className="text-xs text-negative">{failedSaid}</p>
+                  <p className="text-sm text-negative">{failedSaid}</p>
                   {retry && <div className="mt-3 flex justify-center">{retry}</div>}
                 </div>
               ) : notifications.length === 0 && loading ? (
@@ -298,7 +298,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               ) : (
                 notifications.map((item) => {
                   const messageClass = cn(
-                    'text-xs leading-relaxed text-neutral-600 dark:text-[#A1A1A1]',
+                    'text-sm leading-relaxed text-neutral-600 dark:text-[#A1A1A1]',
                     !item.read && 'font-medium text-neutral-900 dark:text-[#FAFAFA]'
                   );
 
@@ -340,7 +340,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                           <p className="text-xs text-muted-foreground leading-relaxed [overflow-wrap:anywhere]">{item.detail}</p>
                         )}
                         {/* ioiti-ui: a Date is said from now ("3 min ago", the day it was only in EasyUI), a string as the application wrote it. */}
-                        <span className="text-[10px] font-mono text-muted-foreground mt-1 block">
+                        <span className="text-xs font-mono text-muted-foreground mt-1 block">
                           {typeof item.timestamp === 'string' ? item.timestamp : <RelativeTime value={item.timestamp} past />}
                         </span>
                       </div>

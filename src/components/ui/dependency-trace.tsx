@@ -225,7 +225,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
                   x={midX}
                   y={midY - 10}
                   textAnchor="middle"
-                  className="text-[9px] font-mono fill-neutral-700 dark:fill-[#D4D4D4] pointer-events-none"
+                  className="text-[11px] font-mono fill-neutral-700 dark:fill-[#D4D4D4] pointer-events-none"
                   style={{ paintOrder: 'stroke', strokeWidth: 3, strokeLinejoin: 'round' }}
                   stroke="var(--surface)"
                 >
@@ -301,7 +301,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
               <motion.text
                 textAnchor="middle"
                 dy="4"
-                className="text-[12px] font-semibold pointer-events-none fill-neutral-700 dark:fill-[#E5E5E5]"
+                className="text-xs font-semibold pointer-events-none fill-neutral-700 dark:fill-[#E5E5E5]"
                 animate={{ opacity: isDimmed ? 0.25 : 1 }}
               >
                 {node.status ? STATUS_ICON[node.status] : '·'}
@@ -309,7 +309,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
               <motion.text
                 textAnchor="middle"
                 y={radius + 13}
-                className="text-[10px] font-medium pointer-events-none fill-neutral-900 dark:fill-[#FAFAFA]"
+                className="text-[11px] font-medium pointer-events-none fill-neutral-900 dark:fill-[#FAFAFA]"
                 animate={{
                   opacity: isDimmed ? 0.25 : 1,
                   fontWeight: isCurrentActive ? 700 : 500,
@@ -326,7 +326,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
       <div
         aria-live="polite"
         // ioiti-ui: glass under the glass material (glass-float).
-        className="m-3 mt-0 flex items-center justify-between gap-3 text-[11px] text-neutral-600 bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-neutral-200 pointer-events-none dark:text-[#A1A1A1] dark:bg-[#0E0E0E]/90 dark:border-[#1F1F1F] glass-float"
+        className="m-3 mt-0 flex items-center justify-between gap-3 text-xs text-neutral-600 bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-neutral-200 pointer-events-none dark:text-[#A1A1A1] dark:bg-[#0E0E0E]/90 dark:border-[#1F1F1F] glass-float"
       >
         <span className="min-w-0">
           {activeNode ? (

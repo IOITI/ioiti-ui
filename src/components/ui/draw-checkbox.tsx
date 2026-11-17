@@ -174,7 +174,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
             className={cn('cursor-pointer text-left', disabled && 'cursor-not-allowed')}
           >
             {label && (
-              <div id={`${inputId}-label`} className="text-xs font-medium text-[var(--text-primary)] leading-tight">
+              <div id={`${inputId}-label`} className="text-sm font-medium text-[var(--text-primary)] leading-tight">
                 {label}
               </div>
             )}

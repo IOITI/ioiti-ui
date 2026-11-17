@@ -143,7 +143,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
     }
 
     if (typeof value === 'string') {
-      return <span className="text-xs font-mono text-neutral-900 dark:text-[#FAFAFA]">{value}</span>;
+      return <span className="text-sm font-mono text-neutral-900 dark:text-[#FAFAFA]">{value}</span>;
     }
 
     return value;
@@ -181,7 +181,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
                 // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder:text-muted-foreground dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#FAFAFA] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
+                className="w-full pl-9 pr-3 py-1.5 text-base sm:text-sm rounded-lg bg-neutral-50 border border-neutral-200 text-neutral-900 placeholder:text-muted-foreground dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#FAFAFA] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
               />
             </div>
           )}
@@ -192,7 +192,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
               onClick={() => setDiffOnly((prev) => !prev)}
               aria-pressed={diffOnly}
               className={cn(
-                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer shrink-0',
+                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors cursor-pointer shrink-0',
                 diffOnly
                   ? // ioiti-ui: on, and the featured plan below, in the accent (accent:).
                     'bg-neutral-900 text-white border-neutral-900 dark:bg-[#FAFAFA] dark:text-[#050505] dark:border-[#FAFAFA] accent:bg-brand accent:text-brand-foreground accent:border-brand'
@@ -216,7 +216,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                 onClick={() => setSelectedPlanId(p.id)}
                 aria-pressed={isSelected}
                 className={cn(
-                  'relative flex-1 py-1.5 px-2 text-xs font-medium text-center rounded-lg transition-colors cursor-pointer truncate',
+                  'relative flex-1 py-1.5 px-2 text-sm font-medium text-center rounded-lg transition-colors cursor-pointer truncate',
                   isSelected ? 'text-neutral-900 dark:text-white' : 'text-muted-foreground hover:text-neutral-900 dark:hover:text-[#A1A1A1]'
                 )}
               >
@@ -238,7 +238,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
       <div role="row" className={cn(grid, 'gap-4 pb-6 border-b border-neutral-200 dark:border-[#1F1F1F]')}>
         {/* Left Column Label spacer */}
         <div role="columnheader" className="hidden sm:flex flex-col justify-end">
-          <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+          <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
             {matrixTitle}
           </span>
           <span className="text-xs text-neutral-600 mt-0.5 dark:text-[#A1A1A1]">
@@ -263,7 +263,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
               )}
             >
               {plan.badge && (
-                <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-neutral-900 text-white font-semibold shadow-sm dark:bg-[#FAFAFA] dark:text-[#050505] accent:bg-brand accent:text-brand-foreground">
+                <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[11px] font-mono uppercase tracking-wider bg-neutral-900 text-white font-semibold shadow-sm dark:bg-[#FAFAFA] dark:text-[#050505] accent:bg-brand accent:text-brand-foreground">
                   {plan.badge}
                 </span>
               )}
@@ -284,7 +284,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                     {plan.featured && <Sparkles className="w-3.5 h-3.5 text-neutral-900 dark:text-white" />}
                   </h3>
                 </div>
-                <p className="text-[11px] text-neutral-600 mb-3 leading-snug dark:text-[#A1A1A1]">{plan.tagline}</p>
+                <p className="text-xs text-neutral-600 mb-3 leading-snug dark:text-[#A1A1A1]">{plan.tagline}</p>
               </div>
 
               <div>
@@ -293,7 +293,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                     {plan.price}
                   </span>
                   {plan.billingPeriod && (
-                    <span className="text-[10px] font-mono text-muted-foreground">
+                    <span className="text-xs font-mono text-muted-foreground">
                       /{plan.billingPeriod}
                     </span>
                   )}
@@ -309,7 +309,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                     }}
                     className={cn(
                       // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                      'w-full py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer',
+                      'w-full py-2 px-3 rounded-lg text-sm font-medium transition-all cursor-pointer',
                       plan.featured
                         ? 'bg-neutral-900 text-white hover:bg-neutral-800 font-semibold dark:bg-[#FAFAFA] dark:text-[#050505] dark:hover:bg-white accent:bg-brand accent:hover:bg-brand/90 accent:text-brand-foreground'
                         : 'bg-neutral-50 hover:bg-white text-neutral-600 hover:text-neutral-900 border border-neutral-200 dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA] dark:border-[#1F1F1F]'
@@ -371,11 +371,11 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                         <div
                           key={feat.id}
                           role="row"
-                          className={cn(grid, 'gap-4 py-2.5 px-2 rounded-lg hover:bg-neutral-50 transition-colors items-center text-xs dark:hover:bg-[#141414]')}
+                          className={cn(grid, 'gap-4 py-2.5 px-2 rounded-lg hover:bg-neutral-50 transition-colors items-center text-sm dark:hover:bg-[#141414]')}
                         >
                           {/* Feature Name & Info */}
                           <div role="rowheader" className="flex items-center gap-1.5 min-w-0 pr-2">
-                            <span className="text-xs text-neutral-900 font-normal truncate dark:text-[#FAFAFA]">
+                            <span className="text-sm text-neutral-900 font-normal truncate dark:text-[#FAFAFA]">
                               {feat.name}
                             </span>
                             {feat.description && (
@@ -394,7 +394,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                                 </button>
 
                                 {activeTooltip === feat.id && (
-                                  <div className="absolute left-0 bottom-full mb-1 z-30 w-48 p-2 rounded-lg bg-white border border-neutral-200 text-[10px] text-neutral-600 shadow-md backdrop-blur-md dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
+                                  <div className="absolute left-0 bottom-full mb-1 z-30 w-48 p-2 rounded-lg bg-white border border-neutral-200 text-xs text-neutral-600 shadow-md backdrop-blur-md dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
                                     {feat.description}
                                   </div>
                                 )}
@@ -414,7 +414,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                                   isMobileActive ? 'flex justify-between py-1' : 'hidden sm:flex'
                                 )}
                               >
-                                <span className="sm:hidden text-[11px] font-mono text-muted-foreground">
+                                <span className="sm:hidden text-xs font-mono text-muted-foreground">
                                   {plan.name}:
                                 </span>
                                 <div>{renderValueCell(feat.values[plan.id])}</div>

@@ -400,7 +400,7 @@ export function NotFound({
         <Illustration parallax={parallax} />
 
         <p className="sr-only">{`Error ${errorCode}: ${title}`}</p>
-        <motion.p {...rise(0.15)} className="mt-2 text-[11.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+        <motion.p {...rise(0.15)} className="mt-2 text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
           {badgeLabel ?? `Error ${errorCode}`}
         </motion.p>
 
@@ -414,7 +414,7 @@ export function NotFound({
           {title}
         </motion.h1>
 
-        <motion.p {...rise(0.3)} className="mt-4 max-w-md text-[15px] leading-relaxed text-muted-foreground sm:text-[16px]">
+        <motion.p {...rise(0.3)} className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
           {description}
         </motion.p>
 
@@ -426,7 +426,7 @@ export function NotFound({
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#fe5510]" aria-hidden />
             {/* ioiti-ui: the whole address in a Hint, shown on hover, keyboard focus and a tap, where a title shows on none. */}
             <Hint content={shownPath.length > 80 ? shownPath : null} wrap className="min-w-0">
-              <code className="block truncate font-mono text-[12px] text-muted-foreground">
+              <code className="block truncate font-mono text-xs text-muted-foreground">
                 {shownPath.length > 80 ? `${shownPath.slice(0, 79)}…` : shownPath}
               </code>
             </Hint>
@@ -443,7 +443,7 @@ export function NotFound({
               <button
                 type="button"
                 onClick={onAction}
-                className={`inline-flex h-11 items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 text-[14px] font-medium text-white shadow-sm transition-[transform,background-color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:[@media(hover:hover)]:hover:bg-neutral-100 ${focus}`}
+                className={`inline-flex h-11 items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 text-sm font-medium text-white shadow-sm transition-[transform,background-color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:[@media(hover:hover)]:hover:bg-neutral-100 ${focus}`}
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   <path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10" />
@@ -453,7 +453,7 @@ export function NotFound({
             ) : (
               <Anchor
                 href={homeHref}
-                className={`inline-flex h-11 items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 text-[14px] font-medium text-white shadow-sm transition-[transform,background-color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:[@media(hover:hover)]:hover:bg-neutral-100 ${focus}`}
+                className={`inline-flex h-11 items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 text-sm font-medium text-white shadow-sm transition-[transform,background-color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:[@media(hover:hover)]:hover:bg-neutral-100 ${focus}`}
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   <path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10" />
@@ -466,7 +466,7 @@ export function NotFound({
               <button
                 type="button"
                 onClick={effectiveGoBack}
-                className={`inline-flex h-11 items-center justify-center rounded-full bg-black/[0.04] dark:bg-white/[0.04] px-6 text-[14px] font-medium text-neutral-700 dark:text-neutral-300 ring-1 ring-black/10 dark:ring-white/12 transition-[transform,background-color,color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-black/[0.06] dark:[@media(hover:hover)]:hover:bg-white/[0.08] [@media(hover:hover)]:hover:text-neutral-950 dark:[@media(hover:hover)]:hover:text-white ${focus}`}
+                className={`inline-flex h-11 items-center justify-center rounded-full bg-black/[0.04] dark:bg-white/[0.04] px-6 text-sm font-medium text-neutral-700 dark:text-neutral-300 ring-1 ring-black/10 dark:ring-white/12 transition-[transform,background-color,color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-black/[0.06] dark:[@media(hover:hover)]:hover:bg-white/[0.08] [@media(hover:hover)]:hover:text-neutral-950 dark:[@media(hover:hover)]:hover:text-white ${focus}`}
               >
                 {effectiveBackLabel}
               </button>
@@ -476,7 +476,7 @@ export function NotFound({
 
         {suggestions && suggestions.length > 0 && (
           <motion.nav {...rise(0.5)} aria-label="Helpful links" className="mt-12 w-full">
-            <p className="mb-3 text-[11.5px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Maybe you were looking for</p>
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Maybe you were looking for</p>
             <ul className="grid grid-cols-1 gap-2.5 text-left sm:grid-cols-3">
               {suggestions.slice(0, 3).map((s) => (
                 <li key={s.href}>
@@ -484,13 +484,13 @@ export function NotFound({
                     href={s.href}
                     className={`group flex h-full flex-col rounded-2xl bg-black/[0.03] p-4 ring-1 ring-black/[0.07] transition-[background-color,transform,box-shadow] duration-200 active:scale-[0.985] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-black/[0.05] [@media(hover:hover)]:hover:ring-black/[0.14] dark:bg-white/[0.03] dark:ring-white/[0.07] dark:[@media(hover:hover)]:hover:bg-white/[0.06] dark:[@media(hover:hover)]:hover:ring-white/[0.14] ${focus}`}
                   >
-                    <span className="flex items-center justify-between gap-2 text-[14px] font-medium text-neutral-900 dark:text-neutral-100">
+                    <span className="flex items-center justify-between gap-2 text-sm font-medium text-neutral-900 dark:text-neutral-100">
                       {s.label}
                       <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-200 [@media(hover:hover)]:group-hover:-translate-y-0.5 [@media(hover:hover)]:group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <path d="M7 17 17 7M8 7h9v9" />
                       </svg>
                     </span>
-                    {s.description && <span className="mt-1 text-[12.5px] leading-snug text-muted-foreground">{s.description}</span>}
+                    {s.description && <span className="mt-1 text-xs leading-snug text-muted-foreground">{s.description}</span>}
                   </Anchor>
                 </li>
               ))}
@@ -498,7 +498,7 @@ export function NotFound({
           </motion.nav>
         )}
 
-        {footer && <motion.div {...rise(0.58)} className="mt-12 text-[12.5px] text-muted-foreground">{footer}</motion.div>}
+        {footer && <motion.div {...rise(0.58)} className="mt-12 text-xs text-muted-foreground">{footer}</motion.div>}
       </div>
     </section>
   );

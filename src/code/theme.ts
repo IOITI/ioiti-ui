@@ -19,7 +19,7 @@ const theme = EditorView.theme({
   '&': {
     color: 'var(--text-primary)',
     backgroundColor: 'var(--surface)',
-    fontSize: '12.5px',
+    fontSize: '13px',
   },
   // The frame shows the focus (its border), as a field that takes text: no outline of the editor's own.
   '&.cm-focused': { outline: 'none' },

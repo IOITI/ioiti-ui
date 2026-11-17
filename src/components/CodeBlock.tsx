@@ -109,7 +109,7 @@ export function CodeBlock({
         aria-label={scrolls ? (typeof label === 'string' ? label : 'Code') : undefined}
         style={scroll}
         className={cn(
-          'overflow-auto py-3 font-mono text-[12.5px] leading-relaxed text-text-primary',
+          'overflow-auto py-3 font-mono text-[13px] leading-relaxed text-text-primary',
           // Wrapped, a word longer than the line (a URL, a hash) breaks too: `break-words` kept the code as wide.
           wrap ? 'whitespace-pre-wrap wrap-anywhere' : 'whitespace-pre',
           !label && copyable && 'pr-10',

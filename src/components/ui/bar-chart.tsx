@@ -247,7 +247,7 @@ export function BarChart({
   const toggle = (key: string) =>
     setHidden((h) => (h.includes(key) ? h.filter((x) => x !== key) : visible.length > 1 ? [...h, key] : h));
 
-  if (!n) return <p className={`py-10 text-center text-[13px] ${muted}`}>No data</p>;
+  if (!n) return <p className={`py-10 text-center text-sm ${muted}`}>No data</p>;
 
   const tr = (i: number, si: number) =>
     reduce

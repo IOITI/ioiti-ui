@@ -253,8 +253,8 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
 
         {/* Floating compact indicator (mobile or compact state) */}
         <div className="flex md:hidden items-center px-2 py-1 gap-2">
-          <span aria-hidden="true" className="text-[10px] font-mono text-muted-foreground">{currentActiveItem?.index}</span>
-          <span className="text-xs font-medium text-neutral-900 dark:text-[#FAFAFA]">{currentActiveItem?.label}</span>
+          <span aria-hidden="true" className="text-[11px] font-mono text-muted-foreground">{currentActiveItem?.index}</span>
+          <span className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA]">{currentActiveItem?.label}</span>
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
@@ -289,7 +289,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
                   : { type: 'button', onClick: () => scrollToSection(section.id) })}
                 aria-current={isActive ? 'location' : undefined}
                 className={cn(
-                  'relative shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors focus-ring inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer',
+                  'relative shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors focus-ring inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer',
                   isActive ? 'text-neutral-900 dark:text-[#FAFAFA] accent:text-brand-text' : 'text-muted-foreground hover:text-neutral-900 dark:hover:text-[#A1A1A1]'
                 )}
               >
@@ -301,7 +301,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
                   />
                 )}
                 {/* ioiti-ui: the number orders the parts for the eye; a screen reader says the part's name alone. */}
-                <span aria-hidden="true" className={cn('text-[10px] font-mono relative z-10', isActive ? 'text-neutral-900/80 dark:text-[#FAFAFA]/80 accent:text-brand-text' : 'text-muted-foreground')}>
+                <span aria-hidden="true" className={cn('text-[11px] font-mono relative z-10', isActive ? 'text-neutral-900/80 dark:text-[#FAFAFA]/80 accent:text-brand-text' : 'text-muted-foreground')}>
                   {indexStr}
                 </span>
                 <span className="relative z-10">{section.label}</span>

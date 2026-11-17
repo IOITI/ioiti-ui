@@ -103,7 +103,7 @@ export function FunnelChart({
     e.preventDefault();
   };
 
-  if (!n) return <p className={`py-10 text-center text-[13px] ${MUTED}`}>{emptyText}</p>;
+  if (!n) return <p className={`py-10 text-center text-sm ${MUTED}`}>{emptyText}</p>;
   const spring = reduce ? { duration: 0 } : ({ type: "spring", duration: 0.7, bounce: 0.1 } as const);
   const cur = active !== null ? stages[active] : null;
 
@@ -112,12 +112,12 @@ export function FunnelChart({
     <div ref={rootRef} className={cx("w-full contain-inline-size", className)}>
       {showSummary && summary && (
         <div className="mb-4 flex flex-wrap items-baseline gap-x-5 gap-y-1">
-          <p className="text-[13px] text-neutral-900 dark:text-neutral-100">
+          <p className="text-sm text-neutral-900 dark:text-neutral-100">
             <span className="text-[22px] font-semibold tracking-[-0.03em] tabular-nums">{pctText(summary.conv)}</span>{" "}
             <span className={MUTED}>{summaryLabel}</span>
           </p>
           {/* ioiti-ui: the loss named by the caller, in the negative colour of theme.css (rose-500 is 3.7:1 on white). */}
-          <p className={`text-[12px] ${MUTED}`}>
+          <p className={`text-xs ${MUTED}`}>
             Biggest drop:{" "}
             {stages[summary.worst].dropLabel ?? `${stages[summary.worst].label} → ${stages[summary.worst + 1].label}`}{" "}
             <span className="tabular-nums text-negative">−{pctText(summary.dropPct)}</span>
@@ -162,10 +162,10 @@ export function FunnelChart({
             const dim = active !== null && active !== i;
             return (
               <g key={i} style={{ opacity: dim ? 0.5 : 1, transition: "opacity .2s" }}>
-                <text x={0} y={y + 14} className={cx("text-[12.5px]", active === i ? "fill-neutral-900 dark:fill-white" : "fill-neutral-600 dark:fill-neutral-400")}>
+                <text x={0} y={y + 14} className={cx("text-xs", active === i ? "fill-neutral-900 dark:fill-white" : "fill-neutral-600 dark:fill-neutral-400")}>
                   {s.label}
                 </text>
-                <text x={width} y={y + 14} textAnchor="end" className="fill-neutral-900 text-[12.5px] tabular-nums dark:fill-neutral-100">
+                <text x={width} y={y + 14} textAnchor="end" className="fill-neutral-900 text-xs tabular-nums dark:fill-neutral-100">
                   {formatValue(s.value)}
                   {width >= 300 && <tspan className="fill-neutral-500 dark:fill-neutral-400"> · {pctText(pct(i))}</tspan>}
                 </text>

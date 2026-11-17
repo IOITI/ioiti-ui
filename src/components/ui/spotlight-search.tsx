@@ -628,7 +628,7 @@ function Palette({
         onRetry();
         inputRef.current?.focus({ preventScroll: true });
       }}
-      className="shrink-0 cursor-pointer rounded-md px-1.5 py-0.5 text-xs font-medium text-text-primary underline-offset-2 hover:underline"
+      className="shrink-0 cursor-pointer rounded-md px-1.5 py-0.5 text-sm font-medium text-text-primary underline-offset-2 hover:underline"
     >
       Try again
     </button>
@@ -700,7 +700,7 @@ function Palette({
               </span>
             )
           )}
-          {(!grouped || row.kind === 'remembered') && <span className="text-[11px] text-text-muted">{item.category}</span>}
+          {(!grouped || row.kind === 'remembered') && <span className="text-xs text-text-muted">{item.category}</span>}
           {/* ioiti-ui: chosen already. */}
           {isPicked && <Check aria-hidden className="size-4 shrink-0 text-text-primary accent:text-brand" />}
           {/* ioiti-ui: a list of its own, opened when chosen. */}
@@ -830,7 +830,7 @@ function Palette({
             value={query}
             onChange={(event) => type(event.target.value)}
             placeholder={scope?.placeholder ?? placeholder}
-            className="min-w-0 flex-1 bg-transparent text-[16px] text-text-primary placeholder-text-muted focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent text-base text-text-primary placeholder-text-muted focus:outline-none"
             aria-label={scope ? `Search ${scope.title}` : 'Search'}
             role="combobox"
             aria-expanded="true"
@@ -856,7 +856,7 @@ function Palette({
 
         {/* ioiti-ui: the last entries found stay under an error, which says they are not the query's. */}
         {failed && rows.length > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-2 text-xs text-negative">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-2 text-sm text-negative">
             <span className="min-w-0">{failedSaid}</span>
             {retry}
           </div>
@@ -896,7 +896,7 @@ function Palette({
               return (
                 // ioiti-ui: a heading names its group; hidden itself, as the group says it.
                 <div key={section.key} role="group" aria-labelledby={headingId} className="space-y-0.5">
-                  <div id={headingId} aria-hidden className="px-3.5 pb-1 pt-2.5 text-[11px] font-medium text-text-muted">
+                  <div id={headingId} aria-hidden className="px-3.5 pb-1 pt-2.5 text-xs font-medium text-text-muted">
                     {section.heading}
                   </div>
                   {section.rows.map(renderRow)}
@@ -910,7 +910,7 @@ function Palette({
             (failed ? (
               <div className="py-8 px-4 text-center">
                 <AlertCircle aria-hidden className="mx-auto mb-2 size-6 text-negative" />
-                <p className="text-xs text-negative">{failedSaid}</p>
+                <p className="text-sm text-negative">{failedSaid}</p>
                 {retry && <div className="mt-3 flex justify-center">{retry}</div>}
               </div>
             ) : loading ? (

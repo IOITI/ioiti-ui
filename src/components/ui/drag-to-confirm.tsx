@@ -61,7 +61,7 @@ const SIZE_CONFIG = {
     thumbSize: 32,
     thumbClass: 'w-8 h-8',
     offset: 40,
-    text: 'text-[11px]',
+    text: 'text-xs',
     iconSize: 'w-3.5 h-3.5',
   },
   md: {
@@ -70,7 +70,7 @@ const SIZE_CONFIG = {
     thumbSize: 40,
     thumbClass: 'w-10 h-10',
     offset: 48,
-    text: 'text-xs',
+    text: 'text-sm',
     iconSize: 'w-4 h-4',
   },
   lg: {
@@ -79,7 +79,7 @@ const SIZE_CONFIG = {
     thumbSize: 44,
     thumbClass: 'w-11 h-11',
     offset: 56,
-    text: 'text-sm',
+    text: 'text-base',
     iconSize: 'w-4.5 h-4.5',
   },
 };

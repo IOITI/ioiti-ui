@@ -75,7 +75,7 @@ export const SmoothAccordion: React.FC<SmoothAccordionProps> = ({
                   transition={motionTransitions.springGentle}
                   className="overflow-hidden"
                 >
-                  <div className="px-4 pb-4 pt-1 text-xs sm:text-sm text-neutral-600 dark:text-[#A1A1A1] leading-relaxed">
+                  <div className="px-4 pb-4 pt-1 text-sm text-neutral-600 dark:text-[#A1A1A1] leading-relaxed">
                     {item.content}
                   </div>
                 </motion.div>

@@ -249,7 +249,7 @@ export function AppBrand({ name, detail, mark }: { name: string; detail?: ReactN
       </div>
       <div className="min-w-0 leading-tight">
         <p className="truncate text-sm font-semibold">{name}</p>
-        {detail && <p className="truncate text-[11px] text-muted-foreground">{detail}</p>}
+        {detail && <p className="truncate text-xs text-muted-foreground">{detail}</p>}
       </div>
     </div>
   )

@@ -48,7 +48,7 @@ function Ramp({ theme, tokens, values = THEMES[theme], label = theme }: { theme:
         {tokens.map((token) => (
           <div key={token} className="flex flex-col items-center gap-1">
             <span className="h-8 w-12 rounded-md" style={{ background: valueOf(values, token) }} />
-            <code className="font-mono text-[10px]" style={{ color: values['--muted-foreground'] }}>
+            <code className="font-mono text-[11px]" style={{ color: values['--muted-foreground'] }}>
               {token.replace('--chart-', '')}
             </code>
           </div>

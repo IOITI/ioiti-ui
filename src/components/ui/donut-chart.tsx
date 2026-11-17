@@ -206,7 +206,7 @@ export function DonutChart({
   const valueSize = clamp(D * 0.15, 22, 38);
   const allTotal = data.reduce((s, d) => s + Math.max(0, d.value), 0);
 
-  if (!data.length) return <p className={`py-10 text-center text-[13px] ${muted}`}>No data</p>;
+  if (!data.length) return <p className={`py-10 text-center text-sm ${muted}`}>No data</p>;
 
   return (
     // ioiti-ui: as wide as its container, never as what it drew (contain-inline-size, see useElementWidth).
@@ -260,11 +260,11 @@ export function DonutChart({
               exit={{ opacity: 0, y: reduce ? 0 : -4, transition: motionTransitions.easeExit }}
               transition={motionTransitions.easeFast}
             >
-              <p className={`truncate text-[12px] ${muted}`}>{act ? act.label : centerLabel}</p>
+              <p className={`truncate text-xs ${muted}`}>{act ? act.label : centerLabel}</p>
               <p className="font-semibold leading-tight tracking-[-0.03em] tabular-nums text-foreground" style={{ fontSize: valueSize }}>
                 {act ? formatValue(act.value) : <CentreTotal value={total} format={formatValue} fromZero={anim} />}
               </p>
-              {act && <p className={`text-[12px] tabular-nums ${muted}`}>{Math.round(act.f * 100)}%</p>}
+              {act && <p className={`text-xs tabular-nums ${muted}`}>{Math.round(act.f * 100)}%</p>}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -282,7 +282,7 @@ export function DonutChart({
                 onPointerLeave={(e) => e.pointerType === "mouse" && setActive(null)}
                 onFocus={() => setActive(i)}
                 onBlur={() => setActive(null)}
-                className={`flex h-11 w-full items-center gap-3 rounded-xl px-2.5 text-left text-[13px] transition-[background-color,opacity] duration-150 [-webkit-tap-highlight-color:transparent] sm:h-10 [@media(hover:hover)]:hover:bg-black/[0.04] dark:[@media(hover:hover)]:hover:bg-white/[0.05] ${focus}`}
+                className={`flex h-11 w-full items-center gap-3 rounded-xl px-2.5 text-left text-sm transition-[background-color,opacity] duration-150 [-webkit-tap-highlight-color:transparent] sm:h-10 [@media(hover:hover)]:hover:bg-black/[0.04] dark:[@media(hover:hover)]:hover:bg-white/[0.05] ${focus}`}
               >
                 {/* ioiti-ui: a hidden segment's words stay readable (muted, struck through), its dot faded. */}
                 <span className={cx("inline-flex", sg.off && "opacity-40")}>
@@ -290,7 +290,7 @@ export function DonutChart({
                 </span>
                 <span className={cx("min-w-0 flex-1 truncate", sg.off ? "text-text-muted line-through" : "text-text-secondary")}>{sg.label}</span>
                 <span className={cx("tabular-nums", sg.off ? "text-text-muted" : "text-foreground")}>{formatValue(sg.value)}</span>
-                <span className={`w-9 text-right text-[12px] tabular-nums ${muted}`}>{sg.off ? "—" : `${Math.round(sg.f * 100)}%`}</span>
+                <span className={`w-9 text-right text-xs tabular-nums ${muted}`}>{sg.off ? "—" : `${Math.round(sg.f * 100)}%`}</span>
               </button>
             </li>
           ))}

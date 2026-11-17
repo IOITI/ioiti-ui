@@ -90,10 +90,10 @@ const SIZE_STYLES: Record<
   }
 > = {
   sm: {
-    primary: 'gap-1.5 px-3.5 py-1.5 text-xs',
+    primary: 'gap-1.5 px-3.5 py-1.5 text-sm',
     chevron: 'px-2 py-1.5',
     radius: 'rounded-[8px]',
-    menuText: 'text-xs',
+    menuText: 'text-sm',
   },
 
   md: {
@@ -654,7 +654,7 @@ export function SplitButton({
                   <span className="min-w-0">
                     <span className="block truncate">{option.label}</span>
                     {option.description && (
-                      <span className="block whitespace-normal text-[11px] font-normal text-text-muted">{option.description}</span>
+                      <span className="block whitespace-normal text-xs font-normal text-text-muted">{option.description}</span>
                     )}
                   </span>
                 </Item>

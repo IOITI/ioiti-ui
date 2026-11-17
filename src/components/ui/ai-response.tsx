@@ -441,11 +441,11 @@ export const AIResponseHeader: React.FC<AIResponseHeaderProps> = ({
     <header className={cx("flex items-center justify-between gap-3", className)}>
       <div className="flex min-w-0 items-center gap-2.5">
         {icon ?? <Orb active={busy} />}
-        <span className="truncate text-[13px] font-medium tracking-[-0.01em] text-foreground">{title}</span>
-        {badge && <span className={`truncate text-[12px] ${muted}`}>{badge}</span>}
+        <span className="truncate text-sm font-medium tracking-[-0.01em] text-foreground">{title}</span>
+        {badge && <span className={`truncate text-xs ${muted}`}>{badge}</span>}
       </div>
 
-      <div className={`flex shrink-0 items-center gap-3 text-[12px] ${muted}`} role="status" aria-live="polite">
+      <div className={`flex shrink-0 items-center gap-3 text-xs ${muted}`} role="status" aria-live="polite">
         {status === "streaming" && (
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-positive" aria-hidden />
@@ -531,17 +531,17 @@ export const AIResponseThinking: React.FC<AIResponseThinkingProps> = ({ label, l
   return (
     <div className={cx("grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 gap-y-1 pt-5 pb-2", className)}>
       <Dots />
-      <div className="flex min-w-0 items-baseline gap-2 text-[13.5px] tracking-[-0.01em]">
+      <div className="flex min-w-0 items-baseline gap-2 text-sm tracking-[-0.01em]">
         <span role="status" className="min-w-0 truncate font-medium">
           <Shimmer>{label}</Shimmer>
         </span>
         {started !== null && (
-          <span className={`shrink-0 text-[12px] tabular-nums ${muted}`}>{formatSpan((now - started) / 1000)}</span>
+          <span className={`shrink-0 text-xs tabular-nums ${muted}`}>{formatSpan((now - started) / 1000)}</span>
         )}
       </div>
       {line !== undefined && (
         <div
-          className="relative col-start-2 h-[3em] text-[12.5px] leading-[1.5]"
+          className="relative col-start-2 h-[3em] text-xs leading-[1.5]"
           onPointerEnter={() => setHeld(true)}
           onPointerLeave={() => setHeld(false)}
         >
@@ -597,11 +597,11 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
     return (
       <div role="alert" className="my-5 flex items-start gap-3 rounded-xl bg-negative/[0.06] p-4 ring-1 ring-negative/25">
         <Ico d={PATHS.alert} className="mt-0.5 h-4 w-4 shrink-0 text-negative" />
-        <div className="min-w-0 flex-1 text-[13px] leading-relaxed">
+        <div className="min-w-0 flex-1 text-sm leading-relaxed">
           <p className="font-medium text-foreground">Couldn’t finish this response</p>
           <p className={`mt-0.5 break-words ${muted}`}>{content || "The connection dropped or the model timed out."}</p>
           {onRegenerate && (
-            <button type="button" onClick={onRegenerate} className="mt-2 rounded-md text-[12.5px] font-medium text-foreground underline decoration-border underline-offset-4">
+            <button type="button" onClick={onRegenerate} className="mt-2 rounded-md text-sm font-medium text-foreground underline decoration-border underline-offset-4">
               Try again
             </button>
           )}
@@ -611,7 +611,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
   }
 
   if (!content) {
-    return <p className={`py-8 text-center text-[13px] ${muted}`}>Ready when you are.</p>;
+    return <p className={`py-8 text-center text-sm ${muted}`}>Ready when you are.</p>;
   }
 
   const lastIdx = blocks.length - 1;
@@ -622,7 +622,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
     <div
       aria-live={streaming ? "polite" : "off"}
       aria-busy={streaming}
-      className={cx("min-w-0 space-y-4 py-5 text-[14.5px] leading-[1.7] tracking-[-0.003em] text-foreground", className)}
+      className={cx("min-w-0 space-y-4 py-5 text-sm leading-[1.7] tracking-[-0.003em] text-foreground", className)}
     >
       {blocks.map((b, idx) => {
         const key = `${idx}-${b.type}`;
@@ -635,7 +635,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
 
         switch (b.type) {
           case "heading": {
-            const size = { 1: "text-[19px]", 2: "text-[16.5px]", 3: "text-[15px]", 4: "text-[14.5px]" }[b.level];
+            const size = { 1: "text-lg", 2: "text-base", 3: "text-sm", 4: "text-sm" }[b.level];
             return wrap(
               <h3 className={`${size} pt-2 font-semibold leading-snug tracking-[-0.02em] text-foreground`}>
                 {renderInline(b.text)}
@@ -674,9 +674,9 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
             return wrap(
               // ioiti-ui: positioned, so that what it scrolls (its words for screen readers too) stays in it.
               <div className={`relative overflow-x-auto rounded-xl ${hair}`}>
-                <table className="w-full min-w-[320px] border-collapse text-left text-[13px]">
+                <table className="w-full min-w-[320px] border-collapse text-left text-sm">
                   <thead>
-                    <tr className={`${wash} text-[11.5px] font-medium ${muted}`}>
+                    <tr className={`${wash} text-xs font-medium ${muted}`}>
                       {b.headers.map((h, j) => (
                         <th key={j} scope="col" className="px-3.5 py-2.5 font-medium">{renderInline(h)}</th>
                       ))}
@@ -731,7 +731,7 @@ export const AIResponseSources: React.FC<AIResponseSourcesProps> = ({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="inline-flex h-8 items-center gap-1.5 rounded-lg pr-2 text-[12.5px] text-muted-foreground transition-colors duration-150 [@media(hover:hover)]:hover:text-foreground"
+        className="inline-flex h-8 items-center gap-1.5 rounded-lg pr-2 text-sm text-muted-foreground transition-colors duration-150 [@media(hover:hover)]:hover:text-foreground"
       >
         <Ico d={PATHS.chevron} className={cx("h-3.5 w-3.5 transition-transform duration-200", open && "rotate-180")} />
         {title}
@@ -753,13 +753,13 @@ export const AIResponseSources: React.FC<AIResponseSourcesProps> = ({
               const host = href ? hostOf(href) : "";
               const inner = (
                 <>
-                  <span className="mt-px w-4 shrink-0 text-right text-[11.5px] tabular-nums text-muted-foreground">{i + 1}</span>
+                  <span className="mt-px w-4 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">{i + 1}</span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline gap-2">
-                      <span className="truncate text-[13px] font-medium text-foreground">{s.title}</span>
-                      {host && <span className="shrink-0 text-[11.5px] text-muted-foreground">{host}</span>}
+                      <span className="truncate text-sm font-medium text-foreground">{s.title}</span>
+                      {host && <span className="shrink-0 text-xs text-muted-foreground">{host}</span>}
                     </span>
-                    {s.snippet && <span className={`mt-0.5 line-clamp-1 block text-[12px] ${muted}`}>{s.snippet}</span>}
+                    {s.snippet && <span className={`mt-0.5 line-clamp-1 block text-xs ${muted}`}>{s.snippet}</span>}
                   </span>
                   {href && isExternal(href) && <Ico d={PATHS.external} className="mt-0.5 h-3 w-3 shrink-0 text-muted-foreground" />}
                 </>
@@ -830,7 +830,7 @@ export const AIResponseToolsSummary: React.FC<AIResponseToolsSummaryProps> = ({
           setOpen((v) => !v);
           onToggleDetails?.();
         }}
-        className={`inline-flex h-8 items-center gap-2 rounded-full bg-surface-hover pl-3 pr-2.5 text-[12.5px] text-muted-foreground ${hair} transition-[color,background-color,transform] duration-150 active:scale-[0.98] [@media(hover:hover)]:hover:text-foreground`}
+        className={`inline-flex h-8 items-center gap-2 rounded-full bg-surface-hover pl-3 pr-2.5 text-sm text-muted-foreground ${hair} transition-[color,background-color,transform] duration-150 active:scale-[0.98] [@media(hover:hover)]:hover:text-foreground`}
       >
         <Ico d={PATHS.tool} className="h-3 w-3" />
         Used {toolCount} {toolCount === 1 ? "tool" : "tools"}
@@ -848,7 +848,7 @@ export const AIResponseToolsSummary: React.FC<AIResponseToolsSummaryProps> = ({
             className="overflow-hidden"
           >
             {tools.map((t, i) => (
-              <li key={i} className="flex items-center justify-between gap-3 px-1 py-1.5 text-[12.5px]">
+              <li key={i} className="flex items-center justify-between gap-3 px-1 py-1.5 text-[13px]">
                 <span className="flex min-w-0 items-center gap-2.5">
                   <span className={cx("h-1.5 w-1.5 shrink-0 rounded-full", DOT[t.status ?? "success"])} aria-hidden />
                   <span className="truncate font-mono text-foreground">{t.name}</span>

@@ -131,7 +131,7 @@ export function Tooltip({
       ref={ref}
       aria-hidden
       // ioiti-ui: glass under the glass material (glass-float).
-      className={`pointer-events-none absolute left-0 top-0 z-20 min-w-[112px] rounded-xl bg-white/95 px-3 py-2 text-[12px] shadow-lg backdrop-blur dark:bg-neutral-900/95 glass-float ${ring}`}
+      className={`pointer-events-none absolute left-0 top-0 z-20 min-w-[112px] rounded-xl bg-white/95 px-3 py-2 text-xs shadow-lg backdrop-blur dark:bg-neutral-900/95 glass-float ${ring}`}
       style={{ x, y }}
       initial={false}
       animate={{ opacity: pos ? 1 : 0 }}
@@ -169,8 +169,8 @@ export function ChartCard({
     >
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="text-[14px] font-medium tracking-[-0.01em] text-neutral-900 dark:text-neutral-100">{title}</h3>
-          {description && <p className={`mt-0.5 text-[12.5px] ${muted}`}>{description}</p>}
+          <h3 className="text-sm font-medium tracking-[-0.01em] text-neutral-900 dark:text-neutral-100">{title}</h3>
+          {description && <p className={`mt-0.5 text-xs ${muted}`}>{description}</p>}
         </div>
         {actions}
       </header>
@@ -202,7 +202,7 @@ export function SegmentedControl<T extends string>({
             role="radio"
             aria-checked={on}
             onClick={() => onChange(o.value)}
-            className={`relative z-10 h-8 rounded-full px-3.5 text-[12px] font-medium transition-colors duration-150 [-webkit-tap-highlight-color:transparent] sm:h-7 sm:px-3 ${focus} ${
+            className={`relative z-10 h-8 rounded-full px-3.5 text-sm font-medium transition-colors duration-150 [-webkit-tap-highlight-color:transparent] sm:h-7 sm:px-3 ${focus} ${
               on ? "text-neutral-900 dark:text-white" : "text-neutral-500"
             }`}
           >

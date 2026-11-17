@@ -563,7 +563,7 @@ function Panel({
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-[13px] outline-none transition-colors",
+                        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm outline-none transition-colors",
                         active
                           ? // ioiti-ui: the page shown, and its dot, in the accent (accent:).
                             "text-neutral-900 dark:text-white accent:text-brand-text"

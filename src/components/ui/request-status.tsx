@@ -152,7 +152,7 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
         <div className="min-w-0 flex-1" role="status" aria-live="polite">
           <h3 className="text-base font-semibold text-neutral-900 tracking-tight dark:text-[#FAFAFA]">{title}</h3>
           {description && (
-            <p className="text-xs sm:text-sm text-neutral-600 mt-1 dark:text-[#A1A1A1]">{description}</p>
+            <p className="text-sm text-neutral-600 mt-1 dark:text-[#A1A1A1]">{description}</p>
           )}
           {/* Amount Pill. ioiti-ui: what it is about. */}
           {subject && (
@@ -182,7 +182,7 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={motionTransitions.springGentle}
-            className="mt-4 pt-4 border-t border-neutral-200 space-y-1.5 text-xs dark:border-[#1F1F1F]"
+            className="mt-4 pt-4 border-t border-neutral-200 space-y-1.5 text-sm dark:border-[#1F1F1F]"
           >
             {figures.map((figure) => (
               <div key={figure.label} className="flex items-baseline justify-between gap-3 py-0.5">
@@ -214,7 +214,7 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
               <div className="pt-2">
                 <LinkComponent
                   href={link.href}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-[#FAFAFA]"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-[#FAFAFA]"
                 >
                   {link.label}
                   <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />

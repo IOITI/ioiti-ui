@@ -102,8 +102,8 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
       <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-50 flex items-center justify-between dark:border-[#1F1F1F] dark:bg-[#141414]">
         <div className="flex items-center gap-2">
           <Clock aria-hidden="true" className="w-4 h-4 text-neutral-500 dark:text-[#525252]" />
-          <h3 className="text-xs font-semibold text-neutral-900 dark:text-[#FAFAFA]">{title}</h3>
-          <span className="text-[10px] font-mono text-muted-foreground bg-white px-2 py-0.5 rounded-full border border-neutral-200 dark:bg-[#141414] dark:border-[#1F1F1F]">
+          <h3 className="text-sm font-semibold text-neutral-900 dark:text-[#FAFAFA]">{title}</h3>
+          <span className="text-[11px] font-mono text-muted-foreground bg-white px-2 py-0.5 rounded-full border border-neutral-200 dark:bg-[#141414] dark:border-[#1F1F1F]">
             {countLabel ?? `${entries.length} snapshots`}
           </span>
         </div>
@@ -137,22 +137,22 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
             const summary = (
               <>
                 <span className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-semibold text-neutral-900 dark:text-[#FAFAFA]">
+                  <span className="text-sm font-semibold text-neutral-900 dark:text-[#FAFAFA]">
                     {entry.action}
                   </span>
                   {isCurrent && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 dark:text-emerald-400">
+                    <span className="px-1.5 py-0.5 rounded text-[11px] font-mono bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 dark:text-emerald-400">
                       {currentLabel}
                     </span>
                   )}
                 </span>
-                <span className="block text-[11px] text-neutral-600 mt-0.5 leading-relaxed dark:text-[#A1A1A1]">
+                <span className="block text-xs text-neutral-600 mt-0.5 leading-relaxed dark:text-[#A1A1A1]">
                   {entry.description}
                 </span>
 
                 {/* Metadata Footer */}
                 {(dateStr || entry.author || entry.reference) && (
-                  <span className="flex items-center gap-3 flex-wrap text-[10px] font-mono text-muted-foreground mt-2">
+                  <span className="flex items-center gap-3 flex-wrap text-xs font-mono text-muted-foreground mt-2">
                     {dateStr && <span>{dateStr}</span>}
                     {entry.reference && <span className="break-all">{entry.reference}</span>}
                     {entry.author && (
@@ -225,7 +225,7 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                           type="button"
                           disabled={Boolean(restoringId)}
                           onClick={(e) => handleRestore(entry.id, e)}
-                          className="relative z-10 px-2.5 py-1 rounded-lg text-[11px] font-medium bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-900 hover:text-white transition-colors flex items-center gap-1 cursor-pointer dark:bg-[#141414] dark:text-[#A1A1A1] dark:border-[#1F1F1F] dark:hover:bg-[#FAFAFA] dark:hover:text-[#050505]"
+                          className="relative z-10 px-2.5 py-1 rounded-lg text-xs font-medium bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-900 hover:text-white transition-colors flex items-center gap-1 cursor-pointer dark:bg-[#141414] dark:text-[#A1A1A1] dark:border-[#1F1F1F] dark:hover:bg-[#FAFAFA] dark:hover:text-[#050505]"
                           // ioiti-ui: named by the entry's action (its id is a file's name).
                           aria-label={`${restoreLabel}: ${entry.action}`}
                         >
@@ -263,7 +263,7 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                         className="mt-3 pt-2.5 border-t border-neutral-200 overflow-hidden dark:border-[#1F1F1F]"
                       >
                         {entry.details.diff && (
-                          <div className="p-2 rounded-lg bg-neutral-50 border border-neutral-200 font-mono text-[10px] text-neutral-700 leading-relaxed overflow-x-auto dark:bg-[#050505] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
+                          <div className="p-2 rounded-lg bg-neutral-50 border border-neutral-200 font-mono text-xs text-neutral-700 leading-relaxed overflow-x-auto dark:bg-[#050505] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
                             <pre>{entry.details.diff}</pre>
                           </div>
                         )}

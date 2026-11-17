@@ -431,7 +431,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
             transition={motionTransitions.springGentle}
             className="mt-4 space-y-2"
           >
-            <div className="flex items-center justify-between px-1 text-[11px] font-mono text-neutral-500 uppercase tracking-wider dark:text-[#8A8A8A]">
+            <div className="flex items-center justify-between px-1 text-xs font-mono text-neutral-500 uppercase tracking-wider dark:text-[#8A8A8A]">
               <span>Files ({files.length})</span>
               {files.some((f) => f.status === 'complete') && (
                 <button
@@ -487,16 +487,16 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                       {/* File Metadata */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-xs font-medium text-neutral-900 truncate dark:text-[#FAFAFA]">
+                          <p className="text-sm font-medium text-neutral-900 truncate dark:text-[#FAFAFA]">
                             {file.name}
                           </p>
-                          <span className="text-[10px] font-mono text-neutral-500 shrink-0 dark:text-[#8A8A8A]">
+                          <span className="text-xs font-mono text-neutral-500 shrink-0 dark:text-[#8A8A8A]">
                             {formatFileSize(file.size)}
                           </span>
                         </div>
 
                         {/* Status line */}
-                        <div className="flex items-center justify-between text-[11px] mt-1">
+                        <div className="flex items-center justify-between text-xs mt-1">
                           {isError ? (
                             // ioiti-ui: the whole error, wrapped (a script's refusal is a sentence).
                             <span role="alert" className="text-negative flex items-start gap-1">
@@ -516,12 +516,12 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                               )}
                             </span>
                           ) : isProcessing ? (
-                            <span className="text-neutral-600 flex items-center gap-1.5 font-mono text-[10px] dark:text-[#A1A1A1]">
+                            <span className="text-neutral-600 flex items-center gap-1.5 font-mono text-xs dark:text-[#A1A1A1]">
                               <span className="w-1.5 h-1.5 rounded-full bg-neutral-500 animate-pulse dark:bg-white/70" />
                               Processing...
                             </span>
                           ) : (
-                            <span className="text-neutral-500 font-mono text-[10px] dark:text-[#8A8A8A]">
+                            <span className="text-neutral-500 font-mono text-xs dark:text-[#8A8A8A]">
                               {workingLabel ?? `Uploading ${file.progress}%`}
                             </span>
                           )}

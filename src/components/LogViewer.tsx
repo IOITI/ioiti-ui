@@ -9,7 +9,7 @@ import { CopyButton } from './CopyButton.js'
 import { IconButton } from './IconButton.js'
 import { Input } from './ui/form.js'
 
-/** A line's height unwrapped: text-[12.5px] on leading-5. */
+/** A line's height unwrapped: text-[13px] on leading-5. */
 const LINE = 20
 /** The height assumed for the view while it has none to measure (before layout, in a test). */
 const UNMEASURED_VIEW = 600
@@ -252,7 +252,7 @@ export function LogViewer({
         tabIndex={0}
         style={view}
         onScroll={onScroll}
-        className="overflow-auto font-mono text-[12.5px] leading-5 text-text-primary"
+        className="overflow-auto font-mono text-[13px] leading-5 text-text-primary"
       >
         {shown.length === 0 ? (
           <p className="p-4 font-sans text-sm text-text-muted">{emptyText}</p>
@@ -309,7 +309,7 @@ export function LogViewer({
             setTarget(null)
             setFollowing(true)
           }}
-          className="absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-xs font-medium text-text-primary shadow-sm transition hover:bg-surface-hover focus-ring"
+          className="absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-sm font-medium text-text-primary shadow-sm transition hover:bg-surface-hover focus-ring"
         >
           <ArrowDownToLine className="size-3.5" aria-hidden />
           Jump to the end

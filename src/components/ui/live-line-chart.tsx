@@ -356,12 +356,12 @@ export function LiveLineChart({
           <div className="min-w-0">
             <p className="text-[28px] font-semibold leading-none tracking-[-0.035em] tabular-nums text-neutral-900 dark:text-neutral-50 sm:text-[32px]">
               {latest === null ? "—" : formatValue(latest)}
-              {unit && <span className={`ml-1.5 text-[13px] font-normal tracking-normal ${muted}`}>{unit}</span>}
+              {unit && <span className={`ml-1.5 text-sm font-normal tracking-normal ${muted}`}>{unit}</span>}
             </p>
             {/* ioiti-ui: the status colours of theme.css, which hold 4.5:1 as text (emerald-500 and rose-500 did not, on white). */}
             {formatChange ? (
               change !== null && (
-                <p className={`mt-1.5 text-[12px] tabular-nums ${muted}`}>
+                <p className={`mt-1.5 text-xs tabular-nums ${muted}`}>
                   <span className={change > 0 ? "text-positive" : change < 0 ? "text-negative" : undefined}>
                     {change > 0 ? "▲" : change < 0 ? "▼" : ""} {formatChange(change)}
                   </span>{" "}
@@ -370,7 +370,7 @@ export function LiveLineChart({
               )
             ) : (
               delta !== null && (
-                <p className={`mt-1.5 text-[12px] tabular-nums ${muted}`}>
+                <p className={`mt-1.5 text-xs tabular-nums ${muted}`}>
                   <span className={delta >= 0 ? "text-positive" : "text-negative"}>
                     {delta >= 0 ? "▲" : "▼"} {pctText(Math.abs(delta))}
                   </span>{" "}
@@ -385,7 +385,7 @@ export function LiveLineChart({
             aria-pressed={manualPause}
             aria-label={manualPause ? "Resume live updates" : "Pause live updates"}
             // ioiti-ui: the global focus ring (EasyUI's `focus` hid it behind its own).
-            className={`inline-flex h-9 items-center gap-2 rounded-full bg-black/[0.04] pl-3 pr-3.5 text-[12px] font-medium text-neutral-600 transition-[background-color,transform] duration-150 active:scale-[0.97] dark:bg-white/[0.05] dark:text-neutral-300 sm:h-8 [@media(hover:hover)]:hover:bg-black/[0.07] dark:[@media(hover:hover)]:hover:bg-white/[0.09]`}
+            className={`inline-flex h-9 items-center gap-2 rounded-full bg-black/[0.04] pl-3 pr-3.5 text-sm font-medium text-neutral-600 transition-[background-color,transform] duration-150 active:scale-[0.97] dark:bg-white/[0.05] dark:text-neutral-300 sm:h-8 [@media(hover:hover)]:hover:bg-black/[0.07] dark:[@media(hover:hover)]:hover:bg-white/[0.09]`}
           >
             <span className="relative flex h-2 w-2">
               {!paused && !reduce && <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />}
