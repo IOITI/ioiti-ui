@@ -62,6 +62,19 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   icons are lucide's); a busy Button's spinner as large as its icon. `formatBytes` writes "—" for nothing.
 - `check-source` holds it: no colour, shadow, radius, curve, spring or disabled strength of a component's own, no
   `var(--font-*)`.
+- **Nothing that floats is cut by what holds it.** SplitButton's menu and the data table's list of columns are drawn in
+  the page's body beside what opened them (`useAnchoredLayer`), following it as the page scrolls; they were cut by a
+  table's or a panel's overflow. The list of columns closes on Escape, a Tab out of it or a press elsewhere (nothing
+  closed it but its button), the focus back on its button. SplitButton's arrows move the option chosen again (every
+  move was undone at once, and Enter chose the first option). SmartComparison says what a feature is in a Hint (on
+  hover, focus and tap, read by screen readers) where its own tooltip was hover-only, inside the card.
+- **A section's frame, named once** (`SECTION` in the recipes): Panel, the KPI tiles and strip, the sign-in card and the
+  copies' cards share it; AirportMatrixClock's ground is a Panel's now.
+- **What is selected** is a faint step of the text's colour, the accent's tint where the look has one (it was the
+  browser's blue); a scrollbar's track shows what is under it (it was a stripe of `--bg` in dark), and Firefox draws
+  thin scrollbars in the design's colours (`finish.css`, new).
+- CodeBlock's copy button is centred on the first line again; StretchSwitch's thumb no longer touches the track's edge
+  when on (its border was left out of its travel), and Switch's stands as far from either end.
 
 An application's pages show more text at 14 px, and its components agree with each other; an application that wants
 its tables small writes `density="compact"`. An application that renders the components outside IoitiProvider no
