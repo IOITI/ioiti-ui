@@ -4,39 +4,46 @@ import * as React from "react";
 import { AnimatePresence, motion, type HTMLMotionProps } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "../../lib/utils.js";
+import { motionTransitions } from "../../lib/motion-tokens.js";
+import { TONE_LINE, TONE_MARK, TONE_SOFT, TONE_SOLID, TONE_TEXT, type Tone } from "../../lib/recipes.js";
 
-const spring = { type: "spring", stiffness: 520, damping: 36, mass: 0.6 } as const;
+// ioiti-ui: what floats in takes the design's spring (EasyUI's was 520/36/0.6).
+const spring = motionTransitions.springSnappy;
 
 export type BadgeVariant = "soft" | "solid" | "outline";
 export type BadgeTone = "neutral" | "success" | "warning" | "danger";
 
+// ioiti-ui: the design's tones (recipes.ts), the same as every other component's: danger is the negative red, not a
+// palette's step, and each word keeps 4.5:1 on every surface.
+const TONE: Record<BadgeTone, Tone> = { neutral: "neutral", success: "positive", warning: "warning", danger: "negative" };
+
 const styles: Record<BadgeVariant, Record<BadgeTone, string>> = {
   soft: {
-    neutral: "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
-    success: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400",
-    warning: "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400",
-    danger: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400",
+    neutral: TONE_SOFT.neutral,
+    success: TONE_SOFT.positive,
+    warning: TONE_SOFT.warning,
+    danger: TONE_SOFT.negative,
   },
   solid: {
     // ioiti-ui: the emphasis, in the accent where the theme has one (accent:); the tones keep their colours.
-    neutral: "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 accent:bg-brand accent:text-brand-foreground",
-    success: "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950",
-    warning: "bg-amber-500 text-amber-950",
-    danger: "bg-red-600 text-white dark:bg-red-500 dark:text-red-950",
+    neutral: `${TONE_SOLID.neutral} accent:bg-brand accent:text-brand-foreground`,
+    success: TONE_SOLID.positive,
+    warning: TONE_SOLID.warning,
+    danger: TONE_SOLID.negative,
   },
   outline: {
-    neutral: "border-neutral-200 text-neutral-700 dark:border-neutral-800 dark:text-neutral-300",
-    success: "border-emerald-200 text-emerald-700 dark:border-emerald-500/30 dark:text-emerald-400",
-    warning: "border-amber-200 text-amber-700 dark:border-amber-500/30 dark:text-amber-400",
-    danger: "border-red-200 text-red-700 dark:border-red-500/30 dark:text-red-400",
+    neutral: `${TONE_LINE.neutral} text-text-secondary`,
+    success: `${TONE_LINE.positive} ${TONE_TEXT.positive}`,
+    warning: `${TONE_LINE.warning} ${TONE_TEXT.warning}`,
+    danger: `${TONE_LINE.negative} ${TONE_TEXT.negative}`,
   },
 };
 
 const dots: Record<BadgeTone, string> = {
-  neutral: "bg-neutral-400",
-  success: "bg-emerald-500",
-  warning: "bg-amber-500",
-  danger: "bg-red-500",
+  neutral: TONE_MARK[TONE.neutral],
+  success: TONE_MARK[TONE.success],
+  warning: TONE_MARK[TONE.warning],
+  danger: TONE_MARK[TONE.danger],
 };
 
 export type BadgeProps = Omit<HTMLMotionProps<"span">, "children"> & {
@@ -121,7 +128,7 @@ export function Badge({
           tabIndex={removeFocusable ? undefined : -1}
           onClick={onRemove}
           // ioiti-ui: no ring of its own (the global one), and a target of 24 px around its 16.
-          className="relative grid size-4 place-items-center rounded-full opacity-60 transition after:absolute after:-inset-1 after:content-[''] hover:bg-black/10 hover:opacity-100 dark:hover:bg-white/15"
+          className="relative grid size-4 place-items-center rounded-full opacity-60 transition after:absolute after:-inset-1 after:content-[''] hover:bg-current/10 hover:opacity-100"
         >
           <X className="size-3" />
         </button>
