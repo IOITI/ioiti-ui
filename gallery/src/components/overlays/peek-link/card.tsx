@@ -14,17 +14,17 @@ export default function PeekLinkCard() {
     <div className="flex flex-wrap items-center gap-4">
       {/* Any element that takes the focus: it keeps its own focus and click. */}
       <PeekCard renderContent={() => <CustomerPreview />} href="/patterns/dashboard" hrefLabel="Open the customer">
-        <button type="button" className="rounded-full border border-border px-2.5 py-0.5 text-xs">
+        <button type="button" className="cursor-pointer rounded-full border border-border px-2.5 py-0.5 text-xs">
           Acme
         </button>
       </PeekCard>
       <PeekCard renderContent={() => <CustomerPreview />} placement="bottom" delay={0}>
-        <button type="button" className="rounded-full border border-border px-2.5 py-0.5 text-xs">
+        <button type="button" className="cursor-pointer rounded-full border border-border px-2.5 py-0.5 text-xs">
           Below, at once
         </button>
       </PeekCard>
       <PeekCard renderContent={() => <CustomerPreview />} placement="top" openOnTap={false}>
-        <button type="button" className="rounded-full" aria-label="Acme, paid">
+        <button type="button" className="cursor-pointer rounded-full" aria-label="Acme, paid">
           <Badge tone="success" dot>
             Paid
           </Badge>

@@ -128,7 +128,7 @@ export function Badge({
           tabIndex={removeFocusable ? undefined : -1}
           onClick={onRemove}
           // ioiti-ui: no ring of its own (the global one), and a target of 24 px around its 16.
-          className="relative grid size-4 place-items-center rounded-full opacity-60 transition after:absolute after:-inset-1 after:content-[''] hover:bg-current/10 hover:opacity-100"
+          className="relative grid size-4 cursor-pointer place-items-center rounded-full opacity-60 transition after:absolute after:-inset-1 after:content-[''] hover:bg-current/10 hover:opacity-100"
         >
           <X className="size-3" />
         </button>
