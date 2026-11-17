@@ -394,3 +394,20 @@ describe('the table state a page holds, arrays and sorting (0.9.0)', () => {
     expect(shown()).toEqual([expect.stringMatching(/^Row 12/), expect.stringMatching(/^Row 10/)])
   })
 })
+
+describe("the data table's list of columns", () => {
+  it('opens in the page’s body, out of the frame that cut it, and closes on Escape, the focus back on its button', async () => {
+    const user = userEvent.setup()
+    render(<AdvancedDataTable title="Rows" data={ROWS} columns={COLUMNS} />)
+
+    const button = screen.getByRole('button', { name: 'Columns shown' })
+    await user.click(button)
+    const list = await screen.findByRole('dialog', { name: 'Columns shown' })
+    expect(list.parentElement).toBe(document.body)
+    await waitFor(() => expect(within(list).getAllByRole('checkbox')[0]).toHaveFocus())
+
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Columns shown' })).not.toBeInTheDocument())
+    expect(button).toHaveFocus()
+  })
+})

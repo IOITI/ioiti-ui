@@ -4,12 +4,13 @@ import React, {
   useCallback,
   useEffect,
   useId,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { useAnchoredLayer } from '../../lib/anchor.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { FLOATING, MENU_ROW, TONE_SOLID } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
@@ -178,12 +179,25 @@ export function SplitButton({
   const optionRefs = useRef<(HTMLElement | null)[]>([]);
 
   const [open, setOpen] = useState(false);
-  const [placement, setPlacement] = useState<'bottom' | 'top'>('bottom');
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const rootRef = useRef<HTMLDivElement>(null);
   const chevronRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // ioiti-ui: the menu is an anchored layer (src/lib/anchor.ts): drawn in document.body, out of every parent that
+  // would cut it (a table's row, a panel that scrolls), beside the chevron where the window has room, following it as
+  // the page scrolls; a press elsewhere closes it, Escape and a Tab out of it give the focus back to the chevron. It
+  // was absolute in the button, on an estimate of its height, cut by a parent's overflow.
+  const layer = useAnchoredLayer({
+    open,
+    onClose: () => setOpen(false),
+    triggerRef: chevronRef,
+    layerRef: menuRef,
+    side: 'bottom',
+    align: 'end',
+    // The menu holds the focus; the arrows move the option it points to (aria-activedescendant).
+    initialFocus: () => menuRef.current,
+  });
 
   const sizeStyles = SIZE_STYLES[size];
 
@@ -231,79 +245,19 @@ export function SplitButton({
   );
 
   // ---------------------------------------------------------------------------
-  // Outside click
-  // ---------------------------------------------------------------------------
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-
-      if (!rootRef.current?.contains(target)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener('pointerdown', handlePointerDown);
-
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown);
-    };
-  }, [open]);
-
-  // ---------------------------------------------------------------------------
-  // Viewport-aware placement
-  // ---------------------------------------------------------------------------
-
-  useLayoutEffect(() => {
-    if (!open || !chevronRef.current) {
-      return;
-    }
-
-    const triggerRect = chevronRef.current.getBoundingClientRect();
-
-    // Approximate menu height:
-    // option height + menu vertical padding.
-    const estimatedMenuHeight = options.length * 36 + 16;
-
-    const spaceBelow = window.innerHeight - triggerRect.bottom;
-    const spaceAbove = triggerRect.top;
-
-    const shouldFlip =
-      spaceBelow < estimatedMenuHeight &&
-      spaceAbove > estimatedMenuHeight;
-
-    setPlacement(shouldFlip ? 'top' : 'bottom');
-  }, [open, options.length]);
-
-  // ---------------------------------------------------------------------------
   // Reset active option when opening
   // ---------------------------------------------------------------------------
 
+  // ioiti-ui: on the first option it can choose as it opens, only then. It hung on `enabledIndices`, an array made
+  // again at each render: every arrow's move was undone at once, and Enter chose the first option whatever was shown.
+  const firstEnabled = enabledIndices[0] ?? 0;
   useEffect(() => {
     if (!open) {
       return;
     }
 
-    setActiveIndex(enabledIndices[0] ?? 0);
-  }, [open, enabledIndices]);
-
-  // ---------------------------------------------------------------------------
-  // Focus menu when opened
-  // ---------------------------------------------------------------------------
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      menuRef.current?.focus();
-    });
-  }, [open]);
+    setActiveIndex(firstEnabled);
+  }, [open, firstEnabled]);
 
   // ---------------------------------------------------------------------------
   // Keyboard navigation
@@ -311,17 +265,13 @@ export function SplitButton({
 
   const handleMenuKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
+      // ioiti-ui: Escape and Tab are the layer's (anchor.ts): neither reaches a dialog around it.
+      if (event.key === 'Escape' || event.key === 'Tab') {
+        layer.onLayerKeyDown(event);
+        return;
+      }
+
       if (!enabledIndices.length) {
-        if (event.key === 'Escape' || event.key === 'Tab') {
-          event.preventDefault();
-
-          if (event.key === 'Escape') {
-            closeMenu();
-          } else {
-            setOpen(false);
-          }
-        }
-
         return;
       }
 
@@ -378,17 +328,6 @@ export function SplitButton({
           break;
         }
 
-        case 'Escape': {
-          event.preventDefault();
-          closeMenu();
-          break;
-        }
-
-        case 'Tab': {
-          setOpen(false);
-          break;
-        }
-
         default:
           break;
       }
@@ -397,6 +336,7 @@ export function SplitButton({
       activeIndex,
       closeMenu,
       enabledIndices,
+      layer,
       options,
       selectOption,
     ],
@@ -407,10 +347,7 @@ export function SplitButton({
   // ---------------------------------------------------------------------------
 
   return (
-    <div
-      ref={rootRef}
-      className={cn('relative inline-flex', className)}
-    >
+    <div className={cn('relative inline-flex', className)}>
       {/* ---------------------------------------------------------------------
           Button group
       --------------------------------------------------------------------- */}
@@ -485,6 +422,7 @@ export function SplitButton({
           aria-label={menuName}
           disabled={disabled}
           onClick={() => setOpen((previous) => !previous)}
+          onKeyDown={layer.onTriggerKeyDown}
           className={cn(
             'relative inline-flex items-center justify-center',
             'select-none',
@@ -510,10 +448,12 @@ export function SplitButton({
           Dropdown menu
       ----------------------------------------------------------------------- */}
 
+      {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
         {open && (
           <motion.div
             ref={menuRef}
+            style={layer.style}
             role="menu"
             aria-label={menuName}
             aria-activedescendant={options[activeIndex] && !options[activeIndex].disabled ? `${idPrefix}-${activeIndex}` : undefined}
@@ -522,7 +462,7 @@ export function SplitButton({
             initial={{
               opacity: 0,
               scale: 0.96,
-              y: placement === 'bottom' ? -4 : 4,
+              y: layer.side === 'top' ? 4 : -4,
             }}
             animate={{
               opacity: 1,
@@ -541,13 +481,8 @@ export function SplitButton({
             className={cn(
               // ioiti-ui: what floats beside its trigger (recipes.ts), glass under the glass material (glass-float).
               FLOATING,
-              'absolute right-0 z-30',
-              'min-w-[10rem]',
-              'p-1',
-              'origin-top-right',
-              placement === 'bottom'
-                ? 'top-[calc(100%+8px)]'
-                : 'bottom-[calc(100%+8px)]',
+              'z-50 min-w-48 max-w-xs overflow-auto p-1 outline-none',
+              layer.side === 'top' ? 'origin-bottom-right' : 'origin-top-right',
             )}
           >
             {options.map((option, index) => {
@@ -608,7 +543,9 @@ export function SplitButton({
             })}
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body,
+      )}
     </div>
   );
 }

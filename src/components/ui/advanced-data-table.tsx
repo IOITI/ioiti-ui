@@ -23,6 +23,7 @@ import {
 import { cn } from '../../lib/utils.js';
 import { fieldBorder } from '../../lib/field-border.js';
 // ioiti-ui: the filters' lists float as everything that floats.
+import { useAnchoredLayer } from '../../lib/anchor.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DISABLED, FLOATING, MENU_ROW, PRESSABLE } from '../../lib/recipes.js';
 import { SelectionBasket } from './selection-basket.js';
@@ -162,6 +163,20 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
   } = useDataTable();
 
   const [isColumnPickerOpen, setIsColumnPickerOpen] = useState(false);
+  // ioiti-ui: the columns' list is an anchored layer (src/lib/anchor.ts): in document.body, out of the frame's
+  // overflow that cut it, beside its button where the window has room; Escape, a Tab out of it or a press elsewhere
+  // closes it (none did), the focus back on its button.
+  const columnPickerId = useId();
+  const columnTriggerRef = useRef<HTMLButtonElement>(null);
+  const columnLayerRef = useRef<HTMLDivElement>(null);
+  const columnLayer = useAnchoredLayer({
+    open: isColumnPickerOpen,
+    onClose: () => setIsColumnPickerOpen(false),
+    triggerRef: columnTriggerRef,
+    layerRef: columnLayerRef,
+    side: 'bottom',
+    align: 'end',
+  });
   // ioiti-ui: the selection basket says what is selected and what can be done with it: said once.
   const selectedCount = selectionBasket ? 0 : selectedRowIds.size;
   const shouldReduceMotion = useReducedMotionConfig();
@@ -230,9 +245,13 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
           <div className="relative shrink-0">
             <Hint content="Columns shown">
               <motion.button
+                ref={columnTriggerRef}
                 type="button"
                 whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                 onClick={() => setIsColumnPickerOpen(!isColumnPickerOpen)}
+                onKeyDown={columnLayer.onTriggerKeyDown}
+                aria-haspopup="dialog"
+                aria-controls={isColumnPickerOpen ? columnPickerId : undefined}
                 className="grid size-8 place-items-center rounded-lg border border-border bg-surface text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors cursor-pointer"
                 aria-label="Columns shown"
                 aria-expanded={isColumnPickerOpen}
@@ -241,8 +260,17 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
               </motion.button>
             </Hint>
 
-            {isColumnPickerOpen && (
-              <div className={cn('absolute right-0 top-full mt-2 w-48 max-h-60 overflow-y-auto p-2 z-30 font-sans', FLOATING)}>
+            {isColumnPickerOpen && typeof document !== 'undefined' && createPortal(
+              <div
+                ref={columnLayerRef}
+                id={columnPickerId}
+                role="dialog"
+                aria-label="Columns shown"
+                tabIndex={-1}
+                onKeyDown={columnLayer.onLayerKeyDown}
+                style={columnLayer.style}
+                className={cn(FLOATING, 'z-50 w-48 overflow-y-auto p-2 font-sans outline-none')}
+              >
                 <div className="text-xs font-medium text-muted-foreground px-2 py-1">
                   Columns
                 </div>
@@ -263,7 +291,8 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                     );
                   })}
                 </div>
-              </div>
+              </div>,
+              document.body,
             )}
           </div>
         </div>

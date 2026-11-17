@@ -7,6 +7,7 @@ import { cn } from '../../lib/utils.js';
 import { fieldBorder } from '../../lib/field-border.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { PRESSABLE } from '../../lib/recipes.js';
+import { Hint } from '../Hint.js';
 import { useLinkComponent } from '../link-context.js';
 
 export interface ComparisonPlan {
@@ -84,7 +85,6 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [diffOnly, setDiffOnly] = useState(false);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   const toggleCategory = (catId: string) => {
     setCollapsedCategories((prev) => {
@@ -388,27 +388,18 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                               {feat.name}
                             </span>
                             {feat.description && (
-                              <div className="relative">
+                              // ioiti-ui: what a feature is, in a Hint: shown on hover, on the keyboard's focus and on a
+                              // tap, drawn in document.body (it was in the card, cut by the table's frame), read with the
+                              // button by a screen reader.
+                              <Hint content={feat.description}>
                                 <button
                                   type="button"
-                                  onMouseEnter={() => setActiveTooltip(feat.id)}
-                                  onMouseLeave={() => setActiveTooltip(null)}
-                                  onClick={() =>
-                                    setActiveTooltip((prev) => (prev === feat.id ? null : feat.id))
-                                  }
                                   className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
                                   aria-label={`Info about ${feat.name}`}
                                 >
                                   <Info className="size-4" />
                                 </button>
-
-                                {activeTooltip === feat.id && (
-                                  // ioiti-ui: a tooltip's look (TOOLTIP), without its glass's blur: it is drawn in the card.
-                                  <div className="absolute left-0 bottom-full mb-1 z-30 w-48 p-2 rounded-lg border border-border bg-surface text-xs text-foreground shadow-elevated">
-                                    {feat.description}
-                                  </div>
-                                )}
-                              </div>
+                              </Hint>
                             )}
                           </div>
 
