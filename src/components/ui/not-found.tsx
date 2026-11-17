@@ -182,6 +182,12 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
   const svgProps = { viewBox: `0 0 ${W} ${H}`, className: "absolute inset-0 h-full w-full overflow-visible", "aria-hidden": true } as const;
   const group = `translate(${CX} ${CY}) rotate(${TILT})`;
   const anchor: CSSProperties = { position: "absolute", left: CX, top: CY, width: 0, height: 0, transform: `rotate(${TILT}deg)` };
+  // ioiti-ui: the glass's layer is not turned as a whole: each of its parts turns itself, about the anchor's point. A
+  // backdrop-filter under a turned parent is not cut by its clip-path (Chrome blurs the whole rectangle around the
+  // folder); turned itself, it is. Its moves are written in the turned frame, as they were.
+  const anchorUpright: CSSProperties = { ...anchor, transform: undefined };
+  const tilted: CSSProperties = { position: "absolute", inset: 0, transform: `rotate(${TILT}deg)`, transformOrigin: `${-GLASS.x}px ${-GLASS.y}px` };
+  const turned = (distance: number) => ({ x: -distance * Math.sin((TILT * Math.PI) / 180), y: distance * Math.cos((TILT * Math.PI) / 180) });
 
   return (
     <div
@@ -250,17 +256,17 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
 
           {/* 3 · frosted-glass folder */}
           <motion.div className={layer} style={{ x: glassX, y: glassY }}>
-            <div style={anchor}>
+            <div style={anchorUpright}>
               <motion.div
                 style={{ position: "absolute", left: GLASS.x, top: GLASS.y, width: GLASS.w, height: GLASS.h }}
-                initial={reduce ? false : { y: 30 }}
-                animate={{ y: 0 }}
-                whileHover={reduce ? undefined : { y: -6 }}
+                initial={reduce ? false : turned(30)}
+                animate={{ x: 0, y: 0 }}
+                whileHover={reduce ? undefined : turned(-6)}
                 transition={spring(0.2)}
               >
                 {/* soft blue glow under the glass */}
+                <div aria-hidden style={tilted}>
                 <div
-                  aria-hidden
                   style={{
                     position: "absolute",
                     left: 14,
@@ -272,18 +278,19 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
                     filter: "blur(22px)",
                   }}
                 />
-                {/* ioiti-ui: cut to the folder by a CSS path (the glass is GLASS.w × GLASS.h px, the path in those px). An
-                    SVG <clipPath> by url() cut what the glass paints but not its backdrop-filter: the blur showed
-                    outside the folder, a rectangle around it. */}
+                </div>
+                {/* ioiti-ui: cut to the folder by a CSS path (the glass is GLASS.w × GLASS.h px, the path in those px), and
+                    turned itself (above): the blur stays in the folder. Cut by an SVG <clipPath> under the turned anchor,
+                    it showed outside the folder, a rectangle around it. */}
                 <motion.div
                   className="np404-glass"
-                  style={{ position: "absolute", inset: 0, clipPath: FOLDER_CLIP, WebkitClipPath: FOLDER_CLIP }}
+                  style={{ ...tilted, clipPath: FOLDER_CLIP, WebkitClipPath: FOLDER_CLIP }}
                   initial={reduce ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.25, ease: EASE_OUT }}
                 />
                 {/* glass rim */}
-                <svg width={GLASS.w} height={GLASS.h} viewBox={`0 0 ${GLASS.w} ${GLASS.h}`} className="pointer-events-none absolute inset-0" aria-hidden>
+                <svg width={GLASS.w} height={GLASS.h} viewBox={`0 0 ${GLASS.w} ${GLASS.h}`} className="pointer-events-none" style={tilted} aria-hidden>
                   <defs>
                     <linearGradient id={`${uid}-rim`} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0" stopColor="#fff" stopOpacity="0.85" />
