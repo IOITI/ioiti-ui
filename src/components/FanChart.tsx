@@ -388,7 +388,7 @@ export function FanChart({
         <Tooltip pos={active === null ? null : { x: activeX, y: activeTop }} boundsWidth={width}>
           {active !== null && (
             <>
-              <p className="mb-1.5 font-medium text-foreground">{formatX(places[active])}</p>
+              <p className="mb-1.5 font-medium tabular-nums text-foreground">{formatX(places[active])}</p>
               <ul className="space-y-1">
                 {shownLines.map((line) => {
                   const value = valueOf(data[active], line.key)

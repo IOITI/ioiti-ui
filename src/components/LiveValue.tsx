@@ -68,7 +68,7 @@ export function LiveValue({
     <span
       className={cn(
         'tabular-nums',
-        stale && 'text-text-muted',
+        stale && 'text-muted-foreground',
         // The tone at once; then back, in a fade.
         change && !fading && !stale && (good ? 'text-positive' : 'text-negative'),
         change && fading ? 'transition-colors duration-500 ease-soft' : 'transition-none',

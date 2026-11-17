@@ -35,7 +35,7 @@ describe('LiveValue', () => {
   it('is muted, and said stale, when what sends it stopped', () => {
     render(<LiveValue value={42} stale />)
     const figure = screen.getByText('42', { exact: false })
-    expect(figure).toHaveClass('text-text-muted')
+    expect(figure).toHaveClass('text-muted-foreground')
     expect(figure).toHaveTextContent('42 (stale)')
   })
 

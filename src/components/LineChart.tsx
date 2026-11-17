@@ -356,7 +356,7 @@ export function LineChart({
         <Tooltip pos={active === null ? null : { x: activeX, y: activeTop }} boundsWidth={width}>
           {active !== null && (
             <>
-              <p className="mb-1.5 font-medium text-foreground">{timeText(times[active])}</p>
+              <p className="mb-1.5 font-medium tabular-nums text-foreground">{timeText(times[active])}</p>
               <ul className="space-y-1">
                 {visible.map((each) => {
                   const value = valueOf(data[active], each.key)

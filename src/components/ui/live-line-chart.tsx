@@ -20,6 +20,10 @@ import {
   type TimestampedPoint,
 } from "../../lib/dashboard-chart-utils.js";
 
+import { AXIS_COLOUR, GRID_COLOUR } from "../../lib/chart-colours.js";
+import { motionTransitions } from "../../lib/motion-tokens.js";
+import { PRESSABLE, TONE_MARK } from "../../lib/recipes.js";
+
 export { buildFrame, valueAt, visibleExtent } from "../../lib/dashboard-chart-utils.js";
 
 /* -------------------------------------------------------------------------- */
@@ -354,7 +358,7 @@ export function LiveLineChart({
       {showReadout && (
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[28px] font-semibold leading-none tracking-[-0.035em] tabular-nums text-neutral-900 dark:text-neutral-50 sm:text-[32px]">
+            <p className="text-[28px] font-semibold leading-none tracking-[-0.035em] tabular-nums text-foreground sm:text-[32px]">
               {latest === null ? "—" : formatValue(latest)}
               {unit && <span className={`ml-1.5 text-sm font-normal tracking-normal ${muted}`}>{unit}</span>}
             </p>
@@ -385,11 +389,11 @@ export function LiveLineChart({
             aria-pressed={manualPause}
             aria-label={manualPause ? "Resume live updates" : "Pause live updates"}
             // ioiti-ui: the global focus ring (EasyUI's `focus` hid it behind its own).
-            className={`inline-flex h-9 items-center gap-2 rounded-full bg-black/[0.04] pl-3 pr-3.5 text-sm font-medium text-neutral-600 transition-[background-color,transform] duration-150 active:scale-[0.97] dark:bg-white/[0.05] dark:text-neutral-300 sm:h-8 [@media(hover:hover)]:hover:bg-black/[0.07] dark:[@media(hover:hover)]:hover:bg-white/[0.09]`}
+            className={`inline-flex h-8 items-center gap-2 rounded-full bg-foreground/5 pl-3 pr-3.5 text-sm font-medium text-text-secondary transition-[background-color,transform] duration-150 [@media(hover:hover)]:hover:bg-foreground/10 ${PRESSABLE}`}
           >
-            <span className="relative flex h-2 w-2">
-              {!paused && !reduce && <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />}
-              <span className={cx("relative h-2 w-2 rounded-full", paused ? "bg-amber-400" : "bg-emerald-500")} />
+            <span className="relative flex size-2">
+              {!paused && !reduce && <span className="absolute inset-0 animate-ping rounded-full bg-positive/70" />}
+              <span className={cx("relative size-2 rounded-full", paused ? TONE_MARK.warning : TONE_MARK.positive)} />
             </span>
             {paused ? "Paused" : "Live"}
           </button>
@@ -419,7 +423,7 @@ export function LiveLineChart({
             const gy = g.t + (g.ih / 2) * i;
             return (
               <g key={i}>
-                <line x1={g.l} x2={width - LIVE_M.r} y1={gy} y2={gy} className="stroke-black/[0.06] dark:stroke-white/[0.07]" />
+                <line x1={g.l} x2={width - LIVE_M.r} y1={gy} y2={gy} stroke={GRID_COLOUR} />
                 <text
                   ref={(el) => {
                     tickEls.current[i] = el;
@@ -428,7 +432,7 @@ export function LiveLineChart({
                   y={gy}
                   textAnchor="end"
                   dominantBaseline="middle"
-                  className="fill-neutral-500 text-[11px] tabular-nums"
+                  className="fill-muted-foreground text-[11px] tabular-nums"
                 />
               </g>
             );
@@ -439,13 +443,13 @@ export function LiveLineChart({
               x={g.l + g.iw * p}
               y={height - 6}
               textAnchor={i === 0 ? "start" : i === 2 ? "end" : "middle"}
-              className="fill-neutral-500 text-[11px]"
+              className="fill-muted-foreground text-[11px] tabular-nums"
             >
               {i === 2 ? "now" : `−${spanText(Math.round(winS * (1 - p)))}`}
             </text>
           ))}
 
-          <line ref={zeroEl} x1={g.l} x2={width - LIVE_M.r} stroke="var(--chart-axis)" strokeWidth={1} style={{ opacity: 0 }} />
+          <line ref={zeroEl} x1={g.l} x2={width - LIVE_M.r} stroke={AXIS_COLOUR} strokeWidth={1} style={{ opacity: 0 }} />
 
           <g clipPath={`url(#${uid}-c)`}>
             <path ref={areaEl} fill={`url(#${uid}-a)`} />
@@ -459,14 +463,14 @@ export function LiveLineChart({
             fill={color}
             style={{ transformBox: "fill-box", transformOrigin: "center", opacity: hovering ? 0 : 1 }}
             animate={paused || reduce ? { scale: 1, opacity: 0 } : { scale: [1, 3], opacity: [0.4, 0] }}
-            transition={paused || reduce ? { duration: 0 } : { repeat: Infinity, duration: 1.6, ease: "easeOut" }}
+            transition={paused || reduce ? { duration: 0 } : { ...motionTransitions.easeSoft, repeat: Infinity, duration: 1.6 }}
           />
-          <circle ref={headEl} r={4} fill={color} className="stroke-white dark:stroke-[#0b0b0c]" strokeWidth={2} />
+          <circle ref={headEl} r={4} fill={color} className="stroke-surface" strokeWidth={2} />
 
           {/* scrubber */}
-          <g style={{ opacity: hovering ? 1 : 0, transition: "opacity .12s" }} pointerEvents="none">
-            <line ref={crossLine} y1={g.t} y2={g.t + g.ih} strokeDasharray="2 3" className="stroke-black/20 dark:stroke-white/25" />
-            <circle ref={crossDot} r={5} fill={color} className="stroke-white dark:stroke-[#0b0b0c]" strokeWidth={2} />
+          <g className="transition-opacity" style={{ opacity: hovering ? 1 : 0 }} pointerEvents="none">
+            <line ref={crossLine} y1={g.t} y2={g.t + g.ih} strokeDasharray="2 3" stroke={AXIS_COLOUR} />
+            <circle ref={crossDot} r={5} fill={color} className="stroke-surface" strokeWidth={2} />
           </g>
 
           <rect
@@ -484,11 +488,11 @@ export function LiveLineChart({
         <Tooltip pos={scrub && hovering ? { x: scrub.x, y: scrub.y } : null} boundsWidth={width}>
           {scrub && (
             <>
-              <p className="font-medium tabular-nums text-neutral-900 dark:text-neutral-100">
+              <p className="font-medium tabular-nums text-foreground">
                 {formatValue(scrub.v)}
-                {unit && <span className="ml-1 font-normal text-neutral-500">{unit}</span>}
+                {unit && <span className="ml-1 font-normal text-muted-foreground">{unit}</span>}
               </p>
-              <p className="mt-0.5 tabular-nums text-neutral-500">{scrub.ago < 0.5 ? "now" : `${agoText(scrub.ago)} ago`}</p>
+              <p className="mt-0.5 tabular-nums text-muted-foreground">{scrub.ago < 0.5 ? "now" : `${agoText(scrub.ago)} ago`}</p>
             </>
           )}
         </Tooltip>

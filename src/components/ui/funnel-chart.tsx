@@ -11,6 +11,7 @@ import {
   useElementWidth,
 } from "../../lib/chart-primitives.js";
 import { pctText } from "../../lib/dashboard-chart-utils.js";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 
 /* -------------------------------------------------------------------------- */
 /*  FunnelChart                                                               */
@@ -46,7 +47,7 @@ export interface FunnelChartProps {
 const F = { text: 22, bar: 30, bridge: 30 };
 
 // ioiti-ui: secondary text at 4.5:1 in both themes (neutral-500 is 4.0:1 on the dark card).
-const MUTED = "text-neutral-500 dark:text-neutral-400";
+const MUTED = "text-muted-foreground";
 // ioiti-ui: the stages take the ramp of theme.css (--chart-funnel-1 to 5, one hue, the first stage the strongest),
 // checked in both themes; EasyUI mixed two hues, indigo to teal.
 const RAMP = 5;
@@ -104,7 +105,8 @@ export function FunnelChart({
   };
 
   if (!n) return <p className={`py-10 text-center text-sm ${MUTED}`}>{emptyText}</p>;
-  const spring = reduce ? { duration: 0 } : ({ type: "spring", duration: 0.7, bounce: 0.1 } as const);
+  // ioiti-ui: the bars move without overshoot (springGentle), and arrive as what arrives does (easeSoft).
+  const spring = reduce ? { duration: 0 } : motionTransitions.springGentle;
   const cur = active !== null ? stages[active] : null;
 
   return (
@@ -112,7 +114,7 @@ export function FunnelChart({
     <div ref={rootRef} className={cx("w-full contain-inline-size", className)}>
       {showSummary && summary && (
         <div className="mb-4 flex flex-wrap items-baseline gap-x-5 gap-y-1">
-          <p className="text-sm text-neutral-900 dark:text-neutral-100">
+          <p className="text-sm text-foreground">
             <span className="text-[22px] font-semibold tracking-[-0.03em] tabular-nums">{pctText(summary.conv)}</span>{" "}
             <span className={MUTED}>{summaryLabel}</span>
           </p>
@@ -153,7 +155,7 @@ export function FunnelChart({
               fill={`url(#fg-${i})`}
               initial={anim ? { opacity: 0, d: bridge(i) } : false}
               animate={{ opacity: active === null ? 1 : active === i ? 1 : 0.35, d: bridge(i) }}
-              transition={anim ? { opacity: { duration: 0.4, delay: 0.3 + i * 0.1 }, d: spring } : { d: spring, opacity: { duration: 0.2 } }}
+              transition={anim ? { opacity: { ...motionTransitions.easeSoft, delay: 0.3 + i * 0.1 }, d: spring } : { d: spring, opacity: motionTransitions.easeFast }}
             />
           ))}
 
@@ -161,13 +163,13 @@ export function FunnelChart({
             const y = i * block;
             const dim = active !== null && active !== i;
             return (
-              <g key={i} style={{ opacity: dim ? 0.5 : 1, transition: "opacity .2s" }}>
-                <text x={0} y={y + 14} className={cx("text-xs", active === i ? "fill-neutral-900 dark:fill-white" : "fill-neutral-600 dark:fill-neutral-400")}>
+              <g key={i} className="transition-opacity" style={{ opacity: dim ? 0.5 : 1 }}>
+                <text x={0} y={y + 14} className={cx("text-xs", active === i ? "fill-foreground" : "fill-muted-foreground")}>
                   {s.label}
                 </text>
-                <text x={width} y={y + 14} textAnchor="end" className="fill-neutral-900 text-xs tabular-nums dark:fill-neutral-100">
+                <text x={width} y={y + 14} textAnchor="end" className="fill-foreground text-xs tabular-nums">
                   {formatValue(s.value)}
-                  {width >= 300 && <tspan className="fill-neutral-500 dark:fill-neutral-400"> · {pctText(pct(i))}</tspan>}
+                  {width >= 300 && <tspan className="fill-muted-foreground"> · {pctText(pct(i))}</tspan>}
                 </text>
                 <motion.rect
                   y={y + F.text}
@@ -176,7 +178,7 @@ export function FunnelChart({
                   fill={color(i)}
                   initial={anim ? { x: width / 2, width: 0 } : false}
                   animate={{ x: bx(i), width: w(i) }}
-                  transition={anim ? { type: "spring", duration: 0.9, bounce: 0.12, delay: i * 0.09 } : spring}
+                  transition={anim ? { ...motionTransitions.easeSoft, delay: i * 0.09 } : spring}
                 />
               </g>
             );
@@ -191,7 +193,7 @@ export function FunnelChart({
                 key={i}
                 initial={anim ? { opacity: 0 } : false}
                 animate={{ opacity: active === null || hot ? 1 : 0.4 }}
-                transition={{ duration: 0.3, delay: anim && active === null ? 0.6 + i * 0.1 : 0 }}
+                transition={{ ...motionTransitions.easeSoft, delay: anim && active === null ? 0.6 + i * 0.1 : 0 }}
               >
                 <rect
                   x={width / 2 - 28}
@@ -199,14 +201,14 @@ export function FunnelChart({
                   width={56}
                   height={20}
                   rx={10}
-                  className={cx("fill-white dark:fill-[#0b0b0c]", hot ? "stroke-rose-400/60" : "stroke-black/10 dark:stroke-white/12")}
+                  className={cx("fill-surface", hot ? "stroke-negative/30" : "stroke-border")}
                 />
                 <text
                   x={width / 2}
                   y={yc}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  className={cx("text-[11px] tabular-nums", hot ? "fill-negative" : "fill-neutral-500 dark:fill-neutral-400")}
+                  className={cx("text-[11px] tabular-nums", hot ? "fill-negative" : "fill-muted-foreground")}
                 >
                   {/* ioiti-ui: nothing lost is "0%", not "−0.0%". */}
                   {drop(i) === 0 ? "0%" : `−${pctText(drop(i))}`}
@@ -237,17 +239,17 @@ export function FunnelChart({
         >
           {cur && active !== null && (
             <>
-              <p className="mb-1 font-medium text-neutral-900 dark:text-neutral-100">{cur.label}</p>
+              <p className="mb-1 font-medium text-foreground">{cur.label}</p>
               <p className="flex justify-between gap-4">
                 <span className={MUTED}>{noun}</span>
-                <span className="tabular-nums text-neutral-900 dark:text-neutral-100">{formatValue(cur.value)}</span>
+                <span className="tabular-nums text-foreground">{formatValue(cur.value)}</span>
               </p>
               <p className="flex justify-between gap-4">
                 <span className={MUTED}>Of the first</span>
-                <span className="tabular-nums text-neutral-900 dark:text-neutral-100">{pctText(pct(active))}</span>
+                <span className="tabular-nums text-foreground">{pctText(pct(active))}</span>
               </p>
               {active < n - 1 && (
-                <p className="mt-1.5 flex justify-between gap-4 border-t border-black/[0.06] pt-1.5 dark:border-white/[0.08]">
+                <p className="mt-1.5 flex justify-between gap-4 border-t border-border pt-1.5">
                   <span className={MUTED}>{cur.dropLabel ?? "Lost next"}</span>
                   <span className="tabular-nums text-negative">
                     {drop(active) === 0 ? "none" : `−${formatValue(cur.value - stages[active + 1].value)} (${pctText(drop(active))})`}

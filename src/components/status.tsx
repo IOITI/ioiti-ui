@@ -61,7 +61,7 @@ export function SignedValue({
   staleLabel?: string
 }) {
   const text = kind === 'money' ? formatMoney(value, currency ?? 'EUR', true) : formatPercent(value, true)
-  const tone = stale ? 'text-text-muted' : TONE_TEXT[toneOf(value)]
+  const tone = stale ? 'text-muted-foreground' : TONE_TEXT[toneOf(value)]
   const said = stale && <span className="sr-only"> ({staleLabel})</span>
   if (animate && typeof value === 'number' && Number.isFinite(value)) {
     // The number first in both cases: it is not drawn again (its digits rolled anew) as it goes stale.

@@ -64,7 +64,7 @@ export function KpiTile({ label, value, hint, change, goodWhen, changeFormat, le
           <p className="min-w-0 text-xs text-muted-foreground">{label}</p>
           {tone && (
             <p className={cn('inline-flex shrink-0 items-center gap-1.5 text-xs font-medium', TONE_TEXT[tone])}>
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
+              <span aria-hidden className="size-1.5 rounded-full bg-current" />
               {toneLabel}
             </p>
           )}

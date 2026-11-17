@@ -25,7 +25,7 @@ export function KpiChange({ change, goodWhen = 'up', format = formatChange, clas
   return (
     <span className={cn('inline-flex items-center gap-1 text-xs font-medium tabular-nums', TONE_TEXT[tone], className)}>
       {change !== 0 && Number.isFinite(change) && (
-        <svg viewBox="0 0 10 10" className={cn('h-2 w-2 shrink-0', change < 0 && 'rotate-180')} fill="currentColor" aria-hidden>
+        <svg viewBox="0 0 10 10" className={cn('size-2 shrink-0', change < 0 && 'rotate-180')} fill="currentColor" aria-hidden>
           <path d="M5 1.5 9 7.5H1Z" />
         </svg>
       )}

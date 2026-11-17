@@ -41,7 +41,7 @@ const DigitColumn: React.FC<{
   stiffness?: number;
   damping?: number;
   mass?: number;
-}> = ({ digit, stiffness = 160, damping = 18, mass = 0.8 }) => {
+}> = ({ digit, stiffness, damping, mass }) => {
   const isNumber = !isNaN(parseInt(digit, 10));
   const numValue = isNumber ? parseInt(digit, 10) : 0;
 

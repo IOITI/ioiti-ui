@@ -19,6 +19,7 @@ import {
   useDismissOutside,
   useElementWidth,
 } from "../../lib/chart-primitives.js";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 
 export interface HeatDay {
   /** "YYYY-MM-DD" or a Date */
@@ -305,13 +306,13 @@ export function ActivityHeatmap({
         dangerouslySetInnerHTML={{
           __html:
             "@keyframes cj-cell{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}" +
-            ".cj-cell{transform-box:fill-box;transform-origin:center;animation:cj-cell .55s cubic-bezier(.23,1,.32,1) both;animation-delay:var(--d,0s)}" +
+            ".cj-cell{transform-box:fill-box;transform-origin:center;animation:cj-cell .55s var(--ease-soft) both;animation-delay:var(--d,0s)}" +
             "@media (prefers-reduced-motion: reduce){.cj-cell{animation:none}}",
         }}
       />
 
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <p className="text-sm font-medium tabular-nums text-neutral-900 dark:text-neutral-100">{summary}</p>
+        <p className="text-sm font-medium tabular-nums text-foreground">{summary}</p>
         {/* ioiti-ui: the best and the worst on a signed scale, each value on one line (a phone broke "−877.16 €" after its
             sign). Small text in the muted colour (4.5:1 in both themes). */}
         {diverging ? (
@@ -352,12 +353,12 @@ export function ActivityHeatmap({
           className="block touch-pan-y overflow-visible rounded-md"
         >
           {topLabels.map((l) => (
-            <text key={l.c} x={gx(l.c)} y={11} className="fill-neutral-500 text-[11px] dark:fill-neutral-400">
+            <text key={l.c} x={gx(l.c)} y={11} className="fill-muted-foreground text-[11px]">
               {l.text}
             </text>
           ))}
           {rowNames.map((l) => (
-            <text key={l.r} x={0} y={gy(l.r) + ch / 2} dominantBaseline="middle" className="fill-neutral-500 text-[11px] dark:fill-neutral-400">
+            <text key={l.r} x={0} y={gy(l.r) + ch / 2} dominantBaseline="middle" className="fill-muted-foreground text-[11px]">
               {l.text}
             </text>
           ))}
@@ -370,20 +371,20 @@ export function ActivityHeatmap({
                 width={cols * (cwEff + gap)}
                 height={ch + 4}
                 rx={5}
-                className="fill-black/[0.035] dark:fill-white/[0.04]"
+                className="fill-surface-hover"
                 initial={false}
                 animate={{ y: gy(active?.r ?? 0) - 2, opacity: active ? 1 : 0 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.15 }}
+                transition={reduce ? { duration: 0 } : motionTransitions.easeFast}
               />
               <motion.rect
                 y={TOP - 2}
                 width={cwEff + 4}
                 height={rows * (ch + gap)}
                 rx={5}
-                className="fill-black/[0.035] dark:fill-white/[0.04]"
+                className="fill-surface-hover"
                 initial={false}
                 animate={{ x: gx(active?.c ?? 0) - 2, opacity: active ? 1 : 0 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.15 }}
+                transition={reduce ? { duration: 0 } : motionTransitions.easeFast}
               />
             </>
           )}
@@ -398,7 +399,7 @@ export function ActivityHeatmap({
                 width={cwEff}
                 height={ch}
                 rx={Math.min(3, cwEff / 4)}
-                className={cx(anim && "cj-cell", l === 0 && "fill-black/[0.05] dark:fill-white/[0.06]")}
+                className={cx(anim && "cj-cell", l === 0 && "fill-foreground/5")}
                 style={{ ...lvlFill(x.v, l), ["--d" as string]: anim ? `${(x.c * 0.012 + x.r * 0.02).toFixed(3)}s` : undefined } as CSSProperties}
               />
             );
@@ -412,10 +413,10 @@ export function ActivityHeatmap({
             fill="none"
             strokeWidth={1.5}
             // ioiti-ui: in the accent, where the theme has one (accent:).
-            className="stroke-neutral-900 dark:stroke-white accent:stroke-brand"
+            className="stroke-foreground accent:stroke-brand"
             initial={false}
             animate={{ x: gx(active?.c ?? 0) - 1, y: gy(active?.r ?? 0) - 1, opacity: active ? 1 : 0 }}
-            transition={reduce ? { duration: 0 } : { x: { duration: 0.12 }, y: { duration: 0.12 }, opacity: { duration: 0.12 } }}
+            transition={reduce ? { duration: 0 } : motionTransitions.easeFast}
           />
 
           <rect
@@ -433,11 +434,11 @@ export function ActivityHeatmap({
         <Tooltip pos={active ? { x: gx(active.c) + cwEff / 2, y: gy(active.r) } : null} boundsWidth={width}>
           {cur && (
             <>
-              <p className="font-medium tabular-nums text-neutral-900 dark:text-neutral-100">
-                {cur.has ? (format ? write(cur.v) : <>{fullFmt.format(cur.v)} <span className="font-normal text-neutral-500">{unit}</span></>) : emptyText ?? write(0)}
+              <p className="font-medium tabular-nums text-foreground">
+                {cur.has ? (format ? write(cur.v) : <>{fullFmt.format(cur.v)} <span className="font-normal text-muted-foreground">{unit}</span></>) : emptyText ?? write(0)}
               </p>
-              <p className="mt-0.5 text-neutral-500 dark:text-neutral-400">{cur.title}</p>
-              {cur.has && cur.detail && <p className="mt-0.5 text-neutral-500 dark:text-neutral-400">{cur.detail}</p>}
+              <p className="mt-0.5 text-muted-foreground">{cur.title}</p>
+              {cur.has && cur.detail && <p className="mt-0.5 text-muted-foreground">{cur.detail}</p>}
             </>
           )}
         </Tooltip>
@@ -454,18 +455,18 @@ export function ActivityHeatmap({
             // ioiti-ui: the largest losses at the left, nothing in the middle, the largest gains at the right.
             <>
               {[...diverging.negative].reverse().map((fill, i) => (
-                <span key={`n${i}`} className="h-[11px] w-[11px] rounded-[3px]" style={{ background: fill }} />
+                <span key={`n${i}`} className="size-[11px] rounded-[3px]" style={{ background: fill }} />
               ))}
-              <span className="h-[11px] w-[11px] rounded-[3px] bg-black/[0.05] dark:bg-white/[0.06]" />
+              <span className="size-[11px] rounded-[3px] bg-foreground/5" />
               {diverging.positive.map((fill, i) => (
-                <span key={`p${i}`} className="h-[11px] w-[11px] rounded-[3px]" style={{ background: fill }} />
+                <span key={`p${i}`} className="size-[11px] rounded-[3px]" style={{ background: fill }} />
               ))}
             </>
           ) : (
             LEVEL_MIX.map((m, i) => (
               <span
                 key={i}
-                className={cx("h-[11px] w-[11px] rounded-[3px]", i === 0 && "bg-black/[0.05] dark:bg-white/[0.06]")}
+                className={cx("size-[11px] rounded-[3px]", i === 0 && "bg-foreground/5")}
                 style={i === 0 ? undefined : { background: `color-mix(in srgb, ${color} ${m}%, transparent)` }}
               />
             ))

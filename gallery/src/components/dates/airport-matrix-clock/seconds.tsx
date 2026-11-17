@@ -5,8 +5,8 @@ export default function AirportMatrixClockSeconds() {
     <AirportMatrixClock
       showSeconds
       format="12h"
-      title="SUPPORT DESKS"
-      footer="5 DESKS · OPEN 9 AM TO 6 PM, LOCAL TIME"
+      title="Support desks"
+      footer="5 desks · open 9 am to 6 pm, local time"
       cities={[
         { id: 'lisbon', name: 'Lisbon', timeZone: 'Europe/Lisbon' },
         { id: 'berlin', name: 'Berlin', timeZone: 'Europe/Berlin' },

@@ -56,12 +56,12 @@ export function ChartLegend({ items, onToggle, label = 'Legend', className }: Ch
         const content = (
           <>
             <Swatch color={item.color} shape={item.shape} />
-            <span className={cn(shown ? 'text-text-secondary' : 'text-text-muted line-through')}>{item.label}</span>
+            <span className={cn(shown ? 'text-text-secondary' : 'text-muted-foreground line-through')}>{item.label}</span>
             {/* A space for the name a screen reader hears: a flex row draws none. */}
             {item.value !== undefined && (
               <>
                 {' '}
-                <span className="tabular-nums text-text-primary">{item.value}</span>
+                <span className="tabular-nums text-foreground">{item.value}</span>
               </>
             )}
           </>
@@ -74,7 +74,7 @@ export function ChartLegend({ items, onToggle, label = 'Legend', className }: Ch
                 aria-pressed={shown}
                 onClick={() => onToggle(index)}
                 className={cn(
-                  'inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 -mx-1.5 transition-colors hover:bg-surface-hover',
+                  'inline-flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-0.5 -mx-1.5 transition-colors hover:bg-surface-hover',
                   !shown && '[&>[aria-hidden]]:opacity-40',
                 )}
               >

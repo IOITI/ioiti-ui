@@ -97,7 +97,7 @@ export function AvatarGroup({ people, max = 4, size = 'md', label = 'People', cl
               role="img"
               tabIndex={0}
               aria-label={`${rest.length} more: ${rest.map((person) => person.name).join(', ')}`}
-              className={cn('inline-grid place-items-center rounded-full bg-surface-raised font-medium text-text-secondary', SIZE[size])}
+              className={cn('inline-grid place-items-center rounded-full bg-surface-raised font-medium tabular-nums text-text-secondary', SIZE[size])}
             >
               <span aria-hidden>+{rest.length}</span>
             </span>

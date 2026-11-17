@@ -1,5 +1,6 @@
 import { formatDateTime, formatRelative } from '../lib/format.js'
 import { nowOf, useNow } from '../lib/now.js'
+import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 
 const SECOND = 1000
@@ -56,7 +57,7 @@ export function RelativeTime({ value, timeZone, past = false, className }: Relat
   const said = past && iso && time > now ? new Date(now).toISOString() : iso
   return (
     <Hint content={full}>
-      <time dateTime={iso} className={className}>
+      <time dateTime={iso} className={cn('tabular-nums', className)}>
         {formatRelative(said, now)}
         <span className="sr-only">, {full}</span>
       </time>

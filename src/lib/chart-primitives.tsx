@@ -9,9 +9,10 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { motion, useReducedMotionConfig, useSpring } from "framer-motion";
+import { motion, useReducedMotionConfig, useSpring, type SpringOptions } from "framer-motion";
 
 import { motionTransitions } from "./motion-tokens.js";
+import { TOOLTIP } from "./recipes.js";
 
 /* -------------------------------------------------------------------------- */
 /*  Shared chart primitives                                                    */
@@ -19,9 +20,6 @@ import { motionTransitions } from "./motion-tokens.js";
 /*  Used by BarChart, DonutChart and ActivityHeatmap. Kept in src/lib so the   */
 /*  registry generator ships it as a shared `registry:lib` dependency.         */
 /* -------------------------------------------------------------------------- */
-
-export const EASE_OUT = [0.23, 1, 0.32, 1] as const;
-export const SPRING = { type: "spring", duration: 0.5, bounce: 0 } as const;
 
 export const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
 export const cx = (...a: (string | false | null | undefined)[]) => a.filter(Boolean).join(" ");
@@ -33,14 +31,13 @@ const trueMinus = (text: string) => text.replace(/^-/, "−");
 export const defaultFormat = (n: number) => trueMinus(fullFmt.format(n));
 export const defaultTick = (n: number) => trueMinus(compactFmt.format(n));
 
-export const ring = "ring-1 ring-black/[0.07] dark:ring-white/[0.07]";
 // ioiti-ui: the design's muted text, 4.5:1 on every surface of every look (neutral-500 was 3.6:1 on the dark card).
 export const muted = "text-muted-foreground";
 // ioiti-ui: the focus is the global ring of design.css, the same everywhere: no ring of a chart's own.
 export const focus = "outline-none";
 
 // ioiti-ui: what follows the pointer moves as what floats does (springSnappy).
-const FOLLOW = motionTransitions.springSnappy as { stiffness: number; damping: number; mass: number };
+const FOLLOW = motionTransitions.springSnappy as SpringOptions;
 
 // "Nice" step so that step × 4 covers `raw × 4`
 export function niceStep(raw: number) {
@@ -101,8 +98,8 @@ export function Tooltip({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const seen = useRef(false);
-  const x = useSpring(0, { stiffness: FOLLOW.stiffness, damping: FOLLOW.damping, mass: FOLLOW.mass });
-  const y = useSpring(0, { stiffness: FOLLOW.stiffness, damping: FOLLOW.damping, mass: FOLLOW.mass });
+  const x = useSpring(0, FOLLOW);
+  const y = useSpring(0, FOLLOW);
   // ioiti-ui: where motion is reduced (the system, or IoitiProvider's reducedMotion), it jumps to the pointer.
   const reduce = useReducedMotionConfig();
 
@@ -131,7 +128,7 @@ export function Tooltip({
       ref={ref}
       aria-hidden
       // ioiti-ui: glass under the glass material (glass-float).
-      className={`pointer-events-none absolute left-0 top-0 z-20 min-w-[112px] rounded-xl bg-white/95 px-3 py-2 text-xs shadow-lg backdrop-blur dark:bg-neutral-900/95 glass-float ${ring}`}
+      className={`pointer-events-none absolute left-0 top-0 z-20 min-w-[112px] px-3 py-2 text-xs tabular-nums ${TOOLTIP}`}
       style={{ x, y }}
       initial={false}
       animate={{ opacity: pos ? 1 : 0 }}
@@ -144,7 +141,7 @@ export function Tooltip({
 }
 
 export function Dot({ color }: { color: string }) {
-  return <span className="inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: color }} aria-hidden />;
+  return <span className="inline-block size-2 shrink-0 rounded-full" style={{ background: color }} aria-hidden />;
 }
 
 export function SegmentedControl<T extends string>({
@@ -160,7 +157,7 @@ export function SegmentedControl<T extends string>({
 }) {
   const id = useId();
   return (
-    <div role="radiogroup" aria-label={label} className="relative inline-flex shrink-0 rounded-full bg-black/[0.04] p-0.5 dark:bg-white/[0.05]">
+    <div role="radiogroup" aria-label={label} className="relative inline-flex shrink-0 rounded-full bg-surface-raised p-0.5">
       {options.map((o) => {
         const on = o.value === value;
         return (
@@ -170,15 +167,15 @@ export function SegmentedControl<T extends string>({
             role="radio"
             aria-checked={on}
             onClick={() => onChange(o.value)}
-            className={`relative z-10 h-8 rounded-full px-3.5 text-sm font-medium transition-colors duration-150 [-webkit-tap-highlight-color:transparent] sm:h-7 sm:px-3 ${focus} ${
-              on ? "text-neutral-900 dark:text-white" : "text-neutral-500"
+            className={`relative z-10 h-8 cursor-pointer rounded-full px-3.5 text-sm font-medium transition-colors duration-150 [-webkit-tap-highlight-color:transparent] sm:px-3 ${focus} ${
+              on ? "text-foreground" : "text-muted-foreground"
             }`}
           >
             {on && (
               <motion.span
                 layoutId={id}
-                className="absolute inset-0 -z-10 rounded-full bg-white shadow-sm dark:bg-neutral-800"
-                transition={{ type: "spring", duration: 0.3, bounce: 0.15 }}
+                className="absolute inset-0 -z-10 rounded-full bg-surface shadow-subtle"
+                transition={motionTransitions.springMorph}
               />
             )}
             {o.label}

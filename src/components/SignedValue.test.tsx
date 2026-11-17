@@ -29,12 +29,12 @@ describe('a signed value that rolls to each new value', () => {
     const { rerender } = render(<SignedValue value={-3.5} kind="percent" stale />)
 
     const shown = screen.getByText('−3.50%', { exact: false })
-    expect(shown).toHaveClass('text-text-muted')
+    expect(shown).toHaveClass('text-muted-foreground')
     expect(shown).not.toHaveClass('text-negative')
     expect(screen.getByText('(stale)', { exact: false })).toHaveClass('sr-only')
 
     rerender(<SignedValue value={12.4} kind="money" animate stale staleLabel="not updated" />)
-    expect(screen.getByText('+€12.40').parentElement).toHaveClass('text-text-muted')
+    expect(screen.getByText('+€12.40').parentElement).toHaveClass('text-muted-foreground')
     expect(screen.getByText('(not updated)', { exact: false })).toHaveClass('sr-only')
   })
 })

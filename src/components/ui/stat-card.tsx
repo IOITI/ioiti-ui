@@ -15,9 +15,9 @@ import {
   useReducedMotionConfig,
   useSpring,
   useTransform,
+  type SpringOptions,
 } from "framer-motion";
 import {
-  EASE_OUT,
   clamp,
   cx,
   defaultFormat,
@@ -25,6 +25,9 @@ import {
   useElementWidth,
 } from "../../lib/chart-primitives.js";
 import { monotonePath, pctText } from "../../lib/dashboard-chart-utils.js";
+import { AXIS_COLOUR } from "../../lib/chart-colours.js";
+import { motionTransitions } from "../../lib/motion-tokens.js";
+import { TONE_SOFT } from "../../lib/recipes.js";
 
 /* -------------------------------------------------------------------------- */
 /*  StatCard / StatGrid                                                       */
@@ -58,7 +61,9 @@ export interface StatCardProps {
 }
 
 // ioiti-ui: secondary text at 4.5:1 in both themes (neutral-500 is 4.0:1 on the dark card).
-const MUTED = "text-neutral-500 dark:text-neutral-400";
+const MUTED = "text-muted-foreground";
+// ioiti-ui: the scrubber follows the pointer as what floats moves (springSnappy).
+const FOLLOW = motionTransitions.springSnappy as SpringOptions;
 
 export function StatCard({
   label,
@@ -101,11 +106,11 @@ export function StatCard({
       : n > 1 && trend[0] !== 0
         ? ((trend[n - 1] - trend[0]) / Math.abs(trend[0])) * 100
         : 0);
-  const rounded = Math.round(pct * 10) / 10;
+  const change = Math.round(pct * 10) / 10;
   // ioiti-ui: a change only when the caller gives what it is from: EasyUI worked one out from the line's two ends,
   // which means nothing for a profit (it changes sign).
   const hasDelta = delta !== undefined || previous !== undefined;
-  const good = rounded === 0 ? null : goodWhen === "up" ? rounded > 0 : rounded < 0;
+  const good = change === 0 ? null : goodWhen === "up" ? change > 0 : change < 0;
 
   /* number: counts up on mount, follows the scrubber afterwards */
   const fmt = useRef(format);
@@ -117,13 +122,17 @@ export function StatCard({
     const target = active === null ? value : trend[active];
     const intro = !mounted.current;
     mounted.current = true;
-    const c = animate(shown, target, { duration: reduce ? 0 : intro ? 1.1 : 0.22, ease: EASE_OUT });
+    const c = animate(
+      shown,
+      target,
+      reduce ? { duration: 0 } : intro ? { ...motionTransitions.easeSoft, duration: 1.1 } : motionTransitions.easeFast,
+    );
     return () => c.stop();
   }, [active, value, trend, shown, reduce]);
 
   /* scrub cursor */
-  const curX = useSpring(0, { stiffness: 600, damping: 44, mass: 0.5 });
-  const curY = useSpring(0, { stiffness: 600, damping: 44, mass: 0.5 });
+  const curX = useSpring(0, FOLLOW);
+  const curY = useSpring(0, FOLLOW);
   const seen = useRef(false);
   useEffect(() => {
     if (active === null || !pts[active]) {
@@ -165,7 +174,7 @@ export function StatCard({
       role="group"
       aria-label={
         hasDelta
-          ? `${label}: ${format(value)}, ${rounded > 0 ? "up" : rounded < 0 ? "down" : "unchanged"} ${pctText(Math.abs(rounded))}`
+          ? `${label}: ${format(value)}, ${change > 0 ? "up" : change < 0 ? "down" : "unchanged"} ${pctText(Math.abs(change))}`
           : `${label}: ${format(value)}`
       }
       onPointerMove={move}
@@ -176,7 +185,7 @@ export function StatCard({
       // ioiti-ui: the look of the other tiles (KpiTile), which it sits among: their border, surface, padding
       // and type sizes, and the global focus ring (EasyUI's card was white, ringed and shadowed); glass under
       // the glass material, as they are.
-      className={`group relative flex min-h-[7.5rem] min-w-0 select-none flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface/50 pt-4 text-neutral-700 sm:pt-5 dark:bg-surface/25 dark:text-neutral-300 glass-card ${className}`}
+      className={`group relative flex min-h-[7.5rem] min-w-0 select-none flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface/50 pt-4 text-text-secondary sm:pt-5 dark:bg-surface/25 glass-card ${className}`}
     >
       <div className="flex items-start justify-between gap-3 px-4 sm:px-5">
         <p className={`truncate text-xs ${MUTED}`}>{label}</p>
@@ -185,22 +194,22 @@ export function StatCard({
             className={cx(
               "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums",
               // ioiti-ui: the status colours of theme.css, 4.5:1 as text (emerald-600 on its pale pill was 3.6:1).
-              good === null && "bg-black/[0.05] text-neutral-500 dark:bg-white/[0.06] dark:text-neutral-400",
-              good === true && "bg-emerald-500/10 text-positive",
-              good === false && "bg-rose-500/10 text-negative",
+              good === null && TONE_SOFT.neutral,
+              good === true && TONE_SOFT.positive,
+              good === false && TONE_SOFT.negative,
             )}
           >
-            {rounded !== 0 && (
-              <svg viewBox="0 0 10 10" className={cx("h-2 w-2", rounded < 0 && "rotate-180")} fill="currentColor" aria-hidden>
+            {change !== 0 && (
+              <svg viewBox="0 0 10 10" className={cx("size-2", change < 0 && "rotate-180")} fill="currentColor" aria-hidden>
                 <path d="M5 1.5 9 7.5H1Z" />
               </svg>
             )}
-            {pctText(Math.abs(rounded))}
+            {pctText(Math.abs(change))}
           </span>
         )}
       </div>
 
-      <p className={cx("mt-2 px-4 text-xl font-semibold tracking-tight tabular-nums sm:px-5 sm:text-2xl", tone ?? "text-neutral-900 dark:text-neutral-50")}>
+      <p className={cx("mt-2 px-4 text-xl font-semibold tracking-tight tabular-nums sm:px-5 sm:text-2xl", tone ?? "text-foreground")}>
         <motion.span>{text}</motion.span>
       </p>
       <p className={`mt-1 truncate px-4 text-xs sm:px-5 ${MUTED}`}>{sub}</p>
@@ -227,7 +236,7 @@ export function StatCard({
               fill={`url(#${uid}-g)`}
               initial={anim ? { opacity: 0 } : false}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ ...motionTransitions.easeSoft, duration: 0.8, delay: 0.5 }}
             />
             <motion.path
               d={line}
@@ -238,10 +247,10 @@ export function StatCard({
               strokeLinejoin="round"
               initial={anim ? { pathLength: 0 } : false}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 1.1, ease: EASE_OUT, delay: 0.15 }}
+              transition={{ ...motionTransitions.easeSoft, duration: 1.1, delay: 0.15 }}
             />
             {/* latest point */}
-            <g style={{ opacity: active === null ? 1 : 0, transition: "opacity .15s" }}>
+            <g className="transition-opacity" style={{ opacity: active === null ? 1 : 0 }}>
               {anim && (
                 <motion.circle
                   cx={pts[n - 1][0]}
@@ -250,15 +259,15 @@ export function StatCard({
                   fill={color}
                   style={{ transformBox: "fill-box", transformOrigin: "center" }}
                   animate={{ scale: [1, 2.8], opacity: [0.4, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.8, ease: "easeOut" }}
+                  transition={{ ...motionTransitions.easeSoft, repeat: Infinity, duration: 1.8 }}
                 />
               )}
               <circle cx={pts[n - 1][0]} cy={pts[n - 1][1]} r={3.5} fill={color} />
             </g>
             {/* scrubber */}
-            <motion.g initial={false} animate={{ opacity: active === null ? 0 : 1 }} transition={{ duration: 0.12 }}>
-              <motion.line y1={0} y2={H} x1={curX} x2={curX} className="stroke-black/15 dark:stroke-white/20" strokeDasharray="2 3" />
-              <motion.circle cx={curX} cy={curY} r={4.5} fill={color} className="stroke-white dark:stroke-[#0b0b0c]" strokeWidth={2} />
+            <motion.g initial={false} animate={{ opacity: active === null ? 0 : 1 }} transition={motionTransitions.easeFast}>
+              <motion.line y1={0} y2={H} x1={curX} x2={curX} stroke={AXIS_COLOUR} strokeDasharray="2 3" />
+              <motion.circle cx={curX} cy={curY} r={4.5} fill={color} className="stroke-surface" strokeWidth={2} />
             </motion.g>
           </svg>
         )}

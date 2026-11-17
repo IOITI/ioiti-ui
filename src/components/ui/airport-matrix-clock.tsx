@@ -150,12 +150,12 @@ const AirportMatrixClockRow = memo(function AirportMatrixClockRow({
   return (
     <li
       onPointerEnter={handlePointerEnter}
-      className={`grid items-center gap-2 ${size === 'sm' ? 'grid-cols-[auto_minmax(0,1fr)] gap-3 px-3 py-1.5' : 'grid-cols-[minmax(84px,0.8fr)_minmax(0,1.2fr)] px-3 py-2 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.2fr)] sm:px-5 sm:py-2.5'} ${rowIndex < rowCount - 1 ? 'border-b border-border/50 dark:border-[#363636]/70' : ''}`}
+      className={`grid items-center gap-2 ${size === 'sm' ? 'grid-cols-[auto_minmax(0,1fr)] gap-3 px-3 py-1.5' : 'grid-cols-[minmax(84px,0.8fr)_minmax(0,1.2fr)] px-3 py-2 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.2fr)] sm:px-5 sm:py-2.5'} ${rowIndex < rowCount - 1 ? 'border-b border-border/40' : ''}`}
     >
-      <div className="min-w-0 text-text-primary dark:text-[#F5F5F5]">
+      <div className="min-w-0 text-foreground">
         <MatrixText text={row.time.matrix} label={`${row.time.accessible}, ${row.name}`} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
       </div>
-      <div className="min-w-0 text-text-primary dark:text-[#F5F5F5]">
+      <div className="min-w-0 text-foreground">
         <MatrixText text={row.name} label={row.name} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
       </div>
     </li>
@@ -167,7 +167,7 @@ export function AirportMatrixClock({
   format = '24h',
   showSeconds = false,
   updateInterval = 1000,
-  title = 'WORLD CLOCK',
+  title = 'World clock',
   footer,
   size = 'md',
   className = '',
@@ -189,13 +189,14 @@ export function AirportMatrixClock({
   return (
     <section
       aria-label={`World times: ${rows.map((row) => `${row.time.accessible} ${row.name}`).join(', ')}`}
-      className={`relative ${size === 'sm' ? 'w-fit' : 'w-full max-w-3xl'} overflow-hidden rounded-xl border border-border bg-[#F5F5F5] text-text-primary shadow-sm [--amc-grid:rgba(0,0,0,0.008)] dark:border-[#363636] dark:bg-[#202020] dark:text-[#F5F5F5] dark:[--amc-grid:rgba(255,255,255,0.01)] glass-card ${className}`}
+      className={`relative ${size === 'sm' ? 'w-fit' : 'w-full max-w-3xl'} overflow-hidden rounded-2xl border border-border/70 bg-surface-raised text-foreground [--amc-grid:color-mix(in_srgb,var(--foreground)_1%,transparent)] glass-card ${className}`}
       style={{ backgroundImage: 'linear-gradient(var(--amc-grid) 1px, transparent 1px), linear-gradient(90deg, var(--amc-grid) 1px, transparent 1px)', backgroundSize: '22px 22px' }}
     >
       <div>
+        {/* ioiti-ui: its heading and its last line in sentence case, as every label (EasyUI's were capitals, spaced). */}
         {title && (
-          <header className={`flex items-center justify-between border-b border-border/70 dark:border-[#363636] ${size === 'sm' ? 'px-3 py-1.5' : 'px-4 py-3 sm:px-6'}`}>
-            <p className="font-mono text-[11px] tracking-[0.18em] text-text-muted dark:text-[#8A8A8A]">{title}</p>
+          <header className={`flex items-center justify-between border-b border-border/70 ${size === 'sm' ? 'px-3 py-1.5' : 'px-4 py-3 sm:px-6'}`}>
+            <p className="text-xs font-medium text-muted-foreground">{title}</p>
           </header>
         )}
         <ul className="m-0 list-none p-0">
@@ -204,10 +205,10 @@ export function AirportMatrixClock({
           ))}
         </ul>
         {/* ioiti-ui: a light value in front of EasyUI's dark-only footer colours. */}
-        <footer className={`border-t border-border/70 font-mono text-[11px] tracking-[0.12em] text-text-muted dark:border-[#363636] dark:text-[#8A8A8A] ${size === 'sm' ? 'px-3 py-1.5' : 'px-3 py-2 sm:px-5'}`}>
+        <footer className={`border-t border-border/70 text-xs text-muted-foreground ${size === 'sm' ? 'px-3 py-1.5' : 'px-3 py-2 sm:px-5'}`}>
           {footer ?? (
             <>
-              {rows.length} CITIES <span className="px-1.5 opacity-50">/</span> IANA TIME ZONES
+              {rows.length} cities <span className="px-1.5 opacity-50">/</span> IANA time zones
             </>
           )}
         </footer>

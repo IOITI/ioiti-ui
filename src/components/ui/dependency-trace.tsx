@@ -143,7 +143,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
       aria-label={label}
       // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`; as tall as its canvas.
       className={cn(
-        'relative w-full rounded-2xl bg-neutral-50 border border-neutral-200 overflow-hidden select-none flex flex-col dark:bg-[#050505] dark:border-[#1F1F1F]',
+        'relative w-full rounded-2xl bg-surface-raised border border-border overflow-hidden select-none flex flex-col',
         className
       )}
     >
@@ -161,7 +161,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
             <path d="M0 0L8 4L0 8Z" fill="var(--chart-muted)" />
           </marker>
           <marker id={`${markerId}-on`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0L8 4L0 8Z" fill="#3B82F6" className="accent:fill-brand" />
+            <path d="M0 0L8 4L0 8Z" className="fill-accent-blue accent:fill-brand" />
           </marker>
         </defs>
 
@@ -196,13 +196,12 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
                 <motion.path
                   d={pathD}
                   fill="none"
-                  stroke="rgba(59, 130, 246, 0.3)"
-                  className="accent:stroke-[var(--brand-glow)]"
+                  className="stroke-accent-blue/30 accent:stroke-[var(--brand-glow)]"
                   strokeWidth="6"
                   strokeLinecap="round"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.2 }}
+                  transition={motionTransitions.easeFast}
                 />
               )}
 
@@ -210,7 +209,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
               <motion.path
                 d={pathD}
                 fill="none"
-                className={isConnected ? 'stroke-[#3B82F6] accent:stroke-brand' : 'stroke-neutral-300 dark:stroke-[#2A2A2A]'}
+                className={isConnected ? 'stroke-accent-blue accent:stroke-brand' : 'stroke-[var(--chart-axis)]'}
                 strokeWidth={isConnected ? '2.5' : '1.5'}
                 strokeDasharray={isConnected ? 'none' : '4 4'}
                 strokeLinecap="round"
@@ -227,7 +226,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
                   x={midX}
                   y={midY - 10}
                   textAnchor="middle"
-                  className="text-[11px] font-mono fill-neutral-700 dark:fill-[#D4D4D4] pointer-events-none"
+                  className="text-[11px] font-mono fill-text-secondary pointer-events-none"
                   style={{ paintOrder: 'stroke', strokeWidth: 3, strokeLinejoin: 'round' }}
                   stroke="var(--surface)"
                 >
@@ -274,11 +273,10 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
                 <motion.circle
                   r={radius + 6}
                   fill="none"
-                  stroke="rgba(59, 130, 246, 0.4)"
-                  className="accent:stroke-[var(--brand-glow)]"
+                  className="stroke-accent-blue/40 accent:stroke-[var(--brand-glow)]"
                   strokeWidth="2"
                   animate={reduceMotion ? { opacity: 0.4 } : { scale: [1, 1.15, 1], opacity: [0.6, 0.2, 0.6] }}
-                  transition={reduceMotion ? { duration: 0 } : { repeat: Infinity, duration: 2 }}
+                  transition={reduceMotion ? { duration: 0 } : { ...motionTransitions.easeSoft, repeat: Infinity, duration: 2 }}
                 />
               )}
 
@@ -286,11 +284,11 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
               <motion.circle
                 r={radius}
                 className={cn(
-                  isCurrentActive ? 'fill-neutral-100 dark:fill-[#141414]' : 'fill-white dark:fill-[#0E0E0E]',
+                  isCurrentActive ? 'fill-surface-hover' : 'fill-surface',
                   // ioiti-ui: a ring that says a health keeps its colour.
-                  isCurrentActive && !node.status && 'accent:stroke-brand'
+                  isCurrentActive && !node.status && 'stroke-accent-blue accent:stroke-brand'
                 )}
-                stroke={node.status ? STATUS_STROKE[node.status] : isCurrentActive ? '#3B82F6' : 'var(--chart-axis)'}
+                stroke={node.status ? STATUS_STROKE[node.status] : isCurrentActive ? undefined : 'var(--chart-axis)'}
                 strokeWidth={node.status ? 2.5 : 1.5}
                 animate={{
                   scale: isCurrentActive ? 1.15 : 1,
@@ -303,7 +301,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
               <motion.text
                 textAnchor="middle"
                 dy="4"
-                className="text-xs font-semibold pointer-events-none fill-neutral-700 dark:fill-[#E5E5E5]"
+                className="text-xs font-semibold pointer-events-none fill-text-secondary"
                 animate={{ opacity: isDimmed ? 0.25 : 1 }}
               >
                 {node.status ? STATUS_ICON[node.status] : '·'}
@@ -311,10 +309,10 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
               <motion.text
                 textAnchor="middle"
                 y={radius + 13}
-                className="text-[11px] font-medium pointer-events-none fill-neutral-900 dark:fill-[#FAFAFA]"
+                className="text-[11px] font-medium pointer-events-none fill-foreground"
                 animate={{
                   opacity: isDimmed ? 0.25 : 1,
-                  fontWeight: isCurrentActive ? 700 : 500,
+                  fontWeight: isCurrentActive ? 600 : 500,
                 }}
               >
                 {node.label}
@@ -328,12 +326,12 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
       <div
         aria-live="polite"
         // ioiti-ui: glass under the glass material (glass-float).
-        className="m-3 mt-0 flex items-center justify-between gap-3 text-xs text-neutral-600 bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-neutral-200 pointer-events-none dark:text-[#A1A1A1] dark:bg-[#0E0E0E]/90 dark:border-[#1F1F1F] glass-float"
+        className="m-3 mt-0 flex items-center justify-between gap-3 text-xs text-muted-foreground bg-surface px-3 py-1.5 rounded-xl border border-border/60 pointer-events-none glass-float"
       >
         <span className="min-w-0">
           {activeNode ? (
             <>
-              <span className="font-medium text-neutral-900 dark:text-[#FAFAFA]">{activeNode.label}</span>
+              <span className="font-medium text-foreground">{activeNode.label}</span>
               {activeNode.statusLabel && `: ${activeNode.statusLabel}`}
               {activeNode.detail && ` (${activeNode.detail})`}
               {needs.length > 0 && ` · calls ${needs.join(', ')}`}

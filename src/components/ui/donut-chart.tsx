@@ -225,7 +225,7 @@ export function DonutChart({
             fill="none"
             strokeWidth={thickness}
             strokeLinecap="round"
-            className="stroke-black/[0.05] dark:stroke-white/[0.06]"
+            className="stroke-foreground/5"
           />
           {segs.map((sg, i) => (
             <Arc
@@ -282,14 +282,14 @@ export function DonutChart({
                 onPointerLeave={(e) => e.pointerType === "mouse" && setActive(null)}
                 onFocus={() => setActive(i)}
                 onBlur={() => setActive(null)}
-                className={`flex h-11 w-full items-center gap-3 rounded-xl px-2.5 text-left text-sm transition-[background-color,opacity] duration-150 [-webkit-tap-highlight-color:transparent] sm:h-10 [@media(hover:hover)]:hover:bg-black/[0.04] dark:[@media(hover:hover)]:hover:bg-white/[0.05] ${focus}`}
+                className={`flex h-10 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-left text-sm transition-[background-color,opacity] duration-150 [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-surface-hover ${focus}`}
               >
                 {/* ioiti-ui: a hidden segment's words stay readable (muted, struck through), its dot faded. */}
                 <span className={cx("inline-flex", sg.off && "opacity-40")}>
                   <Dot color={sg.color} />
                 </span>
-                <span className={cx("min-w-0 flex-1 truncate", sg.off ? "text-text-muted line-through" : "text-text-secondary")}>{sg.label}</span>
-                <span className={cx("tabular-nums", sg.off ? "text-text-muted" : "text-foreground")}>{formatValue(sg.value)}</span>
+                <span className={cx("min-w-0 flex-1 truncate", sg.off ? "text-muted-foreground line-through" : "text-text-secondary")}>{sg.label}</span>
+                <span className={cx("tabular-nums", sg.off ? "text-muted-foreground" : "text-foreground")}>{formatValue(sg.value)}</span>
                 <span className={`w-9 text-right text-xs tabular-nums ${muted}`}>{sg.off ? "—" : `${Math.round(sg.f * 100)}%`}</span>
               </button>
             </li>

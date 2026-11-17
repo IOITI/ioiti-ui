@@ -11,7 +11,7 @@ export default function AirportMatrixClockBesideATitle() {
         <AirportMatrixClock
           size="sm"
           title={null}
-          footer="BOTH WAREHOUSES"
+          footer="Both warehouses"
           cities={[
             { id: 'lyon', name: 'Lyon', timeZone: 'Europe/Paris' },
             { id: 'montreal', name: 'Montreal', timeZone: 'America/Toronto' },

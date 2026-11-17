@@ -301,7 +301,7 @@ export function BarChart({
             height={ih}
             width={stepX}
             rx={8}
-            className="fill-black/[0.04] dark:fill-white/[0.05]"
+            className="fill-surface-hover"
             initial={false}
             animate={{ x: M.left + stepX * (active ?? 0), opacity: active === null ? 0 : 1 }}
             transition={reduce ? { duration: 0 } : { x: motionTransitions.springSnappy, opacity: motionTransitions.easeFast }}
@@ -354,7 +354,7 @@ export function BarChart({
                 x={M.left + stepX * i + stepX / 2}
                 y={height - 8}
                 textAnchor="middle"
-                className={cx("text-[11px]", active === i ? "fill-foreground" : "fill-muted-foreground")}
+                className={cx("text-[11px] tabular-nums", active === i ? "fill-foreground" : "fill-muted-foreground")}
               >
                 {d.label}
               </text>
@@ -377,7 +377,7 @@ export function BarChart({
         <Tooltip pos={active === null ? null : { x: M.left + stepX * (active + 0.5), y: groupTop(active) }} boundsWidth={width}>
           {active !== null && (
             <>
-              <p className="mb-1.5 font-medium text-foreground">{titleOf(active)}</p>
+              <p className="mb-1.5 font-medium tabular-nums text-foreground">{titleOf(active)}</p>
               <ul className="space-y-1">
                 {visible.map((s) => (
                   <li key={s.key} className="flex items-center justify-between gap-4">
