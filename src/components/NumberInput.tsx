@@ -4,6 +4,7 @@ import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
 import { fieldBorder, invalidOf } from '../lib/field-border.js'
+import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { useUnitPadding } from '../lib/unit-padding.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
@@ -176,10 +177,10 @@ export function NumberInput({
         style={{ paddingLeft: prefix ? pad.left : undefined, paddingRight: pad.right ? pad.right : undefined }}
         // The look of the form's Input.
         className={cn(
-          'h-10 w-full rounded-lg border bg-white px-3.5 text-base sm:text-sm tabular-nums text-neutral-900 transition-all duration-150 placeholder:text-muted-foreground dark:bg-[#141414] dark:text-[#FAFAFA]',
+          'h-10 w-full rounded-lg border bg-surface px-3.5 text-base sm:text-sm tabular-nums text-foreground transition-colors duration-150 placeholder:text-text-subtle',
           fieldBorder(invalid),
           'focus:outline-none',
-          disabled && 'cursor-not-allowed bg-neutral-100 opacity-30 dark:bg-[#0E0E0E]',
+          DISABLED,
         )}
       />
       {(suffix || steppers) && (
@@ -203,7 +204,10 @@ export function NumberInput({
                   disabled={disabled || end}
                   onPointerDown={(event) => event.preventDefault()}
                   onClick={() => stepBy(by)}
-                  className="grid size-7 place-items-center rounded-md text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary disabled:pointer-events-none disabled:opacity-40 [&>svg]:size-3.5"
+                  className={cn(
+                    'grid size-6 place-items-center rounded-md text-muted-foreground transition enabled:hover:bg-surface-hover enabled:hover:text-foreground [&>svg]:size-3.5',
+                    PRESSABLE,
+                  )}
                 >
                   {icon}
                 </button>

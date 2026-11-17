@@ -2,6 +2,8 @@ import { Check, Loader2, Pencil, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 
+import { fieldBorder } from '../lib/field-border.js'
+import { PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 import { ErrorText } from './messages.js'
@@ -91,7 +93,7 @@ export function InlineEdit({
       if (typeof answer === 'string') setError(answer)
       else if (answer !== false) setEditing(false)
     } catch {
-      setError("Couldn't save. Try again.")
+      setError('Couldn’t save. Try again.')
     } finally {
       setSaving(false)
     }
@@ -118,14 +120,14 @@ export function InlineEdit({
           onClick={start}
           className={cn(
             'group -mx-1.5 inline-flex max-w-full items-center gap-1.5 rounded-md px-1.5 py-0.5 text-left transition-colors',
-            !readOnly && 'hover:bg-surface-hover',
+            !readOnly && 'cursor-pointer hover:bg-surface-hover',
             readOnly && 'cursor-default',
           )}
         >
-          <span className={cn('truncate', value ? 'text-text-primary' : 'text-muted-foreground')}>{value || placeholder}</span>
+          <span className={cn('truncate', value ? 'text-foreground' : 'text-text-subtle')}>{value || placeholder}</span>
           {!readOnly && (
             <>
-              <Pencil aria-hidden className="size-3.5 shrink-0 text-text-muted opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+              <Pencil aria-hidden className="size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
               <span className="sr-only">, edit the {label.toLowerCase()}</span>
             </>
           )}
@@ -149,9 +151,8 @@ export function InlineEdit({
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={onKeyDown}
           className={cn(
-            'h-9 min-w-0 flex-1 rounded-md border bg-white px-2 text-text-primary focus:outline-none dark:bg-[#141414]',
-            'border-neutral-300 focus:border-neutral-500 dark:border-[#1F1F1F] dark:focus:border-[#4A4A4A] accent:focus:border-brand',
-            error && 'border-negative/60 focus:border-negative',
+            'h-10 min-w-0 flex-1 rounded-lg border bg-surface px-3.5 text-foreground transition-colors placeholder:text-text-subtle focus:outline-none',
+            fieldBorder(error),
             size,
           )}
         />
@@ -160,7 +161,10 @@ export function InlineEdit({
             type="button"
             aria-label="Save"
             onClick={() => void save()}
-            className="grid size-8 shrink-0 place-items-center rounded-md text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary [&>svg]:size-4"
+            className={cn(
+              'grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition enabled:hover:bg-surface-hover enabled:hover:text-foreground [&>svg]:size-4',
+              PRESSABLE,
+            )}
           >
             {saving ? <Loader2 aria-hidden className="motion-safe:animate-spin" /> : <Check aria-hidden />}
           </button>
@@ -171,7 +175,10 @@ export function InlineEdit({
             aria-label="Cancel"
             disabled={saving}
             onClick={cancel}
-            className="grid size-8 shrink-0 place-items-center rounded-md text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary disabled:opacity-40 [&>svg]:size-4"
+            className={cn(
+              'grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition enabled:hover:bg-surface-hover enabled:hover:text-foreground [&>svg]:size-4',
+              PRESSABLE,
+            )}
           >
             <X aria-hidden />
           </button>

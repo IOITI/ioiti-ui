@@ -4,6 +4,7 @@ import * as React from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+import { PRESSABLE } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 
 function useControllableState<T>(
@@ -187,7 +188,7 @@ export function Calendar(props: CalendarProps) {
         <NavButton label="Previous month" disabled={!canPrev} onClick={() => go(addMonths(view, -1), -1)}>
           <ChevronLeft className="size-4" />
         </NavButton>
-        <div className="relative h-5 flex-1 overflow-hidden text-center text-sm font-medium text-neutral-900 dark:text-neutral-100">
+        <div className="relative h-5 flex-1 overflow-hidden text-center text-sm font-medium text-foreground">
           <AnimatePresence initial={false} custom={dir}>
             <motion.span
               key={y * 12 + m}
@@ -212,7 +213,7 @@ export function Calendar(props: CalendarProps) {
       {/* weekdays */}
       <div className="flex" aria-hidden>
         {weekdays.map((w, i) => (
-          <div key={i} className="grid h-8 w-9 place-items-center text-xs text-neutral-500">
+          <div key={i} className="grid h-8 w-9 place-items-center text-xs text-muted-foreground">
             {w}
           </div>
         ))}
@@ -260,7 +261,7 @@ export function Calendar(props: CalendarProps) {
                         className={cn(
                           "relative h-9 w-9",
                           // ioiti-ui: the range, the day picked and today in the accent, where the theme has one (accent:).
-                          inBand && "bg-neutral-100 dark:bg-neutral-800/70 accent:bg-brand-soft",
+                          inBand && "bg-surface-hover accent:bg-brand-soft",
                           inBand && (isSameDay(d, from) || col === 0 || d.getDate() === 1) && "rounded-l-lg",
                           inBand && (isSameDay(d, rangeEnd) || col === 6 || d.getDate() === dim) && "rounded-r-lg"
                         )}
@@ -276,28 +277,23 @@ export function Calendar(props: CalendarProps) {
                           onMouseEnter={() => setHover(d)}
                           className={cn(
                             // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                            "group relative grid size-9 place-items-center rounded-lg text-sm tabular-nums outline-none transition-colors",
-                            picked ? "text-white dark:text-neutral-900 accent:text-brand-foreground" : "text-neutral-900 dark:text-neutral-100",
-                            !picked &&
-                              !off &&
-                              (inBand
-                                ? "hover:bg-neutral-200/80 dark:hover:bg-neutral-700/60"
-                                : "hover:bg-neutral-100 dark:hover:bg-neutral-800"),
-                            off && "cursor-not-allowed opacity-30"
+                            "relative grid size-9 cursor-pointer place-items-center rounded-lg text-sm tabular-nums outline-none transition-colors",
+                            picked ? "text-primary-foreground accent:text-brand-foreground" : "text-foreground",
+                            !picked && !off && (inBand ? "hover:bg-current/10" : "hover:bg-surface-hover"),
+                            "aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
                           )}
                         >
                           {picked && (
                             <motion.span
                               layoutId={isRange ? `${uid}-${isStart ? "start" : "end"}` : `${uid}-sel`}
                               transition={spring}
-                              className="absolute inset-0 rounded-lg bg-neutral-900 dark:bg-white accent:bg-brand"
+                              className="absolute inset-0 rounded-lg bg-primary accent:bg-brand"
                             />
                           )}
-                          <span className="relative transition-transform duration-150 group-active:scale-90">
-                            {d.getDate()}
-                          </span>
+                          {/* ioiti-ui: a day is an option of the grid: it does not give under a press. */}
+                          <span className="relative">{d.getDate()}</span>
                           {isToday && !picked && (
-                            <span className="absolute bottom-1 size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 accent:bg-brand" />
+                            <span className="absolute bottom-1 size-1 rounded-full bg-muted-foreground accent:bg-brand" />
                           )}
                         </button>
                       </div>
@@ -330,7 +326,10 @@ function NavButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid size-8 place-items-center rounded-lg text-neutral-500 outline-none transition hover:bg-neutral-100 hover:text-neutral-900 active:scale-95 disabled:pointer-events-none disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+      className={cn(
+        "grid size-8 place-items-center rounded-lg text-muted-foreground outline-none transition enabled:hover:bg-surface-hover enabled:hover:text-foreground",
+        PRESSABLE
+      )}
     >
       {children}
     </button>

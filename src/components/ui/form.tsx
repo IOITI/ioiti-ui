@@ -6,6 +6,7 @@ import { ChevronDown, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { DISABLED } from '../../lib/recipes.js';
 // ioiti-ui: the units inside a field, measured as they change.
 import { useUnitPadding } from '../../lib/unit-padding.js';
 
@@ -50,13 +51,13 @@ export const FormLabel = forwardRef<HTMLLabelElement, FormLabelProps>(
     <label
       ref={ref}
       className={cn(
-        'block text-xs font-medium text-neutral-900 dark:text-[#FAFAFA] select-none tracking-tight',
+        'block text-xs font-semibold text-foreground select-none',
         className
       )}
       {...props}
     >
       {children}
-      {required && <span className="text-red-700 dark:text-[#FF7A7A] ml-1" aria-hidden="true">*</span>}
+      {required && <span className="text-negative ml-1" aria-hidden="true">*</span>}
     </label>
   )
 );
@@ -101,12 +102,12 @@ export const FormMessage = forwardRef<HTMLParagraphElement, FormMessageProps>(
               ref={ref}
               role="alert"
               className={cn(
-                'text-xs text-red-700 dark:text-[#FF7A7A] flex items-center gap-1.5 pt-0.5 font-medium',
+                'text-xs text-negative flex items-center gap-1.5 pt-0.5 font-medium',
                 className
               )}
               {...props}
             >
-              <AlertCircle className="w-3 h-3 shrink-0" />
+              <AlertCircle className="size-3 shrink-0" />
               <span>{message}</span>
             </p>
           </motion.div>
@@ -172,7 +173,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="relative w-full flex items-center">
         {leftIcon && (
-          <div className="absolute left-3 text-neutral-500 dark:text-[#525252] pointer-events-none flex items-center justify-center">
+          <div className="absolute left-3 text-muted-foreground pointer-events-none flex items-center justify-center">
             {leftIcon}
           </div>
         )}
@@ -193,14 +194,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           type={computedType}
           disabled={disabled}
           className={cn(
-            'w-full h-10 px-3.5 text-base sm:text-sm text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150',
+            'w-full h-10 px-3.5 text-base sm:text-sm text-foreground placeholder:text-text-subtle bg-surface rounded-lg border transition-colors duration-150',
             // ioiti-ui: its border, or the error's (never both: the error's lost to the dark ones); in focus, in
             // the accent under a theme that has one (accent:).
             fieldBorder(invalid),
-            'focus:bg-white dark:focus:bg-[#141414] focus:outline-none focus-ring',
+            'focus:outline-none focus-ring',
             leftIcon && 'pl-9',
             (rightIcon || (isPassword && showPasswordToggle)) && 'pr-9',
-            disabled && 'opacity-30 cursor-not-allowed bg-neutral-100 dark:bg-[#0E0E0E]',
+            DISABLED,
             className
           )}
           // ioiti-ui: an error is said, not only shown.
@@ -227,17 +228,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onClick={() => setShowPassword(!showPassword)}
             tabIndex={-1}
             aria-label={showPassword ? 'Hide password' : 'Show password'}
-            className="absolute right-3 text-neutral-500 dark:text-[#525252] hover:text-neutral-900 dark:hover:text-[#FAFAFA] transition-colors focus-ring rounded cursor-pointer"
+            className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors focus-ring rounded-md cursor-pointer"
           >
             {showPassword ? (
-              <EyeOff className="w-3.5 h-3.5" />
+              <EyeOff className="size-4" />
             ) : (
-              <Eye className="w-3.5 h-3.5" />
+              <Eye className="size-4" />
             )}
           </button>
         ) : (
           rightIcon && (
-            <div className="absolute right-3 text-neutral-500 dark:text-[#525252] pointer-events-none flex items-center justify-center">
+            <div className="absolute right-3 text-muted-foreground pointer-events-none flex items-center justify-center">
               {rightIcon}
             </div>
           )
@@ -264,11 +265,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         ref={ref}
         disabled={disabled}
         className={cn(
-          'w-full min-h-[90px] p-3 text-base sm:text-sm text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150 resize-y',
+          'w-full min-h-[90px] px-3.5 py-3 text-base sm:text-sm text-foreground placeholder:text-text-subtle bg-surface rounded-lg border transition-colors duration-150 resize-y',
           // ioiti-ui: its border, or the error's, as the Input's.
           fieldBorder(invalid),
-          'focus:bg-white dark:focus:bg-[#141414] focus:outline-none focus-ring leading-relaxed',
-          disabled && 'opacity-30 cursor-not-allowed bg-neutral-100 dark:bg-[#0E0E0E]',
+          'focus:outline-none focus-ring leading-relaxed',
+          DISABLED,
           className
         )}
         {...props}
@@ -303,11 +304,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           disabled={disabled}
           className={cn(
-            'w-full h-10 pl-3.5 pr-8 text-base sm:text-sm text-neutral-900 dark:text-[#FAFAFA] bg-white dark:bg-[#141414] rounded-lg border appearance-none transition-all duration-150 cursor-pointer',
+            'w-full h-10 pl-3.5 pr-8 text-base sm:text-sm text-foreground bg-surface rounded-lg border appearance-none transition-colors duration-150 cursor-pointer',
             // ioiti-ui: its border, or the error's, as the Input's.
             fieldBorder(invalid),
-            'focus:bg-white dark:focus:bg-[#141414] focus:outline-none focus-ring',
-            disabled && 'opacity-30 cursor-not-allowed bg-neutral-100 dark:bg-[#0E0E0E]',
+            'focus:outline-none focus-ring',
+            DISABLED,
             className
           )}
           {...props}
@@ -319,15 +320,15 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                   key={opt.value}
                   value={opt.value}
                   disabled={opt.disabled}
-                  className="bg-white dark:bg-[#141414] text-neutral-900 dark:text-[#FAFAFA]"
+                  className="bg-surface text-foreground"
                 >
                   {opt.label}
                 </option>
               ))
             : children}
         </select>
-        <div className="absolute right-3 text-neutral-500 dark:text-[#525252] pointer-events-none flex items-center justify-center">
-          <ChevronDown className="w-3.5 h-3.5" />
+        <div className="absolute right-3 text-muted-foreground pointer-events-none flex items-center justify-center">
+          <ChevronDown className="size-4" />
         </div>
       </div>
     );
@@ -453,7 +454,7 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
   const id = useId();
 
   return (
-    <div className={cn('flex items-start gap-2.5 select-none', disabled && 'opacity-30 cursor-not-allowed', className)}>
+    <div className={cn('flex items-start gap-2.5 select-none', disabled && 'opacity-50 cursor-not-allowed', className)}>
       <div className="relative flex items-center justify-center mt-0.5">
         <input
           id={id}
@@ -470,17 +471,17 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
         <div
           aria-hidden
           className={cn(
-            'w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-150 cursor-pointer pointer-events-none',
+            'size-4 rounded-full border flex items-center justify-center transition-colors duration-150 cursor-pointer pointer-events-none',
             checked
-              ? 'border-neutral-900 dark:border-[#FAFAFA] bg-white dark:bg-[#141414] accent:border-brand'
-              : 'border-neutral-300 dark:border-[#1F1F1F] bg-white dark:bg-[#141414] hover:border-neutral-500 dark:hover:border-[#4A4A4A]',
+              ? 'border-foreground bg-surface accent:border-brand'
+              : 'border-border bg-surface hover:border-border-hover',
             disabled && 'cursor-not-allowed'
           )}
         >
           {checked && (
             <motion.div
               layoutId={`radio-dot-${name}`}
-              className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-[#FAFAFA] accent:bg-brand"
+              className="size-2 rounded-full bg-foreground accent:bg-brand"
               transition={motionTransitions.springSnappy}
             />
           )}
@@ -490,7 +491,7 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
       {(label || description) && (
         <label htmlFor={id} className="cursor-pointer text-left">
           {label && (
-            <div className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
+            <div className="text-sm font-medium text-foreground leading-tight">
               {label}
             </div>
           )}
@@ -547,11 +548,11 @@ export const Switch: React.FC<SwitchProps> = ({
   };
 
   return (
-    <div className={cn('flex items-center justify-between gap-4 select-none', disabled && 'opacity-30 cursor-not-allowed', className)}>
+    <div className={cn('flex items-center justify-between gap-4 select-none', disabled && 'opacity-50 cursor-not-allowed', className)}>
       {(label || description) && (
         <div className="text-left cursor-pointer" onClick={handleToggle}>
           {label && (
-            <div id={`${id}-label`} className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
+            <div id={`${id}-label`} className="text-sm font-medium text-foreground leading-tight">
               {label}
             </div>
           )}
@@ -574,8 +575,8 @@ export const Switch: React.FC<SwitchProps> = ({
         className={cn(
           'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border transition-colors duration-200 focus-ring',
           current
-            ? 'bg-neutral-900 dark:bg-[#FAFAFA] border-neutral-900 dark:border-[#FAFAFA] accent:bg-brand accent:border-brand'
-            : 'bg-white dark:bg-[#141414] border-neutral-300 dark:border-[#1F1F1F]',
+            ? 'bg-primary border-primary accent:bg-brand accent:border-brand'
+            : 'bg-surface border-border',
           disabled && 'cursor-not-allowed'
         )}
       >
@@ -583,8 +584,8 @@ export const Switch: React.FC<SwitchProps> = ({
           animate={{ x: current ? 16 : 2 }}
           transition={motionTransitions.springSnappy}
           className={cn(
-            'pointer-events-none block h-3.5 w-3.5 my-auto top-0 bottom-0 rounded-full shadow-xs',
-            current ? 'bg-white dark:bg-[#050505] accent:bg-brand-foreground' : 'bg-neutral-500 dark:bg-[#6B6B6B]'
+            'pointer-events-none block size-3.5 my-auto top-0 bottom-0 rounded-full shadow-subtle',
+            current ? 'bg-primary-foreground accent:bg-brand-foreground' : 'bg-muted-foreground'
           )}
         />
       </button>

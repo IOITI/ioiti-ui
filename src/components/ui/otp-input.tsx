@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { fieldBorder, invalidOf } from '../../lib/field-border.js';
+import { motionTransitions } from '../../lib/motion-tokens.js';
+import { DISABLED } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 
 export interface OTPInputProps {
@@ -185,17 +187,17 @@ export const OTPInput: React.FC<OTPInputProps> = ({
             if (poppedIndex === i) setPoppedIndex(null);
           }}
           // ioiti-ui: a tween, since framer-motion 13 animates a spring between two
-          // keyframes only (the third stopped the pop at 1.25, or threw in development).
-          transition={{ duration: 0.25, ease: 'easeOut' }}
+          // keyframes only (the third stopped the pop at 1.25, or threw in development); the design's quick curve.
+          transition={motionTransitions.easeFast}
           className={cn(
             // ioiti-ui: the look of the form's Input (its border, its surface, its text, in both themes), where
             // EasyUI's boxes were grey with a violet focus: a code's boxes under a password field look like it.
-            'h-12 w-10 rounded-lg border bg-white text-neutral-900 dark:bg-[#141414] dark:text-[#FAFAFA]',
+            'h-12 w-10 rounded-lg border bg-surface text-foreground',
             // ioiti-ui: the Input's border, or the error's; the box in focus in the accent, where the theme has one.
             fieldBorder(invalid),
             'text-center text-lg font-medium transition-colors duration-150',
-            'outline-none placeholder:text-muted-foreground',
-            'disabled:cursor-not-allowed disabled:opacity-50',
+            'outline-none placeholder:text-text-subtle',
+            DISABLED,
             boxClassName
           )}
         />

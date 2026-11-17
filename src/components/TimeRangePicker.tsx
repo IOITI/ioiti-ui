@@ -5,6 +5,8 @@ import type { ReactNode } from 'react'
 import { useControllableState } from '../lib/controllable.js'
 import { formatTimeRange, parseDateMath, relativeEnd, TIME_UNITS, unitName } from '../lib/date-math.js'
 import type { TimeRange, TimeUnit } from '../lib/date-math.js'
+import { fieldBorder } from '../lib/field-border.js'
+import { PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { NumberInput } from './NumberInput.js'
 import { Popover } from './Popover.js'
@@ -241,7 +243,7 @@ function QuickSelect({
               <button
                 type="button"
                 onClick={() => apply(common.range)}
-                className="w-full rounded-md px-1.5 py-1 text-left text-sm text-text-primary transition-colors hover:bg-surface-hover accent:text-brand-text"
+                className="w-full cursor-pointer rounded-md px-1.5 py-1 text-left text-sm text-foreground transition-colors hover:bg-surface-hover accent:text-brand-text"
               >
                 {common.label}
               </button>
@@ -260,7 +262,7 @@ function QuickSelect({
                 <button
                   type="button"
                   onClick={() => apply(range)}
-                  className="w-full rounded-md px-1.5 py-1 text-left text-sm text-text-primary transition-colors hover:bg-surface-hover"
+                  className="w-full cursor-pointer rounded-md px-1.5 py-1 text-left text-sm text-foreground transition-colors hover:bg-surface-hover"
                 >
                   {formatTimeRange(range)}
                 </button>
@@ -287,12 +289,12 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
   const [count, setCount] = useState<number | null>(relative?.count ?? 15)
   const [unit, setUnit] = useState<TimeUnit>(relative?.unit ?? 'm')
   const [past, setPast] = useState(relative?.past ?? true)
-  const [rounded, setRounded] = useState(relative?.round !== undefined)
-  const relativeText = (next: Partial<{ count: number | null; unit: TimeUnit; past: boolean; rounded: boolean }>) => {
+  const [roundToUnit, setRoundToUnit] = useState(relative?.round !== undefined)
+  const relativeText = (next: Partial<{ count: number | null; unit: TimeUnit; past: boolean; roundToUnit: boolean }>) => {
     const c = next.count === undefined ? count : next.count
     const u = next.unit ?? unit
     const p = next.past ?? past
-    const r = next.rounded ?? rounded
+    const r = next.roundToUnit ?? roundToUnit
     return `now${p ? '-' : '+'}${c ?? 1}${u}${r ? `/${u}` : ''}`
   }
   const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`
@@ -344,7 +346,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
                 onChange(localIso(next))
               }}
               // Its focus as the form's Input shows it: a field that takes text has no ring.
-              className="h-8 rounded-md border border-border bg-surface px-2 text-base sm:text-sm tabular-nums text-text-primary focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
+              className={cn('h-10 rounded-lg border bg-surface px-3.5 text-base sm:text-sm tabular-nums text-foreground transition-colors', fieldBorder(false))}
             />
           </label>
         </div>
@@ -395,11 +397,11 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
           </div>
           <DrawCheckbox
             label={`Round to the ${unitName(unit, 1)}`}
-            checked={rounded}
+            checked={roundToUnit}
             onChange={(event) => {
               const next = event.target.checked
-              setRounded(next)
-              onChange(relativeText({ rounded: next }))
+              setRoundToUnit(next)
+              onChange(relativeText({ roundToUnit: next }))
             }}
           />
         </div>
@@ -493,8 +495,8 @@ export function TimeRangePicker({
           <button
             type="button"
             className={cn(
-              'h-8 min-w-0 truncate rounded-md px-2 text-sm tabular-nums transition-colors hover:bg-surface-hover',
-              wrong ? 'text-negative' : 'text-text-primary',
+              'h-8 min-w-0 cursor-pointer truncate rounded-lg px-2 text-sm tabular-nums transition-colors hover:bg-surface-hover',
+              wrong ? 'text-negative' : 'text-foreground',
             )}
           >
             {endInWords(text, locale)}
@@ -514,7 +516,7 @@ export function TimeRangePicker({
 
   return (
     <div className={cn('flex w-full min-w-0 items-center gap-2', className)}>
-      <div className="flex h-10 min-w-0 flex-1 items-center gap-1 rounded-lg border border-neutral-300 bg-white px-1 dark:border-[#1F1F1F] dark:bg-[#141414]">
+      <div className="flex h-10 min-w-0 flex-1 items-center gap-1 rounded-lg border border-border bg-surface px-1">
         <Popover
           label="Quick select"
           open={quickOpen}
@@ -523,7 +525,10 @@ export function TimeRangePicker({
             <button
               type="button"
               aria-label="Quick select"
-              className="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-md px-1.5 text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary [&>svg]:size-4"
+              className={cn(
+                'inline-flex h-8 shrink-0 items-center gap-0.5 rounded-lg px-1.5 text-muted-foreground transition hover:bg-surface-hover hover:text-foreground [&>svg]:size-4',
+                PRESSABLE,
+              )}
             >
               <CalendarClock aria-hidden />
               <ChevronDown aria-hidden className="!size-3" />
@@ -536,7 +541,7 @@ export function TimeRangePicker({
         {dates || changed ? (
           <div className="flex min-w-0 flex-1 items-center gap-1">
             {endButton('start')}
-            <span aria-hidden className="text-xs text-text-muted">
+            <span aria-hidden className="text-xs text-muted-foreground">
               →
             </span>
             {endButton('end')}
@@ -545,7 +550,7 @@ export function TimeRangePicker({
           <button
             type="button"
             onClick={() => setDates(true)}
-            className="h-8 min-w-0 flex-1 truncate rounded-md px-2 text-left text-sm text-text-primary transition-colors hover:bg-surface-hover"
+            className="h-8 min-w-0 flex-1 cursor-pointer truncate rounded-lg px-2 text-left text-sm text-foreground transition-colors hover:bg-surface-hover"
           >
             {formatTimeRange(applied, locale)}
             <span className="sr-only">: show its start and its end</span>

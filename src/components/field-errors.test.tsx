@@ -39,7 +39,7 @@ describe('a field in error', () => {
     render(<Input aria-label="Name" />)
     const field = screen.getByRole('textbox', { name: 'Name' })
     expect(field).not.toHaveAttribute('aria-invalid')
-    expect(field.className).toContain('dark:border-[#1F1F1F]')
+    expect(field).toHaveClass('border-border', 'focus:border-muted-foreground')
     expect(field.className).toContain('accent:focus:border-brand')
   })
 

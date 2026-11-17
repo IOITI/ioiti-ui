@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { cn } from '../lib/utils.js'
 
 /** The label: small, in the primary text and semibold, so that it stands out of a form; its description stays muted. */
-const LABEL = 'text-xs font-semibold text-text-primary'
+const LABEL = 'text-xs font-semibold text-foreground'
 
 interface FieldProps {
   label: ReactNode

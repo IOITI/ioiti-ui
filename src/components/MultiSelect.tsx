@@ -8,6 +8,7 @@ import { useAnchoredLayer } from '../lib/anchor.js'
 import { useControllableState } from '../lib/controllable.js'
 import { fieldBorder, invalidOf } from '../lib/field-border.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
+import { CLOSE_SM, FLOATING, MENU_ROW } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 import { Badge } from './ui/badge.js'
@@ -168,12 +169,13 @@ export function MultiSelect({
         onClick={() => inputRef.current?.focus()}
         // The look of the form's Input, chips inside it.
         className={cn(
-          'relative flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-lg border bg-white px-1.5 py-1 text-base sm:text-sm transition-colors dark:bg-[#141414]',
+          // Its text 14px in (px-3.5), as the Input's: the frame's 8px and the input's 6px.
+          'relative flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-lg border bg-surface pl-2 py-1 text-base sm:text-sm transition-colors',
           // Room for the arrow that says it opens a list, and the clear button before it, both keeping to the first
           // line's end however many lines the chips take.
           chosen.length > 0 && !disabled ? 'pr-16' : 'pr-8',
           fieldBorder(invalid, 'focus-within'),
-          disabled && 'cursor-not-allowed opacity-30',
+          disabled && 'cursor-not-allowed opacity-50',
         )}
       >
         {shown.map((each) => (
@@ -216,12 +218,12 @@ export function MultiSelect({
           onFocus={() => setOpen(true)}
           onClick={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          className="h-7 min-w-24 flex-1 bg-transparent px-1.5 text-base sm:text-sm text-neutral-900 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed dark:text-[#FAFAFA]"
+          className="h-7 min-w-24 flex-1 bg-transparent px-1.5 text-base sm:text-sm text-foreground placeholder:text-text-subtle focus:outline-none disabled:cursor-not-allowed"
         />
         {/* A list to choose from, as a Combobox says: its arrow, which a click goes through to the field. */}
-        <ChevronsUpDown aria-hidden className="pointer-events-none absolute right-2.5 top-3 size-4 shrink-0 text-neutral-400" />
+        <ChevronsUpDown aria-hidden className="pointer-events-none absolute right-2.5 top-3 size-4 shrink-0 text-muted-foreground" />
         {chosen.length > 0 && !disabled && (
-          <span className="absolute right-7 top-1.5">
+          <span className="absolute right-7 top-2">
             <Hint content="Clear">
               <button
                 type="button"
@@ -231,7 +233,7 @@ export function MultiSelect({
                   setChosen([])
                   inputRef.current?.focus()
                 }}
-                className="grid size-7 shrink-0 place-items-center rounded-md text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary [&>svg]:size-3.5"
+                className={CLOSE_SM}
               >
                 <X />
               </button>
@@ -250,7 +252,7 @@ export function MultiSelect({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springSnappy}
-                className="z-50 overflow-auto rounded-xl border border-border bg-surface p-1 shadow-lg glass-float"
+                className={cn('z-50 overflow-auto p-1', FLOATING)}
               >
                 {full && (
                   <p role="status" className="px-2.5 pb-1 pt-1.5 text-xs text-muted-foreground">
@@ -261,7 +263,7 @@ export function MultiSelect({
                   {rows.length === 0 && <li className="px-2.5 py-2 text-xs text-muted-foreground">{emptyText}</li>}
                   {groups.map((group) => (
                     <li key={group || '·'} role="presentation">
-                      {group && <div className="px-2.5 pb-1 pt-2 text-xs font-medium text-text-muted">{group}</div>}
+                      {group && <div className="px-2.5 pb-1 pt-2 text-xs font-medium text-text-secondary">{group}</div>}
                       <ul role="group" aria-label={group || undefined}>
                         {rows.map((row, index) => {
                           if ((row.create ? '' : (row.option.group ?? '')) !== group) return null
@@ -278,12 +280,12 @@ export function MultiSelect({
                               onClick={() => toggle(row)}
                               onPointerMove={() => setActive(index)}
                               className={cn(
-                                'flex cursor-default select-none items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-text-primary',
+                                MENU_ROW,
                                 index === at && 'bg-surface-hover accent:bg-brand-soft accent:text-brand-text',
                                 blocked(row) && 'cursor-not-allowed opacity-50',
                               )}
                             >
-                              <span className="grid size-4 shrink-0 place-items-center [&>svg]:size-3.5">
+                              <span className="grid size-4 shrink-0 place-items-center [&>svg]:size-4">
                                 {row.create ? <Plus aria-hidden /> : ticked ? <Check aria-hidden /> : null}
                               </span>
                               <span className="flex min-w-0 flex-col">

@@ -5,8 +5,9 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { useAnchoredLayer } from "../../lib/anchor.js";
-import { invalidOf } from "../../lib/field-border.js";
+import { fieldBorder, invalidOf } from "../../lib/field-border.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+import { DISABLED, FLOATING, MENU_ROW } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 
 function useControllableState<T>(
@@ -145,32 +146,31 @@ export function Combobox({
           } else layer.onTriggerKeyDown(e);
         }}
         className={cn(
-          "flex h-10 w-full items-center gap-2.5 rounded-lg border bg-white px-3 text-sm outline-none transition-colors disabled:pointer-events-none disabled:opacity-50 dark:bg-neutral-950",
+          "flex h-10 w-full cursor-pointer items-center gap-2.5 rounded-lg border bg-surface px-3.5 text-sm outline-none transition-colors",
+          DISABLED,
           // ioiti-ui: its border, or the error's (never both); open, the option under the pointer and the one chosen in
           // the accent, where the theme has one (accent:).
-          invalid
-            ? "border-negative/60 hover:border-negative"
-            : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700",
+          fieldBorder(invalid),
           open &&
             (invalid
               ? "border-negative hover:border-negative"
-              : "border-neutral-400 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-600 accent:border-brand accent:hover:border-brand")
+              : "border-muted-foreground hover:border-muted-foreground accent:border-brand accent:hover:border-brand")
         )}
       >
         {current?.icon && (
-          <span className="grid size-4 shrink-0 place-items-center text-neutral-500 [&>svg]:size-4">
+          <span className="grid size-4 shrink-0 place-items-center text-muted-foreground [&>svg]:size-4">
             {current.icon}
           </span>
         )}
         <span
           className={cn(
             "flex-1 truncate text-left",
-            current ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-500 dark:text-neutral-500"
+            current ? "text-foreground" : "text-text-subtle"
           )}
         >
           {current?.label ?? placeholder}
         </span>
-        <ChevronsUpDown className="size-4 shrink-0 text-neutral-400" />
+        <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
       </button>
 
       {typeof document !== "undefined" &&
@@ -194,7 +194,8 @@ export function Combobox({
                 }}
                 className={cn(
                   // ioiti-ui: glass under the glass material (glass-float).
-                  "z-50 min-w-[14rem] overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg shadow-neutral-900/5 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-black/40 glass-float"
+                  "z-50 min-w-[14rem] overflow-hidden",
+                  FLOATING
                 )}
               >
                 <Panel
@@ -306,8 +307,8 @@ function Panel({
 
   return (
     <>
-      <div className="flex items-center gap-2 border-b border-neutral-200 px-3 dark:border-neutral-800">
-        <Search className="size-4 shrink-0 text-neutral-400" />
+      <div className="flex items-center gap-2 border-b border-border px-3">
+        <Search className="size-4 shrink-0 text-muted-foreground" />
         <input
           ref={inputRef}
           value={query}
@@ -323,7 +324,7 @@ function Panel({
           aria-controls={id}
           aria-autocomplete="list"
           aria-activedescendant={items[active] ? `${id}-${active}` : undefined}
-          className="h-10 w-full bg-transparent text-sm text-neutral-900 outline-none placeholder:text-neutral-500 dark:text-neutral-100 dark:placeholder:text-neutral-500"
+          className="h-10 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-text-subtle"
         />
       </div>
 
@@ -335,7 +336,7 @@ function Panel({
               initial={false}
               animate={{ y: box.y, height: box.h }}
               transition={spring}
-              className="pointer-events-none absolute inset-x-1 top-0 rounded-lg bg-neutral-100 dark:bg-neutral-800/80 accent:bg-brand-soft"
+              className="pointer-events-none absolute inset-x-1 top-0 rounded-lg bg-surface-hover accent:bg-brand-soft"
             />
           )}
 
@@ -351,11 +352,7 @@ function Panel({
               aria-disabled={o.disabled || undefined}
               onMouseMove={() => !o.disabled && active !== i && setActive(i)}
               onClick={() => !o.disabled && onSelect(o.value)}
-              className={cn(
-                "relative flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors",
-                active === i ? "text-neutral-900 dark:text-white" : "text-neutral-600 dark:text-neutral-400",
-                o.disabled && "cursor-not-allowed opacity-40"
-              )}
+              className={cn(MENU_ROW, "relative", o.disabled && "cursor-not-allowed opacity-50")}
             >
               {o.icon && (
                 <span className="relative grid size-4 shrink-0 place-items-center [&>svg]:size-4">{o.icon}</span>
@@ -365,7 +362,7 @@ function Panel({
                   <Highlight text={o.label} query={q} />
                 </span>
                 {o.description && (
-                  <span className="block truncate text-xs text-neutral-500 dark:text-neutral-500">
+                  <span className="block truncate text-xs text-muted-foreground">
                     {o.description}
                   </span>
                 )}
@@ -387,7 +384,7 @@ function Panel({
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="px-3 py-6 text-center text-sm text-neutral-500 dark:text-neutral-500"
+              className="px-3 py-6 text-center text-sm text-muted-foreground"
             >
               {emptyText}
             </motion.p>
@@ -404,7 +401,7 @@ function Highlight({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, i)}
-      <span className="text-neutral-950 underline decoration-neutral-300 underline-offset-[3px] dark:text-white dark:decoration-neutral-600">
+      <span className="text-foreground underline decoration-foreground/30 underline-offset-[3px]">
         {text.slice(i, i + query.length)}
       </span>
       {text.slice(i + query.length)}

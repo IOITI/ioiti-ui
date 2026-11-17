@@ -54,7 +54,7 @@ interface RangeSliderProps extends SliderBase {
 // The browser's own range input, its track hidden (the slider draws its own under it), its thumb drawn
 // here in both engines: a disc in the page's colour, ringed in the text's (the accent's, where the look has one).
 const THUMB =
-  '[&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-foreground [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm active:[&::-webkit-slider-thumb]:cursor-grabbing accent:[&::-webkit-slider-thumb]:border-brand ' +
+  '[&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-foreground [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-subtle active:[&::-webkit-slider-thumb]:cursor-grabbing accent:[&::-webkit-slider-thumb]:border-brand ' +
   '[&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-3 [&::-moz-range-thumb]:cursor-grab [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-foreground [&::-moz-range-thumb]:bg-background accent:[&::-moz-range-thumb]:border-brand'
 const RANGE = cn(
   'absolute inset-x-0 top-1/2 h-5 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent disabled:cursor-not-allowed',
@@ -127,7 +127,7 @@ function Header({ id, label, said }: { id: string; label: ReactNode; said: strin
       <span id={id} className="text-text-secondary">
         {label}
       </span>
-      <span aria-hidden className="tabular-nums text-text-primary">
+      <span aria-hidden className="tabular-nums text-foreground">
         {said}
       </span>
     </div>
@@ -160,7 +160,8 @@ export function Slider({
   const at = ((current - min) / (max - min || 1)) * 100
   return (
     <div className={cn('flex w-full items-end gap-4', className)}>
-      <div className="min-w-0 flex-1">
+      {/* Disabled, half its strength (DISABLED), the field beside it on its own. */}
+      <div className={cn('min-w-0 flex-1', disabled && 'opacity-50')}>
         <Header id={id} label={label} said={format(current)} />
         <Track from={0} to={at} levels={levels} ticks={tickList(ticks, min, max, step)} min={min} max={max}>
           <input
@@ -218,7 +219,7 @@ export function RangeSlider({
   const at = (number: number) => ((number - min) / (max - min || 1)) * 100
   const name = ariaLabel ?? (typeof label === 'string' ? label : 'Range')
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn('w-full', disabled && 'opacity-50', className)}>
       <Header id={id} label={label} said={`${format(low)} – ${format(high)}`} />
       <Track from={at(low)} to={at(high)} levels={levels} ticks={tickList(ticks, min, max, step)} min={min} max={max}>
         {/* Two inputs over each other, each taking the pointer on its thumb only. */}

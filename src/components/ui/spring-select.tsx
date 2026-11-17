@@ -3,8 +3,10 @@
 import React, { useState, useRef, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Check } from 'lucide-react';
+import { fieldBorder } from '../../lib/field-border.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { DISABLED, FLOATING, MENU_ROW } from '../../lib/recipes.js';
 
 export interface SpringSelectOption {
   value: string;
@@ -38,6 +40,9 @@ export interface SpringSelectProps {
  * SpringSelect — The dropdown menu follows the trigger with a tiny spring.
  * On open, the menu slides down with a slight overshoot; the chevron rotates
  * a hair past 180° before settling. Closing is a smooth ease-back.
+ *
+ * ioiti-ui: the menu settles without overshoot (springSnappy) and the chevron turns to 180° exactly, as every
+ * chevron of the design does.
  */
 export const SpringSelect: React.FC<SpringSelectProps> = ({
   options,
@@ -119,7 +124,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
       {label && (
         <label
           htmlFor={`${rootId}-trigger`}
-          className="block text-xs font-medium text-[var(--text-primary)] tracking-tight mb-1.5 select-none"
+          className="block text-xs font-semibold text-foreground mb-1.5 select-none"
         >
           {label}
         </label>
@@ -135,29 +140,24 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
         onClick={() => !disabled && setOpen((o) => !o)}
         onKeyDown={handleTriggerKey}
         className={cn(
-          'relative w-full h-10 px-3.5 pr-9 text-base sm:text-sm rounded-lg border outline-none text-left flex items-center justify-between transition-colors duration-150 focus-ring',
-          'bg-[var(--surface-raised)]',
-          open
-            ? // ioiti-ui: open, the option under the pointer and the one chosen in the accent, where the theme has one (accent:).
-              'border-[var(--border-hover)] accent:border-brand'
-            : error
-              ? 'border-rose-500/50 hover:border-rose-500/70'
-              : 'border-[var(--border)] hover:border-[var(--border-hover)]',
-          disabled && 'opacity-30 cursor-not-allowed',
-          currentOption ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'
+          'relative w-full h-10 px-3.5 pr-9 text-base sm:text-sm rounded-lg border outline-none text-left flex items-center justify-between transition-colors duration-150 focus-ring cursor-pointer',
+          'bg-surface',
+          fieldBorder(error),
+          // ioiti-ui: open, the option under the pointer and the one chosen in the accent, where the theme has one (accent:).
+          open &&
+            (error
+              ? 'border-negative hover:border-negative'
+              : 'border-muted-foreground hover:border-muted-foreground accent:border-brand accent:hover:border-brand'),
+          DISABLED,
+          currentOption ? 'text-foreground' : 'text-text-subtle'
         )}
       >
         <span className="truncate">{currentOption?.label ?? placeholder}</span>
 
-        <motion.div
-          animate={{
-            rotate: open ? 192 : 0, // 192° gives a tiny past-180° before settle
-          }}
-          transition={motionTransitions.springSnappy}
-          className="absolute right-3 text-[var(--text-secondary)]"
-        >
-          <ChevronDown className="w-3.5 h-3.5" />
-        </motion.div>
+        {/* ioiti-ui: the field's chevron, turned to 180° by the stylesheet (EasyUI's went to 192° on a spring). */}
+        <span className="absolute right-3 flex text-muted-foreground">
+          <ChevronDown className={cn('size-4 motion-safe:transition-transform duration-200 ease-fast', open && 'rotate-180')} />
+        </span>
       </button>
 
       <AnimatePresence>
@@ -175,7 +175,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
             // "settles" with the snappy spring, plus a slight overshoot via the
             // scale: 0.98 -> 1 motion.
             // ioiti-ui: glass under the glass material (glass-float).
-            className="absolute z-50 left-0 right-0 mt-1.5 max-h-60 overflow-auto py-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-elevated)] focus:outline-none glass-float"
+            className={cn('absolute z-50 left-0 right-0 mt-1.5 max-h-60 overflow-auto py-1 focus:outline-none', FLOATING)}
           >
             {options.map((opt, idx) => {
               const selected = opt.value === current;
@@ -188,21 +188,22 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
                   onMouseEnter={() => setActiveIndex(idx)}
                   onClick={() => handleSelect(opt, idx)}
                   className={cn(
-                    'relative px-3 py-2 mx-1 rounded-md text-sm cursor-pointer flex items-center justify-between gap-2',
-                    selected ? 'text-[var(--text-primary)] accent:text-brand-text' : 'text-[var(--text-secondary)]',
-                    opt.disabled && 'opacity-30 cursor-not-allowed',
-                    activeIndex === idx && !opt.disabled && 'bg-[var(--surface-raised)] accent:bg-brand-soft'
+                    MENU_ROW,
+                    'relative mx-1 justify-between',
+                    selected && 'accent:text-brand-text',
+                    opt.disabled && 'opacity-50 cursor-not-allowed',
+                    activeIndex === idx && !opt.disabled && 'bg-surface-hover accent:bg-brand-soft'
                   )}
                 >
                   <span className="flex flex-col">
                     <span className="leading-tight">{opt.label}</span>
                     {opt.description && (
-                      <span className="text-xs text-[var(--text-muted)] mt-0.5">
+                      <span className="text-xs text-muted-foreground mt-0.5">
                         {opt.description}
                       </span>
                     )}
                   </span>
-                  {selected && <Check className="w-3.5 h-3.5 text-[var(--text-primary)] accent:text-brand-text shrink-0" />}
+                  {selected && <Check className="size-4 text-foreground accent:text-brand-text shrink-0" />}
                 </li>
               );
             })}
@@ -215,7 +216,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
           initial={{ opacity: 0, y: -2 }}
           animate={{ opacity: 1, y: 0 }}
           transition={motionTransitions.springSnappy}
-          className="text-xs text-rose-700 dark:text-rose-400 font-medium mt-1.5"
+          className="text-xs text-negative font-medium mt-1.5"
           role="alert"
         >
           {error}

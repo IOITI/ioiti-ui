@@ -5,8 +5,9 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays } from "lucide-react";
 import { useAnchoredLayer } from "../../lib/anchor.js";
-import { invalidOf } from "../../lib/field-border.js";
+import { fieldBorder, invalidOf } from "../../lib/field-border.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+import { DISABLED, FLOATING } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 import { Calendar, type CalendarOptions, type DateRange } from "./calendar.js";
 
@@ -125,22 +126,21 @@ function PickerShell({
         onKeyDown={layer.onTriggerKeyDown}
         className={cn(
           // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-          "flex h-10 w-full items-center gap-2.5 rounded-lg border bg-white px-3 text-sm outline-none transition-colors disabled:pointer-events-none disabled:opacity-50 dark:bg-neutral-950",
+          "flex h-10 w-full cursor-pointer items-center gap-2.5 rounded-lg border bg-surface px-3.5 text-sm outline-none transition-colors",
+          DISABLED,
           // ioiti-ui: its border, or the error's (never both); open, in the accent where the theme has one (accent:).
-          invalid
-            ? "border-negative/60 hover:border-negative"
-            : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700",
+          fieldBorder(invalid),
           open &&
             (invalid
               ? "border-negative hover:border-negative"
-              : "border-neutral-400 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-600 accent:border-brand accent:hover:border-brand")
+              : "border-muted-foreground hover:border-muted-foreground accent:border-brand accent:hover:border-brand")
         )}
       >
-        <CalendarDays className="size-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
+        <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
         <span
           className={cn(
             "truncate",
-            text ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-500"
+            text ? "text-foreground" : "text-text-subtle"
           )}
         >
           {text ?? placeholder}
@@ -169,7 +169,8 @@ function PickerShell({
                 }}
                 className={cn(
                   // ioiti-ui: glass under the glass material (glass-float).
-                  "z-50 w-max max-w-[calc(100vw-2rem)] overflow-auto rounded-xl border border-neutral-200 bg-white shadow-lg shadow-neutral-900/5 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-black/40 glass-float"
+                  "z-50 w-max max-w-[calc(100vw-2rem)] overflow-auto",
+                  FLOATING
                 )}
               >
                 {children({ close })}

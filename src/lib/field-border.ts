@@ -1,7 +1,7 @@
 /**
- * A field's border, at rest, under the pointer and in focus: its own (the form's Input's, in both themes and the
- * accent's in focus), or the error's. One set or the other, never both: the error's classes added over the others
- * lost to their `dark:` and `accent:` variants (more specific), and an error showed no red in dark.
+ * A field's border, at rest, under the pointer and in focus: its own (the design's tokens, `muted-foreground` in focus as the text it holds, the
+ * accent's where the look has one), or the error's. One set or the other, never both: the error's classes added over
+ * the others lost to their `accent:` variants (more specific), and an error showed no red in an accent.
  *
  * `focus-within` for a field whose frame holds the control (MultiSelect's chips and its input).
  */
@@ -12,8 +12,8 @@ export function fieldBorder(error: unknown, focus: 'focus' | 'focus-within' = 'f
       : 'border-negative/60 hover:border-negative focus-within:border-negative'
   }
   return focus === 'focus'
-    ? 'border-neutral-300 hover:border-neutral-500 dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand'
-    : 'border-neutral-300 hover:border-neutral-500 dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] focus-within:border-neutral-500 dark:focus-within:border-[#4A4A4A] accent:focus-within:border-brand'
+    ? 'border-border hover:border-border-hover focus:border-muted-foreground accent:focus:border-brand'
+    : 'border-border hover:border-border-hover focus-within:border-muted-foreground accent:focus-within:border-brand'
 }
 
 /**

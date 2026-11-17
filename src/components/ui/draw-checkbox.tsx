@@ -19,6 +19,9 @@ export interface DrawCheckboxProps
  * DrawCheckbox — The checkmark draws itself (path length animation) and
  * settles with a tiny overshoot. The box also springs from 0.9 -> 1.02 -> 1.0
  * for a tactile "snap" feel.
+ *
+ * ioiti-ui: both settle without overshoot, on the design's curves (motionTransitions): the box grows from 0.9 to 1,
+ * the check from 0.6 to 1 as it draws itself.
  */
 export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
   (
@@ -70,7 +73,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
       <div
         className={cn(
           'flex items-start gap-2.5 select-none',
-          disabled && 'opacity-30 cursor-not-allowed',
+          disabled && 'opacity-50 cursor-not-allowed',
           className
         )}
       >
@@ -95,23 +98,19 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
             aria-invalid={invalid || undefined}
           />
 
-          {/* Box: a tiny "pop" via scale 0.9 -> 1.04 -> 1.0 when checked */}
+          {/* Box: a tiny "pop" via scale 0.9 -> 1.0 when checked */}
           <motion.div
             aria-hidden="true"
             initial={false}
             animate={{
-              scale: showCheck && !reduceMotion ? [0.9, 1.04, 1] : 1,
+              scale: showCheck && !reduceMotion ? [0.9, 1] : 1,
             }}
-            transition={{
-              // Use a keyframed spring-like array for the "settle" overshoot.
-              duration: 0.32,
-              ease: [0.16, 1, 0.3, 1],
-            }}
+            transition={motionTransitions.easeSoft}
             // ioiti-ui: the colours are classes, EasyUI's tokens (both themes) and then the accent's,
             // under a theme that has one (accent:), as the radio and the switch; framer animated them
             // as inline styles, which no class outranks.
             className={cn(
-              'w-4 h-4 rounded-[4px] border flex items-center justify-center pointer-events-none transition-colors duration-300',
+              'size-4 rounded-[4px] border flex items-center justify-center pointer-events-none transition-colors duration-300',
               showCheck
                 ? 'bg-accent border-accent accent:bg-brand accent:border-brand'
                 : invalid
@@ -119,7 +118,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
                   : 'bg-surface-raised border-border'
             )}
           >
-            {/* Path-draw checkmark with overshoot on stroke-dashoffset */}
+            {/* Path-draw checkmark */}
             {currentChecked && !indeterminate && (
               <motion.svg
                 viewBox="0 0 16 16"
@@ -130,27 +129,24 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
                 strokeWidth="2.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-black dark:text-white stroke-black dark:stroke-white accent:text-brand-foreground accent:stroke-brand-foreground"
+                className="text-foreground accent:text-brand-foreground"
                 initial={reduceMotion ? false : { pathLength: 0, scale: 0.6, opacity: 0 }}
                 animate={{
                   pathLength: 1,
-                  scale: [0.6, 1.18, 1], // tiny overshoot
+                  scale: 1,
                   opacity: 1,
                 }}
                 transition={{
-                  pathLength: { duration: 0.28, ease: [0.65, 0, 0.35, 1] },
-                  scale: { duration: 0.36, ease: [0.16, 1, 0.3, 1] },
-                  opacity: { duration: 0.12 },
+                  pathLength: motionTransitions.easeSoft,
+                  scale: motionTransitions.easeSoft,
+                  opacity: motionTransitions.easeFast,
                 }}
               >
                 <motion.path
                   d="M3.5 8.5 L6.5 11.5 L12.5 5"
                   initial={reduceMotion ? false : { pathLength: 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{
-                    duration: 0.28,
-                    ease: [0.65, 0, 0.35, 1],
-                  }}
+                  transition={motionTransitions.easeSoft}
                 />
               </motion.svg>
             )}
@@ -162,7 +158,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
                 animate={{ scaleX: 1 }}
                 transition={motionTransitions.springSnappy}
                 style={{ transformOrigin: 'left center' }}
-                className="w-2.5 h-[2px] rounded-full bg-black dark:bg-white accent:bg-brand-foreground"
+                className="w-2.5 h-0.5 rounded-full bg-foreground accent:bg-brand-foreground"
               />
             )}
           </motion.div>
@@ -174,7 +170,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
             className={cn('cursor-pointer text-left', disabled && 'cursor-not-allowed')}
           >
             {label && (
-              <div id={`${inputId}-label`} className="text-sm font-medium text-[var(--text-primary)] leading-tight">
+              <div id={`${inputId}-label`} className="text-sm font-medium text-foreground leading-tight">
                 {label}
               </div>
             )}

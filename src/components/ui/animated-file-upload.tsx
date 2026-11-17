@@ -19,6 +19,7 @@ import {
 import { cn } from '../../lib/utils.js';
 import { formatBytes } from '../../lib/format.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { CLOSE_SM, TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
 
 export type FileUploadStatus = 'queued' | 'uploading' | 'processing' | 'complete' | 'error';
@@ -387,10 +388,10 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
           'relative flex flex-col items-center justify-center text-center cursor-pointer border border-dashed rounded-xl transition-colors focus-ring',
           isDragOver
             ? // ioiti-ui: a file over it, and the progress below, in the accent where the theme has one (accent:).
-              'border-neutral-500 bg-neutral-100 dark:border-[#4A4A4A] dark:bg-[#141414] accent:border-brand accent:bg-brand-soft'
-            : 'border-neutral-300 bg-white hover:border-neutral-500 dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:hover:border-[#4A4A4A]',
+              'border-border-hover bg-surface-hover accent:border-brand accent:bg-brand-soft'
+            : 'border-border bg-surface hover:border-border-hover',
           isCompact ? 'p-5 sm:p-6 min-h-[120px]' : 'p-8 sm:p-10 min-h-[180px]',
-          disabled && 'opacity-40 cursor-not-allowed border-solid'
+          disabled && 'opacity-50 cursor-not-allowed border-solid'
         )}
       >
         <motion.div
@@ -399,17 +400,17 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
             scale: isDragOver ? 1.08 : 1,
           }}
           transition={motionTransitions.springSnappy}
-          className="w-10 h-10 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-neutral-500 mb-3 dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]"
+          className="size-10 rounded-lg bg-surface-raised border border-border flex items-center justify-center text-muted-foreground mb-3"
         >
-          <Upload className={cn('w-5 h-5 transition-colors', isDragOver ? 'text-neutral-900 dark:text-white' : 'text-neutral-500 dark:text-[#525252]')} />
+          <Upload className={cn('size-5 transition-colors', isDragOver ? 'text-foreground' : 'text-muted-foreground')} />
         </motion.div>
 
         <div className="space-y-1">
-          <p className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA]">{dropTitle}</p>
-          <p className="text-xs text-neutral-600 dark:text-[#A1A1A1]">
+          <p className="text-sm font-medium text-foreground">{dropTitle}</p>
+          <p className="text-xs text-muted-foreground">
             {dropSubtitle}{' '}
             {maxSize && (
-              <span className="text-neutral-500 dark:text-[#8A8A8A]">
+              <span className="text-muted-foreground">
                 (up to {formatFileSize(maxSize)})
               </span>
             )}
@@ -427,15 +428,15 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
             transition={motionTransitions.springGentle}
             className="mt-4 space-y-2"
           >
-            <div className="flex items-center justify-between px-1 text-xs font-mono text-neutral-500 uppercase tracking-wider dark:text-[#8A8A8A]">
-              <span>Files ({files.length})</span>
+            <div className="flex items-center justify-between px-1 text-xs font-medium text-muted-foreground">
+              <span className="tabular-nums">Files ({files.length})</span>
               {files.some((f) => f.status === 'complete') && (
                 <button
                   type="button"
                   onClick={() => setFiles((prev) => prev.filter((f) => f.status !== 'complete'))}
-                  className="hover:text-neutral-900 transition-colors focus-ring rounded cursor-pointer dark:hover:text-[#A1A1A1]"
+                  className="hover:text-foreground transition-colors focus-ring rounded-sm cursor-pointer"
                 >
-                  Clear Completed
+                  Clear completed
                 </button>
               )}
             </div>
@@ -454,39 +455,39 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                     layout
                     initial={{ opacity: 0, y: 10, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+                    exit={{ opacity: 0, scale: 0.95, transition: motionTransitions.easeExit }}
                     transition={motionTransitions.springGentle}
                     className={cn(
-                      'relative overflow-hidden rounded-xl border p-3 sm:p-3.5 bg-white transition-colors dark:bg-[#0E0E0E]',
+                      'relative overflow-hidden rounded-xl border p-3 sm:p-3.5 bg-surface transition-colors',
                       isError
-                        ? 'border-rose-500/30 bg-rose-500/5'
+                        ? cn(TONE_LINE.negative, 'bg-negative/5 dark:bg-negative/10')
                         : isComplete
-                        ? 'border-emerald-500/30 bg-emerald-500/5'
-                        : 'border-neutral-200 dark:border-[#1F1F1F]'
+                        ? cn(TONE_LINE.positive, 'bg-positive/5 dark:bg-positive/10')
+                        : 'border-border'
                     )}
                   >
                     <div className="flex items-center gap-3 relative z-10">
                       {/* File Type Icon */}
                       <div
                         className={cn(
-                          'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border',
+                          'size-8 rounded-lg flex items-center justify-center shrink-0 border',
                           isError
-                            ? 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-400'
+                            ? cn(TONE_SOFT.negative, TONE_LINE.negative)
                             : isComplete
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
-                            : 'bg-neutral-100 border-neutral-200 text-neutral-500 dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]'
+                            ? cn(TONE_SOFT.positive, TONE_LINE.positive)
+                            : 'bg-surface-raised border-border text-muted-foreground'
                         )}
                       >
-                        <IconComponent className="w-4 h-4" />
+                        <IconComponent className="size-4" />
                       </div>
 
                       {/* File Metadata */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-medium text-neutral-900 truncate dark:text-[#FAFAFA]">
+                          <p className="text-sm font-medium text-foreground truncate">
                             {file.name}
                           </p>
-                          <span className="text-xs font-mono text-neutral-500 shrink-0 dark:text-[#8A8A8A]">
+                          <span className="text-xs font-mono text-muted-foreground shrink-0">
                             {formatFileSize(file.size)}
                           </span>
                         </div>
@@ -496,28 +497,28 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                           {isError ? (
                             // ioiti-ui: the whole error, wrapped (a script's refusal is a sentence).
                             <span role="alert" className="text-negative flex items-start gap-1">
-                              <AlertCircle className="w-3 h-3 shrink-0 mt-0.5" />
+                              <AlertCircle className="size-3 shrink-0 mt-0.5" />
                               <span className="break-words">{file.errorMessage || 'Upload failed'}</span>
                             </span>
                           ) : isComplete ? (
                             <span className="text-positive flex items-center gap-2">
                               <span className="flex items-center gap-1">
-                                <Check className="w-3 h-3 shrink-0" />
+                                <Check className="size-3 shrink-0" />
                                 <span>{doneLabel}</span>
                               </span>
                               {file.link && (
-                                <LinkComponent href={file.link.href} className="font-medium text-neutral-900 underline underline-offset-2 dark:text-[#FAFAFA]">
+                                <LinkComponent href={file.link.href} className="font-medium text-foreground underline underline-offset-2">
                                   {file.link.label}
                                 </LinkComponent>
                               )}
                             </span>
                           ) : isProcessing ? (
-                            <span className="text-neutral-600 flex items-center gap-1.5 font-mono text-xs dark:text-[#A1A1A1]">
-                              <span className="w-1.5 h-1.5 rounded-full bg-neutral-500 animate-pulse dark:bg-white/70" />
-                              Processing...
+                            <span className="text-muted-foreground flex items-center gap-1.5 font-mono text-xs">
+                              <span className="size-1.5 rounded-full bg-muted-foreground animate-pulse" />
+                              Processing…
                             </span>
                           ) : (
-                            <span className="text-neutral-500 font-mono text-xs dark:text-[#8A8A8A]">
+                            <span className="text-muted-foreground font-mono text-xs tabular-nums">
                               {workingLabel ?? `Uploading ${file.progress}%`}
                             </span>
                           )}
@@ -530,31 +531,31 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                           <button
                             type="button"
                             onClick={() => handleRetryFile(file)}
-                            className="p-1 rounded-md text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-ring cursor-pointer dark:text-[#6B6B6B] dark:hover:text-white dark:hover:bg-[#141414]"
+                            className={CLOSE_SM}
                             aria-label={`Retry uploading ${file.name}`}
                           >
-                            <RotateCcw className="w-3.5 h-3.5" />
+                            <RotateCcw />
                           </button>
                         )}
                         <button
                           type="button"
                           onClick={() => handleRemoveFile(file.id)}
-                          className="p-1 rounded-md text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-ring cursor-pointer dark:text-[#6B6B6B] dark:hover:text-[#FAFAFA] dark:hover:bg-[#141414]"
+                          className={CLOSE_SM}
                           aria-label={`Remove ${file.name}`}
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X />
                         </button>
                       </div>
                     </div>
 
                     {/* Progress Bar (at the bottom) */}
                     {(isUploading || isProcessing) && (
-                      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-neutral-100 dark:bg-[#141414]">
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-surface-raised">
                         <motion.div
-                          className="h-full bg-neutral-900 dark:bg-[#FAFAFA] accent:bg-brand"
+                          className="h-full bg-foreground accent:bg-brand"
                           initial={{ width: '0%' }}
                           animate={{ width: `${file.progress}%` }}
-                          transition={{ duration: 0.15, ease: 'easeOut' }}
+                          transition={motionTransitions.easeFast}
                         />
                       </div>
                     )}

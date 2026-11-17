@@ -4,6 +4,7 @@ import type { KeyboardEvent, ReactNode } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
+import { DISABLED } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 
 export interface SegmentedControlOption<T extends string = string> {
@@ -32,9 +33,11 @@ export interface SegmentedControlProps<T extends string = string> {
   className?: string
 }
 
+// The control 32px (sm) or 40px (md) tall, as a button of its size: each segment that less the track's padding (2px)
+// and its border (1px), above and below.
 const SIZE = {
-  sm: 'h-7 px-2.5 text-sm [&_svg]:size-3.5',
-  md: 'h-8 px-3 text-sm [&_svg]:size-4',
+  sm: 'h-6.5 px-2.5 text-sm [&_svg]:size-3.5',
+  md: 'h-8.5 px-3 text-sm [&_svg]:size-4',
 }
 
 /**
@@ -111,12 +114,13 @@ export function SegmentedControl<T extends string = string>({
             onKeyDown={(event) => onKeyDown(event, index)}
             className={cn(
               // The text takes its colour as the fill slides under it, not before it arrives.
-              'relative inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium transition-colors motion-safe:duration-300 motion-safe:ease-soft disabled:cursor-not-allowed disabled:opacity-50',
+              'relative inline-flex cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium transition-colors motion-safe:duration-300 motion-safe:ease-soft',
+              DISABLED,
               SIZE[size],
               fullWidth && 'flex-1',
               on
-                ? 'text-[var(--bg)] accent:text-brand-fill-foreground'
-                : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary',
+                ? 'text-primary-foreground accent:text-brand-fill-foreground'
+                : 'text-text-secondary hover:bg-surface-hover hover:text-foreground',
             )}
           >
             {on && (
@@ -126,7 +130,7 @@ export function SegmentedControl<T extends string = string>({
                 // its segment, where a spring had it trail behind.
                 layoutDependency={chosen}
                 aria-hidden
-                className="absolute inset-0 rounded-md bg-[var(--text-primary)] shadow-xs accent:bg-brand accent:bg-(image:--brand-fill)"
+                className="absolute inset-0 rounded-md bg-primary shadow-subtle accent:bg-brand accent:bg-(image:--brand-fill)"
                 transition={motionTransitions.springMorph}
               />
             )}

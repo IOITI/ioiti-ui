@@ -5,6 +5,7 @@ import { motion, useMotionValue, useTransform, animate, useReducedMotionConfig }
 import { ChevronRight, Check, Trash2, Lock, Unlock, Archive, ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { TONE_LINE, TONE_SOFT, TONE_SOLID, TONE_TEXT, type Tone } from '../../lib/recipes.js';
 
 export type DragConfirmActionType =
   | 'delete'
@@ -59,28 +60,29 @@ const SIZE_CONFIG = {
     trackHeight: 'h-10',
     padding: 'p-1',
     thumbSize: 32,
-    thumbClass: 'w-8 h-8',
+    thumbClass: 'size-8',
     offset: 40,
     text: 'text-xs',
-    iconSize: 'w-3.5 h-3.5',
+    iconSize: 'size-3.5',
   },
   md: {
     trackHeight: 'h-12',
     padding: 'p-1',
     thumbSize: 40,
-    thumbClass: 'w-10 h-10',
+    thumbClass: 'size-10',
     offset: 48,
     text: 'text-sm',
-    iconSize: 'w-4 h-4',
+    iconSize: 'size-4',
   },
+  // ioiti-ui: the large thumb 48px, a step of the controls' heights (EasyUI's was 44px in a padding of 6px).
   lg: {
     trackHeight: 'h-14',
-    padding: 'p-1.5',
-    thumbSize: 44,
-    thumbClass: 'w-11 h-11',
+    padding: 'p-1',
+    thumbSize: 48,
+    thumbClass: 'size-12',
     offset: 56,
     text: 'text-base',
-    iconSize: 'w-4.5 h-4.5',
+    iconSize: 'size-4.5',
   },
 };
 
@@ -215,41 +217,26 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
     confirmAction();
   };
 
-  // Archetype color profiles tailored for balanced light & dark appearance
+  // Archetype color profiles tailored for balanced light & dark appearance.
+  // ioiti-ui: the design's tones (recipes.ts): danger the negative, warning and info their own, a confirmation the
+  // positive once done; on its way, a neutral fill.
+  const toneOf = (each: Exclude<Tone, 'neutral'>, iconColor: string) => ({
+    fill: cn(TONE_SOFT[each], 'border-r', TONE_LINE[each]),
+    confirmedTrack: cn(TONE_SOFT[each], TONE_LINE[each]),
+    confirmedHandle: cn(TONE_SOLID[each], 'shadow-subtle'),
+    confirmedText: cn(TONE_TEXT[each], 'font-semibold'),
+    iconColor,
+  });
   const getToneClasses = () => {
     switch (resolvedTone) {
       case 'danger':
-        return {
-          fill: 'bg-rose-500/10 dark:bg-rose-500/15 border-r border-rose-500/25',
-          confirmedTrack: 'bg-rose-500/[0.08] border-rose-500/35 dark:bg-rose-500/15 dark:border-rose-500/30',
-          confirmedHandle: 'bg-rose-600 text-white dark:bg-rose-500 dark:text-white border-rose-600 dark:border-rose-500 shadow-xs',
-          confirmedText: 'text-rose-600 dark:text-rose-400 font-semibold',
-          iconColor: 'text-rose-500 dark:text-rose-400',
-        };
+        return toneOf('negative', TONE_TEXT.negative);
       case 'warning':
-        return {
-          fill: 'bg-amber-500/10 dark:bg-amber-500/15 border-r border-amber-500/25',
-          confirmedTrack: 'bg-amber-500/[0.08] border-amber-500/35 dark:bg-amber-500/15 dark:border-amber-500/30',
-          confirmedHandle: 'bg-amber-500 text-neutral-950 dark:bg-amber-400 dark:text-neutral-950 border-amber-500 dark:border-amber-400 shadow-xs',
-          confirmedText: 'text-amber-600 dark:text-amber-400 font-semibold',
-          iconColor: 'text-amber-500 dark:text-amber-400',
-        };
+        return toneOf('warning', TONE_TEXT.warning);
       case 'info':
-        return {
-          fill: 'bg-blue-500/10 dark:bg-blue-500/15 border-r border-blue-500/25',
-          confirmedTrack: 'bg-blue-500/[0.08] border-blue-500/35 dark:bg-blue-500/15 dark:border-blue-500/30',
-          confirmedHandle: 'bg-blue-600 text-white dark:bg-blue-500 dark:text-white border-blue-600 dark:border-blue-500 shadow-xs',
-          confirmedText: 'text-blue-600 dark:text-blue-400 font-semibold',
-          iconColor: 'text-blue-500 dark:text-blue-400',
-        };
+        return toneOf('info', TONE_TEXT.info);
       default:
-        return {
-          fill: 'bg-neutral-200/70 dark:bg-white/[0.07] border-r border-neutral-300/50 dark:border-white/10',
-          confirmedTrack: 'bg-emerald-500/[0.08] border-emerald-500/35 dark:bg-emerald-500/15 dark:border-emerald-500/30',
-          confirmedHandle: 'bg-emerald-600 text-white dark:bg-emerald-500 dark:text-neutral-950 border-emerald-600 dark:border-emerald-500 shadow-xs',
-          confirmedText: 'text-emerald-600 dark:text-emerald-400 font-semibold',
-          iconColor: 'text-neutral-700 dark:text-neutral-200',
-        };
+        return { ...toneOf('positive', 'text-text-secondary'), fill: 'bg-border border-r border-border-hover' };
     }
   };
 
@@ -279,13 +266,11 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
       <div
         ref={trackRef}
         className={cn(
-          'relative rounded-full border flex items-center overflow-hidden transition-all duration-200',
+          'relative rounded-full border flex items-center overflow-hidden transition-colors duration-200',
           currentSize.trackHeight,
           currentSize.padding,
-          isConfirmed
-            ? tone.confirmedTrack
-            : 'bg-neutral-100/90 dark:bg-[#121214] border-neutral-200/90 dark:border-[#232327] shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.35)]',
-          disabled && 'opacity-40 cursor-not-allowed'
+          isConfirmed ? tone.confirmedTrack : 'bg-surface-raised border-border',
+          disabled && 'opacity-50 cursor-not-allowed'
         )}
       >
         {/* Progressive Dynamic Fill behind the Thumb */}
@@ -303,7 +288,7 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
         <motion.div
           style={{ opacity: isConfirmed ? 0 : textOpacity, x: textTranslateX }}
           className={cn(
-            'absolute inset-0 flex items-center justify-center pointer-events-none font-medium tracking-tight z-10 text-neutral-600 dark:text-neutral-400 select-none',
+            'absolute inset-0 flex items-center justify-center pointer-events-none font-medium tracking-tight z-10 text-muted-foreground select-none',
             currentSize.text
           )}
         >
@@ -335,7 +320,7 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
           style={{ x }}
           onDragEnd={handleDragEnd}
           whileDrag={{ scale: 1.04 }}
-          whileTap={disabled || isConfirmed ? undefined : { scale: 0.96 }}
+          whileTap={disabled || isConfirmed ? undefined : { scale: 0.97 }}
           transition={motionTransitions.springSnappy}
           className={cn(
             currentSize.thumbClass,
@@ -343,8 +328,9 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
             'rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing z-20 relative select-none touch-none transition-[background-color,border-color,box-shadow]',
             isConfirmed
               ? tone.confirmedHandle
-              : 'bg-white dark:bg-[#1C1C20] border border-neutral-200/90 dark:border-[#2C2C32] text-neutral-800 dark:text-neutral-200 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.4)] hover:border-neutral-300 dark:hover:border-[#3A3A42]',
-            disabled && 'cursor-not-allowed opacity-50'
+              : 'bg-surface border border-border text-text-secondary shadow-subtle hover:border-border-hover',
+            // ioiti-ui: half its strength with the track (50%), not a second time.
+            disabled && 'cursor-not-allowed'
           )}
           tabIndex={disabled ? -1 : 0}
           role="slider"
@@ -366,7 +352,7 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
               animate={{ scale: 1, rotate: 0 }}
               transition={motionTransitions.springSnappy}
             >
-              {confirmedIcon ?? <Check className={cn(currentSize.iconSize, 'stroke-[2.5]')} />}
+              {confirmedIcon ?? <Check className={currentSize.iconSize} />}
             </motion.div>
           ) : (
             icon ?? getActionIcon()

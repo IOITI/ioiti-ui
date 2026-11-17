@@ -68,7 +68,7 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
     <div
       className={cn(
         'flex items-center justify-between gap-4 select-none',
-        disabled && 'opacity-30 cursor-not-allowed',
+        disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
     >
@@ -78,10 +78,10 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
           onClick={handleToggle}
         >
           {label && (
-            <div id={`${id}-label`} className="text-sm font-medium text-[var(--text-primary)] leading-tight">{label}</div>
+            <div id={`${id}-label`} className="text-sm font-medium text-foreground leading-tight">{label}</div>
           )}
           {description && (
-            <div id={`${id}-description`} className="text-xs text-[var(--text-muted)] mt-0.5 leading-relaxed">
+            <div id={`${id}-description`} className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
               {description}
             </div>
           )}
@@ -101,11 +101,11 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
         onPointerLeave={() => setIsPressed(false)}
         onClick={handleToggle}
         className={cn(
-          'relative inline-flex h-5 w-9 shrink-0 rounded-full border transition-colors duration-200 focus-ring',
+          'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border transition-colors duration-200 focus-ring',
           current
             ? // ioiti-ui: on, in the accent under a theme that has one (accent:), its thumb on it.
-              'bg-[var(--text-primary)] border-[var(--text-primary)] accent:bg-brand accent:border-brand'
-            : 'bg-[var(--surface-raised)] border-[var(--border)]',
+              'bg-primary border-primary accent:bg-brand accent:border-brand'
+            : 'bg-surface-raised border-border',
           disabled && 'cursor-not-allowed'
         )}
         style={{ paddingInline: TRACK_PADDING }}
@@ -113,8 +113,8 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
         <motion.span
           style={{ x, scaleX, scaleY, width: THUMB_SIZE, height: THUMB_SIZE }}
           className={cn(
-            'pointer-events-none block my-auto rounded-full shadow-xs origin-center',
-            current ? 'bg-[var(--bg)] accent:bg-brand-foreground' : 'bg-[var(--text-secondary)]'
+            'pointer-events-none block my-auto rounded-full shadow-subtle origin-center',
+            current ? 'bg-primary-foreground accent:bg-brand-foreground' : 'bg-muted-foreground'
           )}
         />
       </button>
