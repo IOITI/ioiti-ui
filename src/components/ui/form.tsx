@@ -182,7 +182,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={`${unitId}-prefix`}
             // Not in a label's name around the field: its description (aria-describedby).
             aria-hidden
-            className="absolute left-0 flex h-full items-center pl-3.5 pr-1.5 text-xs text-muted-foreground pointer-events-none"
+            className="absolute left-0 flex h-full items-center pl-3.5 pr-1.5 text-base sm:text-sm text-muted-foreground pointer-events-none"
           >
             {prefix}
           </span>
@@ -193,7 +193,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           type={computedType}
           disabled={disabled}
           className={cn(
-            'w-full h-10 px-3.5 text-xs text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150',
+            'w-full h-10 px-3.5 text-base sm:text-sm text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150',
             // ioiti-ui: its border, or the error's (never both: the error's lost to the dark ones); in focus, in
             // the accent under a theme that has one (accent:).
             fieldBorder(invalid),
@@ -215,7 +215,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={after}
             id={`${unitId}-suffix`}
             aria-hidden
-            className="absolute right-0 flex h-full items-center pl-1.5 pr-3.5 text-xs text-muted-foreground pointer-events-none"
+            className="absolute right-0 flex h-full items-center pl-1.5 pr-3.5 text-base sm:text-sm text-muted-foreground pointer-events-none"
           >
             {suffix}
           </span>
@@ -264,7 +264,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         ref={ref}
         disabled={disabled}
         className={cn(
-          'w-full min-h-[90px] p-3 text-xs text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150 resize-y',
+          'w-full min-h-[90px] p-3 text-base sm:text-sm text-neutral-900 dark:text-[#FAFAFA] placeholder:text-muted-foreground bg-white dark:bg-[#141414] rounded-lg border transition-all duration-150 resize-y',
           // ioiti-ui: its border, or the error's, as the Input's.
           fieldBorder(invalid),
           'focus:bg-white dark:focus:bg-[#141414] focus:outline-none focus-ring leading-relaxed',
@@ -303,7 +303,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           disabled={disabled}
           className={cn(
-            'w-full h-10 pl-3.5 pr-8 text-xs text-neutral-900 dark:text-[#FAFAFA] bg-white dark:bg-[#141414] rounded-lg border appearance-none transition-all duration-150 cursor-pointer',
+            'w-full h-10 pl-3.5 pr-8 text-base sm:text-sm text-neutral-900 dark:text-[#FAFAFA] bg-white dark:bg-[#141414] rounded-lg border appearance-none transition-all duration-150 cursor-pointer',
             // ioiti-ui: its border, or the error's, as the Input's.
             fieldBorder(invalid),
             'focus:bg-white dark:focus:bg-[#141414] focus:outline-none focus-ring',
@@ -490,7 +490,7 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
       {(label || description) && (
         <label htmlFor={id} className="cursor-pointer text-left">
           {label && (
-            <div className="text-xs font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
+            <div className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
               {label}
             </div>
           )}
@@ -551,7 +551,7 @@ export const Switch: React.FC<SwitchProps> = ({
       {(label || description) && (
         <div className="text-left cursor-pointer" onClick={handleToggle}>
           {label && (
-            <div id={`${id}-label`} className="text-xs font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
+            <div id={`${id}-label`} className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] leading-tight">
               {label}
             </div>
           )}

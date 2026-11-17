@@ -14,7 +14,8 @@ const tables: CategoryInfo = {
       names: ['Table', 'TableHead', 'TableBody', 'TableRow', 'TableHeaderCell', 'TableCell'],
       keywords: ['rows', 'columns', 'grid', 'figures'],
       examples: [
-        { id: 'records', title: 'Records in a panel', description: 'Compact, the default: 12 px, rows apart by a line. Ids in mono, the name in the primary text, figures on the right in digits of one width.' },
+        { id: 'records', title: 'Records in a panel', description: 'Regular, the default: rows at 14 px under a 12 px head, apart by a line. Ids in mono, the name in the primary text, figures on the right in digits of one width.' },
+        { id: 'compact', title: 'A screen of data', description: 'density="compact": the same in 12 px, for a page whose point is to show many rows at once. Only where it asks for it.' },
         { id: 'dense', title: 'Figures side by side', description: 'density="dense": 14 px, narrow cells, for figures read across. Each row named by its first cell, a header cell.' },
         { id: 'row-action', title: 'A row’s action', description: 'The id that leads to the record is a link; what acts on the row is an xs button at its end, which says what came of it.' },
         { id: 'narrow', title: 'Wider than its room', description: 'A table wider than the page scrolls sideways in its own frame, never the page.' },

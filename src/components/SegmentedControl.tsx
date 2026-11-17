@@ -33,7 +33,7 @@ export interface SegmentedControlProps<T extends string = string> {
 }
 
 const SIZE = {
-  sm: 'h-7 px-2.5 text-xs [&_svg]:size-3.5',
+  sm: 'h-7 px-2.5 text-sm [&_svg]:size-3.5',
   md: 'h-8 px-3 text-sm [&_svg]:size-4',
 }
 

@@ -7924,10 +7924,11 @@
     "name": "density",
     "type": "TableDensity",
     "values": [
+     "regular",
      "compact",
      "dense"
     ],
-    "default": "'compact'"
+    "default": "'regular'"
    },
    {
     "name": "wrapperClassName",

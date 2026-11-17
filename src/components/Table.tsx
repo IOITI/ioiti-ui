@@ -4,12 +4,13 @@ import type { ComponentProps, ReactNode } from 'react'
 import { cn } from '../lib/utils.js'
 
 /**
- * How tight a table is. `compact`: small text, rows apart by a line, for lists of records in a
- * panel. `dense`: body-size text in narrow cells, a line above each row, for figures side by side.
+ * How tight a table is. `regular`: body-size text under a small head, rows apart by a line, for lists of
+ * records in a panel. `compact`: the same in small text, for a screen of data that asks for it. `dense`:
+ * body-size text in narrow cells, a line above each row, for figures side by side.
  */
-export type TableDensity = 'compact' | 'dense'
+export type TableDensity = 'regular' | 'compact' | 'dense'
 
-const DensityContext = createContext<TableDensity>('compact')
+const DensityContext = createContext<TableDensity>('regular')
 const PartContext = createContext<'head' | 'body'>('body')
 
 interface TableProps extends ComponentProps<'table'> {
@@ -24,11 +25,13 @@ interface TableProps extends ComponentProps<'table'> {
  * scrolls, the text of its cells for screen readers too (`sr-only`, placed absolutely): out of a frame
  * that is not positioned, that text stood beyond the page, which then scrolled sideways onto nothing.
  */
-export function Table({ density = 'compact', wrapperClassName, className, children, ...props }: TableProps) {
+const TABLE = { regular: 'w-full text-left text-sm', compact: 'w-full text-left text-xs', dense: 'w-full whitespace-nowrap text-sm' }
+
+export function Table({ density = 'regular', wrapperClassName, className, children, ...props }: TableProps) {
   return (
     <div className={cn('relative min-w-0 overflow-x-auto', wrapperClassName)}>
       <table
-        className={cn(density === 'compact' ? 'w-full text-left text-xs' : 'w-full whitespace-nowrap text-sm', className)}
+        className={cn(TABLE[density], className)}
         {...props}
       >
         <DensityContext.Provider value={density}>{children}</DensityContext.Provider>
@@ -40,7 +43,7 @@ export function Table({ density = 'compact', wrapperClassName, className, childr
 export function TableHead({ className, children, ...props }: ComponentProps<'thead'>) {
   const density = useContext(DensityContext)
   return (
-    <thead className={cn(density === 'compact' && 'text-muted-foreground', className)} {...props}>
+    <thead className={cn(density !== 'dense' && 'text-muted-foreground', density === 'regular' && 'text-xs', className)} {...props}>
       <PartContext.Provider value="head">{children}</PartContext.Provider>
     </thead>
   )
@@ -49,7 +52,7 @@ export function TableHead({ className, children, ...props }: ComponentProps<'the
 export function TableBody({ className, children, ...props }: ComponentProps<'tbody'>) {
   const density = useContext(DensityContext)
   return (
-    <tbody className={cn(density === 'compact' ? 'divide-y divide-border/40' : 'tabular-nums', className)} {...props}>
+    <tbody className={cn(density !== 'dense' ? 'divide-y divide-border/40' : 'tabular-nums', className)} {...props}>
       <PartContext.Provider value="body">{children}</PartContext.Provider>
     </tbody>
   )
@@ -76,7 +79,7 @@ export function TableHeaderCell({ numeric = false, className, scope, ...props }:
     <th
       scope={scope ?? (part === 'head' ? 'col' : 'row')}
       className={cn(
-        density === 'compact' ? 'py-2 pr-4 font-medium last:pr-0' : 'p-2 font-medium',
+        density !== 'dense' ? 'py-2 pr-4 font-medium last:pr-0' : 'p-2 font-medium',
         numeric ? 'text-right' : density === 'dense' && 'text-left',
         className,
       )}
@@ -90,8 +93,8 @@ export function TableCell({ numeric = false, className, ...props }: CellProps & 
   return (
     <td
       className={cn(
-        density === 'compact' ? 'py-2.5 pr-4 last:pr-0' : 'p-2',
-        numeric && (density === 'compact' ? 'text-right tabular-nums' : 'text-right'),
+        density !== 'dense' ? 'py-2.5 pr-4 last:pr-0' : 'p-2',
+        numeric && (density !== 'dense' ? 'text-right tabular-nums' : 'text-right'),
         className,
       )}
       {...props}

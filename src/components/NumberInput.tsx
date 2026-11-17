@@ -150,7 +150,7 @@ export function NumberInput({
   return (
     <div className={cn('relative flex w-full items-center', className)}>
       {prefix && (
-        <span ref={before} aria-hidden className="pointer-events-none absolute left-0 flex h-full items-center pl-3.5 pr-1.5 text-xs text-muted-foreground">
+        <span ref={before} aria-hidden className="pointer-events-none absolute left-0 flex h-full items-center pl-3.5 pr-1.5 text-base sm:text-sm text-muted-foreground">
           {prefix}
         </span>
       )}
@@ -178,7 +178,7 @@ export function NumberInput({
         style={{ paddingLeft: prefix ? pad.left : undefined, paddingRight: pad.right ? pad.right : undefined }}
         // The look of the form's Input.
         className={cn(
-          'h-10 w-full rounded-lg border bg-white px-3.5 text-xs tabular-nums text-neutral-900 transition-all duration-150 placeholder:text-muted-foreground dark:bg-[#141414] dark:text-[#FAFAFA]',
+          'h-10 w-full rounded-lg border bg-white px-3.5 text-base sm:text-sm tabular-nums text-neutral-900 transition-all duration-150 placeholder:text-muted-foreground dark:bg-[#141414] dark:text-[#FAFAFA]',
           fieldBorder(invalid),
           'focus:outline-none',
           disabled && 'cursor-not-allowed bg-neutral-100 opacity-30 dark:bg-[#0E0E0E]',
@@ -187,7 +187,7 @@ export function NumberInput({
       {(suffix || steppers) && (
         <span ref={after} className="absolute right-0 flex h-full items-center gap-0.5 pl-1.5 pr-1">
           {suffix && (
-            <span aria-hidden className="pointer-events-none pr-1 text-xs text-muted-foreground">
+            <span aria-hidden className="pointer-events-none pr-1 text-base sm:text-sm text-muted-foreground">
               {suffix}
             </span>
           )}

@@ -69,7 +69,7 @@ const variantStyles: Record<ButtonVariant, string> = {
 const sizeStyles: Record<ButtonSize, string> = {
   // ioiti-ui: the smallest, for an action on a line of text or a row of a table (an "Edit" beside a value).
   xs: 'h-6 px-2 text-xs rounded-md gap-1',
-  sm: 'h-8 px-3 text-xs rounded-md gap-1.5',
+  sm: 'h-8 px-3 text-sm rounded-md gap-1.5',
   md: 'h-10 px-4.5 text-sm rounded-lg gap-2',
   lg: 'h-12 px-6 text-base rounded-lg gap-2.5',
   icon: 'h-10 w-10 p-0 rounded-lg justify-center shrink-0',

@@ -58,7 +58,7 @@ export function CopyButton({ value, label = 'Copy', showLabel = false, size = 'm
       onClick={copy}
       className={cn(
         'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md text-text-secondary transition hover:bg-surface-hover hover:text-text-primary motion-safe:active:scale-95',
-        size === 'sm' ? 'h-7 min-w-7 text-xs [&>svg]:size-3.5' : 'h-8 min-w-8 text-sm [&>svg]:size-4',
+        size === 'sm' ? 'h-7 min-w-7 text-sm [&>svg]:size-3.5' : 'h-8 min-w-8 text-sm [&>svg]:size-4',
         showLabel && 'px-2',
         className,
       )}

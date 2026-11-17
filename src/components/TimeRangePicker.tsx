@@ -344,7 +344,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
                 onChange(localIso(next))
               }}
               // Its focus as the form's Input shows it: a field that takes text has no ring.
-              className="h-8 rounded-md border border-border bg-surface px-2 text-xs tabular-nums text-text-primary focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
+              className="h-8 rounded-md border border-border bg-surface px-2 text-base sm:text-sm tabular-nums text-text-primary focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand"
             />
           </label>
         </div>
@@ -493,7 +493,7 @@ export function TimeRangePicker({
           <button
             type="button"
             className={cn(
-              'h-8 min-w-0 truncate rounded-md px-2 text-xs tabular-nums transition-colors hover:bg-surface-hover',
+              'h-8 min-w-0 truncate rounded-md px-2 text-sm tabular-nums transition-colors hover:bg-surface-hover',
               wrong ? 'text-negative' : 'text-text-primary',
             )}
           >
@@ -545,7 +545,7 @@ export function TimeRangePicker({
           <button
             type="button"
             onClick={() => setDates(true)}
-            className="h-8 min-w-0 flex-1 truncate rounded-md px-2 text-left text-xs text-text-primary transition-colors hover:bg-surface-hover"
+            className="h-8 min-w-0 flex-1 truncate rounded-md px-2 text-left text-sm text-text-primary transition-colors hover:bg-surface-hover"
           >
             {formatTimeRange(applied, locale)}
             <span className="sr-only">: show its start and its end</span>

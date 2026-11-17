@@ -16,6 +16,8 @@ describe('Button', () => {
     )
     const iconBox = (name: string) => screen.getByRole('button', { name }).querySelector('svg')!.parentElement!
     expect(screen.getByRole('button', { name: 'Change' })).toHaveClass('h-6', 'text-xs')
+    // Only an inline button (xs) is small text: from sm up, its words are body-size.
+    expect(screen.getByRole('button', { name: 'Edit' })).toHaveClass('h-8', 'text-sm')
     expect(iconBox('Change')).toHaveClass("[&>svg:not([class*='size-'])]:size-3")
     expect(iconBox('Edit')).toHaveClass("[&>svg:not([class*='size-'])]:size-3.5")
     // Its own size is not one the rule picks.

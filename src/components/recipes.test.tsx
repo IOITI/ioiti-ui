@@ -105,8 +105,8 @@ describe('an icon button', () => {
   })
 })
 
-describe('a compact table', () => {
-  it('is small text, its head quiet, its rows apart by a line, its figures right and of one width', () => {
+describe('a table of records', () => {
+  it('is body-size text under a small, quiet head, its rows apart by a line, its figures right and of one width', () => {
     render(
       <Table className="min-w-[40rem]" aria-label="Orders">
         <TableHead>
@@ -126,13 +126,38 @@ describe('a compact table', () => {
 
     const table = screen.getByRole('table', { name: 'Orders' })
     expect(table.parentElement).toHaveClass('overflow-x-auto')
-    expect(table).toHaveClass('w-full', 'text-left', 'text-xs', 'min-w-[40rem]')
-    expect(table.querySelector('thead')).toHaveClass('text-muted-foreground')
+    expect(table).toHaveClass('w-full', 'text-left', 'text-sm', 'min-w-[40rem]')
+    expect(table.querySelector('thead')).toHaveClass('text-xs', 'text-muted-foreground')
     expect(table.querySelector('tbody')).toHaveClass('divide-y', 'divide-border/40')
     expect(screen.getByRole('columnheader', { name: 'Customer' })).toHaveClass('py-2', 'pr-4', 'font-medium')
     expect(screen.getByRole('columnheader', { name: 'Amount' })).toHaveClass('text-right')
     expect(screen.getByRole('cell', { name: 'Acme' })).toHaveClass('py-2.5', 'pr-4')
     expect(screen.getByRole('cell', { name: '120.00' })).toHaveClass('text-right', 'tabular-nums')
+  })
+})
+
+describe('a compact table', () => {
+  it('is small text throughout, for a screen of data that asks for it', () => {
+    render(
+      <Table density="compact" aria-label="Orders">
+        <TableHead>
+          <TableRow>
+            <TableHeaderCell>Customer</TableHeaderCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>Acme</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    )
+
+    const table = screen.getByRole('table', { name: 'Orders' })
+    expect(table).toHaveClass('w-full', 'text-left', 'text-xs')
+    expect(table.querySelector('thead')).toHaveClass('text-muted-foreground')
+    expect(table.querySelector('thead')).not.toHaveClass('text-xs')
+    expect(screen.getByRole('cell', { name: 'Acme' })).toHaveClass('py-2.5', 'pr-4')
   })
 })
 

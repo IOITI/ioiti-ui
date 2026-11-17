@@ -168,7 +168,7 @@ export function MultiSelect({
         onClick={() => inputRef.current?.focus()}
         // The look of the form's Input, chips inside it.
         className={cn(
-          'relative flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-lg border bg-white px-1.5 py-1 text-xs transition-colors dark:bg-[#141414]',
+          'relative flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-lg border bg-white px-1.5 py-1 text-base sm:text-sm transition-colors dark:bg-[#141414]',
           // Room for the arrow that says it opens a list, and the clear button before it, both keeping to the first
           // line's end however many lines the chips take.
           chosen.length > 0 && !disabled ? 'pr-16' : 'pr-8',
@@ -216,7 +216,7 @@ export function MultiSelect({
           onFocus={() => setOpen(true)}
           onClick={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          className="h-7 min-w-24 flex-1 bg-transparent px-1.5 text-xs text-neutral-900 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed dark:text-[#FAFAFA]"
+          className="h-7 min-w-24 flex-1 bg-transparent px-1.5 text-base sm:text-sm text-neutral-900 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed dark:text-[#FAFAFA]"
         />
         {/* A list to choose from, as a Combobox says: its arrow, which a click goes through to the field. */}
         <ChevronsUpDown aria-hidden className="pointer-events-none absolute right-2.5 top-3 size-4 shrink-0 text-neutral-400" />
