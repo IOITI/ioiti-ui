@@ -17,7 +17,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 - **What is typed in a field is 16 px on a phone, 14 px from 640 px** (`text-base sm:text-sm`), where it was 12 px:
   `Input` and its units, `Textarea`, `Select`, `NumberInput`, `MultiSelect`, `SpringSelect`, `TimeRangePicker`'s
   time, `DataTable`'s searches and its rows per page, `SmartComparison`'s search. A field under 16 px made a phone
-  zoom the page in when it took the focus.
+  zoom the page in when it took the focus. A field's units (`prefix`, `suffix`) are measured again whenever their
+  size changes: measured once, the text ran a few pixels under the unit when the web font arrived late.
 - **`Table` reads at 14 px by default**: a new density, `regular` (the default), has its rows in body-size text under
   a 12 px head, apart by a line. `compact`, as before (12 px throughout), is now asked for: `density="compact"` for a
   screen of data. `TableDensity` is `'regular' | 'compact' | 'dense'`.
