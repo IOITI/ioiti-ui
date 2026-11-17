@@ -154,7 +154,7 @@ describe('the stylesheets, as an application builds them', () => {
     expect(added.length).toBeGreaterThan(0)
     for (const block of added) {
       expect(block, block.slice(0, 80)).toMatch(
-        /^(:root\[data-(accent|material|reduced-motion)=|@supports not \(\(backdrop-filter|@media \(prefers-reduced-(transparency|motion)|@keyframes ioiti-|::view-transition|:root(:not\()?\[data-look-change\]|code,\s*kbd,\s*samp,\s*pre,\s*\.font-mono|::selection|:root\[data-accent\] ::selection|:root ::-webkit-scrollbar-track|@supports \(-moz-appearance)/,
+        /^(:root\[data-(accent|material|reduced-motion)=|@supports not \(\(backdrop-filter|@media \(prefers-reduced-(transparency|motion)|@keyframes ioiti-|::view-transition|:root(:not\()?\[data-look-change\]|code,\s*kbd,\s*samp,\s*pre,\s*\.font-mono|::selection|:root\[data-accent\] ::selection|:root ::-webkit-scrollbar-track|@supports \(-moz-appearance|\.np404-glass)/,
       )
     }
   })

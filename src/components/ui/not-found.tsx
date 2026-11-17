@@ -279,9 +279,10 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
                   }}
                 />
                 </div>
-                {/* ioiti-ui: cut to the folder by a CSS path (the glass is GLASS.w × GLASS.h px, the path in those px), and
-                    turned itself (above): the blur stays in the folder. Cut by an SVG <clipPath> under the turned anchor,
-                    it showed outside the folder, a rectangle around it. */}
+                {/* ioiti-ui: its blur cut to the folder by a mask (finish.css: .np404-glass, the outline in
+                    not-found-folder.svg): Chrome cuts a backdrop-filter to the box of its clip-path, not its shape, under
+                    a turned parent or one that clips with round corners (a card), and the blur showed in the rectangle
+                    around the folder. The path still cuts what it paints; turned itself (above). */}
                 <motion.div
                   className="np404-glass"
                   style={{ ...tilted, clipPath: FOLDER_CLIP, WebkitClipPath: FOLDER_CLIP }}

@@ -73,7 +73,10 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   browser's blue); a scrollbar's track shows what is under it (it was a stripe of `--bg` in dark), and Firefox draws
   thin scrollbars in the design's colours (`finish.css`, new).
 - **The 404 keeps EasyUI's illustration** as it was, its frosted glass included (its colours, glows, blur and springs,
-  by choice: `check-source` lets it), its words at the type's sizes. ScrollProgressNav's pill has no blur of its own
+  by choice: `check-source` lets it), its words at the type's sizes. Its blur stays in the folder: it was cut by a
+  clip-path, which Chrome turns into the box around the folder under a turned parent or one that clips with round
+  corners (a card), and the rectangle around the folder was blurred. A mask cuts it now (`not-found-folder.svg`, a file
+  beside the stylesheets, named by `finish.css`). ScrollProgressNav's pill has no blur of its own
   (it is opaque, glass under the glass material): beside the 404's drawing, the design blurs a KPI tile and what floats,
   nothing else, and `check-source` refuses any other blur.
 - CodeBlock's copy button is centred on the first line again; StretchSwitch's thumb no longer touches the track's edge

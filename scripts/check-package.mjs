@@ -85,6 +85,7 @@ const FILES = [
   'dist/styles/type.css',
   'dist/styles/finish.css',
   ...GRAINS.map((grain) => `dist/styles/${grain}.png`),
+  'dist/styles/not-found-folder.svg',
   'dist/theme.js',
   'dist/vite/index.js',
   'dist/vite/index.d.ts',
@@ -140,10 +141,10 @@ try {
 
   const fonts = assets.filter((name) => name.endsWith('.woff2'))
   check(fonts.length === 11, `the 11 font files are written as files (${fonts.length})`)
-  for (const grain of GRAINS) {
-    const file = assets.find((name) => name.startsWith(`${grain}-`) && name.endsWith('.png'))
+  for (const [image, type] of [...GRAINS.map((grain) => [grain, 'png']), ['not-found-folder', 'svg']]) {
+    const file = assets.find((name) => name.startsWith(`${image}-`) && name.endsWith(`.${type}`))
     const named = Boolean(file) && new RegExp(`url\\(["']?/assets/${file}["']?\\)`).test(css)
-    check(named, `${grain}.png is written as a file, and the CSS names it there${file ? ` (${file})` : ''}`)
+    check(named, `${image}.${type} is written as a file, and the CSS names it there${file ? ` (${file})` : ''}`)
   }
   check(!/url\(\s*["']?data:/.test(css) && !`${css}${js}`.includes('data:font'), 'nothing is inlined as a data: URI (font-src and img-src stay at self)')
   check(!js.includes('cm-editor') && !js.includes('@codemirror'), 'CodeMirror stays out of an application that does not import ioiti-ui/code')
