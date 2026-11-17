@@ -35,6 +35,7 @@
     "./accents.css": "./dist/styles/accents.css",
     "./glass.css": "./dist/styles/glass.css",
     "./motion.css": "./dist/styles/motion.css",
+    "./type.css": "./dist/styles/type.css",
     "./theme.js": "./dist/theme.js",
     "./package.json": "./package.json"
   },
