@@ -129,7 +129,7 @@ export function TopBarTrail({ home = DEFAULT_HOME }: { home?: { label: string; h
                   last && tail.length > 1 && 'hidden md:flex',
                 )}
               >
-                {index > 0 && <ChevronRight aria-hidden className="size-3.5 shrink-0 text-neutral-300 dark:text-neutral-700" />}
+                {index > 0 && <ChevronRight aria-hidden className="size-3.5 shrink-0 text-border-hover" />}
                 {last || !item.href ? (
                   <span aria-current={last ? 'page' : undefined} className={cn('truncate', last && 'font-medium text-foreground')}>
                     {item.label}

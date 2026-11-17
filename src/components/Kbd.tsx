@@ -15,7 +15,7 @@ interface KbdProps {
 }
 
 const CAP =
-  'inline-flex h-5 min-w-5 items-center justify-center rounded border border-border bg-surface px-1 font-sans text-[11px] font-medium leading-none text-text-secondary shadow-[inset_0_-1px_0_var(--border)]'
+  'inline-flex h-5 min-w-5 items-center justify-center rounded-sm border border-border bg-surface px-1 font-sans text-[11px] font-medium leading-none text-text-secondary shadow-[inset_0_-1px_0_var(--border)]'
 
 /** A key to press, or the keys of a shortcut, as this computer writes them. */
 export function Kbd({ keys, children, className }: KbdProps) {
@@ -26,7 +26,7 @@ export function Kbd({ keys, children, className }: KbdProps) {
       {strokes.map((stroke, index) => (
         <span key={index} className="inline-flex items-center gap-0.5">
           {index > 0 && (
-            <span className="mr-0.5 text-[11px] text-text-muted">
+            <span className="mr-0.5 text-[11px] text-muted-foreground">
               <span aria-hidden>·</span>
               <span className="sr-only">then</span>
             </span>

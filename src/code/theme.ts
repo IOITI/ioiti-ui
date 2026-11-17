@@ -23,27 +23,28 @@ const MONO = "'JetBrains Mono Variable', 'JetBrains Mono', 'Fira Code', monospac
 
 const theme = EditorView.theme({
   '&': {
-    color: 'var(--text-primary)',
+    color: 'var(--foreground)',
     backgroundColor: 'var(--surface)',
     fontSize: '13px',
   },
   // The frame shows the focus (its border), as a field that takes text: no outline of the editor's own.
   '&.cm-focused': { outline: 'none' },
-  '.cm-scroller': { fontFamily: MONO, lineHeight: '1.625' },
-  '.cm-content': { caretColor: 'var(--text-primary)', padding: '10px 0' },
+  // Code at 13px on 20px, as CodeBlock and LogViewer set it; read as typed, without ligatures.
+  '.cm-scroller': { fontFamily: MONO, lineHeight: '20px', fontVariantLigatures: 'none' },
+  '.cm-content': { caretColor: 'var(--foreground)', padding: '10px 0' },
   '.cm-line': { padding: '0 12px' },
-  '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--text-primary)' },
+  '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--foreground)' },
   '&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection':
     { backgroundColor: 'var(--code-selection)' },
   '.cm-activeLine': { backgroundColor: 'var(--surface-hover)' },
   '.cm-gutters': {
     backgroundColor: 'var(--surface)',
-    color: 'var(--text-muted)',
+    color: 'var(--muted-foreground)',
     borderRight: '1px solid var(--border)',
   },
   '.cm-activeLineGutter': { backgroundColor: 'var(--surface-hover)', color: 'var(--text-secondary)' },
   '.cm-lineNumbers .cm-gutterElement': { padding: '0 8px 0 12px', minWidth: '2.5em' },
-  '.cm-placeholder': { color: 'var(--text-muted)' },
+  '.cm-placeholder': { color: 'var(--text-subtle)' },
   '.cm-matchingBracket, &.cm-focused .cm-matchingBracket': {
     backgroundColor: 'var(--surface-hover)',
     outline: '1px solid var(--border)',
@@ -51,28 +52,30 @@ const theme = EditorView.theme({
   '.cm-selectionMatch': { backgroundColor: mix('--info', 14) },
   '.cm-searchMatch': { backgroundColor: mix('--warning', 22), outline: `1px solid ${mix('--warning', 60)}` },
   '.cm-searchMatch.cm-searchMatch-selected': { backgroundColor: mix('--warning', 40) },
-  '.cm-panels': { backgroundColor: 'var(--surface)', color: 'var(--text-primary)' },
+  '.cm-panels': { backgroundColor: 'var(--surface)', color: 'var(--foreground)' },
   '.cm-panels.cm-panels-top': { borderBottom: '1px solid var(--border)' },
   '.cm-panels.cm-panels-bottom': { borderTop: '1px solid var(--border)' },
   '.cm-panel input, .cm-panel button': { font: 'inherit', fontSize: '12px' },
   '.cm-textfield': {
     backgroundColor: 'var(--surface)',
-    color: 'var(--text-primary)',
+    color: 'var(--foreground)',
     border: '1px solid var(--border)',
-    borderRadius: '6px',
+    borderRadius: 'calc(var(--radius) * 0.8)',
   },
   '.cm-button': {
     backgroundImage: 'none',
     backgroundColor: 'var(--surface-hover)',
-    color: 'var(--text-primary)',
+    color: 'var(--foreground)',
     border: '1px solid var(--border)',
-    borderRadius: '6px',
+    borderRadius: 'calc(var(--radius) * 0.8)',
   },
+  // A tooltip of the design (TOOLTIP): the surface, its line, the radius of a control, the shadow of what floats.
   '.cm-tooltip': {
-    backgroundColor: 'var(--surface-raised)',
-    color: 'var(--text-primary)',
+    backgroundColor: 'var(--surface)',
+    color: 'var(--foreground)',
     border: '1px solid var(--border)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius)',
+    boxShadow: 'var(--shadow-elevated)',
   },
   '.cm-tooltip.cm-tooltip-lint': { padding: '2px 0' },
   '.cm-diagnostic': { padding: '4px 10px', borderLeftWidth: '3px' },

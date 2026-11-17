@@ -107,7 +107,7 @@ export function SignInProviders({
                   if (busy) event.preventDefault()
                   else if (!event.defaultPrevented && isPlainClick(event)) setCurrent(provider.id)
                 }}
-                className={cn('w-full', busy && 'cursor-not-allowed opacity-30')}
+                className="w-full aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
               >
                 {provider.label}
               </ButtonLink>

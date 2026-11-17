@@ -23,7 +23,7 @@ export function CopyChip({ value, label, truncate = false, keep = { start: 8, en
   const shown = cut ? `${value.slice(0, keep.start)}…${value.slice(-keep.end)}` : value
   const short = cut || truncate === 'end'
   const text = (
-    <span className={cn('min-w-0 font-mono text-xs text-text-primary', truncate === 'end' ? 'truncate' : 'whitespace-nowrap')}>
+    <span className={cn('min-w-0 font-mono text-xs text-foreground', truncate === 'end' ? 'truncate' : 'whitespace-nowrap')}>
       <span aria-hidden={cut || undefined}>{shown}</span>
       {cut && <span className="sr-only">{value}</span>}
     </span>

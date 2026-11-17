@@ -7,6 +7,7 @@ import { ChevronRight, PanelLeft } from "lucide-react";
 import { ariaKeyShortcuts, keysText } from "../../lib/keys.js";
 import { isPlainClick } from "../../lib/links.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+import { PRESSABLE, SCRIM, TOOLTIP } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 import { DropdownMenu, type DropdownMenuItem } from "../DropdownMenu.js";
 import { Kbd } from "../Kbd.js";
@@ -199,7 +200,9 @@ export function Sidebar({
         transition={spring}
         className={cn(
           // ioiti-ui: glass under the glass material (glass-bar), as the drawer below (glass-float), its scrim lighter.
-          "hidden h-full shrink-0 overflow-hidden border-r border-neutral-200 bg-white md:block dark:border-neutral-800 dark:bg-neutral-950 glass-bar",
+          // In dark, the page's own ground (background), as the design's: on the dark surface, a row's hover and the
+          // pill of the page shown (surface-hover) would hardly show.
+          "hidden h-full shrink-0 overflow-hidden border-r border-border bg-surface md:block dark:bg-background glass-bar",
           className
         )}
       >
@@ -213,7 +216,7 @@ export function Sidebar({
           <div key="drawer" className="fixed inset-0 z-50 md:hidden over-page">
             <motion.div
               aria-hidden
-              className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px] glass:bg-[var(--glass-scrim)]"
+              className={cn("absolute inset-0", SCRIM)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
@@ -225,7 +228,7 @@ export function Sidebar({
               role="dialog"
               aria-modal="true"
               aria-label="Navigation"
-              className="absolute inset-y-0 left-0 w-[17rem] max-w-[85vw] overflow-hidden border-r border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950 glass-float"
+              className="absolute inset-y-0 left-0 w-[17rem] max-w-[85vw] overflow-hidden border-r border-border bg-surface shadow-elevated dark:bg-background glass-float"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
@@ -255,7 +258,8 @@ export function SidebarTrigger({ className, ...props }: React.ComponentProps<"bu
       aria-label="Open navigation"
       className={cn(
         // ioiti-ui: pressed, it gives, as the top bar's other buttons do (motion-safe:).
-        "grid size-9 place-items-center rounded-lg text-neutral-500 transition motion-safe:active:scale-95 hover:bg-neutral-100 hover:text-neutral-900 md:hidden dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white",
+        "grid size-9 place-items-center rounded-lg text-muted-foreground transition hover:bg-surface-hover hover:text-foreground md:hidden",
+        PRESSABLE,
         className
       )}
       {...props}
@@ -361,7 +365,7 @@ function Panel({
       ) : (
         <span className="flex items-center gap-2">
           <span className="truncate">{label}</span>
-          <span className={cn("text-[11px] tabular-nums", tone && tone !== "neutral" ? cn("font-medium", BADGE_TONE[tone]) : "text-text-muted")}>
+          <span className={cn("text-[11px] tabular-nums", tone && tone !== "neutral" ? cn("font-medium", BADGE_TONE[tone]) : "text-muted-foreground")}>
             {badge}
           </span>
         </span>
@@ -434,27 +438,27 @@ function Panel({
             aria-current={isActive ? "page" : undefined}
             className={cn(
               // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-              "relative flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm outline-none transition-colors",
+              "relative flex h-9 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-sm outline-none transition-colors",
               chevron && "pr-9",
-              place === "footer" && !pilled && "hover:bg-neutral-100 dark:hover:bg-neutral-900",
+              place === "footer" && !pilled && "hover:bg-surface-hover",
               pilled || childActive
                 ? // ioiti-ui: the page shown, in the accent when the theme has one (accent:), as its pill below.
-                  "text-neutral-900 dark:text-white accent:text-brand-text"
-                : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                  "text-foreground accent:text-brand-text"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
             {pilled && (
               <motion.span
                 layoutId={`${uid}-active`}
                 transition={spring}
-                className="absolute inset-0 rounded-lg bg-neutral-200/70 dark:bg-neutral-800 accent:bg-brand-soft"
+                className="absolute inset-0 rounded-lg bg-surface-hover accent:bg-brand-soft"
               />
             )}
             <span className="relative grid size-5 shrink-0 place-items-center [&>svg]:size-[18px]">{item.icon}</span>
             <motion.span
               initial={false}
               animate={{ opacity: collapsed ? 0 : 1 }}
-              transition={{ duration: 0.15 }}
+              transition={motionTransitions.easeFast}
               className="relative flex-1 truncate whitespace-nowrap text-left"
             >
               {item.label}
@@ -466,7 +470,7 @@ function Panel({
                 className={
                   item.badgeTone && item.badgeTone !== "neutral"
                     ? cn("relative inline-flex items-center gap-1 text-[11px] font-medium", BADGE_TONE[item.badgeTone])
-                    : "relative rounded-md bg-neutral-200/70 px-1.5 text-[11px] tabular-nums text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+                    : "relative rounded-md bg-muted px-1.5 text-[11px] tabular-nums text-text-secondary"
                 }
               >
                 {item.badgeTone && item.badgeTone !== "neutral" && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
@@ -479,7 +483,7 @@ function Panel({
                   aria-hidden
                   className={cn(
                     "relative size-1.5 shrink-0 rounded-full",
-                    unseen === "neutral" ? "bg-neutral-500 dark:bg-neutral-400 accent:bg-brand" : cn("bg-current", BADGE_TONE[unseen])
+                    unseen === "neutral" ? "bg-muted-foreground accent:bg-brand" : cn("bg-current", BADGE_TONE[unseen])
                   )}
                 />
                 <span className="sr-only">, with counts</span>
@@ -488,7 +492,7 @@ function Panel({
             {!collapsed && hasChildren && !linked && (
               <ChevronRight
                 className={cn(
-                  "relative size-3.5 shrink-0 text-neutral-500 transition-transform duration-200 dark:text-neutral-400",
+                  "relative size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform duration-200 ease-fast",
                   isOpen && "rotate-90"
                 )}
               />
@@ -526,9 +530,9 @@ function Panel({
               aria-label={`The pages under ${item.label}`}
               aria-expanded={isOpen}
               aria-controls={isOpen ? childrenId : undefined}
-              className="relative -ml-8 grid h-9 w-8 shrink-0 place-items-center rounded-md text-neutral-500 outline-none transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+              className="relative -ml-8 grid h-9 w-8 shrink-0 cursor-pointer place-items-center rounded-lg text-muted-foreground outline-none transition-colors hover:text-foreground"
             >
-              <ChevronRight aria-hidden className={cn("size-3.5 transition-transform duration-200", isOpen && "rotate-90")} />
+              <ChevronRight aria-hidden className={cn("size-3.5 motion-safe:transition-transform duration-200 ease-fast", isOpen && "rotate-90")} />
             </button>
           )}
         </div>
@@ -539,11 +543,11 @@ function Panel({
               id={childrenId}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+              exit={{ height: 0, opacity: 0, transition: motionTransitions.easeExit }}
+              transition={motionTransitions.easeSoft}
               className="overflow-hidden"
             >
-              <div className="ml-[19px] mt-0.5 space-y-0.5 border-l border-neutral-200 py-0.5 pl-3 dark:border-neutral-800">
+              <div className="ml-[19px] mt-0.5 space-y-0.5 border-l border-border py-0.5 pl-3">
                 {item.children!.map((c) => {
                   const active = c.id === activeId;
                   const Child: React.ElementType = c.href !== undefined ? LinkComponent : "button";
@@ -563,18 +567,18 @@ function Panel({
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm outline-none transition-colors",
+                        "relative flex h-8 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-sm outline-none transition-colors",
                         active
                           ? // ioiti-ui: the page shown, and its dot, in the accent (accent:).
-                            "text-neutral-900 dark:text-white accent:text-brand-text"
-                          : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                            "text-foreground accent:text-brand-text"
+                          : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       {active && (
                         <motion.span
                           layoutId={`${uid}-dot`}
                           transition={spring}
-                          className="absolute -left-[15.5px] top-[13px] size-1.5 rounded-full bg-neutral-900 dark:bg-white accent:bg-brand"
+                          className="absolute -left-[15.5px] top-[13px] size-1.5 rounded-full bg-foreground accent:bg-brand"
                         />
                       )}
                       <span className="flex-1 truncate text-left">{c.label}</span>
@@ -582,7 +586,7 @@ function Panel({
                         <span
                           className={cn(
                             "text-[11px] tabular-nums",
-                            c.badgeTone && c.badgeTone !== "neutral" ? cn("font-medium", BADGE_TONE[c.badgeTone]) : "text-neutral-500 dark:text-neutral-400"
+                            c.badgeTone && c.badgeTone !== "neutral" ? cn("font-medium", BADGE_TONE[c.badgeTone]) : "text-muted-foreground"
                           )}
                         >
                           {c.badge}
@@ -605,7 +609,7 @@ function Panel({
         {header && (
           <div
             className={cn(
-              "flex h-14 shrink-0 items-center overflow-hidden px-4 transition-all",
+              "flex h-14 shrink-0 items-center overflow-hidden px-4 transition-[padding,width]",
               collapsed && "w-14 justify-center px-0 [&>div>*:not(:first-child)]:hidden [&>div]:gap-0 [&>*:not(:first-child)]:hidden"
             )}
           >
@@ -626,8 +630,8 @@ function Panel({
               aria-hidden
               initial={false}
               animate={{ y: hoverBox.y, height: hoverBox.h, opacity: hovering ? 1 : 0 }}
-              transition={{ y: spring, height: spring, opacity: { duration: 0.15 } }}
-              className="pointer-events-none absolute inset-x-2 top-0 rounded-lg bg-neutral-100 dark:bg-neutral-900"
+              transition={{ y: spring, height: spring, opacity: motionTransitions.easeFast }}
+              className="pointer-events-none absolute inset-x-2 top-0 rounded-lg bg-surface-hover"
             />
           )}
 
@@ -644,7 +648,7 @@ function Panel({
               <div key={key} className="space-y-0.5">
                 {section.title &&
                   (collapsed ? (
-                    <div className="mx-2.5 my-2 h-px bg-neutral-200 dark:bg-neutral-800" />
+                    <div className="mx-2.5 my-2 h-px bg-border" />
                   ) : foldable ? (
                     <button
                       type="button"
@@ -652,23 +656,23 @@ function Panel({
                       aria-expanded={!folded}
                       aria-controls={folded ? undefined : listId}
                       // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                      className="flex w-full items-center gap-1.5 rounded-md px-2.5 pb-1 pt-4 text-left text-xs text-neutral-500 outline-none transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                      className="flex w-full cursor-pointer items-center gap-1.5 rounded-md px-2.5 pb-1 pt-4 text-left text-xs text-muted-foreground outline-none transition-colors hover:text-foreground"
                     >
                       <span className="truncate">{section.title}</span>
                       <ChevronRight
                         aria-hidden
-                        className={cn("size-3 shrink-0 transition-transform duration-200", !folded && "rotate-90")}
+                        className={cn("size-3 shrink-0 motion-safe:transition-transform duration-200 ease-fast", !folded && "rotate-90")}
                       />
                       {/* ioiti-ui: folded, it says that an entry under it has a count to read. */}
                       {folded && counted && (
                         <>
-                          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-neutral-500 dark:bg-neutral-400 accent:bg-brand" />
+                          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-muted-foreground accent:bg-brand" />
                           <span className="sr-only">, with counts</span>
                         </>
                       )}
                     </button>
                   ) : (
-                    <p className="truncate px-2.5 pb-1 pt-4 text-xs text-neutral-500">
+                    <p className="truncate px-2.5 pb-1 pt-4 text-xs text-muted-foreground">
                       {section.title}
                     </p>
                   ))}
@@ -679,8 +683,8 @@ function Panel({
                         id={listId}
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+                        exit={{ height: 0, opacity: 0, transition: motionTransitions.easeExit }}
+                        transition={motionTransitions.easeSoft}
                         className="space-y-0.5 overflow-hidden"
                       >
                         {section.items.map((item) => renderItem(item))}
@@ -698,7 +702,7 @@ function Panel({
         {(footer || onToggle || footItems.length > 0) && (
           <div
             onMouseLeave={() => setTip(null)}
-            className="shrink-0 space-y-1 border-t border-neutral-200 p-2 dark:border-neutral-800"
+            className="shrink-0 space-y-1 border-t border-border p-2"
           >
             {/* ioiti-ui: the entries of the sections at the foot (place: "footer"), then the application's own. */}
             {footItems.map((item) => renderItem(item, "footer"))}
@@ -716,7 +720,7 @@ function Panel({
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                 aria-keyshortcuts={ariaKeyShortcuts(TOGGLE_KEYS)}
                 // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                className="flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-500 outline-none transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white"
+                className="flex h-9 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-sm text-muted-foreground outline-none transition-colors hover:bg-surface-hover hover:text-foreground"
               >
                 <span className="grid size-5 shrink-0 place-items-center">
                   <PanelLeft className="size-[18px]" />
@@ -724,7 +728,7 @@ function Panel({
                 <motion.span
                   initial={false}
                   animate={{ opacity: collapsed ? 0 : 1 }}
-                  transition={{ duration: 0.15 }}
+                  transition={motionTransitions.easeFast}
                   className="flex-1 whitespace-nowrap text-left"
                 >
                   Collapse
@@ -755,10 +759,10 @@ function Panel({
                   // ioiti-ui: the motion of everything that floats: springSnappy arriving, easeExit leaving.
                   exit={{ opacity: 0, transition: motionTransitions.easeExit }}
                   transition={motionTransitions.springSnappy}
-                  className="whitespace-nowrap rounded-md bg-neutral-900 px-2 py-1 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-neutral-900"
+                  className={cn("whitespace-nowrap px-2 py-1 text-xs font-medium", TOOLTIP)}
                 >
                   {tip.label}
-                  {tip.keys && <span className="ml-1.5 opacity-70">{tip.keys}</span>}
+                  {tip.keys && <span className="ml-1.5 text-muted-foreground">{tip.keys}</span>}
                 </motion.div>
               </div>
             )}

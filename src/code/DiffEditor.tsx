@@ -10,6 +10,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { IconButton } from '../components/IconButton.js'
+import { DISABLED } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { placeDiagnostics } from './diagnostics.js'
 import type { CodeDiagnostic } from './diagnostics.js'
@@ -235,9 +236,9 @@ export function DiffEditor({
       aria-label={label}
       className={cn('min-w-0 overflow-hidden rounded-xl border border-border bg-surface', className)}
     >
-      <header className="flex items-center gap-2 border-b border-border py-1 pl-3 pr-1.5 text-xs text-text-secondary">
-        <span className="min-w-0 truncate font-medium text-text-primary">{label}</span>
-        <span role="status" className="shrink-0">
+      <header className="flex items-center gap-2 border-b border-border py-1 pl-3 pr-1.5 text-xs text-muted-foreground">
+        <span className="min-w-0 truncate font-medium text-foreground">{label}</span>
+        <span role="status" className="shrink-0 tabular-nums">
           {changes === 0 ? 'No change' : changes === 1 ? '1 change' : `${changes} changes`}
         </span>
         <span className="ml-auto flex shrink-0 items-center">
@@ -247,7 +248,7 @@ export function DiffEditor({
             icon={<ChevronUp />}
             disabled={changes === 0}
             onClick={() => move('previous')}
-            className="size-7 disabled:opacity-40"
+            className={cn('size-8', DISABLED)}
           />
           <IconButton
             label="Next change"
@@ -255,7 +256,7 @@ export function DiffEditor({
             icon={<ChevronDown />}
             disabled={changes === 0}
             onClick={() => move('next')}
-            className="size-7 disabled:opacity-40"
+            className={cn('size-8', DISABLED)}
           />
           {actions}
         </span>

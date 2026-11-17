@@ -53,17 +53,17 @@ export function Disclosure({ summary, children, open, defaultOpen = false, onOpe
       <summary
         onClick={onClick}
         className={cn(
-          'flex cursor-pointer list-none items-center gap-2 rounded-lg font-medium text-text-secondary transition-colors hover:text-text-primary [&::-webkit-details-marker]:hidden',
+          'flex cursor-pointer list-none items-center gap-2 rounded-lg font-medium text-text-secondary transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden',
           boxed ? 'px-4 py-3' : 'py-1',
         )}
       >
         <ChevronRight
           aria-hidden
-          className="size-4 shrink-0 text-text-muted motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-soft group-open:rotate-90"
+          className="size-4 shrink-0 text-muted-foreground motion-safe:transition-transform duration-200 ease-fast group-open:rotate-90"
         />
         {summary}
       </summary>
-      <div className={cn('text-text-primary', boxed ? 'px-4 pb-4' : 'pb-1 pl-6 pt-2')}>{children}</div>
+      <div className={cn('text-foreground', boxed ? 'px-4 pb-4' : 'pb-1 pl-6 pt-2')}>{children}</div>
     </details>
   )
 }

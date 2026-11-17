@@ -53,7 +53,7 @@ describe('EmptyState', () => {
     const panel = screen.getByRole('heading', { level: 2, name: 'Alerts of the day' })
     const heading = screen.getByRole('heading', { level: 3, name: 'No alert matches' })
     expect(panel.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(heading).toHaveClass('text-sm', 'font-medium')
+    expect(heading).toHaveClass('text-sm', 'font-semibold')
     expect(heading.parentElement).toHaveClass('py-6')
     expect(screen.getByText('Try another time range.')).toHaveClass('text-xs')
   })

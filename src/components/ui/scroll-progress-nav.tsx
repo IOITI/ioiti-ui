@@ -6,6 +6,7 @@ import { motion, useReducedMotionConfig } from 'framer-motion';
 import { ArrowUp, ChevronRight } from 'lucide-react';
 import { isPlainClick } from '../../lib/links.js';
 import { Hint } from '../Hint.js';
+import { PRESSABLE } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -225,7 +226,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
   return (
     <div
       className={cn(
-        'font-sans transition-all duration-300 select-none',
+        'font-sans select-none',
         wrapperClass,
         className
       )}
@@ -236,8 +237,9 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
         className={cn(
           // ioiti-ui: glass under the glass material (glass-float). Not the phone's menu inside it: its blur would see
           // nothing but this pill.
-          'relative max-w-full rounded-full border border-neutral-200 bg-white/95 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-1 flex items-center gap-1 dark:border-[#1F1F1F] dark:bg-[#0E0E0E]/95 dark:shadow-[0_10px_30px_rgba(0,0,0,0.6)] glass-float',
-          isFloating ? 'ring-1 ring-black/5 dark:ring-white/5' : ''
+          // ioiti-ui: what floats, its shadow the design's (shadow-elevated, its own hairline in it: the ring once
+          // drawn while it floated said it again).
+          'relative max-w-full rounded-full border border-border bg-surface/95 backdrop-blur-md shadow-elevated p-1 flex items-center gap-1 glass-float'
         )}
         role="navigation"
         aria-label={label}
@@ -246,7 +248,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
         <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
           <div
             // ioiti-ui: the progress, the part shown and its pill in the accent, where the theme has one (accent:).
-            className="h-[1.5px] bg-neutral-900 dark:bg-[#FAFAFA] accent:bg-brand absolute top-0 left-0 transition-all duration-150"
+            className="h-[1.5px] bg-foreground accent:bg-brand absolute top-0 left-0 transition-[width] duration-150"
             style={{ width: `${scrollProgress}%` }}
           />
         </div>
@@ -254,15 +256,15 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
         {/* Floating compact indicator (mobile or compact state) */}
         <div className="flex md:hidden items-center px-2 py-1 gap-2">
           <span aria-hidden="true" className="text-[11px] font-mono text-muted-foreground">{currentActiveItem?.index}</span>
-          <span className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA]">{currentActiveItem?.label}</span>
+          <span className="text-sm font-medium text-foreground">{currentActiveItem?.label}</span>
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 rounded-full text-muted-foreground hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
+            className={cn('p-1 rounded-full text-muted-foreground hover:text-foreground transition', PRESSABLE)}
             aria-label="Toggle section menu"
             aria-expanded={isExpanded}
           >
-            <ChevronRight className={cn('w-3.5 h-3.5 transition-transform', isExpanded && 'rotate-90')} />
+            <ChevronRight className={cn('size-3.5 motion-safe:transition-transform duration-200 ease-fast', isExpanded && 'rotate-90')} />
           </button>
         </div>
 
@@ -273,7 +275,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
           ref={rowRef}
           className={cn(
             'hidden md:flex items-center gap-0.5 min-w-0 md:-mx-1 md:-my-1 md:px-1 md:py-1 md:overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-            isExpanded ? '!flex flex-col md:flex-row absolute top-12 left-1/2 -translate-x-1/2 w-max max-w-[calc(100vw-2rem)] p-2 rounded-2xl bg-white border border-neutral-200 dark:bg-[#0E0E0E] dark:border-[#1F1F1F] md:relative md:top-auto md:left-auto md:translate-x-0 md:w-auto md:max-w-none md:p-0 md:bg-transparent md:dark:bg-transparent md:border-none' : ''
+            isExpanded ? '!flex flex-col md:flex-row absolute top-12 left-1/2 -translate-x-1/2 w-max max-w-[calc(100vw-2rem)] p-2 rounded-xl bg-surface border border-border shadow-elevated md:relative md:top-auto md:left-auto md:translate-x-0 md:w-auto md:max-w-none md:p-0 md:bg-transparent md:border-none md:shadow-none' : ''
           )}
         >
           {sections.map((section, idx) => {
@@ -290,18 +292,18 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
                 aria-current={isActive ? 'location' : undefined}
                 className={cn(
                   'relative shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors focus-ring inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer',
-                  isActive ? 'text-neutral-900 dark:text-[#FAFAFA] accent:text-brand-text' : 'text-muted-foreground hover:text-neutral-900 dark:hover:text-[#A1A1A1]'
+                  isActive ? 'text-foreground accent:text-brand-text' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId={`active-scroll-pill-${uniqueId}`}
                     transition={motionTransitions.springMorph}
-                    className="absolute inset-0 rounded-full bg-neutral-100 border border-neutral-200 z-0 shadow-xs dark:bg-[#141414] dark:border-[#1F1F1F] accent:bg-brand-soft accent:border-brand/30"
+                    className="absolute inset-0 rounded-full bg-surface-hover border border-border z-0 shadow-subtle accent:bg-brand-soft accent:border-brand/30"
                   />
                 )}
                 {/* ioiti-ui: the number orders the parts for the eye; a screen reader says the part's name alone. */}
-                <span aria-hidden="true" className={cn('text-[11px] font-mono relative z-10', isActive ? 'text-neutral-900/80 dark:text-[#FAFAFA]/80 accent:text-brand-text' : 'text-muted-foreground')}>
+                <span aria-hidden="true" className={cn('text-[11px] font-mono relative z-10', isActive ? 'text-foreground/80 accent:text-brand-text' : 'text-muted-foreground')}>
                   {indexStr}
                 </span>
                 <span className="relative z-10">{section.label}</span>
@@ -317,10 +319,13 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
             <button
               type="button"
               onClick={scrollToTop}
-              className="w-6 h-6 rounded-full bg-neutral-100 hover:bg-white border border-neutral-200 hover:border-neutral-400 flex items-center justify-center text-muted-foreground hover:text-neutral-900 transition-colors focus-ring shrink-0 ml-0.5 cursor-pointer dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:hover:text-[#FAFAFA]"
+              className={cn(
+                'size-6 rounded-full bg-surface-raised hover:bg-surface border border-border hover:border-border-hover flex items-center justify-center text-muted-foreground hover:text-foreground transition focus-ring shrink-0 ml-0.5',
+                PRESSABLE
+              )}
               aria-label="Back to the top"
             >
-              <ArrowUp className="w-3 h-3" />
+              <ArrowUp className="size-3" />
             </button>
           </Hint>
         )}

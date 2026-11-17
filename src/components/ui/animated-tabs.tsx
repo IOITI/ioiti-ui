@@ -110,8 +110,8 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
           isGlass
             ? // ioiti-ui: no blur: the design blurs a tile and what floats only (glass-tile, glass-float), and this one,
               // on a solid surface, blurred nothing seen.
-              'p-1 rounded-full bg-surface-raised border border-border dark:bg-[#0E0E0E] dark:border-[#1F1F1F]'
-            : 'p-1 rounded-lg bg-surface-raised border border-border dark:bg-[#0E0E0E] dark:border-[#1F1F1F]',
+              'p-1 rounded-full bg-surface-raised border border-border'
+            : 'p-1 rounded-lg bg-surface-raised border border-border',
           tabsContainerClassName
         )}
       >
@@ -148,8 +148,8 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
                   : 'px-3.5 py-1.5 rounded-md',
                 isActive
                   ? // ioiti-ui: the tab shown, and its pill, in the accent where the theme has one (accent:).
-                    'text-text-primary font-medium dark:text-[#FAFAFA] accent:text-brand-text'
-                  : 'text-text-muted hover:text-text-secondary dark:text-muted-foreground dark:hover:text-[#A1A1A1]'
+                    'text-foreground font-medium accent:text-brand-text'
+                  : 'text-muted-foreground hover:text-text-secondary'
               )}
             >
               {isActive && (
@@ -158,10 +158,10 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
                   // ioiti-ui: slides when the tab changes, only; a resize moves it with its tab (a spring had it trail).
                   layoutDependency={activeTab}
                   className={cn(
-                    'absolute inset-0 shadow-xs',
+                    'absolute inset-0 shadow-subtle',
                     isGlass
-                      ? 'rounded-full bg-surface border border-border-hover dark:bg-[#141414] dark:border-[#1F1F1F]'
-                      : 'rounded-md bg-surface border border-border-hover dark:bg-[#141414] dark:border-[#1F1F1F]',
+                      ? 'rounded-full bg-surface border border-border-hover'
+                      : 'rounded-md bg-surface border border-border-hover',
                     'accent:bg-brand-soft accent:border-brand/30'
                   )}
                   transition={motionTransitions.springMorph}
@@ -174,7 +174,7 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
                     name a screen reader hears ("Lines 4"), which the flex row does not draw. */}
                 {tab.badge !== undefined && tab.badge !== null && tab.badge !== '' && ' '}
                 {tab.badge !== undefined && tab.badge !== null && tab.badge !== '' && (
-                  <span className="px-1.5 py-0.5 text-[11px] font-mono rounded bg-surface-hover border border-border text-text-secondary dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
+                  <span className="px-1.5 py-0.5 text-[11px] font-mono tabular-nums rounded-full bg-surface-hover border border-border text-text-secondary">
                     {tab.badge}
                   </span>
                 )}
@@ -197,7 +197,7 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
                 // ioiti-ui: it leaves quicker than it came (easeExit).
                 exit={{ opacity: 0, y: -6, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springGentle}
-                className="text-sm text-text-secondary dark:text-[#A1A1A1]"
+                className="text-sm text-text-secondary"
               >
                 {currentTabObj.content}
               </motion.div>

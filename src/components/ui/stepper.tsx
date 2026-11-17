@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotionConfig, type Variants } from "framer-motion";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 
-const spring = { type: "spring", stiffness: 420, damping: 34, mass: 0.8 } as const;
-const fill = { duration: 0.35, ease: [0.32, 0.72, 0, 1] } as const;
+// ioiti-ui: the design's motion (motion-tokens), not curves of its own: the ring follows as an indicator, the line fills in.
+const spring = motionTransitions.springSnappy;
+const fill = motionTransitions.easeSoft;
 
 export interface Step {
   title: string;
@@ -26,6 +28,8 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
   const uid = React.useId();
   const vertical = orientation === "vertical";
   const last = steps.length - 1;
+  // ioiti-ui: the check drawn at once where motion is reduced (MotionConfig leaves a path's length as it is).
+  const reduce = useReducedMotionConfig();
 
   // don't replay the check-draw for steps that are already done on first paint
   const ready = React.useRef(false);
@@ -45,16 +49,16 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
               "relative grid size-7 shrink-0 place-items-center rounded-full border text-xs font-medium tabular-nums transition-colors duration-300",
               // ioiti-ui: steps done, the current one and the line between them in the accent, where the theme has one (accent:).
               state === "complete" &&
-                "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900 accent:border-brand accent:bg-brand accent:text-brand-foreground",
-              state === "current" && "border-neutral-900 text-neutral-900 dark:border-white dark:text-white accent:border-brand accent:text-brand-text",
-              state === "upcoming" && "border-neutral-200 text-neutral-400 dark:border-neutral-800 dark:text-neutral-500"
+                "border-primary bg-primary text-primary-foreground accent:border-brand accent:bg-brand accent:text-brand-foreground",
+              state === "current" && "border-foreground text-foreground accent:border-brand accent:text-brand-text",
+              state === "upcoming" && "border-border text-muted-foreground"
             )}
           >
             {state === "current" && (
               <motion.span
                 layoutId={`${uid}-ring`}
                 transition={spring}
-                className="absolute -inset-[5px] rounded-full border border-neutral-300 dark:border-neutral-700 accent:border-brand/40"
+                className="absolute -inset-[5px] rounded-full border border-border-hover accent:border-brand/40"
               />
             )}
             {state === "complete" ? (
@@ -70,9 +74,9 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
               >
                 <motion.path
                   d="M5 12.5l4.5 4.5L19 7.5"
-                  initial={ready.current ? { pathLength: 0 } : false}
+                  initial={ready.current && !reduce ? { pathLength: 0 } : false}
                   animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.3, delay: 0.08, ease: "easeOut" }}
+                  transition={{ ...motionTransitions.easeSoft, delay: 0.08 }}
                 />
               </svg>
             ) : (
@@ -91,14 +95,14 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
             <span
               className={cn(
                 "truncate text-sm transition-colors duration-300",
-                state === "upcoming" ? "text-neutral-400 dark:text-neutral-500" : "font-medium text-neutral-900 dark:text-neutral-100"
+                state === "upcoming" ? "text-muted-foreground" : "font-medium text-foreground"
               )}
             >
               {step.title}
               {state === "complete" && <span className="sr-only"> (completed)</span>}
             </span>
             {step.description && (
-              <span className="truncate text-xs text-neutral-400 dark:text-neutral-500">{step.description}</span>
+              <span className="truncate text-xs text-muted-foreground">{step.description}</span>
             )}
           </span>
         );
@@ -109,7 +113,7 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
             onClick={() => onStepChange!(i)}
             className={cn(
               // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-              "flex gap-3 rounded-lg text-left outline-none",
+              "flex cursor-pointer gap-3 rounded-lg text-left outline-none",
               vertical ? "items-start" : "items-center"
             )}
           >
@@ -138,7 +142,7 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
               <span
                 aria-hidden
                 className={cn(
-                  "overflow-hidden bg-neutral-200 dark:bg-neutral-800",
+                  "overflow-hidden bg-border",
                   vertical ? "absolute bottom-1 left-[13.5px] top-[34px] w-px" : "relative mx-3 h-px flex-1"
                 )}
               >
@@ -147,7 +151,7 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
                   animate={vertical ? { scaleY: i < current ? 1 : 0 } : { scaleX: i < current ? 1 : 0 }}
                   transition={fill}
                   className={cn(
-                    "absolute inset-0 bg-neutral-900 dark:bg-white accent:bg-brand",
+                    "absolute inset-0 bg-primary accent:bg-brand",
                     vertical ? "origin-top" : "origin-left"
                   )}
                 />
@@ -165,7 +169,8 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
 const slide: Variants = {
   enter: (d: number) => ({ x: d * 24, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (d: number) => ({ x: d * -24, opacity: 0 }),
+  // ioiti-ui: it leaves quicker than the next arrives (easeExit).
+  exit: (d: number) => ({ x: d * -24, opacity: 0, transition: motionTransitions.easeExit }),
 };
 
 export interface StepPanelsProps {
@@ -197,7 +202,7 @@ export function StepPanels({
           initial="enter"
           animate="center"
           exit="exit"
-          transition={{ duration: 0.18, ease: [0.32, 0.72, 0, 1] }}
+          transition={motionTransitions.easeSoft}
         >
           {panels[current]}
         </motion.div>

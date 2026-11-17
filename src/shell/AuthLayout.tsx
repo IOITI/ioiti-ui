@@ -52,8 +52,8 @@ export function AuthLayout({ title, description, logo, icon, notice, footer, the
               {icon ?? <Lock className="size-4 text-foreground" aria-hidden />}
             </div>
           )}
-          <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          <h1 className="text-balance break-words text-xl font-semibold tracking-tight">{title}</h1>
+          {description && <p className="text-pretty text-sm text-muted-foreground">{description}</p>}
         </div>
         {/* Gone with its notice: an Alert dismissed leaves no room above the form. */}
         {notice && <div className="mb-5 empty:hidden">{notice}</div>}

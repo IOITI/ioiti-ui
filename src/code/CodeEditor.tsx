@@ -16,6 +16,7 @@ import {
 } from '@codemirror/view'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 
+import { fieldBorder } from '../lib/field-border.js'
 import { cn } from '../lib/utils.js'
 import { placeDiagnostics } from './diagnostics.js'
 import type { CodeDiagnostic } from './diagnostics.js'
@@ -209,8 +210,8 @@ export function CodeEditor({
       ref={host}
       data-language={language}
       className={cn(
-        'min-w-0 overflow-hidden rounded-xl border border-border bg-surface',
-        'focus-within:border-neutral-500 dark:focus-within:border-[#4A4A4A] accent:focus-within:border-brand',
+        'min-w-0 overflow-hidden rounded-xl border bg-surface',
+        fieldBorder(false, 'focus-within'),
         className,
       )}
     />

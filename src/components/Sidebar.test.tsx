@@ -117,7 +117,7 @@ describe('an entry with entries under it, in the rail', () => {
     const rules = screen.getByRole('button', { name: 'Rules' })
     expect(rules).toHaveAttribute('aria-haspopup', 'menu')
     expect(rules).toHaveAttribute('aria-expanded', 'false')
-    expect(rules.querySelector('[class*="bg-neutral-200"]')).not.toBeNull()
+    expect(rules.querySelector('[class*="bg-surface-hover"]')).not.toBeNull()
     expect(screen.queryByRole('button', { name: /The pages under/ })).toBeNull()
 
     await user.click(rules)

@@ -40,28 +40,28 @@ export const SmoothAccordion: React.FC<SmoothAccordionProps> = ({
 
   return (
     // ioiti-ui: glass under the glass material, as a card (glass-card).
-    <div className={cn('flex flex-col divide-y divide-neutral-200 dark:divide-[#1F1F1F] rounded-xl border border-neutral-200 dark:border-[#1F1F1F] bg-white dark:bg-[#0E0E0E] overflow-hidden glass-card', className)}>
+    <div className={cn('flex flex-col divide-y divide-border rounded-xl border border-border bg-surface overflow-hidden glass-card', className)}>
       {items.map((item) => {
         const isOpen = openIds.includes(item.id);
         return (
           <div key={item.id} className="transition-colors">
             <button
               onClick={() => toggle(item.id)}
-              className="flex w-full items-center justify-between p-4 text-left font-medium text-neutral-900 dark:text-[#FAFAFA] hover:bg-neutral-50 dark:hover:bg-[#141414] transition-colors focus-ring cursor-pointer"
+              className="flex w-full items-center justify-between p-4 text-left font-medium text-foreground hover:bg-surface-hover transition-colors focus-ring cursor-pointer"
               aria-expanded={isOpen}
             >
               <div>
-                <div className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA]">{item.title}</div>
+                <div className="text-sm font-medium text-foreground">{item.title}</div>
                 {item.subtitle && (
                   <div className="text-xs text-muted-foreground mt-0.5">{item.subtitle}</div>
                 )}
               </div>
               <motion.div
                 animate={{ rotate: isOpen ? 180 : 0 }}
-                transition={motionTransitions.springSnappy}
-                className="text-neutral-500 dark:text-[#525252] ml-2 shrink-0"
+                transition={motionTransitions.easeFast}
+                className="text-muted-foreground ml-2 shrink-0"
               >
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="size-4" />
               </motion.div>
             </button>
 
@@ -71,11 +71,11 @@ export const SmoothAccordion: React.FC<SmoothAccordionProps> = ({
                   key="content"
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
+                  exit={{ height: 0, opacity: 0, transition: motionTransitions.easeExit }}
                   transition={motionTransitions.springGentle}
                   className="overflow-hidden"
                 >
-                  <div className="px-4 pb-4 pt-1 text-sm text-neutral-600 dark:text-[#A1A1A1] leading-relaxed">
+                  <div className="px-4 pb-4 pt-1 text-sm text-muted-foreground leading-relaxed">
                     {item.content}
                   </div>
                 </motion.div>

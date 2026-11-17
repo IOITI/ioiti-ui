@@ -109,7 +109,7 @@ export function CodeBlock({
         aria-label={scrolls ? (typeof label === 'string' ? label : 'Code') : undefined}
         style={scroll}
         className={cn(
-          'overflow-auto py-3 font-mono text-[13px] leading-relaxed text-text-primary',
+          'overflow-auto py-3 font-mono text-[13px] leading-5 text-foreground',
           // Wrapped, a word longer than the line (a URL, a hash) breaks too: `break-words` kept the code as wide.
           wrap ? 'whitespace-pre-wrap wrap-anywhere' : 'whitespace-pre',
           !label && copyable && 'pr-10',
@@ -130,7 +130,7 @@ export function CodeBlock({
                 )}
               >
                 {numbered && (
-                  <span aria-hidden className="mr-4 inline-block w-6 select-none text-right text-text-muted">
+                  <span aria-hidden className="mr-4 inline-block w-6 select-none text-right text-muted-foreground">
                     {number}
                   </span>
                 )}
@@ -154,7 +154,7 @@ export function CodeBlock({
 /** A word of code in a sentence: a name, a value, a key. */
 export function Code({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <code className={cn('rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-[0.85em] text-text-primary', className)}>
+    <code className={cn('rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-[0.85em] text-foreground', className)}>
       {children}
     </code>
   )

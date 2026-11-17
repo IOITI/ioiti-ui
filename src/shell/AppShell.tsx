@@ -148,7 +148,7 @@ function Shell<S extends string>({
       <a
         href={`#${mainId}`}
         onClick={skip}
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[70] focus:rounded-lg focus:border focus:border-border focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-text-primary focus:shadow-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[70] focus:rounded-lg focus:border focus:border-border focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-elevated"
       >
         Skip to the page
       </a>
@@ -270,7 +270,7 @@ export function SidebarFooterButton({ icon, label, className, ...props }: Sideba
       aria-label={label}
       className={cn(
         // The design's focus ring alone (design.css), not one of its own beside it.
-        'flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-sm text-neutral-600 outline-none transition-colors hover:bg-neutral-200/70 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white',
+        'flex h-9 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-sm text-muted-foreground outline-none transition-colors hover:bg-surface-hover hover:text-foreground',
         className,
       )}
       {...props}

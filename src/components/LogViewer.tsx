@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from 'react'
 
 import { blocksInSight, findInLog, LOG_BLOCK, logLevel, matchParts, splitLog } from '../lib/log.js'
 import type { LogLevel } from '../lib/log.js'
+import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { CopyButton } from './CopyButton.js'
 import { IconButton } from './IconButton.js'
@@ -207,7 +208,7 @@ export function LogViewer({
   return (
     <section aria-label={label} className={cn('relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-surface', className)}>
       <div className="flex flex-wrap items-center gap-1.5 border-b border-border py-1.5 pl-3 pr-1.5">
-        <span className="mr-auto min-w-0 truncate text-xs font-medium text-text-primary">{label}</span>
+        <span className="mr-auto min-w-0 truncate text-xs font-medium text-foreground">{label}</span>
         <div className="w-48 max-w-full">
           <Input
             aria-label={`Search ${label}`}
@@ -223,24 +224,24 @@ export function LogViewer({
             }}
           />
         </div>
-        <span role="status" className="min-w-14 text-center text-xs tabular-nums text-text-secondary">
+        <span role="status" className="min-w-14 text-center text-xs tabular-nums text-muted-foreground">
           {query.trim() ? (found.length ? `${Math.min(current, found.length - 1) + 1} of ${found.length}` : 'No match') : ''}
         </span>
-        <IconButton label="Previous match" hint="Previous match (Shift+Enter)" icon={<ChevronUp />} disabled={!found.length} onClick={() => go(-1)} className="size-8 disabled:opacity-40" />
-        <IconButton label="Next match" hint="Next match (Enter)" icon={<ChevronDown />} disabled={!found.length} onClick={() => go(1)} className="size-8 disabled:opacity-40" />
+        <IconButton label="Previous match" hint="Previous match (Shift+Enter)" icon={<ChevronUp />} disabled={!found.length} onClick={() => go(-1)} className={cn('size-8', DISABLED)} />
+        <IconButton label="Next match" hint="Next match (Enter)" icon={<ChevronDown />} disabled={!found.length} onClick={() => go(1)} className={cn('size-8', DISABLED)} />
         <IconButton
           label="Wrap long lines"
           hint={wrap ? 'Long lines wrapped' : 'Long lines scroll sideways'}
           icon={<WrapText />}
           aria-pressed={wrap}
           onClick={() => setWrap((was) => !was)}
-          className={cn('size-8', wrap && 'bg-surface-hover text-text-primary')}
+          className={cn('size-8', wrap && 'bg-surface-hover text-foreground')}
         />
         <CopyButton value={() => shown.join('\n')} label="Copy the log" size="sm" />
-        <IconButton label="Download the log" hint={`Download as ${downloadName}`} icon={<Download />} onClick={download} disabled={!shown.length} className="size-8 disabled:opacity-40" />
+        <IconButton label="Download the log" hint={`Download as ${downloadName}`} icon={<Download />} onClick={download} disabled={!shown.length} className={cn('size-8', DISABLED)} />
       </div>
       {dropped > 0 && (
-        <p className="border-b border-border px-3 py-1 text-xs text-text-muted">
+        <p className="border-b border-border px-3 py-1 text-xs text-muted-foreground">
           {dropped.toLocaleString('en')} earlier {dropped === 1 ? 'line' : 'lines'} dropped
         </p>
       )}
@@ -252,10 +253,10 @@ export function LogViewer({
         tabIndex={0}
         style={view}
         onScroll={onScroll}
-        className="overflow-auto font-mono text-[13px] leading-5 text-text-primary"
+        className="overflow-auto font-mono text-[13px] leading-5 text-foreground"
       >
         {shown.length === 0 ? (
-          <p className="p-4 font-sans text-sm text-text-muted">{emptyText}</p>
+          <p className="p-4 font-sans text-sm text-muted-foreground">{emptyText}</p>
         ) : (
           <div style={width} className="py-1.5">
             <div aria-hidden style={{ height: before }} />
@@ -274,7 +275,7 @@ export function LogViewer({
                         data-line={firstLine + index + 1}
                         className={cn('flex', wrap ? 'min-h-5' : 'h-5', level && LEVEL_EDGE[level], isCurrent && 'bg-surface-hover')}
                       >
-                        <span aria-hidden className="w-14 shrink-0 select-none pr-3 text-right tabular-nums text-text-muted">
+                        <span aria-hidden className="w-14 shrink-0 select-none pr-3 text-right tabular-nums text-muted-foreground">
                           {firstLine + index + 1}
                         </span>
                         <span className={cn('min-w-0 flex-1 pr-6', wrap ? 'whitespace-pre-wrap break-all' : 'whitespace-pre', level && LEVEL_TEXT[level])}>
@@ -309,7 +310,7 @@ export function LogViewer({
             setTarget(null)
             setFollowing(true)
           }}
-          className="absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-sm font-medium text-text-primary shadow-sm transition hover:bg-surface-hover focus-ring"
+          className={cn('absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-sm font-medium text-foreground shadow-subtle transition hover:bg-surface-hover focus-ring', PRESSABLE)}
         >
           <ArrowDownToLine className="size-3.5" aria-hidden />
           Jump to the end

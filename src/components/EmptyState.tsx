@@ -38,8 +38,8 @@ export function EmptyState({ icon, title, headingLevel, description, actions, co
           {icon}
         </div>
       )}
-      <Heading className={cn('text-foreground', compact ? 'text-sm font-medium' : 'text-base font-semibold')}>{title}</Heading>
-      {description && <p className={cn('text-muted-foreground', compact ? 'max-w-sm text-xs' : 'max-w-md text-sm')}>{description}</p>}
+      <Heading className={cn('text-balance break-words font-semibold text-foreground', compact ? 'text-sm' : 'text-base')}>{title}</Heading>
+      {description && <p className={cn('text-pretty text-muted-foreground', compact ? 'max-w-sm text-xs' : 'max-w-md text-sm')}>{description}</p>}
       {actions && <div className={cn('flex flex-wrap items-center justify-center gap-2', compact ? 'mt-3' : 'mt-4')}>{actions}</div>}
     </div>
   )

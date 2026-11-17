@@ -3,10 +3,13 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { ChevronRight, Ellipsis } from "lucide-react";
+import { motionTransitions } from "../../lib/motion-tokens.js";
+import { PRESSABLE } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 import { useLinkComponent } from "../link-context.js";
 
-const spring = { type: "spring", stiffness: 500, damping: 40, mass: 0.6 } as const;
+// ioiti-ui: the design's spring for what follows the pointer and what arrives (springSnappy), not one of its own.
+const spring = motionTransitions.springSnappy;
 
 export interface BreadcrumbItem {
   label: string;
@@ -63,14 +66,14 @@ export function Breadcrumb({
   });
 
   const sep = (
-    <span aria-hidden className="text-neutral-300 dark:text-neutral-700 [&>svg]:size-3.5">
+    <span aria-hidden className="text-border-hover [&>svg]:size-3.5">
       {separator === "slash" ? <span className="text-sm">/</span> : <ChevronRight />}
     </span>
   );
 
   const linkBase =
     // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-    "relative flex h-7 items-center gap-1.5 rounded-md px-2 text-sm outline-none";
+    "relative flex h-8 items-center gap-1.5 rounded-lg px-2 text-sm outline-none";
 
   return (
     <nav aria-label="Breadcrumb" className={className} {...props}>
@@ -94,7 +97,7 @@ export function Breadcrumb({
                   aria-label="Show hidden pages"
                   onClick={() => setExpanded(true)}
                   // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                  className="grid h-7 w-8 place-items-center rounded-md outline-none transition-colors hover:bg-neutral-100 hover:text-foreground dark:hover:bg-neutral-800"
+                  className={cn("grid size-8 place-items-center rounded-lg outline-none transition hover:bg-surface-hover hover:text-foreground", PRESSABLE)}
                 >
                   <Ellipsis className="size-4" />
                 </button>
@@ -146,7 +149,7 @@ export function Breadcrumb({
                     <motion.span
                       layoutId={`${uid}-hover`}
                       transition={spring}
-                      className="absolute inset-0 rounded-md bg-neutral-100 dark:bg-neutral-800"
+                      className="absolute inset-0 rounded-lg bg-surface-hover"
                     />
                   )}
                   {body}

@@ -99,14 +99,14 @@ export function BarList({ items, label, max, format = (value) => formatNumber(va
               {item.href ? (
                 // The application's link, held in context (LinkProvider): the same component at every render.
                 // oxlint-disable-next-line react/static-components
-                <Link href={item.href} className="hover:text-text-primary hover:underline accent:text-brand-text">
+                <Link href={item.href} className="underline-offset-2 hover:text-foreground hover:underline accent:text-brand-text">
                   {item.label}
                 </Link>
               ) : (
                 item.label
               )}
             </span>
-            <span className="text-right tabular-nums text-text-primary">{format(item.value)}</span>
+            <span className="text-right tabular-nums text-foreground">{format(item.value)}</span>
             <span aria-hidden className={cn('col-span-2 h-1.5 overflow-hidden rounded-full', METER_TRACK[item.tone ?? 'neutral'])}>
               <span
                 className={cn(
