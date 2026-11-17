@@ -18,7 +18,10 @@ export interface StretchSwitchProps {
 const TRACK_WIDTH = 36; // px (w-9)
 const THUMB_SIZE = 14; // px (h-3.5 w-3.5)
 const TRACK_PADDING = 2; // px-0.5
-const TRAVEL = TRACK_WIDTH - THUMB_SIZE - TRACK_PADDING * 2;
+// ioiti-ui: the track's 1 px border is inside its 36 px (border-box): left out, the thumb went 2 px too far when on,
+// against the track's edge, where off it stood 3 px from it.
+const TRACK_BORDER = 1;
+const TRAVEL = TRACK_WIDTH - THUMB_SIZE - (TRACK_PADDING + TRACK_BORDER) * 2;
 
 /**
  * StretchSwitch — Thumb stretches slightly while dragging/pressing,

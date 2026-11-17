@@ -581,7 +581,8 @@ export const Switch: React.FC<SwitchProps> = ({
         )}
       >
         <motion.span
-          animate={{ x: current ? 16 : 2 }}
+          // ioiti-ui: 2 px from either end of the track's 34 px inside its border (it stopped 4 px short when on).
+          animate={{ x: current ? 18 : 2 }}
           transition={motionTransitions.springSnappy}
           className={cn(
             'pointer-events-none block size-3.5 my-auto top-0 bottom-0 rounded-full shadow-subtle',

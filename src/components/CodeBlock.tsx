@@ -95,10 +95,10 @@ export function CodeBlock({
           {copy}
         </figcaption>
       )}
-      {/* Over the code's first line: on the block's own surface, the code scrolled under it fading out
-          before it, never showing through. */}
+      {/* Over the code's first line, centred on it (its 12 px of padding and 20 px line: 44 px), whatever the button's
+          size: on the block's own surface, the code scrolled under it fading out before it, never showing through. */}
       {!label && copy && (
-        <div className="absolute right-0 top-0 z-10 flex bg-surface pb-1 pl-1 pr-1.5 pt-1.5 before:pointer-events-none before:absolute before:inset-y-0 before:right-full before:w-6 before:bg-linear-to-l before:from-surface before:to-transparent">
+        <div className="absolute right-0 top-0 z-10 flex h-11 items-center bg-surface pl-1 pr-2.5 before:pointer-events-none before:absolute before:inset-y-0 before:right-full before:w-6 before:bg-linear-to-l before:from-surface before:to-transparent">
           {copy}
         </div>
       )}
