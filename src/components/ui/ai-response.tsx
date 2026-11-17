@@ -15,7 +15,7 @@ import { ArrowUpRight, Check, ChevronDown, CircleAlert, Copy, RotateCcw, ThumbsD
 import { formatSpan } from "../../lib/format.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { useNow } from "../../lib/now.js";
-import { PRESSABLE } from "../../lib/recipes.js";
+import { PRESSABLE, SECTION } from "../../lib/recipes.js";
 import { cn, copyToClipboard } from "../../lib/utils.js";
 import { CodeBlock } from "../CodeBlock.js";
 import { Hint } from "../Hint.js";
@@ -978,7 +978,7 @@ export const AIResponse: React.FC<AIResponseProps> = ({
         aria-busy={status === "streaming" || status === "generating"}
         // ioiti-ui: a section, as a Panel (its border, its surface, no shadow), glass under the glass material.
         className={cx(
-          "w-full min-w-0 rounded-2xl border border-border/70 bg-surface/50 p-4 text-foreground antialiased sm:p-6 dark:bg-surface/25 glass-card",
+          SECTION, "w-full min-w-0 p-4 text-foreground antialiased sm:p-6",
           className,
         )}
       >

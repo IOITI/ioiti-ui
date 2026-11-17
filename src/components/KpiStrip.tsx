@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import type { GoodWhen } from '../lib/change.js'
 import { cn } from '../lib/utils.js'
 import { KpiChange } from './KpiChange.js'
+import { SECTION } from '../lib/recipes.js'
 
 /** One figure of a strip: what KpiTile takes. */
 export interface KpiStripItem {
@@ -45,7 +46,7 @@ export function KpiStrip({ items, title, period, columns, className }: KpiStripP
   const periodId = useId()
   const shown = columns ?? (Math.min(Math.max(items.length, 2), 6) as 2 | 3 | 4 | 5 | 6)
   return (
-    <section className={cn('min-w-0 rounded-2xl border border-border/70 bg-surface/50 text-foreground dark:bg-surface/25 glass-card glass-edge', className)}>
+    <section className={cn(SECTION, 'min-w-0 text-foreground glass-edge', className)}>
       {(title || period) && (
         <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border/70 px-5 py-3">
           {title && <h2 className="text-sm font-semibold">{title}</h2>}

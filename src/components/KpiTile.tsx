@@ -6,6 +6,7 @@ import { cn } from '../lib/utils.js'
 import { KpiChange } from './KpiChange.js'
 import { METER_FILL, METER_TRACK } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
+import { SECTION_FRAME } from '../lib/recipes.js'
 
 interface KpiTileBaseProps {
   label: string
@@ -50,7 +51,7 @@ export function KpiTile({ label, value, hint, change, goodWhen, changeFormat, le
   return (
     <div
       className={cn(
-        'relative isolate flex min-h-[7.5rem] min-w-0 flex-col rounded-2xl border border-border/70 bg-surface/50 p-4 sm:p-5 dark:bg-surface/25 glass-tile glass-edge',
+        SECTION_FRAME, 'relative isolate flex min-h-[7.5rem] min-w-0 flex-col p-4 sm:p-5 glass-tile glass-edge',
         lead && 'col-span-2 sm:flex-row sm:items-end sm:gap-6',
         // A tile that needs attention has no glow under glass: its tint and the glow together took its text under 4.5:1.
         tone && cn(TONE_BORDER[tone], '[--glass-tile-glow:transparent]'),

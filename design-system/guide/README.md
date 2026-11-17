@@ -79,7 +79,7 @@ An accent colours what is **chosen, current or primary**: a filled primary butto
 ## Shape and depth
 
 - **One radius**, `radius` (14px); every corner is a multiple of it, chosen by size: `radius-full` for a badge, a state, a count, a switch, an avatar; `radius-sm` for a key or a tag on a line; `radius-md` for a 24px control, a chip, inline code; `radius-lg` for a 32–48px control, a field, a row of a menu; `radius-xl` for what floats beside its trigger, a toast, a nested box; `radius-2xl` for a section, a card, a dialog. A chart's marks keep their own small corners.
-- **One recipe per role** (`src/lib/recipes.ts`): what floats beside its trigger, a tooltip, a dialog, a toast, a row of a menu, the scrim, the two close buttons (24px in a toast or a chip, 32px in a dialog, a sheet, an alert). A new component names them.
+- **One recipe per role** (`src/lib/recipes.ts`): a section and every card that stands as one (`SECTION`: Panel's frame), what floats beside its trigger, a tooltip, a dialog, a toast, a row of a menu, the scrim, the two close buttons (24px in a toast or a chip, 32px in a dialog, a sheet, an alert). A new component names them.
 - **A shadow means it floats**: `shadow-elevated` on a dialog, a menu, a popover, a toast, a sheet, the drawer. What sits in the page has a border, no shadow (a chosen card says it with its border). `shadow-subtle` lifts a control a hair. The sign-in card, alone on its page, is the one card that floats.
 - **What is above what**: the page's own layers 0–30, what floats in the document's body 50, toasts 55, hints 60, the skip link 70.
 

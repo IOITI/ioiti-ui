@@ -78,7 +78,7 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 - **A layer placed beside its trigger** (a popover, a menu, a list) is placed by `src/lib/anchor.ts`
   (`useAnchoredLayer`): in `document.body`, following its trigger, its Escape and Tab its own inside a dialog.
   No new placement written by hand.
-- **One recipe per role** (`src/lib/recipes.ts`): what floats, a tooltip, a dialog, a toast, a menu's row, the scrim,
+- **One recipe per role** (`src/lib/recipes.ts`): a section or a card (`SECTION`), what floats, a tooltip, a dialog, a toast, a menu's row, the scrim,
   the close buttons, a disabled or pressed control, the tones. A component names the design's tokens by role
   (`design-system/guide/README.md`, Colour) and these recipes, never a colour (hex, `rgba()`, a palette's step, white or
   black), a shadow (but `shadow-elevated`, `shadow-subtle`, a look's `accent:`/`glass:` glow), a radius off the scale, a

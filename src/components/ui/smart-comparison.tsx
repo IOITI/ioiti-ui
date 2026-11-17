@@ -6,7 +6,7 @@ import { Check, Minus, Search, Sparkles, Filter, ChevronDown, Info } from 'lucid
 import { cn } from '../../lib/utils.js';
 import { fieldBorder } from '../../lib/field-border.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
-import { PRESSABLE } from '../../lib/recipes.js';
+import { PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { Hint } from '../Hint.js';
 import { useLinkComponent } from '../link-context.js';
 
@@ -164,7 +164,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
       aria-label={label}
       className={cn(
         // ioiti-ui: a section, as a Panel: its border, its surface, glass under the glass material (glass-card).
-        'w-full rounded-2xl border border-border/70 bg-surface/50 p-4 sm:p-5 text-foreground overflow-hidden dark:bg-surface/25 glass-card',
+        SECTION, 'w-full p-4 sm:p-5 text-foreground overflow-hidden',
         className
       )}
       style={columns}

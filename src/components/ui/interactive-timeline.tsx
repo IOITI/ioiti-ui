@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Clock, AlertCircle, AlertTriangle, Loader2, GitCommit, Copy, CheckCheck, ChevronDown } from 'lucide-react';
 import { cn, copyToClipboard } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
-import { PRESSABLE } from '../../lib/recipes.js';
+import { PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { Hint } from '../Hint.js';
 
 // ioiti-ui: `warning`, a step that went on but not as it should (amber).
@@ -160,7 +160,7 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
     <div
       className={cn(
         // ioiti-ui: a section, as a Panel: its border, its surface, glass under the glass material (glass-card).
-        'w-full rounded-2xl border border-border/70 bg-surface/50 p-4 sm:p-5 text-foreground dark:bg-surface/25 glass-card',
+        SECTION, 'w-full p-4 sm:p-5 text-foreground',
         className
       )}
       {...props}

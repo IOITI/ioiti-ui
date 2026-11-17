@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { RotateCcw, ChevronDown, User, Clock, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
-import { PRESSABLE } from '../../lib/recipes.js';
+import { PRESSABLE, SECTION } from '../../lib/recipes.js';
 
 export interface LedgerEntry {
   id: string;
@@ -95,7 +95,7 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
     <div
       className={cn(
         // ioiti-ui: glass under the glass material, as a card (glass-card); a section, as a Panel.
-        'w-full rounded-2xl border border-border/70 bg-surface/50 overflow-hidden dark:bg-surface/25 glass-card',
+        SECTION, 'w-full overflow-hidden',
         className
       )}
     >

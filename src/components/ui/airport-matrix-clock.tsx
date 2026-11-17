@@ -3,6 +3,7 @@
 import { memo, useEffect, useMemo, useState, type PointerEvent, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { SECTION } from '../../lib/recipes.js';
 
 
 // ioiti-ui: the cities are the caller's, each with its IANA zone; EasyUI's list of 32 (five countries, no Paris), its
@@ -189,7 +190,7 @@ export function AirportMatrixClock({
   return (
     <section
       aria-label={`World times: ${rows.map((row) => `${row.time.accessible} ${row.name}`).join(', ')}`}
-      className={`relative ${size === 'sm' ? 'w-fit' : 'w-full max-w-3xl'} overflow-hidden rounded-2xl border border-border/70 bg-surface-raised text-foreground [--amc-grid:color-mix(in_srgb,var(--foreground)_1%,transparent)] glass-card ${className}`}
+      className={`relative ${size === 'sm' ? 'w-fit' : 'w-full max-w-3xl'} overflow-hidden ${SECTION} text-foreground [--amc-grid:color-mix(in_srgb,var(--foreground)_1%,transparent)] glass-card ${className}`}
       style={{ backgroundImage: 'linear-gradient(var(--amc-grid) 1px, transparent 1px), linear-gradient(90deg, var(--amc-grid) 1px, transparent 1px)', backgroundSize: '22px 22px' }}
     >
       <div>

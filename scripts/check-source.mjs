@@ -110,6 +110,7 @@ const RECIPE_RULES = [
   [/(?<![\w-])rounded(?=[\s"'`])|rounded(?:-[a-z]{1,2})?-\[(?!(?:[0-4](?:\.\d+)?px|inherit|calc\(var\(--radius)[^\]]*\])/, 'a radius off the scale: rounded-sm/md/lg/xl/2xl/full by size'],
   [/(?<![\w-])transition-all(?![\w-])/, 'transition-all: the properties that change'],
   [/(?<![\w-])ease-(?:in|out|in-out)(?![\w-])|ease:\s*['"](?:easeIn|easeOut|easeInOut)['"]/, 'a curve of its own: ease-soft / ease-fast / ease-exit, or motionTransitions'],
+  [/bg-surface\/50.*dark:bg-surface\/25|rounded-2xl.*border-border\/70|border-border\/70.*rounded-2xl/, "a section's frame written by hand: SECTION or SECTION_FRAME (recipes.ts)"],
   [/\buseReducedMotion\b(?!Config)/, "framer's useReducedMotion follows the system only: useReducedMotionConfig"],
   [/(?<![\w-])(?:aria-)?disabled:opacity-(?!50(?![\d]))/, 'disabled is 50% (DISABLED in recipes.ts)'],
 ]

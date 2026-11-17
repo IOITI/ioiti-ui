@@ -25,7 +25,7 @@ import { fieldBorder } from '../../lib/field-border.js';
 // ioiti-ui: the filters' lists float as everything that floats.
 import { useAnchoredLayer } from '../../lib/anchor.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
-import { DISABLED, FLOATING, MENU_ROW, PRESSABLE } from '../../lib/recipes.js';
+import { DISABLED, FLOATING, MENU_ROW, PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { SelectionBasket } from './selection-basket.js';
 import type { SelectionActionItem } from './selection-basket.js';
 // ioiti-ui: every box of the table is the package's checkbox, EasyUI's draw-checkbox.
@@ -1557,7 +1557,7 @@ export function DataTable<T = any>({
         }}
         className={cn(
           // ioiti-ui: glass under the glass material, as a panel; its column list floats (glass-float).
-          'w-full font-sans rounded-2xl border border-border/70 bg-surface/50 dark:bg-surface/25 text-foreground overflow-hidden transition-colors glass-card',
+          SECTION, 'w-full font-sans text-foreground overflow-hidden transition-colors',
           className
         )}
       >

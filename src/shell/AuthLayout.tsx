@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { ThemeToggle } from '../components/ThemeToggle.js'
 import { cn } from '../lib/utils.js'
 import { useTabTitle } from './page-trail-context.js'
+import { SECTION } from '../lib/recipes.js'
 
 interface AuthLayoutProps {
   /** The heading: the application's name. */
@@ -43,7 +44,7 @@ export function AuthLayout({ title, description, logo, icon, notice, footer, the
   return (
     <main className={cn('relative grid min-h-dvh place-items-center p-6', className)}>
       {themeToggle && <ThemeToggle className="absolute right-4 top-4" />}
-      <div className="w-full max-w-sm rounded-2xl border border-border/70 bg-surface/50 p-8 shadow-elevated dark:bg-surface/25 glass-card">
+      <div className={cn(SECTION, "w-full max-w-sm p-8 shadow-elevated")}>
         <div className="mb-6 flex flex-col gap-1.5">
           {logo ? (
             <div className="mb-3 flex">{logo}</div>

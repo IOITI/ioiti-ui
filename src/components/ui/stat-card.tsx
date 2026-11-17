@@ -27,7 +27,7 @@ import {
 import { monotonePath, pctText } from "../../lib/dashboard-chart-utils.js";
 import { AXIS_COLOUR } from "../../lib/chart-colours.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
-import { TONE_SOFT } from "../../lib/recipes.js";
+import { SECTION, TONE_SOFT } from "../../lib/recipes.js";
 
 /* -------------------------------------------------------------------------- */
 /*  StatCard / StatGrid                                                       */
@@ -185,7 +185,7 @@ export function StatCard({
       // ioiti-ui: the look of the other tiles (KpiTile), which it sits among: their border, surface, padding
       // and type sizes, and the global focus ring (EasyUI's card was white, ringed and shadowed); glass under
       // the glass material, as they are.
-      className={`group relative flex min-h-[7.5rem] min-w-0 select-none flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface/50 pt-4 text-text-secondary sm:pt-5 dark:bg-surface/25 glass-card ${className}`}
+      className={`group relative flex min-h-[7.5rem] min-w-0 select-none flex-col overflow-hidden ${SECTION} pt-4 text-text-secondary sm:pt-5 ${className}`}
     >
       <div className="flex items-start justify-between gap-3 px-4 sm:px-5">
         <p className={`truncate text-xs ${MUTED}`}>{label}</p>

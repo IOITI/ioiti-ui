@@ -2,6 +2,12 @@
 // here rather than writing its own, so that a menu, a toast or a badge of one component looks as another's, and a new
 // component takes them. Internal to the package: an application composes the components.
 
+/** The frame of a section of a page (a Panel) and of every card that stands as one, without its material. */
+export const SECTION_FRAME = 'rounded-2xl border border-border/70 bg-surface/50 dark:bg-surface/25'
+
+/** A section of a page, and every card that stands as one: a Panel, a data table's frame, a timeline, a ledger. */
+export const SECTION = `${SECTION_FRAME} glass-card`
+
 /** What floats beside its trigger: a popover, a menu, a list of options, a date picker, a panel of notifications. */
 export const FLOATING = 'rounded-xl border border-border bg-surface text-foreground shadow-elevated glass-float'
 

@@ -13,6 +13,7 @@ import {
 import { useControllableState } from '../../lib/controllable.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
+import { SECTION } from '../../lib/recipes.js';
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -607,7 +608,7 @@ export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
         }}
         className={cn(
           // ioiti-ui: glass under the glass material, as a panel.
-          'w-full font-sans rounded-2xl border border-border/70 bg-surface/50 dark:bg-surface/25 text-foreground overflow-hidden transition-colors glass-card',
+          SECTION, 'w-full font-sans text-foreground overflow-hidden transition-colors',
           className
         )}
       >

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { cn } from '../lib/utils.js'
 import type { Crumb } from '../shell/navigation.js'
 import { usePageName, useTabTitle } from '../shell/page-trail-context.js'
+import { SECTION } from '../lib/recipes.js'
 
 interface PanelProps {
   /** An anchor a link can lead to (`#trades`). */
@@ -27,7 +28,7 @@ export function Panel({ id, title, description, action, className, bodyClassName
     <section
       id={id}
       className={cn(
-        'min-w-0 rounded-2xl border border-border/70 bg-surface/50 text-foreground dark:bg-surface/25 glass-card glass-edge',
+        SECTION, 'min-w-0 text-foreground glass-edge',
         className,
       )}
     >
