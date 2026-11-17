@@ -4925,7 +4925,7 @@
    {
     "name": "description",
     "type": "ReactNode",
-    "default": "\"The requested page doesn’t exist or may have moved.\""
+    "default": "\"The requested page doesn't exist or may have moved.\""
    },
    {
     "name": "actionLabel",

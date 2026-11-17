@@ -111,14 +111,17 @@ const RECIPE_RULES = [
   [/(?<![\w-])transition-all(?![\w-])/, 'transition-all: the properties that change'],
   [/(?<![\w-])ease-(?:in|out|in-out)(?![\w-])|ease:\s*['"](?:easeIn|easeOut|easeInOut)['"]/, 'a curve of its own: ease-soft / ease-fast / ease-exit, or motionTransitions'],
   [/bg-surface\/50.*dark:bg-surface\/25|rounded-2xl.*border-border\/70|border-border\/70.*rounded-2xl/, "a section's frame written by hand: SECTION or SECTION_FRAME (recipes.ts)"],
+  [/backdrop-blur|backdrop-filter|backdropFilter/, 'a blur of its own: the design blurs glass-tile and glass-float (and the scrim, SCRIM)'],
   [/\buseReducedMotion\b(?!Config)/, "framer's useReducedMotion follows the system only: useReducedMotionConfig"],
   [/(?<![\w-])(?:aria-)?disabled:opacity-(?!50(?![\d]))/, 'disabled is 50% (DISABLED in recipes.ts)'],
 ]
 // Where a rule does not apply: the recipes themselves, the looks' swatches (copies of accents.css and glass.css,
-// tested), and the motion tokens.
+// tested), the motion tokens; and the 404's illustration, EasyUI's drawing kept as it was on purpose (its colours,
+// its glows, its frosted glass, its springs and curve), the page around it on the rules.
 const RECIPE_EXEMPT = {
   [join('src', 'lib', 'recipes.ts')]: /./,
   [join('src', 'components', 'look-swatches.ts')]: /./,
+  [join('src', 'components', 'ui', 'not-found.tsx')]: /colour written by hand|palette's colour|white or black|shadow of its own|curve of its own|spring written by hand|blur of its own/,
 }
 const SPRING_BY_HAND = /\b(?:stiffness|damping|bounce)\s*:/
 for (const file of filesUnder('src')) {
@@ -131,7 +134,7 @@ for (const file of filesUnder('src')) {
       for (const [rule, says] of RECIPE_RULES) {
         if (rule.test(line) && !(exempt && exempt.test(says))) problems.push(`${file}:${index + 1}: ${says}`)
       }
-      if (SPRING_BY_HAND.test(line) && !file.endsWith(join('lib', 'motion-tokens.ts'))) {
+      if (SPRING_BY_HAND.test(line) && !file.endsWith(join('lib', 'motion-tokens.ts')) && !(exempt && exempt.test('spring written by hand'))) {
         problems.push(`${file}:${index + 1}: a spring written by hand: motionTransitions (src/lib/motion-tokens.ts)`)
       }
     })

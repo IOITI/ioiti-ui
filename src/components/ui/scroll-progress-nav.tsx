@@ -238,8 +238,9 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
           // ioiti-ui: glass under the glass material (glass-float). Not the phone's menu inside it: its blur would see
           // nothing but this pill.
           // ioiti-ui: what floats, its shadow the design's (shadow-elevated, its own hairline in it: the ring once
-          // drawn while it floated said it again).
-          'relative max-w-full rounded-full border border-border bg-surface/95 backdrop-blur-md shadow-elevated p-1 flex items-center gap-1 glass-float'
+          // drawn while it floated said it again). Opaque, with no blur of its own (the design blurs only glass-tile
+          // and glass-float): EasyUI's backdrop-blur-md under 95 % of the surface is gone.
+          'relative max-w-full rounded-full border border-border bg-surface shadow-elevated p-1 flex items-center gap-1 glass-float'
         )}
         role="navigation"
         aria-label={label}

@@ -107,9 +107,12 @@ otherwise).
   move). Icons are `size-*`, one size per role, at lucide's stroke (`ai-response`'s own icons are lucide's).
 - **Motion on the tokens** (0.22.0). No spring, curve or duration written by hand where a token says it
   (`motionTransitions`): the springs of `badge`, `breadcrumb`, `stepper`, `dynamic-island`, `advanced-data-table`,
-  `ai-agent-activity`, `stat-card`, `not-found`, and the bounces of `chart-primitives`, `funnel-chart` and `not-found`,
-  which overshot, are gone; `transition-all` is the properties that change. Reduced motion follows IoitiProvider
+  `ai-agent-activity`, `stat-card`, and the bounces of `chart-primitives` and `funnel-chart`, which overshot, are gone
+  (`not-found`'s illustration keeps EasyUI's, as its colours and glows: it is drawn as it was, by choice); `transition-all` is the properties that change. Reduced motion follows IoitiProvider
   (`useReducedMotionConfig`), not the system alone, and `dependency-trace`'s pulse stops with it.
+- **No blur but the design's** (0.22.0). Only `glass-tile` and `glass-float` blur what is behind them (and the scrim, a
+  hair): `scroll-progress-nav`'s pill lost its `backdrop-blur-md` (opaque, glass under the glass material).
+  `not-found`'s folder of frosted glass is EasyUI's drawing, kept as it was by choice. `check-source` refuses any other.
 - **Type's finish** (0.22.0). No uppercase eyebrows (sentence case); a title semibold, a message's title medium; figures
   that change `tabular-nums`; "…" and ’ in what is shown; Badge, DataTable, AIAgentActivity and the code editors in the
   design's faces (they read `var(--font-sans)`, which `tokens.css` names after faces the package does not register).

@@ -83,7 +83,8 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   (`design-system/guide/README.md`, Colour) and these recipes, never a colour (hex, `rgba()`, a palette's step, white or
   black), a shadow (but `shadow-elevated`, `shadow-subtle`, a look's `accent:`/`glass:` glow), a radius off the scale, a
   curve or a spring of its own, nor `var(--font-*)` (tokens.css names faces no `@font-face` registers). `check-source`
-  holds it; `look-swatches.ts` is the one exception.
+  holds it; `look-swatches.ts` and the 404's illustration (`ui/not-found.tsx`, EasyUI's drawing kept as it was,
+  its frosted glass's blur included) are the exceptions.
 - **A chart's series take the design's colours** (`src/lib/chart-colours.ts`): one series `--chart-series`,
   things compared `--chart-compare-1…4` in order, never recycled (a fifth is grey).
 - **What MotionConfig does not reduce** (a value animated by hand: `pathLength`, `d`, a size, `useSpring`) is

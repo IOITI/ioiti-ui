@@ -10,13 +10,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { motion, useMotionValue, useReducedMotionConfig, useSpring, useTransform, type SpringOptions } from "framer-motion";
-import { ArrowUpRight, Home } from "lucide-react";
-import { motionTransitions } from "../../lib/motion-tokens.js";
-import { cn } from "../../lib/utils.js";
+import { motion, useMotionValue, useReducedMotionConfig, useSpring, useTransform } from "framer-motion";
 import { Hint } from "../Hint.js";
 import { useLinkComponent } from "../link-context.js";
-import { BUTTON_LABEL_CLASS, Button, buttonClassName, buttonIconClassName } from "./button.js";
 
 /* -------------------------------------------------------------------------- */
 /*  NotFound — a premium 404 page. A frosted-glass folder over a big "404".    */
@@ -82,13 +78,15 @@ const CX = 230;
 const CY = 185;
 const TILT = 8;
 
+const ORANGE = "#fe5510";
+const WHITE = "#fafbff";
+
 const GLASS = { x: -151, y: -31, w: 288, h: 142 };
 // Folder outline (tab on the top-left), in glass-local px
 const FOLDER =
   "M12 0H64Q72 0 78 6L90 20Q94 26 102 26H276Q288 26 288 38V130Q288 142 276 142H12Q0 142 0 130V12Q0 0 12 0Z";
 
-// ioiti-ui: the pointer followed with the design's soft spring (springSoft), no overshoot.
-const FOLLOW = motionTransitions.springSoft as SpringOptions;
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
 // "4": outer outline + the small triangular counter (even-odd)
 const FOUR = "M76 0H110V102H124V134H110V154H76V134H0V102ZM76 46V102H36Z";
@@ -100,16 +98,14 @@ const ZERO =
 // Written as real CSS so it can use @supports (graceful, opaque fallback when
 // backdrop-filter isn't available) and a hover transition. No quotes, ">" or "&"
 // so it survives any renderer untouched.
-// ioiti-ui: the glass is the page's surface frosted, in both themes (the design's tokens), its blur changing on the
-// design's curve (--ease-fast); EasyUI's was a blue of its own.
 const CSS = `
 .np404-glass{
-  background:linear-gradient(180deg,color-mix(in oklab,var(--surface) 94%,transparent) 0%,color-mix(in oklab,var(--surface-raised) 94%,transparent) 100%);
-  transition:-webkit-backdrop-filter .2s var(--ease-fast),backdrop-filter .2s var(--ease-fast);
+  background:linear-gradient(180deg,rgba(236,238,252,0.92) 0%,rgba(150,150,225,0.85) 52%,rgba(62,72,214,0.9) 100%);
+  transition:-webkit-backdrop-filter .4s ease,backdrop-filter .4s ease;
 }
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
   .np404-glass{
-    background:linear-gradient(180deg,color-mix(in oklab,var(--surface) 70%,transparent) 0%,color-mix(in oklab,var(--surface) 45%,transparent) 40%,color-mix(in oklab,var(--surface-raised) 65%,transparent) 100%);
+    background:linear-gradient(180deg,rgba(255,255,255,0.55) 0%,rgba(236,238,255,0.35) 30%,rgba(130,118,232,0.38) 58%,rgba(62,72,214,0.6) 88%,rgba(59,70,207,0.7) 100%);
     -webkit-backdrop-filter:blur(5px) saturate(1.2);
     backdrop-filter:blur(5px) saturate(1.2);
   }
@@ -147,8 +143,8 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
   // Pointer parallax: each layer moves a different amount for depth
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const sx = useSpring(mx, FOLLOW);
-  const sy = useSpring(my, FOLLOW);
+  const sx = useSpring(mx, { stiffness: 90, damping: 18, mass: 0.6 });
+  const sy = useSpring(my, { stiffness: 90, damping: 18, mass: 0.6 });
   useEffect(() => {
     if (!parallax || reduce) return;
     // ioiti-ui: no parallax where there is no matchMedia (jsdom).
@@ -178,11 +174,11 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
   const markX = useTransform(sx, (v) => v * 16);
   const markY = useTransform(sy, (v) => v * 10);
 
-  // ioiti-ui: the design's spring for a larger move (springGentle), without EasyUI's overshoot.
-  const spring = (delay: number) => (reduce ? { duration: 0 } : { ...motionTransitions.springGentle, delay });
+  const spring = (delay: number) =>
+    reduce ? { duration: 0 } : ({ type: "spring", duration: 0.9, bounce: 0.18, delay } as const);
 
   const layer = "absolute inset-0";
-  const svgProps = { viewBox: `0 0 ${W} ${H}`, className: "absolute inset-0 size-full overflow-visible", "aria-hidden": true } as const;
+  const svgProps = { viewBox: `0 0 ${W} ${H}`, className: "absolute inset-0 h-full w-full overflow-visible", "aria-hidden": true } as const;
   const group = `translate(${CX} ${CY}) rotate(${TILT})`;
   const anchor: CSSProperties = { position: "absolute", left: CX, top: CY, width: 0, height: 0, transform: `rotate(${TILT}deg)` };
 
@@ -209,9 +205,9 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
         <motion.div
           className="absolute inset-0"
           animate={reduce ? undefined : { y: [0, -5, 0] }}
-          transition={reduce ? undefined : { ...motionTransitions.easeSoft, repeat: Infinity, duration: 6 }}
+          transition={reduce ? undefined : { repeat: Infinity, duration: 6, ease: "easeInOut" }}
         >
-          {/* 1 · the back panel. ioiti-ui: a box of the page (surface-raised, its border), not EasyUI's orange. */}
+          {/* 1 · orange back panel */}
           <motion.div className={layer} style={{ x: panelX, y: panelY }}>
             <motion.div
               className="absolute inset-0"
@@ -220,14 +216,21 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
               transition={spring(0)}
             >
               <svg {...svgProps}>
+                <defs>
+                  <linearGradient id={`${uid}-panel`} x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stopColor={ORANGE} />
+                    <stop offset="0.72" stopColor={ORANGE} />
+                    <stop offset="1" stopColor="#cf4a12" />
+                  </linearGradient>
+                </defs>
                 <g transform={group}>
-                  <rect x={-140} y={-63} width={285} height={168} rx={9} className="fill-surface-raised stroke-border" strokeWidth={1} />
+                  <rect x={-140} y={-63} width={285} height={168} rx={9} fill={`url(#${uid}-panel)`} />
                 </g>
               </svg>
             </motion.div>
           </motion.div>
 
-          {/* 2 · the big 404. ioiti-ui: in the page's ink, seen on the page and the panel alike, without a shadow. */}
+          {/* 2 · the big white 404 */}
           <motion.div className={layer} style={{ x: textX, y: textY }}>
             <motion.div
               className="absolute inset-0"
@@ -236,8 +239,14 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
               transition={spring(0.08)}
               style={{ transformOrigin: "50% 50%" }}
             >
-              <svg {...svgProps}>
-                <g transform={group} className="fill-foreground stroke-foreground" strokeWidth={6} strokeLinejoin="round">
+              <svg {...svgProps} style={{ filter: "drop-shadow(0 6px 10px rgba(110,20,0,0.35))" }}>
+                <defs>
+                  <linearGradient id={`${uid}-ink`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="#ffffff" />
+                    <stop offset="1" stopColor="#eef0ff" />
+                  </linearGradient>
+                </defs>
+                <g transform={group} fill={`url(#${uid}-ink)`} stroke={`url(#${uid}-ink)`} strokeWidth={6} strokeLinejoin="round">
                   <path d={FOUR} fillRule="evenodd" transform="translate(-177 -117)" />
                   <path d={ZERO} fillRule="evenodd" />
                   <path d={FOUR} fillRule="evenodd" transform="translate(45 -117)" />
@@ -256,16 +265,37 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
                 whileHover={reduce ? undefined : { y: -6 }}
                 transition={spring(0.2)}
               >
+                {/* soft blue glow under the glass */}
+                <div
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    left: 14,
+                    right: 14,
+                    bottom: -10,
+                    height: 40,
+                    borderRadius: 24,
+                    background: "rgba(53,68,187,0.55)",
+                    filter: "blur(22px)",
+                  }}
+                />
                 <motion.div
                   className="np404-glass"
                   style={{ position: "absolute", inset: 0, clipPath: `url(#${uid}-folder)`, WebkitClipPath: `url(#${uid}-folder)` }}
                   initial={reduce ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={reduce ? { duration: 0 } : { ...motionTransitions.easeSoft, delay: 0.25 }}
+                  transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.25, ease: EASE_OUT }}
                 />
-                {/* glass rim. ioiti-ui: a line of the design (border-hover). */}
+                {/* glass rim */}
                 <svg width={GLASS.w} height={GLASS.h} viewBox={`0 0 ${GLASS.w} ${GLASS.h}`} className="pointer-events-none absolute inset-0" aria-hidden>
-                  <path d={FOLDER} fill="none" className="stroke-border-hover" strokeWidth={1.2} />
+                  <defs>
+                    <linearGradient id={`${uid}-rim`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stopColor="#fff" stopOpacity="0.85" />
+                      <stop offset="0.45" stopColor="#fff" stopOpacity="0.18" />
+                      <stop offset="1" stopColor="#fff" stopOpacity="0.1" />
+                    </linearGradient>
+                  </defs>
+                  <path d={FOLDER} fill="none" stroke={`url(#${uid}-rim)`} strokeWidth={1.2} />
                 </svg>
               </motion.div>
             </div>
@@ -279,11 +309,10 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
                 initial={reduce ? false : { scale: 0, rotate: -70 }}
                 animate={{ scale: 1, rotate: 0 }}
                 whileHover={reduce ? undefined : { rotate: 90 }}
-                transition={reduce ? { duration: 0 } : { ...motionTransitions.springGentle, delay: 0.5 }}
+                transition={reduce ? { duration: 0 } : { type: "spring", duration: 0.7, bounce: 0.35, delay: 0.5 }}
               >
-                {/* ioiti-ui: in the page's ink, without a shadow. */}
-                <svg viewBox="0 0 56 56" width="56" height="56" aria-hidden>
-                  <g transform="translate(28 28)" className="fill-foreground">
+                <svg viewBox="0 0 56 56" width="56" height="56" aria-hidden style={{ filter: "drop-shadow(0 4px 6px rgba(20,24,90,0.4))" }}>
+                  <g transform="translate(28 28)" fill={WHITE}>
                     <rect x={-23} y={-5.5} width={46} height={11} rx={5.5} transform="rotate(45)" />
                     <rect x={-23} y={-5.5} width={46} height={11} rx={5.5} transform="rotate(-45)" />
                   </g>
@@ -306,7 +335,7 @@ export function NotFound({
   errorCode = "404",
   badgeLabel,
   title = "This page took a wrong turn.",
-  description = "The requested page doesn’t exist or may have moved.",
+  description = "The requested page doesn't exist or may have moved.",
   actionLabel,
   onAction,
   homeHref = "/",
@@ -352,20 +381,26 @@ export function NotFound({
   const rise = (delay: number) =>
     reduce
       ? { initial: false as const }
-      : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { ...motionTransitions.easeSoft, delay } };
+      : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay, ease: EASE_OUT } };
 
   return (
     // ioiti-ui: a section of the page, under the application's top bar: the shell has the page's <main>, and the page its title.
     <section
       aria-labelledby={headingId}
-      // ioiti-ui: without EasyUI's ambient glows (the design draws none).
-      className={`relative isolate flex w-full flex-col items-center justify-center overflow-hidden px-5 py-10 text-center text-foreground antialiased sm:px-8 ${className}`}
+      className={`relative isolate flex w-full flex-col items-center justify-center overflow-hidden px-5 py-10 text-center text-neutral-900 antialiased dark:text-neutral-100 sm:px-8 ${className}`}
     >
+
+      {/* ambient light */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute left-1/2 top-[18%] h-[420px] w-[560px] max-w-[120vw] -translate-x-1/2 rounded-full" style={{ background: "radial-gradient(closest-side, rgba(254,85,16,0.16), transparent)", filter: "blur(30px)" }} />
+        <div className="absolute left-1/2 top-[42%] h-[360px] w-[520px] max-w-[110vw] -translate-x-1/2 rounded-full" style={{ background: "radial-gradient(closest-side, rgba(59,70,207,0.16), transparent)", filter: "blur(36px)" }} />
+      </div>
+
       <div className="flex w-full max-w-xl flex-col items-center">
         <Illustration parallax={parallax} />
 
         <p className="sr-only">{`Error ${errorCode}: ${title}`}</p>
-        <motion.p {...rise(0.15)} className="mt-2 text-xs font-medium text-muted-foreground">
+        <motion.p {...rise(0.15)} className="mt-2 text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
           {badgeLabel ?? `Error ${errorCode}`}
         </motion.p>
 
@@ -374,21 +409,21 @@ export function NotFound({
           id={headingId}
           tabIndex={-1}
           {...rise(0.22)}
-          className="mt-3 text-balance break-words bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-transparent outline-none sm:text-[44px]"
+          className="mt-3 bg-gradient-to-b from-neutral-950 to-neutral-600 bg-clip-text dark:from-white dark:to-neutral-400 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-transparent outline-none sm:text-[44px]"
         >
           {title}
         </motion.h1>
 
-        <motion.p {...rise(0.3)} className="mt-4 max-w-md text-pretty text-base leading-relaxed text-muted-foreground">
+        <motion.p {...rise(0.3)} className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
           {description}
         </motion.p>
 
         {shownPath && (
           <motion.div
             {...rise(0.36)}
-            className="mt-5 inline-flex max-w-full items-center gap-2 rounded-full bg-surface-raised px-3.5 py-1.5 ring-1 ring-border"
+            className="mt-5 inline-flex max-w-full items-center gap-2 rounded-full bg-black/[0.04] px-3.5 py-1.5 ring-1 ring-black/10 dark:bg-white/[0.04] dark:ring-white/10"
           >
-            <span className="size-1.5 shrink-0 rounded-full bg-negative" aria-hidden />
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#fe5510]" aria-hidden />
             {/* ioiti-ui: the whole address in a Hint, shown on hover, keyboard focus and a tap, where a title shows on none. */}
             <Hint content={shownPath.length > 80 ? shownPath : null} wrap className="min-w-0">
               <code className="block truncate font-mono text-xs text-muted-foreground">
@@ -404,52 +439,56 @@ export function NotFound({
           </motion.div>
         ) : (
           <motion.div {...rise(0.42)} className="mt-8 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
-            {/* ioiti-ui: the design's buttons (Button, and its classes on the link home), at its heights, with lucide's
-                icons: EasyUI's were pills of their own, 44 px high. */}
             {onAction ? (
-              <Button leftIcon={<Home />} onClick={onAction}>
+              <button
+                type="button"
+                onClick={onAction}
+                className={`inline-flex h-11 items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 text-sm font-medium text-white shadow-sm transition-[transform,background-color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:[@media(hover:hover)]:hover:bg-neutral-100 ${focus}`}
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10" />
+                </svg>
                 {effectiveHomeLabel}
-              </Button>
+              </button>
             ) : (
               <Anchor
                 href={homeHref}
-                className={buttonClassName({ className: "transition motion-safe:active:scale-[0.97] [-webkit-tap-highlight-color:transparent]" })}
+                className={`inline-flex h-11 items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 text-sm font-medium text-white shadow-sm transition-[transform,background-color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:[@media(hover:hover)]:hover:bg-neutral-100 ${focus}`}
               >
-                <span className={buttonIconClassName()}>
-                  <Home />
-                </span>
-                <span className={BUTTON_LABEL_CLASS}>{effectiveHomeLabel}</span>
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10" />
+                </svg>
+                {effectiveHomeLabel}
               </Anchor>
             )}
 
             {isBackVisible && (
-              <Button variant="outline" onClick={effectiveGoBack}>
+              <button
+                type="button"
+                onClick={effectiveGoBack}
+                className={`inline-flex h-11 items-center justify-center rounded-full bg-black/[0.04] dark:bg-white/[0.04] px-6 text-sm font-medium text-neutral-700 dark:text-neutral-300 ring-1 ring-black/10 dark:ring-white/12 transition-[transform,background-color,color] duration-150 active:scale-[0.97] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-black/[0.06] dark:[@media(hover:hover)]:hover:bg-white/[0.08] [@media(hover:hover)]:hover:text-neutral-950 dark:[@media(hover:hover)]:hover:text-white ${focus}`}
+              >
                 {effectiveBackLabel}
-              </Button>
+              </button>
             )}
           </motion.div>
         )}
 
         {suggestions && suggestions.length > 0 && (
           <motion.nav {...rise(0.5)} aria-label="Helpful links" className="mt-12 w-full">
-            <p className="mb-3 text-xs font-medium text-muted-foreground">Maybe you were looking for</p>
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Maybe you were looking for</p>
             <ul className="grid grid-cols-1 gap-2.5 text-left sm:grid-cols-3">
               {suggestions.slice(0, 3).map((s) => (
                 <li key={s.href}>
                   <Anchor
                     href={s.href}
-                    className={cn(
-                      "group flex h-full flex-col rounded-2xl bg-surface p-4 ring-1 ring-border transition-[background-color,box-shadow] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-surface-hover [@media(hover:hover)]:hover:ring-border-hover",
-                      focus
-                    )}
+                    className={`group flex h-full flex-col rounded-2xl bg-black/[0.03] p-4 ring-1 ring-black/[0.07] transition-[background-color,transform,box-shadow] duration-200 active:scale-[0.985] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-black/[0.05] [@media(hover:hover)]:hover:ring-black/[0.14] dark:bg-white/[0.03] dark:ring-white/[0.07] dark:[@media(hover:hover)]:hover:bg-white/[0.06] dark:[@media(hover:hover)]:hover:ring-white/[0.14] ${focus}`}
                   >
-                    <span className="flex items-center justify-between gap-2 text-sm font-medium text-foreground">
+                    <span className="flex items-center justify-between gap-2 text-sm font-medium text-neutral-900 dark:text-neutral-100">
                       {s.label}
-                      {/* ioiti-ui: lucide's arrow, not one drawn here. */}
-                      <ArrowUpRight
-                        aria-hidden
-                        className="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform duration-200 ease-fast [@media(hover:hover)]:group-hover:-translate-y-0.5 [@media(hover:hover)]:group-hover:translate-x-0.5"
-                      />
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-200 [@media(hover:hover)]:group-hover:-translate-y-0.5 [@media(hover:hover)]:group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <path d="M7 17 17 7M8 7h9v9" />
+                      </svg>
                     </span>
                     {s.description && <span className="mt-1 text-xs leading-snug text-muted-foreground">{s.description}</span>}
                   </Anchor>

@@ -46,8 +46,7 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   that acts shows the pointer; a button or an icon button gives a little when pressed (LookPicker had no press, the
   data table's buttons another), a row never moves.
 - **Motion on the tokens.** No spring or curve written by hand: Badge's, Breadcrumb's, Stepper's, DynamicIsland's,
-  the data table's, StatCard's and the 404's springs are the design's, and the charts' and the 404's bounces are gone
-  (nothing overshoots). `transition-all` is gone (a field animated its font size across 640 px). The EasyUI copies
+  the data table's and StatCard's springs are the design's, and the charts' bounces are gone (nothing overshoots). `transition-all` is gone (a field animated its font size across 640 px). The EasyUI copies
   follow IoitiProvider's `reducedMotion` (they followed the system only); DependencyTrace's pulse stops with it.
 - **The design's fonts everywhere.** Badge and StatusBadge, DataTable, AIAgentActivity and the code editors read
   `var(--font-sans)` / `var(--font-mono)`, which EasyUI's `tokens.css` names after faces the package does not register:
@@ -55,7 +54,7 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   `->` stays two characters).
 - **Finish.** Titles balanced over their lines, descriptions without a lone last word; a title semibold, a toast's
   medium; no uppercase labels (sentence case: SmartComparison, InteractiveTimeline, AnimatedFileUpload, AirportMatrixClock,
-  whose default title is "World clock", the 404); figures that change in digits of one width (charts' readings,
+  whose default title is "World clock"); figures that change in digits of one width (charts' readings,
   RelativeTime, counts); a true minus in `formatNumber`, AnimatedNumber and the charts; "…" and ’ in what is shown
   ("Search…", "Loading…", "Couldn’t copy"); a toast's words wrap to two lines instead of being cut; AttachmentChip cuts
   a long name in its middle, keeping its extension; icons one size per role, at lucide's stroke (AIResponse's own
@@ -73,6 +72,10 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 - **What is selected** is a faint step of the text's colour, the accent's tint where the look has one (it was the
   browser's blue); a scrollbar's track shows what is under it (it was a stripe of `--bg` in dark), and Firefox draws
   thin scrollbars in the design's colours (`finish.css`, new).
+- **The 404 keeps EasyUI's illustration** as it was, its frosted glass included (its colours, glows, blur and springs,
+  by choice: `check-source` lets it), its words at the type's sizes. ScrollProgressNav's pill has no blur of its own
+  (it is opaque, glass under the glass material): beside the 404's drawing, the design blurs a KPI tile and what floats,
+  nothing else, and `check-source` refuses any other blur.
 - CodeBlock's copy button is centred on the first line again; StretchSwitch's thumb no longer touches the track's edge
   when on (its border was left out of its travel), and Switch's stands as far from either end.
 
