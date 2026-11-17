@@ -117,6 +117,15 @@ entries, its sections, the top bar, the trail, the page's title and description 
 were. A form's fields and a table's rows (`Table`'s default density is `regular`, 14 px; `compact`, WATA's 12 px, is
 asked for) read larger than WATA's pages did.
 
+## One recipe per role
+
+A change made on purpose, in 0.22.0, with no token, base rule or block of the reference changed: the EasyUI copies take
+the design's tokens and the recipes of `src/lib/recipes.ts` in place of their own colours, shadows, radii and curves.
+What WATA's pages show changes where they used those copies: their dark cards and fields are the design's `surface`
+(they were `#141414` and `#0E0E0E`), a disabled control is 50 % (Button and the form's fields were 30 %), a danger is
+the negative red, menus and popovers have one radius and one shadow. The shell's parts compared in §2 keep their sizes;
+their colours are the same tokens' (the menu's hover, `hover:bg-neutral-200/70` before, is `surface-hover`).
+
 ## What the package changed, and why
 
 Nothing of the design's values but the focus ring of a field that takes text, and the sizes of text by their role (above). The differences an

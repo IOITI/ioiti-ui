@@ -92,6 +92,27 @@ otherwise).
   `text-xs`; a count, a key, a chart's tick or an index 11 px, never less. EasyUI's 9, 10, 10.5, 11.5, 12.5, 13, 13.5,
   14.5 and 15 px, and its `text-[12px]` and `text-[14px]` for Tailwind's own sizes, are gone; `ai-response`'s headings
   are `text-lg`, `text-base` and `text-sm` over a 14 px answer. `check-source` holds it.
+- **Colour by role** (0.22.0). Every colour is one of the design's tokens, chosen by role (`design-system/guide/README.md`,
+  Colour): EasyUI's 40 hex values (`#FAFAFA`, `#141414`, `#0E0E0E`, `#1F1F1F`, `#A1A1A1`…), its `neutral-*` steps and
+  its `rgba()` are gone, so that a caption is the same grey, a field the same surface and a line the same line in every
+  component, in both themes (the copies' dark cards and fields, `#141414` and `#0E0E0E`, are the design's `surface`).
+  The tones are the design's (`src/lib/recipes.ts`): danger is `negative` everywhere (rose and palette reds are gone),
+  success `positive`, warning `warning`, info `info`; EasyUI's blue indicator is `accent-blue`. `check-source` holds it.
+- **One surface per role** (0.22.0). What floats beside its trigger, a tooltip, a dialog, a toast, a menu's row, the
+  scrim and the close buttons take the recipes of `src/lib/recipes.ts`: one radius, one border, one shadow
+  (`shadow-elevated`; `shadow-lg`, `shadow-2xl` and hand-written shadows and glows are gone), one scrim (`bg-black/50`
+  with a 12 px blur, `/60`, `neutral-950/30`… were five). Nothing in the page has a shadow. Radii follow the size of what
+  they round (bare `rounded`, 4 px, and `[8px]`, `[10px]`, `[20px]`, `[26px]` are gone). Disabled is 50 % (it was 25,
+  30, 40, 50 or 60 %); everything that acts shows the pointer and a button gives a little when pressed (rows never
+  move). Icons are `size-*`, one size per role, at lucide's stroke (`ai-response`'s own icons are lucide's).
+- **Motion on the tokens** (0.22.0). No spring, curve or duration written by hand where a token says it
+  (`motionTransitions`): the springs of `badge`, `breadcrumb`, `stepper`, `dynamic-island`, `advanced-data-table`,
+  `ai-agent-activity`, `stat-card`, `not-found`, and the bounces of `chart-primitives`, `funnel-chart` and `not-found`,
+  which overshot, are gone; `transition-all` is the properties that change. Reduced motion follows IoitiProvider
+  (`useReducedMotionConfig`), not the system alone, and `dependency-trace`'s pulse stops with it.
+- **Type's finish** (0.22.0). No uppercase eyebrows (sentence case); a title semibold, a message's title medium; figures
+  that change `tabular-nums`; "…" and ’ in what is shown; Badge, DataTable, AIAgentActivity and the code editors in the
+  design's faces (they read `var(--font-sans)`, which `tokens.css` names after faces the package does not register).
 - **Narrow screens** (0.4.3). Nothing of a copy is wider than its place, where on a phone the page scrolled
   sideways. The charts measured to their width (`bar-chart`, `donut-chart`, `funnel-chart`, `activity-heatmap`,
   `live-line-chart`, `stat-card`'s line) take it from their container alone (`contain-inline-size` on the box

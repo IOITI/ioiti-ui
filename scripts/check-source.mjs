@@ -96,6 +96,46 @@ for (const file of [...filesUnder('src'), ...filesUnder(join('gallery', 'src')),
     })
 }
 
+// One recipe per role (src/lib/recipes.ts, design-system/guide/README.md): a component names the design's tokens and
+// recipes, never a colour, a shadow, a curve or a radius of its own. Each rule names what it refuses and what to write.
+const RECIPE_RULES = [
+  [/var\(--font-(sans|mono|body|heading)/, "reads tokens.css's font names, which no face registers: font-sans / font-mono"],
+  [/\[#[0-9a-fA-F]{3,8}\]|#[0-9a-fA-F]{6}\b|\brgba?\(/, 'a colour written by hand: a token by role (recipes.ts)'],
+  [
+    /(?<![\w-])(?:[a-z-]+:)*(?:text|bg|border|fill|stroke|ring|divide|from|to|via|outline|decoration|placeholder|shadow|caret)-(?:neutral|zinc|gray|slate|stone|red|rose|emerald|green|amber|yellow|orange|sky|blue|indigo|violet|purple|pink|fuchsia|teal|cyan|lime)-\d/,
+    "a palette's colour: a token by role (recipes.ts)",
+  ],
+  [/(?<![\w-])(?:[a-z-]+:)*(?:bg|text|border|fill)-(?:white|black)(?![\w-])/, 'white or black: a token by role (recipes.ts)'],
+  [/(?<![\w-])shadow-(?:xs|sm|md|lg|xl|2xl)(?![\w-])|(?<!(?:accent|glass):(?:hover:)?)shadow-\[(?!inset)/, 'a shadow of its own: shadow-elevated (it floats) or shadow-subtle; a look adds its glow (accent:, glass:)'],
+  [/(?<![\w-])rounded(?=[\s"'`])|rounded(?:-[a-z]{1,2})?-\[(?!(?:[0-4](?:\.\d+)?px|inherit|calc\(var\(--radius)[^\]]*\])/, 'a radius off the scale: rounded-sm/md/lg/xl/2xl/full by size'],
+  [/(?<![\w-])transition-all(?![\w-])/, 'transition-all: the properties that change'],
+  [/(?<![\w-])ease-(?:in|out|in-out)(?![\w-])|ease:\s*['"](?:easeIn|easeOut|easeInOut)['"]/, 'a curve of its own: ease-soft / ease-fast / ease-exit, or motionTransitions'],
+  [/\buseReducedMotion\b(?!Config)/, "framer's useReducedMotion follows the system only: useReducedMotionConfig"],
+  [/(?<![\w-])(?:aria-)?disabled:opacity-(?!50(?![\d]))/, 'disabled is 50% (DISABLED in recipes.ts)'],
+]
+// Where a rule does not apply: the recipes themselves, the looks' swatches (copies of accents.css and glass.css,
+// tested), and the motion tokens.
+const RECIPE_EXEMPT = {
+  [join('src', 'lib', 'recipes.ts')]: /./,
+  [join('src', 'components', 'look-swatches.ts')]: /./,
+}
+const SPRING_BY_HAND = /\b(?:stiffness|damping|bounce)\s*:/
+for (const file of filesUnder('src')) {
+  if (!/\.(ts|tsx)$/.test(file) || /\.test\.(ts|tsx)$/.test(file) || file.startsWith(join('src', 'test'))) continue
+  const exempt = RECIPE_EXEMPT[file]
+  readFileSync(join(root, file), 'utf8')
+    .split('\n')
+    .forEach((line, index) => {
+      if (/^\s*(\/\/|\*|\/\*)/.test(line)) return
+      for (const [rule, says] of RECIPE_RULES) {
+        if (rule.test(line) && !(exempt && exempt.test(says))) problems.push(`${file}:${index + 1}: ${says}`)
+      }
+      if (SPRING_BY_HAND.test(line) && !file.endsWith(join('lib', 'motion-tokens.ts'))) {
+        problems.push(`${file}:${index + 1}: a spring written by hand: motionTransitions (src/lib/motion-tokens.ts)`)
+      }
+    })
+}
+
 // The gallery is an application made with the package: it imports `ioiti-ui`, never the package's source.
 for (const file of filesUnder(join('gallery', 'src'))) {
   const text = readFileSync(join(root, file), 'utf8')
@@ -139,4 +179,4 @@ if (problems.length) {
   console.error(`\ncheck-source: ${problems.length} problem${problems.length === 1 ? '' : 's'}`)
   process.exit(1)
 }
-console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, text sizes on the scale, examples import what an application would, no name of the original application')
+console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, text sizes on the scale, one recipe per role (colours, shadows, radii, curves, disabled), examples import what an application would, no name of the original application')

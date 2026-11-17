@@ -653,7 +653,7 @@
    {
     "name": "title",
     "type": "string | null",
-    "default": "'WORLD CLOCK'",
+    "default": "'World clock'",
     "description": "The board's heading (EasyUI's \"WORLD CLOCK\"); null for none."
    },
    {
@@ -2554,7 +2554,7 @@
    {
     "name": "searchPlaceholder",
     "type": "string",
-    "default": "'Search...'"
+    "default": "'Search…'"
    },
    {
     "name": "onBulkDelete",
@@ -4688,7 +4688,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Loading...'",
+    "default": "'Loading…'",
     "description": "Optional accessible text label."
    },
    {
@@ -4925,7 +4925,7 @@
    {
     "name": "description",
     "type": "ReactNode",
-    "default": "\"The requested page doesn't exist or may have moved.\""
+    "default": "\"The requested page doesn’t exist or may have moved.\""
    },
    {
     "name": "actionLabel",
@@ -6077,7 +6077,7 @@
    {
     "name": "title",
     "type": "string",
-    "default": "'Recovery Ledger'",
+    "default": "'Recovery ledger'",
     "description": "The header's title."
    },
    {
@@ -6094,7 +6094,7 @@
    {
     "name": "currentLabel",
     "type": "string",
-    "default": "'Current Head'",
+    "default": "'Current head'",
     "description": "The badge of the current entry."
    },
    {
@@ -7213,7 +7213,7 @@
    {
     "name": "matrixTitle",
     "type": "string",
-    "default": "'Feature Matrix'",
+    "default": "'Feature matrix'",
     "description": "The words of the matrix's own column, and of its count of rows."
    },
    {
@@ -7224,7 +7224,7 @@
    {
     "name": "searchPlaceholder",
     "type": "string",
-    "default": "'Filter capabilities...'"
+    "default": "'Filter capabilities…'"
    },
    {
     "name": "diffLabel",

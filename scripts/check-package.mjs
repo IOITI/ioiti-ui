@@ -40,7 +40,7 @@ function textUnder(folder) {
 // them in its CSS proves that Tailwind read the package in node_modules (design.css's @source).
 const PACKAGE_ONLY = [
   { name: 'w-[17rem]', css: '.w-\\[17rem\\]', file: 'src/components/ui/sidebar.tsx' },
-  { name: 'tracking-[0.22em]', css: '.tracking-\\[0\\.22em\\]', file: 'src/components/ui/not-found.tsx' },
+  { name: 'backdrop-blur-[2px]', css: '.backdrop-blur-\\[2px\\]', file: 'src/lib/recipes.ts' },
 ]
 
 // The design itself, as the built CSS writes it: the light page and secondary text, the dark
@@ -82,6 +82,7 @@ const FILES = [
   'dist/styles/accents.css',
   'dist/styles/glass.css',
   'dist/styles/motion.css',
+  'dist/styles/type.css',
   ...GRAINS.map((grain) => `dist/styles/${grain}.png`),
   'dist/theme.js',
   'dist/vite/index.js',

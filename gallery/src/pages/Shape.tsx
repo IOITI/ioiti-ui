@@ -71,10 +71,20 @@ export function Shape() {
         <ul className="grid gap-4 sm:grid-cols-2">
           <Rule title="A frame by role">
             A panel holds a section; what is inside it has no second card around it. A nested box (an example, a code
-            line) is lighter: rounded-lg, a fainter border, the raised surface.
+            line) is lighter: rounded-xl, a fainter border, the raised surface.
           </Rule>
           <Rule title="Lines inside, borders outside">
-            Rows of a list or a table are apart by a line of the border colour at 40 %; a panel's border is at 70 %.
+            Rows of a list or a table are apart by a line of the border colour at 40 %; a nested box's border is at 60 %, a
+            panel's at 70 %.
+          </Rule>
+          <Rule title="A radius by size">
+            A count, a state, a switch, an avatar are pills; a key or a tag on a line rounded-sm; a 24 px control, a chip,
+            inline code rounded-md; a 32 to 48 px control, a field, a row of a menu rounded-lg; what floats beside its
+            trigger, a toast, a nested box rounded-xl; a section, a card, a dialog rounded-2xl.
+          </Rule>
+          <Rule title="A shadow means it floats">
+            A menu, a popover, a tooltip, a toast, a dialog, a sheet: shadow-elevated, the same for all. What sits in the
+            page has a border and no shadow; a chosen card says it with its border. Disabled is half its strength.
           </Rule>
           <Rule title="Width">
             A page's column stops at 80rem (max-w-7xl) and is padded 16 px on a phone, 24 px from 640 px up; a page that

@@ -5,12 +5,12 @@ import { Rule } from '../parts'
 const SCALE = [
   { name: 'Page title', classes: 'text-2xl tracking-tight', weight: '700 (h1)', sample: 'Orders', note: 'PageHeader. One a page.' },
   { name: 'Sign-in title', classes: 'text-xl font-semibold tracking-tight', weight: '600', sample: 'My App', note: 'AuthLayout.' },
-  { name: 'Figure', classes: 'text-xl font-semibold tracking-tight sm:text-2xl', weight: '600', sample: '12,480.00 €', note: 'A tile\'s figure: proportional digits at this size.' },
+  { name: 'Figure', classes: 'text-xl font-semibold tracking-tight sm:text-2xl', weight: '600', sample: '€12,480.00', note: 'A tile\'s figure: proportional digits at this size.' },
   { name: 'Section title', classes: 'text-sm font-semibold', weight: '600 (h2)', sample: 'Latest orders', note: 'A panel\'s title.' },
   { name: 'Body', classes: 'text-sm', weight: '400', sample: 'The order was sent to the warehouse.', note: 'Running text, and what is read or acted on: a row, an option, a tab, a button, a toast.' },
   { name: 'Field value', classes: 'text-base sm:text-sm', weight: '400', sample: 'Acme Corporation', note: 'What is typed in a field: 16px on a phone, which zooms in on a smaller field, 14px from 640px.' },
   { name: 'Small', classes: 'text-xs text-muted-foreground', weight: '400', sample: 'Updated 2 min ago', note: 'What supports it: a caption, a table\'s head, a tile\'s label, the help under a field.' },
-  { name: 'Field label', classes: 'text-xs text-text-secondary', weight: '400', sample: 'Customer', note: 'Field.' },
+  { name: 'Field label', classes: 'text-xs font-semibold text-foreground', weight: '600', sample: 'Customer', note: 'Field, FormLabel.' },
   { name: 'Badge', classes: 'text-xs font-medium', weight: '500', sample: 'Healthy', note: 'Badge, StatusBadge.' },
   { name: 'Micro', classes: 'text-[11px] font-medium', weight: '500', sample: '12', note: 'A count, a key, a chart\'s tick: the smallest there is.' },
   { name: 'Code', classes: 'font-mono text-xs', weight: '400', sample: 'IT-1042', note: 'Ids, keys, what is typed exactly.' },
@@ -86,6 +86,14 @@ export function Typography() {
           </Rule>
           <Rule title="Tight headings">
             Headings are set a little tighter than the text ({TRACKING.map((item) => `${item.token} ${item.value}`).join(', ')}).
+          </Rule>
+          <Rule title="Typed as written">
+            Ids, keys, code and logs are set in JetBrains Mono without ligatures or tracking: -&gt; stays two characters
+            and a column of ids lines up.
+          </Rule>
+          <Rule title="Titles by role">
+            A title is semibold and balanced over its lines; a message&apos;s title (a toast, an alert) medium; bold only
+            for the page&apos;s title. Labels are written in sentence case, never in capitals.
           </Rule>
           <Rule title="Read at 14 px">
             What a user reads or acts on is body-size: a row, an option, a tab, a button, a message. Small text (12 px)

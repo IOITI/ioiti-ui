@@ -8,7 +8,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 
 | Path | Content |
 |---|---|
-| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `grain-*.png` (the gradient accents' grains, the glass backdrop's) |
+| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `type.css` (what is typed exactly, without ligatures or tracking: ioiti-ui's own), `grain-*.png` (the gradient accents' grains, the glass backdrop's) |
 | `src/theme.js` | the pre-paint theme script, a file of its own (no inline script under a strict CSP) |
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
@@ -78,6 +78,12 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 - **A layer placed beside its trigger** (a popover, a menu, a list) is placed by `src/lib/anchor.ts`
   (`useAnchoredLayer`): in `document.body`, following its trigger, its Escape and Tab its own inside a dialog.
   No new placement written by hand.
+- **One recipe per role** (`src/lib/recipes.ts`): what floats, a tooltip, a dialog, a toast, a menu's row, the scrim,
+  the close buttons, a disabled or pressed control, the tones. A component names the design's tokens by role
+  (`design-system/guide/README.md`, Colour) and these recipes, never a colour (hex, `rgba()`, a palette's step, white or
+  black), a shadow (but `shadow-elevated`, `shadow-subtle`, a look's `accent:`/`glass:` glow), a radius off the scale, a
+  curve or a spring of its own, nor `var(--font-*)` (tokens.css names faces no `@font-face` registers). `check-source`
+  holds it; `look-swatches.ts` is the one exception.
 - **A chart's series take the design's colours** (`src/lib/chart-colours.ts`): one series `--chart-series`,
   things compared `--chart-compare-1…4` in order, never recycled (a fifth is grey).
 - **What MotionConfig does not reduce** (a value animated by hand: `pathLength`, `d`, a size, `useSpring`) is
@@ -85,7 +91,7 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   `useReducedMotion` follows the system only.
 - **One focus ring**, the global rule of `design.css`; no component draws its own. A field that takes text has
   none, a browser marking it at a click too: its caret and its own border show its focus, as the form's `Input`
-  (`focus:border-neutral-500 dark:focus:border-[#4A4A4A] accent:focus:border-brand`), or its frame's.
+  (`fieldBorder()` in `src/lib/field-border.ts`: `focus:border-muted-foreground accent:focus:border-brand`), or its frame's.
 - **What leads somewhere is a link**, drawn by `useLinkComponent()` (the application's, from `LinkProvider`),
   or by the component's own `linkComponent` prop when given; a plain click is left to the router, a click with
   a modifier to the browser (`isPlainClick`). Never import a router outside `src/react-router/`. A part of the

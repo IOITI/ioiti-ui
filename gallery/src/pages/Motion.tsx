@@ -253,6 +253,11 @@ startTransition(() => setPathname(next))`} />
             A click is answered at once; an animation never delays what was asked, the shell stays in use while a page
             arrives, and a list never waits for its entrance to be read.
           </Rule>
+          <Rule title="Pressed, it gives a little">
+            A button or an icon button shrinks to 97 % while pressed, where motion is allowed; a row, an option or a tab
+            lights up and never moves. Everything that acts shows the pointer. No spring, curve or bounce written by
+            hand: the tokens, and nothing that overshoots.
+          </Rule>
           <Rule title="Quicker to leave">
             What leaves takes 150 ms, what arrives up to about 300: the eye is on what comes, not on what goes.
           </Rule>

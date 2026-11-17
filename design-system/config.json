@@ -320,14 +320,14 @@
     "glass-shadow-subtle": "Glass: shadow-subtle under the glass material.",
     "glass-shadow-elevated": "Glass: shadow-elevated under the glass material, deeper.",
     "radius": "The one radius (14px). Every rounded-* class is a multiple of it, so changing it changes them all.",
-    "radius-sm": "rounded-sm, radius × 0.6: a small chip.",
-    "radius-md": "rounded-md, radius × 0.8: a small button (xs, sm), a menu item.",
-    "radius-lg": "rounded-lg, the radius itself: a button, a field, a nested box.",
-    "radius-xl": "rounded-xl, radius × 1.4: a popover, a menu, a dialog.",
-    "radius-2xl": "rounded-2xl, radius × 1.8: a Panel, a KpiTile.",
+    "radius-sm": "rounded-sm, radius × 0.6: a key (Kbd), a small tag on a line.",
+    "radius-md": "rounded-md, radius × 0.8: a 24px control (an xs or sm button, the close of a toast), a chip, inline code.",
+    "radius-lg": "rounded-lg, the radius itself: a 32–48px control, a field, a row of a menu, a tooltip, the close of a dialog.",
+    "radius-xl": "rounded-xl, radius × 1.4: what floats beside its trigger (a popover, a menu, a list of options), a toast, a nested box (PanelInset).",
+    "radius-2xl": "rounded-2xl, radius × 1.8: a Panel, a KpiTile, a card, a dialog.",
     "radius-3xl": "rounded-3xl, radius × 2.2.",
     "radius-4xl": "rounded-4xl, radius × 2.6.",
-    "radius-full": "rounded-full: a badge, a switch, an avatar, a pill.",
+    "radius-full": "rounded-full: a badge, a state, a count, a switch, an avatar, a pill.",
     "tracking-tighter": "The tightest heading tracking.",
     "tracking-tight-heading": "h1.",
     "tracking-snug": "h3.",
@@ -395,7 +395,7 @@
           "lineHeight": "32px",
           "fontWeight": 600,
           "letterSpacing": "-0.025em",
-          "sample": "12,480.00 €",
+          "sample": "€12,480.00",
           "usage": "A KpiTile's figure (text-xl, sm:text-2xl): proportional digits at this size."
         },
         {
@@ -453,10 +453,10 @@
           "name": "field-label",
           "fontSize": "12px",
           "lineHeight": "16px",
-          "fontWeight": 400,
+          "fontWeight": 600,
           "letterSpacing": "-0.011em",
           "sample": "Customer",
-          "usage": "Field's label (text-xs text-text-secondary)."
+          "usage": "Field's label, and FormLabel's (text-xs font-semibold text-foreground)."
         },
         {
           "name": "badge",

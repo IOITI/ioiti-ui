@@ -31,8 +31,42 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 - **The design's type scale** (`design-system/config.json`, the guide, the gallery's Type page) names the roles:
   `field-value`, `micro` (11 px); `badge` is the 12 px Badge has always had.
 
-An application's pages show more text at 14 px; an application that wants its tables small writes
-`density="compact"`. Nothing else changes for it.
+- **One recipe per role.** The components agree with each other and with the guide: what floats beside its trigger
+  (a popover, a menu, a list of options, the notifications), a tooltip, a dialog, a toast, a menu's row, the scrim and
+  the close buttons each take one set of classes (`src/lib/recipes.ts`): one radius, one border, one shadow
+  (`shadow-elevated`), one scrim. Nothing in the page has a shadow (RequestStatus, AIResponse, AirportMatrixClock,
+  SmartComparison's chosen plan and the timeline's and ledger's rows had one). Radii follow the size of what they round.
+- **Colours by token, everywhere.** The copies' hex values, palette steps and `rgba()` are the design's tokens by role:
+  one grey for a caption in every component (there were ten spellings and six greys), the design's `surface` for their
+  cards and fields in dark (`#141414`, `#0E0E0E` before), one line. The tones are the design's: danger is the negative red
+  in Button, SplitButton, Badge, Alert, StateChip, DragToConfirm and the data table (rose before, at 3.7:1 in the data
+  table); a soft tone keeps its word at 4.5:1 on a hovered row. A field shows its focus with a darker border in every
+  field (`fieldBorder()`).
+- **Disabled is 50 %** in every component (Button and the form's fields were 30 %, others 25, 40 or 60 %). Everything
+  that acts shows the pointer; a button or an icon button gives a little when pressed (LookPicker had no press, the
+  data table's buttons another), a row never moves.
+- **Motion on the tokens.** No spring or curve written by hand: Badge's, Breadcrumb's, Stepper's, DynamicIsland's,
+  the data table's, StatCard's and the 404's springs are the design's, and the charts' and the 404's bounces are gone
+  (nothing overshoots). `transition-all` is gone (a field animated its font size across 640 px). The EasyUI copies
+  follow IoitiProvider's `reducedMotion` (they followed the system only); DependencyTrace's pulse stops with it.
+- **The design's fonts everywhere.** Badge and StatusBadge, DataTable, AIAgentActivity and the code editors read
+  `var(--font-sans)` / `var(--font-mono)`, which EasyUI's `tokens.css` names after faces the package does not register:
+  they were drawn in a system font. Ids, keys, code and logs are set without ligatures or tracking (`type.css`, new:
+  `->` stays two characters).
+- **Finish.** Titles balanced over their lines, descriptions without a lone last word; a title semibold, a toast's
+  medium; no uppercase labels (sentence case: SmartComparison, InteractiveTimeline, AnimatedFileUpload, AirportMatrixClock,
+  whose default title is "World clock", the 404); figures that change in digits of one width (charts' readings,
+  RelativeTime, counts); a true minus in `formatNumber`, AnimatedNumber and the charts; "…" and ’ in what is shown
+  ("Search…", "Loading…", "Couldn’t copy"); a toast's words wrap to two lines instead of being cut; AttachmentChip cuts
+  a long name in its middle, keeping its extension; icons one size per role, at lucide's stroke (AIResponse's own
+  icons are lucide's); a busy Button's spinner as large as its icon. `formatBytes` writes "—" for nothing.
+- `check-source` holds it: no colour, shadow, radius, curve, spring or disabled strength of a component's own, no
+  `var(--font-*)`.
+
+An application's pages show more text at 14 px, and its components agree with each other; an application that wants
+its tables small writes `density="compact"`. An application that renders the components outside IoitiProvider no
+longer has their motion reduced by the system alone: IoitiProvider (`reducedMotion="user"`, its default) does it.
+Nothing else changes for it.
 
 ## [0.21.0] - 2026-11-16
 
