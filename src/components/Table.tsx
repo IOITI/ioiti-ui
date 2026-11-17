@@ -61,7 +61,7 @@ export function TableBody({ className, children, ...props }: ComponentProps<'tbo
 export function TableRow({ className, ...props }: ComponentProps<'tr'>) {
   const density = useContext(DensityContext)
   const part = useContext(PartContext)
-  const dense = density === 'dense' && (part === 'head' ? 'text-xs text-muted-foreground' : 'border-t border-border/50')
+  const dense = density === 'dense' && (part === 'head' ? 'text-xs text-muted-foreground' : 'border-t border-border/40')
   return <tr className={cn(dense, className)} {...props} />
 }
 

@@ -15,17 +15,6 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
 
 // =============================================================================
-// DESIGN SYSTEM CONSTANTS & SPRING TOKENS
-// =============================================================================
-
-const SPRING_PHYSICS = {
-  type: 'spring' as const,
-  stiffness: 300,
-  damping: 32,
-  mass: 0.6,
-};
-
-// =============================================================================
 // TYPES & INTERFACES
 // =============================================================================
 
@@ -107,20 +96,20 @@ export function useAgentActivity() {
 
 export function getActivityIcon(_type: ActivityType, status: ActivityStatus): React.ReactNode {
   if (status === 'running') {
-    return <RotateCw className="w-3 h-3 animate-spin text-foreground stroke-[2]" />;
+    return <RotateCw className="size-3 animate-spin text-foreground" />;
   }
   if (status === 'error') {
-    return <AlertCircle className="w-3.5 h-3.5 text-rose-500 stroke-[2]" />;
+    return <AlertCircle className="size-3.5 text-negative" />;
   }
   if (status === 'cancelled') {
-    return <Pause className="w-3 h-3 text-muted-foreground stroke-[2]" />;
+    return <Pause className="size-3 text-muted-foreground" />;
   }
   if (status === 'success') {
-    return <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />;
+    return <Check className="size-3 text-positive" />;
   }
 
   // Pending / default: clean minimal point
-  return <div className="w-1.5 h-1.5 rounded-full bg-border" />;
+  return <div className="size-1.5 rounded-full bg-border" />;
 }
 
 // =============================================================================
@@ -151,7 +140,7 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
   const said = (
     <>
       <span className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-        <Title className="text-sm font-medium text-foreground tracking-tight truncate">
+        <Title className="text-sm font-semibold text-foreground tracking-tight truncate">
           {title}
         </Title>
         {agentName && (
@@ -161,12 +150,12 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
         )}
       </span>
 
-      <span className="w-1 h-1 rounded-full bg-border shrink-0 hidden sm:inline-block" />
+      <span className="size-1 rounded-full bg-border shrink-0 hidden sm:inline-block" />
 
       <span className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
         {isRunning ? (
           <span className="flex items-center gap-1.5 text-foreground">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="size-1.5 rounded-full bg-positive animate-pulse" />
             Running
           </span>
         ) : (
@@ -201,9 +190,9 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
             <motion.span
               animate={{ rotate: open ? 0 : -90 }}
               transition={motionTransitions.springSnappy}
-              className="shrink-0 text-muted-foreground/70 group-hover/fold:text-foreground transition-colors"
+              className="shrink-0 text-muted-foreground group-hover/fold:text-foreground transition-colors"
             >
-              <ChevronDown className="w-3.5 h-3.5" />
+              <ChevronDown className="size-4" />
             </motion.span>
             {said}
           </button>
@@ -258,21 +247,21 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
     <div className={cn('relative flex items-start gap-3 sm:gap-4 group', className)}>
       {/* Subtle timeline connector line */}
       {!isLast && (
-        <div className="absolute left-[9px] sm:left-[11px] top-6 bottom-[-20px] w-px bg-border/50 group-last:hidden" />
+        <div className="absolute left-[9px] sm:left-[11px] top-6 bottom-[-20px] w-px bg-border/60 group-last:hidden" />
       )}
 
       {/* Minimal state indicator */}
-      <div className="relative z-10 w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center shrink-0 mt-0.5">
+      <div className="relative z-10 size-5 sm:size-6 flex items-center justify-center shrink-0 mt-0.5">
         <div
           className={cn(
-            'w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all',
+            'size-4.5 sm:size-5 rounded-full flex items-center justify-center transition-[color,background-color,border-color,box-shadow]',
             activity.status === 'running'
-              ? 'bg-surface border border-border ring-2 ring-emerald-500/20'
+              ? 'bg-surface border border-border ring-2 ring-positive/20'
               : activity.status === 'success'
-              ? 'bg-emerald-500/10 dark:bg-emerald-500/15'
+              ? 'bg-positive/5 dark:bg-positive/10'
               : activity.status === 'error'
-              ? 'bg-rose-500/10 dark:bg-rose-500/20'
-              : 'bg-surface border border-border/80'
+              ? 'bg-negative/5 dark:bg-negative/10'
+              : 'bg-surface border border-border'
           )}
         >
           {getActivityIcon(activity.type, activity.status)}
@@ -312,10 +301,10 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
               {hasDetails && (
                 <motion.div
                   animate={{ rotate: isExpanded ? 180 : 0 }}
-                  transition={shouldReduceMotion ? { duration: 0 } : SPRING_PHYSICS}
-                  className="text-muted-foreground/60 group-hover/row:text-foreground transition-colors"
+                  transition={shouldReduceMotion ? { duration: 0 } : motionTransitions.springSnappy}
+                  className="text-muted-foreground group-hover/row:text-foreground transition-colors"
                 >
-                  <ChevronDown className="w-3.5 h-3.5" />
+                  <ChevronDown className="size-3.5" />
                 </motion.div>
               )}
             </div>
@@ -337,7 +326,7 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={shouldReduceMotion ? { duration: 0 } : SPRING_PHYSICS}
+              transition={shouldReduceMotion ? { duration: 0 } : motionTransitions.springSnappy}
               className="overflow-hidden mt-3 pt-3 pl-3 sm:pl-3.5 border-l border-border/60 space-y-3 font-sans text-xs"
             >
               {/* Input parameters */}
@@ -361,7 +350,7 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
                   <div className="text-xs font-medium text-muted-foreground">
                     {activity.details.language || 'Code'}
                   </div>
-                  <pre className="p-2.5 sm:p-3 rounded-lg bg-surface-raised/50 dark:bg-surface-raised/20 border border-border/40 text-foreground text-xs leading-relaxed overflow-x-auto select-text font-sans">
+                  <pre className="p-2.5 sm:p-3 rounded-lg bg-surface-raised/50 dark:bg-surface-raised/20 border border-border/40 text-foreground text-xs leading-relaxed overflow-x-auto select-text font-mono">
                     <code>{activity.details.codeSnippet}</code>
                   </pre>
                 </div>
@@ -412,7 +401,7 @@ function NoteCaret() {
       data-caret=""
       className="ml-[3px] inline-block h-[1.05em] w-[2px] translate-y-[0.2em] rounded-full bg-current"
       animate={reduce ? { opacity: 0.7 } : { opacity: [1, 0.15, 1] }}
-      transition={reduce ? undefined : { repeat: Infinity, duration: 1.1, ease: 'easeInOut' }}
+      transition={reduce ? undefined : { ...motionTransitions.easeSoft, repeat: Infinity, duration: 1.1 }}
     />
   );
 }

@@ -2,6 +2,7 @@ import { useId, useLayoutEffect, useRef, useState } from 'react'
 import type { ClipboardEvent, DragEvent, KeyboardEvent, ReactNode } from 'react'
 import { ArrowUp, Square } from 'lucide-react'
 
+import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 
@@ -172,9 +173,13 @@ export function PromptComposer({
       onClick={send}
       disabled={!canSend}
       aria-label="Send"
-      className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-[opacity,transform] duration-150 active:scale-95 disabled:opacity-40 accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground"
+      className={cn(
+        'grid size-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-[opacity,transform] duration-150',
+        PRESSABLE,
+        'accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground',
+      )}
     >
-      <ArrowUp className="h-4 w-4" aria-hidden />
+      <ArrowUp className="size-4" aria-hidden />
     </button>
   )
 
@@ -191,7 +196,10 @@ export function PromptComposer({
               type="button"
               disabled={disabled || busy}
               onClick={() => suggest(suggestion.prompt)}
-              className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted-foreground transition-colors duration-150 hover:border-border-hover hover:text-foreground disabled:opacity-50"
+              className={cn(
+                'cursor-pointer rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted-foreground transition-colors duration-150 hover:border-border-hover hover:text-foreground',
+                DISABLED,
+              )}
             >
               {suggestion.label}
             </button>
@@ -204,9 +212,9 @@ export function PromptComposer({
         className={cn(
           'rounded-2xl border border-border bg-surface transition-colors duration-150 focus-within:border-border-hover',
           // Glass's edge would hide the border that shows its focus: the focus is said over it.
-          floating && 'shadow-[var(--shadow-elevated)] glass-float glass:focus-within:border-border-hover',
+          floating && 'shadow-elevated glass-float glass:focus-within:border-border-hover',
           // Files dragged over it: where they would go.
-          dropping && 'border-dashed border-neutral-500 bg-surface-hover dark:border-neutral-400 accent:border-brand',
+          dropping && 'border-dashed border-muted-foreground bg-surface-hover accent:border-brand',
         )}
       >
         {attachments && (
@@ -225,7 +233,7 @@ export function PromptComposer({
           onChange={(event) => onValueChange(event.target.value)}
           onKeyDown={onKeyDown}
           onPaste={onPaste}
-          className="block w-full resize-none overflow-y-auto bg-transparent px-3.5 pt-3 text-sm leading-normal text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-60"
+          className="block w-full resize-none overflow-y-auto bg-transparent px-3.5 pt-3 text-sm leading-normal text-foreground outline-none placeholder:text-text-subtle disabled:cursor-not-allowed disabled:opacity-50"
         />
         <div className="flex items-center justify-between gap-3 px-3 pb-2.5 pt-1">
           {/* What does not fit beside the send button wraps under itself, never under the button: the controls
@@ -247,9 +255,12 @@ export function PromptComposer({
               type="button"
               onClick={onStop}
               aria-label="Stop"
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border bg-surface-hover text-foreground transition-transform duration-150 active:scale-95"
+              className={cn(
+                'grid size-8 shrink-0 place-items-center rounded-full border border-border bg-surface-hover text-foreground transition-transform duration-150',
+                PRESSABLE,
+              )}
             >
-              <Square className="h-3.5 w-3.5 fill-current" aria-hidden />
+              <Square className="size-3.5 fill-current" aria-hidden />
             </button>
           ) : reason ? (
             <Hint content={reason} wrap>

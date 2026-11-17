@@ -76,7 +76,7 @@ describe('PromptComposer', () => {
     const { rerender } = render(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} floating />)
 
     const frame = screen.getByRole('textbox').parentElement!
-    expect(frame).toHaveClass('glass-float', 'shadow-[var(--shadow-elevated)]', 'glass:focus-within:border-border-hover')
+    expect(frame).toHaveClass('glass-float', 'shadow-elevated', 'glass:focus-within:border-border-hover')
 
     rerender(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} />)
     expect(screen.getByRole('textbox').parentElement).not.toHaveClass('glass-float')

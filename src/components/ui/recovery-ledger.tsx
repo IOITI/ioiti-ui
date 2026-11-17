@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { RotateCcw, ChevronDown, User, Clock, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { PRESSABLE } from '../../lib/recipes.js';
 
 export interface LedgerEntry {
   id: string;
@@ -59,10 +60,10 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
   onSelect,
   expandedId: controlledExpandedId,
   onExpandedChange,
-  title = 'Recovery Ledger',
+  title = 'Recovery ledger',
   countLabel,
   restoreLabel = 'Revert',
-  currentLabel = 'Current Head',
+  currentLabel = 'Current head',
   variant = 'timeline',
   className,
 }) => {
@@ -93,17 +94,17 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
   return (
     <div
       className={cn(
-        // ioiti-ui: glass under the glass material, as a card (glass-card).
-        'w-full rounded-2xl bg-white border border-neutral-200 overflow-hidden dark:bg-[#0E0E0E] dark:border-[#1F1F1F] glass-card',
+        // ioiti-ui: glass under the glass material, as a card (glass-card); a section, as a Panel.
+        'w-full rounded-2xl border border-border/70 bg-surface/50 overflow-hidden dark:bg-surface/25 glass-card',
         className
       )}
     >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-50 flex items-center justify-between dark:border-[#1F1F1F] dark:bg-[#141414]">
+      <div className="px-4 py-3 border-b border-border/40 bg-surface-raised/60 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Clock aria-hidden="true" className="w-4 h-4 text-neutral-500 dark:text-[#525252]" />
-          <h3 className="text-sm font-semibold text-neutral-900 dark:text-[#FAFAFA]">{title}</h3>
-          <span className="text-[11px] font-mono text-muted-foreground bg-white px-2 py-0.5 rounded-full border border-neutral-200 dark:bg-[#141414] dark:border-[#1F1F1F]">
+          <Clock aria-hidden="true" className="size-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <span className="text-[11px] font-mono tabular-nums text-muted-foreground bg-surface px-2 py-0.5 rounded-full border border-border">
             {countLabel ?? `${entries.length} snapshots`}
           </span>
         </div>
@@ -113,7 +114,7 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
       <div className="relative p-4">
         {variant === 'timeline' && (
           // ioiti-ui: through the middle of the pips (16 px from the edge, 16 px wide); EasyUI's ran 5 px to their right.
-          <div aria-hidden="true" className="absolute top-6 bottom-6 left-[23px] w-[2px] bg-neutral-200 pointer-events-none dark:bg-[#1F1F1F]" />
+          <div aria-hidden="true" className="absolute top-6 bottom-6 left-[23px] w-[2px] bg-border pointer-events-none" />
         )}
 
         {/* ioiti-ui: a list, in the order given. */}
@@ -137,16 +138,16 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
             const summary = (
               <>
                 <span className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm font-semibold text-neutral-900 dark:text-[#FAFAFA]">
+                  <span className="text-sm font-semibold text-foreground">
                     {entry.action}
                   </span>
                   {isCurrent && (
-                    <span className="px-1.5 py-0.5 rounded text-[11px] font-mono bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 dark:text-emerald-400">
+                    <span className="px-1.5 py-0.5 rounded-sm text-[11px] font-mono bg-positive/5 text-positive border border-positive/30 dark:bg-positive/10">
                       {currentLabel}
                     </span>
                   )}
                 </span>
-                <span className="block text-xs text-neutral-600 mt-0.5 leading-relaxed dark:text-[#A1A1A1]">
+                <span className="block text-xs text-muted-foreground mt-0.5 leading-relaxed">
                   {entry.description}
                 </span>
 
@@ -157,7 +158,7 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                     {entry.reference && <span className="break-all">{entry.reference}</span>}
                     {entry.author && (
                       <span className="flex items-center gap-1">
-                        <User aria-hidden="true" className="w-2.5 h-2.5" />
+                        <User aria-hidden="true" className="size-3" />
                         {entry.author}
                       </span>
                     )}
@@ -171,35 +172,35 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                 key={entry.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
+                transition={{ ...motionTransitions.easeSoft, delay: idx * 0.05 }}
                 className="relative pl-8"
               >
                 {/* Timeline Indicator Pip */}
                 <div
                   aria-hidden="true"
                   className={cn(
-                    'absolute left-0 top-3 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors bg-white dark:bg-[#0E0E0E]',
+                    'absolute left-0 top-3 size-4 rounded-full border-2 flex items-center justify-center transition-colors bg-surface',
                     isCurrent
-                      ? 'border-emerald-600 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400'
+                      ? 'border-positive text-positive'
                       : isExpanded
-                      ? 'border-neutral-500 dark:border-[#4A4A4A]'
-                      : 'border-neutral-300 dark:border-[#1F1F1F]'
+                      ? 'border-border-hover'
+                      : 'border-border'
                   )}
                 >
-                  {isCurrent && <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />}
+                  {isCurrent && <div className="size-1.5 rounded-full bg-positive" />}
                 </div>
 
                 {/* Entry Card */}
                 <div
                   className={cn(
-                    'p-3 rounded-xl border transition-all',
+                    'p-3 rounded-xl border transition-colors',
                     isCurrent
-                      ? 'bg-neutral-50 border-emerald-500/30 shadow-xs dark:bg-[#141414]'
+                      ? 'bg-surface-hover border-positive/30'
                       : isExpanded
-                      ? 'bg-neutral-50 border-neutral-400 dark:bg-[#141414] dark:border-[#4A4A4A]'
+                      ? 'bg-surface-hover border-border-hover'
                       : canExpand
-                      ? 'bg-white border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50 dark:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:hover:bg-[#141414]'
-                      : 'bg-white border-neutral-200 dark:bg-[#0E0E0E] dark:border-[#1F1F1F]'
+                      ? 'bg-surface border-border/60 hover:border-border-hover hover:bg-surface-hover'
+                      : 'bg-surface border-border/60'
                   )}
                 >
                   {/* ioiti-ui: the button's ::after covers the header, so the whole of it opens the entry, as EasyUI's card did. */}
@@ -225,26 +226,29 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                           type="button"
                           disabled={Boolean(restoringId)}
                           onClick={(e) => handleRestore(entry.id, e)}
-                          className="relative z-10 px-2.5 py-1 rounded-lg text-xs font-medium bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-900 hover:text-white transition-colors flex items-center gap-1 cursor-pointer dark:bg-[#141414] dark:text-[#A1A1A1] dark:border-[#1F1F1F] dark:hover:bg-[#FAFAFA] dark:hover:text-[#050505]"
+                          className={cn(
+                            'relative z-10 px-2.5 py-1 rounded-md text-xs font-medium bg-surface text-text-secondary border border-border hover:bg-primary hover:text-primary-foreground transition-colors flex items-center gap-1',
+                            PRESSABLE
+                          )}
                           // ioiti-ui: named by the entry's action (its id is a file's name).
                           aria-label={`${restoreLabel}: ${entry.action}`}
                         >
                           {isRestoring ? (
-                            <Loader2 aria-hidden="true" className="w-3 h-3 animate-spin" />
+                            <Loader2 aria-hidden="true" className="size-3 animate-spin" />
                           ) : (
-                            <RotateCcw aria-hidden="true" className="w-3 h-3" />
+                            <RotateCcw aria-hidden="true" className="size-3" />
                           )}
                           <span>{restoreLabel}</span>
                         </button>
                       )}
 
                       {canExpand && (
-                        <div aria-hidden="true" className="p-1 text-neutral-500 pointer-events-none dark:text-[#525252]">
+                        <div aria-hidden="true" className="p-1 text-muted-foreground pointer-events-none">
                           <motion.div
                             animate={{ rotate: isExpanded ? 180 : 0 }}
                             transition={motionTransitions.springSnappy}
                           >
-                            <ChevronDown className="w-3.5 h-3.5" />
+                            <ChevronDown className="size-4" />
                           </motion.div>
                         </div>
                       )}
@@ -260,15 +264,15 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={motionTransitions.springSmooth}
-                        className="mt-3 pt-2.5 border-t border-neutral-200 overflow-hidden dark:border-[#1F1F1F]"
+                        className="mt-3 pt-2.5 border-t border-border/40 overflow-hidden"
                       >
                         {entry.details.diff && (
-                          <div className="p-2 rounded-lg bg-neutral-50 border border-neutral-200 font-mono text-xs text-neutral-700 leading-relaxed overflow-x-auto dark:bg-[#050505] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
+                          <div className="p-2 rounded-lg bg-surface-raised border border-border/60 font-mono text-xs text-text-secondary leading-relaxed overflow-x-auto">
                             <pre>{entry.details.diff}</pre>
                           </div>
                         )}
                         {entry.details.preview && (
-                          <p className="text-xs text-neutral-600 mt-2 dark:text-[#A1A1A1]">
+                          <p className="text-xs text-muted-foreground mt-2">
                             {entry.details.preview}
                           </p>
                         )}

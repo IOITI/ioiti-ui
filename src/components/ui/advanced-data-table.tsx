@@ -21,25 +21,16 @@ import {
   List,
 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
+import { fieldBorder } from '../../lib/field-border.js';
 // ioiti-ui: the filters' lists float as everything that floats.
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { DISABLED, FLOATING, MENU_ROW, PRESSABLE } from '../../lib/recipes.js';
 import { SelectionBasket } from './selection-basket.js';
 import type { SelectionActionItem } from './selection-basket.js';
 // ioiti-ui: every box of the table is the package's checkbox, EasyUI's draw-checkbox.
 import { DrawCheckbox } from './draw-checkbox.js';
 import { Skeleton } from './skeleton.js';
 import { Hint } from '../Hint.js';
-
-// =============================================================================
-// DESIGN SYSTEM CONSTANTS & SPRING TOKENS
-// =============================================================================
-
-const SPRING_PHYSICS = {
-  type: 'spring' as const,
-  stiffness: 300,
-  damping: 32,
-  mass: 0.6,
-};
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -153,7 +144,7 @@ export interface DataTableToolbarProps {
 
 export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
   title,
-  searchPlaceholder = 'Search...',
+  searchPlaceholder = 'Search…',
   onBulkDelete,
   onBulkExport,
   className,
@@ -176,19 +167,19 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
   const shouldReduceMotion = useReducedMotionConfig();
 
   return (
-    <div className={cn('px-3.5 py-3 sm:px-7 sm:py-5 border-b border-border/50 space-y-3 sm:space-y-4 select-none', className)}>
+    <div className={cn('px-3.5 py-3 sm:px-7 sm:py-5 border-b border-border/40 space-y-3 sm:space-y-4 select-none', className)}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
         {/* Title or Selection Counter */}
         <div className="flex items-center gap-2.5 min-w-0">
           {title && (
-            <h3 className="text-sm font-medium text-foreground tracking-tight truncate">
+            <h3 className="text-sm font-semibold text-foreground tracking-tight truncate">
               {title}
             </h3>
           )}
           {selectedCount > 0 && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-muted/40 border border-border/40 text-xs text-foreground font-normal">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-muted/40 border border-border text-xs text-foreground font-normal tabular-nums">
               {/* ioiti-ui: the dot, the filters on, the boxes, the sorted column and the rows selected in the accent, where the theme has one (accent:). */}
-              <span className="w-1.5 h-1.5 rounded-full bg-foreground accent:bg-brand" />
+              <span className="size-1.5 rounded-full bg-foreground accent:bg-brand" />
               {selectedCount} selected
             </span>
           )}
@@ -198,21 +189,25 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
         <div className="flex items-center gap-1.5 sm:gap-2.5 w-full sm:w-auto">
           {/* Search Input */}
           <div className="relative flex-1 sm:w-64 min-w-0">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search className="size-4 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            {/* ioiti-ui: a field as the form's Input draws one (its surface, its border, in focus the accent's). */}
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={searchPlaceholder}
-              className="w-full pl-8 sm:pl-9 pr-7 sm:pr-8 py-1.5 rounded-lg border border-border/60 bg-surface-raised/20 text-base sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-border transition-colors font-sans"
+              className={cn(
+                'w-full h-8 pl-8 sm:pl-9 pr-7 sm:pr-8 rounded-lg border bg-surface text-base sm:text-sm text-foreground placeholder:text-text-subtle focus:outline-none transition-colors font-sans',
+                fieldBorder(false)
+              )}
             />
             {searchTerm && (
               <button
                 type="button"
                 onClick={() => setSearchTerm('')}
-                className="absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 cursor-pointer"
+                className="absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-0.5 cursor-pointer"
               >
-                <X className="w-3 h-3" />
+                <X className="size-3" />
               </button>
             )}
           </div>
@@ -222,12 +217,12 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
           <Hint content={viewMode === 'cards' ? 'Show as a table' : 'Show as cards'}>
             <motion.button
               type="button"
-              whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
               onClick={() => setViewMode(viewMode === 'cards' ? 'table' : 'cards')}
-              className="p-1.5 sm:p-2 rounded-lg border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer shrink-0"
+              className="grid size-8 place-items-center rounded-lg border border-border bg-surface text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors cursor-pointer shrink-0"
               aria-label={viewMode === 'cards' ? 'Show as a table' : 'Show as cards'}
             >
-              {viewMode === 'cards' ? <List className="w-3.5 h-3.5" /> : <LayoutGrid className="w-3.5 h-3.5" />}
+              {viewMode === 'cards' ? <List className="size-4" /> : <LayoutGrid className="size-4" />}
             </motion.button>
           </Hint>
 
@@ -236,18 +231,18 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
             <Hint content="Columns shown">
               <motion.button
                 type="button"
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                 onClick={() => setIsColumnPickerOpen(!isColumnPickerOpen)}
-                className="p-1.5 sm:p-2 rounded-lg border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer"
+                className="grid size-8 place-items-center rounded-lg border border-border bg-surface text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors cursor-pointer"
                 aria-label="Columns shown"
                 aria-expanded={isColumnPickerOpen}
               >
-                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <SlidersHorizontal className="size-4" />
               </motion.button>
             </Hint>
 
             {isColumnPickerOpen && (
-              <div className="absolute right-0 top-full mt-2 w-48 max-h-60 overflow-y-auto rounded-xl border border-border/70 bg-surface p-2 shadow-elevated z-30 font-sans glass-float">
+              <div className={cn('absolute right-0 top-full mt-2 w-48 max-h-60 overflow-y-auto p-2 z-30 font-sans', FLOATING)}>
                 <div className="text-xs font-medium text-muted-foreground px-2 py-1">
                   Columns
                 </div>
@@ -257,7 +252,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                     return (
                       <label
                         key={col.id}
-                        className="flex items-center gap-2 px-2 py-1.5 text-sm text-foreground/80 hover:text-foreground hover:bg-surface-hover/50 rounded-md cursor-pointer select-none font-normal"
+                        className={cn(MENU_ROW, 'hover:bg-surface-hover')}
                       >
                         <DrawCheckbox
                           checked={isVisible}
@@ -281,33 +276,33 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={SPRING_PHYSICS}
+            transition={motionTransitions.springSnappy}
             className="overflow-hidden"
           >
-            <div className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 rounded-lg bg-surface-raised/30 border border-border/50 text-xs">
-              <span className="text-xs text-muted-foreground font-normal">
+            <div className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 rounded-lg bg-surface-raised/30 border border-border/60 text-xs">
+              <span className="text-xs text-muted-foreground font-normal tabular-nums">
                 {selectedCount} item{selectedCount === 1 ? '' : 's'} selected:
               </span>
               <div className="flex items-center gap-2">
                 {onBulkExport && (
                   <motion.button
                     type="button"
-                    whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+                    whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                     onClick={() => onBulkExport(Array.from(selectedRowIds))}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border/60 hover:bg-surface-hover text-foreground transition-colors text-sm font-normal cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-surface hover:bg-surface-hover text-foreground transition-colors text-sm font-normal cursor-pointer"
                   >
-                    <Download className="w-3 h-3" />
+                    <Download className="size-4" />
                     <span>Export</span>
                   </motion.button>
                 )}
                 {onBulkDelete && (
                   <motion.button
                     type="button"
-                    whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+                    whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                     onClick={() => onBulkDelete(Array.from(selectedRowIds))}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-negative transition-colors text-sm font-normal cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-negative/30 bg-negative/5 hover:bg-negative/10 text-negative transition-colors text-sm font-normal cursor-pointer dark:bg-negative/10 dark:hover:bg-negative/20"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="size-4" />
                     <span>Delete</span>
                   </motion.button>
                 )}
@@ -351,7 +346,7 @@ function drawnAsToggles(column: ColumnDef<any>): boolean {
 // ioiti-ui: a button of the filter group, as Elastic UI's EuiFilterButton: the group's border around it, a
 // divider between two, its ends rounded as the group is.
 const FILTER_BUTTON =
-  'inline-flex h-8 shrink-0 items-center gap-1.5 px-3 text-sm whitespace-nowrap transition-colors cursor-pointer first:rounded-l-[calc(var(--radius-lg)-1px)] last:rounded-r-[calc(var(--radius-lg)-1px)] hover:bg-surface-hover/60';
+  'inline-flex h-8 shrink-0 items-center gap-1.5 px-3 text-sm whitespace-nowrap transition-colors cursor-pointer first:rounded-l-[calc(var(--radius-lg)-1px)] last:rounded-r-[calc(var(--radius-lg)-1px)] hover:bg-surface-hover';
 const FILTER_BUTTON_IDLE = 'text-muted-foreground hover:text-foreground';
 // What is on, in the accent where the theme has one (accent:).
 const FILTER_BUTTON_ON = 'text-foreground font-medium accent:text-brand-text';
@@ -537,7 +532,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
           openedByFinger.current = finger;
           setOpen(true);
         }}
-        className={cn(FILTER_BUTTON, chosen.length > 0 ? FILTER_BUTTON_ON : FILTER_BUTTON_IDLE, open && 'bg-surface-hover/60')}
+        className={cn(FILTER_BUTTON, chosen.length > 0 ? FILTER_BUTTON_ON : FILTER_BUTTON_IDLE, open && 'bg-surface-hover')}
       >
         {column.header}
         <span aria-hidden className={cn(FILTER_COUNT, chosen.length > 0 ? FILTER_COUNT_TICKED : FILTER_COUNT_ALL)}>
@@ -546,7 +541,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
         <span className="sr-only">
           {chosen.length > 0 ? `, ${chosen.length} of ${options.length} chosen` : `, ${options.length} options`}
         </span>
-        <ChevronDown aria-hidden className={cn('size-3 shrink-0 transition-transform', open && 'rotate-180')} />
+        <ChevronDown aria-hidden className={cn('size-4 shrink-0 motion-safe:transition-transform duration-200 ease-fast', open && 'rotate-180')} />
       </button>
       {createPortal(
         <AnimatePresence>
@@ -569,19 +564,22 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                 maxHeight: place.maxHeight,
                 transformOrigin: place.below ? 'top left' : 'bottom left',
               }}
-              className="fixed z-50 flex flex-col overflow-hidden rounded-xl border border-border bg-surface text-foreground shadow-elevated font-sans select-none glass-float"
+              className={cn('fixed z-50 flex flex-col overflow-hidden font-sans select-none', FLOATING)}
             >
               {searchable && (
                 <div className="border-b border-border/60 p-2">
                   <div className="relative">
-                    <Search aria-hidden className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <Search aria-hidden className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="search"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       aria-label={`Search the options of ${column.header}`}
                       placeholder="Search…"
-                      className="w-full rounded-lg border border-border/60 bg-surface-raised/20 py-1.5 pl-8 pr-2 text-base sm:text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-border"
+                      className={cn(
+                        'w-full h-8 rounded-lg border bg-surface pl-8 pr-3.5 text-base sm:text-sm text-foreground placeholder:text-text-subtle transition-colors',
+                        fieldBorder(false)
+                      )}
                     />
                   </div>
                 </div>
@@ -597,7 +595,8 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                       <label
                         key={option.value}
                         className={cn(
-                          'flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-surface-hover/60',
+                          MENU_ROW,
+                          'hover:bg-surface-hover',
                           // An option that would leave no row, unless ticked, recedes.
                           count === 0 && !ticked ? 'text-muted-foreground' : 'text-foreground'
                         )}
@@ -618,7 +617,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                   <button
                     type="button"
                     onClick={clearColumn}
-                    className="w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-sm text-muted-foreground transition-colors hover:bg-surface-hover/60 hover:text-foreground"
+                    className={cn(MENU_ROW, 'w-full text-left text-muted-foreground hover:bg-surface-hover hover:text-foreground')}
                   >
                     Clear
                   </button>
@@ -649,7 +648,7 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className })
   return (
     // ioiti-ui: positioned, so that the filters' words for screen readers (sr-only) stay in the bar that scrolls
     // them: out of it, a filter's beyond the screen stood beyond the page, which then scrolled sideways onto nothing.
-    <div className={cn('relative px-4 py-2 sm:px-7 sm:py-2.5 border-b border-border/50 bg-surface-raised/15 flex items-center gap-2 sm:gap-3 text-xs overflow-x-auto scrollbar-none font-sans select-none', className)}>
+    <div className={cn('relative px-4 py-2 sm:px-7 sm:py-2.5 border-b border-border/40 bg-surface-raised/15 flex items-center gap-2 sm:gap-3 text-xs overflow-x-auto scrollbar-none font-sans select-none', className)}>
       <div role="group" aria-label="Filters" className="flex shrink-0 items-stretch divide-x divide-border/60 rounded-lg border border-border/60 bg-surface-raised/20">
         {filterableColumns.map((col) =>
           drawnAsToggles(col) ? <FilterToggles key={col.id} column={col} /> : <FilterList key={col.id} column={col} />
@@ -740,8 +739,8 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
   if (error) {
     return (
       <div className="py-12 px-6 text-center flex flex-col items-center justify-center gap-2 font-sans">
-        <AlertCircle className="w-5 h-5 text-negative" />
-        <p className="text-sm font-medium text-foreground">Failed to load data</p>
+        <AlertCircle className="size-5 text-negative" />
+        <p className="text-sm font-semibold text-foreground">Failed to load data</p>
         <p className="text-xs text-muted-foreground max-w-sm">{error}</p>
       </div>
     );
@@ -767,24 +766,24 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     if (!filtering) {
       return (
         <div className="py-10 sm:py-12 px-6 text-center flex flex-col items-center justify-center gap-1.5 font-sans">
-          <h4 className="text-sm font-medium text-foreground">{emptyTitle}</h4>
-          {emptyDescription && <p className="text-xs text-muted-foreground max-w-sm">{emptyDescription}</p>}
+          <h4 className="text-sm font-semibold text-foreground text-balance">{emptyTitle}</h4>
+          {emptyDescription && <p className="text-xs text-muted-foreground max-w-sm text-pretty">{emptyDescription}</p>}
         </div>
       );
     }
     return (
       <div className="py-12 sm:py-16 px-6 text-center flex flex-col items-center justify-center gap-2 font-sans">
-        <div className="w-9 h-9 rounded-full bg-surface-raised/40 border border-border/50 flex items-center justify-center text-muted-foreground mb-1">
-          <Search className="w-4 h-4" />
+        <div className="size-9 rounded-full bg-surface-raised/40 border border-border/60 flex items-center justify-center text-muted-foreground mb-1">
+          <Search className="size-4" />
         </div>
-        <h4 className="text-sm font-medium text-foreground">No matching records found</h4>
+        <h4 className="text-sm font-semibold text-foreground">No matching records found</h4>
         <p className="text-xs text-muted-foreground max-w-xs">
           Nothing matches the search or the filters.
         </p>
         <button
           type="button"
           onClick={clearFilters}
-          className="mt-2 px-3 py-1 rounded-md border border-border/60 hover:bg-surface-hover text-sm text-foreground transition-colors cursor-pointer"
+          className={cn('mt-2 px-3 py-1 rounded-md border border-border bg-surface hover:bg-surface-hover text-sm text-foreground transition-colors', PRESSABLE)}
         >
           Clear filters
         </button>
@@ -813,8 +812,8 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
               key={rowId}
               onClick={expandOnClick(rowId)}
               className={cn(
-                'rounded-xl border border-border/60 bg-surface/30 p-3.5 sm:p-4 space-y-2.5 sm:space-y-3 transition-colors',
-                isSelected && 'bg-surface-raised/40 border-border',
+                'rounded-xl border border-border/60 bg-surface/30 p-4 space-y-2.5 sm:space-y-3 transition-colors',
+                isSelected && 'bg-surface-raised/40 border-foreground/30 accent:border-brand',
                 expandOnClick(rowId) && 'cursor-pointer'
               )}
             >
@@ -839,12 +838,12 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleRowExpansion(rowId)}
-                    className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                    className={cn('p-1 rounded-md text-muted-foreground hover:text-foreground transition-colors shrink-0', PRESSABLE)}
                     aria-expanded={isExpanded}
                     aria-label={expandLabel(row, isExpanded)}
                   >
-                    <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={SPRING_PHYSICS}>
-                      <ChevronRight className="w-3.5 h-3.5" />
+                    <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={motionTransitions.springSnappy}>
+                      <ChevronRight className="size-4" />
                     </motion.div>
                   </button>
                 )}
@@ -877,7 +876,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  transition={SPRING_PHYSICS}
+                  transition={motionTransitions.springSnappy}
                   className="pt-2.5 sm:pt-3 border-t border-border/40 overflow-hidden"
                 >
                   {renderSubComponent(row)}
@@ -897,7 +896,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     <div className={cn('relative overflow-x-auto [scrollbar-width:thin] font-sans', className)}>
       <table className="w-full border-collapse text-left font-sans text-sm min-w-[500px] sm:min-w-full">
         <thead>
-          <tr className="border-b border-border/50 bg-surface-raised/20 text-xs text-muted-foreground select-none">
+          <tr className="border-b border-border/40 bg-surface-raised/20 text-xs text-muted-foreground select-none">
             {/* Checkbox Column */}
             {selectable && (
               <th className="w-10 sm:w-12 px-3.5 sm:px-6 py-3 sm:py-3.5">
@@ -938,12 +937,12 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                       <span>{col.header}</span>
                       {isSorted ? (
                         sortDirection === 'asc' ? (
-                          <ChevronUp className="w-3.5 h-3.5 text-foreground accent:text-brand-text" />
+                          <ChevronUp className="size-3.5 text-foreground accent:text-brand-text" />
                         ) : (
-                          <ChevronDown className="w-3.5 h-3.5 text-foreground accent:text-brand-text" />
+                          <ChevronDown className="size-3.5 text-foreground accent:text-brand-text" />
                         )
                       ) : (
-                        <ChevronsUpDown className="w-3 h-3 opacity-30 hover:opacity-100" />
+                        <ChevronsUpDown className="size-3.5 opacity-30 hover:opacity-100" />
                       )}
                     </button>
                   ) : (
@@ -966,8 +965,8 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                 <tr
                   onClick={expandOnClick(rowId)}
                   className={cn(
-                    'transition-colors hover:bg-surface-hover/40 group',
-                    isSelected && 'bg-surface-raised/35 accent:bg-brand-soft',
+                    'transition-colors hover:bg-surface-hover group',
+                    isSelected && 'bg-surface-hover accent:bg-brand-soft',
                     expandOnClick(rowId) && 'cursor-pointer',
                     isExpanded && expandOnRowClick && 'bg-surface-raised/25'
                   )}
@@ -991,15 +990,15 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                       <button
                         type="button"
                         onClick={() => toggleRowExpansion(rowId)}
-                        className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                        className={cn('p-1 rounded-md text-muted-foreground hover:text-foreground transition-colors', PRESSABLE)}
                         aria-expanded={isExpanded}
                         aria-label={expandLabel(row, isExpanded)}
                       >
                         <motion.div
                           animate={{ rotate: isExpanded ? 90 : 0 }}
-                          transition={SPRING_PHYSICS}
+                          transition={motionTransitions.springSnappy}
                         >
-                          <ChevronRight className="w-3.5 h-3.5" />
+                          <ChevronRight className="size-4" />
                         </motion.div>
                       </button>
                     </td>
@@ -1031,12 +1030,12 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                 {/* Sub-component Expansion Drawer */}
                 {renderSubComponent && isExpanded && (
                   <tr className="bg-surface-raised/15">
-                    <td colSpan={visibleColumns.length + (selectable ? 2 : 1)} className="p-0 border-b border-border/50">
+                    <td colSpan={visibleColumns.length + (selectable ? 2 : 1)} className="p-0 border-b border-border/40">
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        transition={SPRING_PHYSICS}
+                        transition={motionTransitions.springSnappy}
                         className="p-3.5 sm:p-6 overflow-hidden border-t border-border/40"
                       >
                         {renderSubComponent(row)}
@@ -1057,6 +1056,12 @@ export interface DataTablePaginationProps {
   pageSizeOptions?: number[];
   className?: string;
 }
+
+// ioiti-ui: a page's button: a control's surface and border, half its strength where it leads nowhere (DISABLED).
+const PAGE_BUTTON = cn(
+  'p-1.5 rounded-md border border-border bg-surface text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors cursor-pointer',
+  DISABLED
+);
 
 export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
   pageSizeOptions = [5, 10, 20, 50],
@@ -1079,7 +1084,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
   return (
     <div
       className={cn(
-        'px-4 py-3 sm:px-7 sm:py-4 border-t border-border/50 bg-surface/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs font-sans select-none',
+        'px-4 py-3 sm:px-7 sm:py-4 border-t border-border/40 bg-surface/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs font-sans select-none',
         className
       )}
     >
@@ -1107,7 +1112,10 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
               setCurrentPage(1);
             }}
             aria-label="Rows per page"
-            className="px-2 py-1 rounded-md border border-border/60 bg-surface-raised/20 text-foreground text-base sm:text-sm focus:outline-none focus:border-border cursor-pointer font-sans"
+            className={cn(
+              'h-8 px-2.5 rounded-lg border bg-surface text-foreground text-base sm:text-sm focus:outline-none transition-colors cursor-pointer font-sans',
+              fieldBorder(false)
+            )}
           >
             {/* ioiti-ui: the page's size among them, given or not: a select shows its first option for a value it lacks. */}
             {(pageSizeOptions.includes(pageSize) ? pageSizeOptions : [...pageSizeOptions, pageSize].sort((a, b) => a - b)).map((opt) => (
@@ -1122,23 +1130,23 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
         <div className="flex items-center gap-1 shrink-0">
           <motion.button
             type="button"
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(1)}
             disabled={isLoading || currentPage <= 1}
             aria-label="First page"
-            className="p-1.5 rounded-md border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className={PAGE_BUTTON}
           >
-            <ChevronsLeft className="w-3.5 h-3.5" />
+            <ChevronsLeft className="size-3.5" />
           </motion.button>
           <motion.button
             type="button"
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={isLoading || currentPage <= 1}
             aria-label="Previous page"
-            className="p-1.5 rounded-md border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className={PAGE_BUTTON}
           >
-            <ChevronLeft className="w-3.5 h-3.5" />
+            <ChevronLeft className="size-3.5" />
           </motion.button>
 
           <span className="px-2 text-foreground/90 text-xs tabular-nums font-normal">
@@ -1147,23 +1155,23 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
 
           <motion.button
             type="button"
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={isLoading || currentPage >= totalPages}
             aria-label="Next page"
-            className="p-1.5 rounded-md border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className={PAGE_BUTTON}
           >
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="size-3.5" />
           </motion.button>
           <motion.button
             type="button"
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(totalPages)}
             disabled={isLoading || currentPage >= totalPages}
             aria-label="Last page"
-            className="p-1.5 rounded-md border border-border/60 bg-surface-raised/20 text-muted-foreground hover:text-foreground hover:border-border disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className={PAGE_BUTTON}
           >
-            <ChevronsRight className="w-3.5 h-3.5" />
+            <ChevronsRight className="size-3.5" />
           </motion.button>
         </div>
       </div>

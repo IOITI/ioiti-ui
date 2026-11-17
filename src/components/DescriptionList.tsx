@@ -49,7 +49,7 @@ export function DescriptionList({
   className,
 }: DescriptionListProps) {
   const size = compressed ? 'text-xs' : 'text-sm'
-  const details = cn('text-text-primary', numeric && 'tabular-nums')
+  const details = cn('text-foreground', numeric && 'tabular-nums')
 
   if (layout === 'inline') {
     return (
@@ -71,7 +71,7 @@ export function DescriptionList({
           'grid grid-cols-1 gap-x-6',
           GRID_COLUMNS[columns],
           compressed ? 'gap-y-2' : 'gap-y-3',
-          boxed && 'rounded-xl border border-border p-4',
+          boxed && 'rounded-xl border border-border/60 p-4',
           size,
           className,
         )}
@@ -91,8 +91,8 @@ export function DescriptionList({
     <dl
       className={cn(
         'flex flex-col',
-        (boxed || divided || layout === 'columns') && 'divide-y divide-border',
-        boxed && 'rounded-xl border border-border px-4',
+        (boxed || divided || layout === 'columns') && 'divide-y divide-border/40',
+        boxed && 'rounded-xl border border-border/60 px-4',
         size,
         className,
       )}

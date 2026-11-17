@@ -11,4 +11,4 @@ Versions of something, newest first: the current one marked, an earlier one open
 
 - The ledger restores nothing itself: `onRestore` opens the page's confirmation (a `SettleModal`), which restores.
 - The current entry is marked in green; an entry with `details` opens under its card. An entry with `restorable: false` has no restore button.
-- Give the words: the defaults are "Recovery Ledger", "Revert", "Current Head" and "N snapshots".
+- Give the words: the defaults are "Recovery ledger", "Revert", "Current head" and "N snapshots", in sentence case.

@@ -34,6 +34,20 @@ describe('AttachmentChip', () => {
     expect(link).toHaveAttribute('target', '_blank')
   })
 
+  it('cuts a long name in its middle, keeping its extension, the whole of it in a hint and said to screen readers', () => {
+    const label = 'positions-2026-10-31-after-the-close.csv'
+    const { rerender } = render(<AttachmentChip label={label} href="/files/f2" />)
+
+    const link = screen.getByRole('link', { name: label })
+    expect(link).toHaveAccessibleDescription(label)
+    expect(screen.getByText('positions-2026-10-31-after-the')).toHaveClass('min-w-0', 'text-ellipsis')
+    expect(screen.getByText('-close.csv')).toHaveClass('shrink-0')
+    expect(screen.getByText('-close.csv').parentElement).toHaveAttribute('aria-hidden', 'true')
+
+    rerender(<AttachmentChip label="export.csv" href="/files/f1" />)
+    expect(screen.getByRole('link', { name: 'export.csv' })).not.toHaveAttribute('aria-describedby')
+  })
+
   it('shows an image small, says while it is made ready, and says why it could not be taken', () => {
     const { container, rerender } = render(<AttachmentChip label="chart.png" thumbnail="data:image/png;base64,AAAA" busy />)
 

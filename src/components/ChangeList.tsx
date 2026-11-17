@@ -38,18 +38,18 @@ function Row({ change, numeric }: { change: Change; numeric: boolean }) {
       <span className="min-w-0 text-text-secondary">{change.label}</span>
       <span className={cn('ml-auto inline-flex flex-wrap items-baseline justify-end gap-x-2', numeric && 'tabular-nums')}>
         {added ? (
-          <span className="text-xs text-text-muted">New</span>
+          <span className="text-xs text-muted-foreground">New</span>
         ) : (
-          <del className="text-text-muted decoration-text-muted">
+          <del className="text-muted-foreground decoration-muted-foreground">
             <span className="sr-only">from </span>
             {change.before}
           </del>
         )}
-        <ArrowRight aria-hidden className="size-3.5 shrink-0 self-center text-text-muted" />
+        <ArrowRight aria-hidden className="size-3.5 shrink-0 self-center text-muted-foreground" />
         {removed ? (
-          <span className="text-text-muted">Removed</span>
+          <span className="text-muted-foreground">Removed</span>
         ) : (
-          <ins className="font-medium text-text-primary no-underline">
+          <ins className="font-medium text-foreground no-underline">
             <span className="sr-only">to </span>
             {change.after}
           </ins>
@@ -71,7 +71,7 @@ export function ChangeList({ changes = [], groups, label, numeric = false, class
         {groups.map((group, index) => (
           <section key={index}>
             <h4 className="mb-1 text-xs font-medium text-text-secondary">{group.title}</h4>
-            <ul className="divide-y divide-border">
+            <ul className="divide-y divide-border/40">
               {group.changes.map((change, at) => (
                 <Row key={at} change={change} numeric={numeric} />
               ))}
@@ -82,7 +82,7 @@ export function ChangeList({ changes = [], groups, label, numeric = false, class
     )
   }
   return (
-    <ul aria-label={label} className={cn('divide-y divide-border text-sm', className)}>
+    <ul aria-label={label} className={cn('divide-y divide-border/40 text-sm', className)}>
       {changes.map((change, index) => (
         <Row key={index} change={change} numeric={numeric} />
       ))}

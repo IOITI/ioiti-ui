@@ -11,9 +11,11 @@ import React, {
 } from "react";
 // ioiti-ui: reduced motion as IoitiProvider says it too (useReducedMotionConfig), not the system's alone.
 import { AnimatePresence, motion, useReducedMotionConfig } from "framer-motion";
+import { ArrowUpRight, Check, ChevronDown, CircleAlert, Copy, RotateCcw, ThumbsDown, ThumbsUp, Wrench } from "lucide-react";
 import { formatSpan } from "../../lib/format.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { useNow } from "../../lib/now.js";
+import { PRESSABLE } from "../../lib/recipes.js";
 import { cn, copyToClipboard } from "../../lib/utils.js";
 import { CodeBlock } from "../CodeBlock.js";
 import { Hint } from "../Hint.js";
@@ -160,26 +162,7 @@ function useCopy() {
   return { copied, copy };
 }
 
-/* ---------------------------------- Icons ---------------------------------- */
-
-const PATHS = {
-  copy: "M9 9h10v10H9zM5 15V5h10",
-  check: "M5 12.5l4.5 4.5L19 7.5",
-  retry: "M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5",
-  up: "M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z",
-  external: "M7 17 17 7M8 7h9v9",
-  chevron: "m6 9 6 6 6-6",
-  tool: "M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4Z",
-  alert: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18ZM12 8v5M12 16.5v.01",
-};
-
-function Ico({ d, className = "h-3.5 w-3.5", sw = 1.7 }: { d: string; className?: string; sw?: number }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d={d} />
-    </svg>
-  );
-}
+// ioiti-ui: lucide's icons at their own stroke, at the sizes of EasyUI's own set (its paths, at 1.7), which is gone.
 
 /* ---------------------------------- Styles --------------------------------- */
 
@@ -187,8 +170,8 @@ function Ico({ d, className = "h-3.5 w-3.5", sw = 1.7 }: { d: string; className?
 // no focus ring of its own (design.css draws the one ring).
 const muted = "text-muted-foreground";
 const hair = "ring-1 ring-border";
-const wash = "bg-surface-hover";
-const iconBtn = "grid h-8 min-w-8 place-items-center rounded-lg text-muted-foreground transition-[color,background-color,transform] duration-150 active:scale-[0.94] [-webkit-tap-highlight-color:transparent] max-sm:h-10 max-sm:min-w-10 [@media(hover:hover)]:hover:bg-surface-hover [@media(hover:hover)]:hover:text-foreground";
+const wash = "bg-surface-raised";
+const iconBtn = `grid h-8 min-w-8 place-items-center rounded-lg text-muted-foreground transition-[color,background-color,transform] duration-150 ${PRESSABLE} [-webkit-tap-highlight-color:transparent] max-sm:h-10 max-sm:min-w-10 [@media(hover:hover)]:hover:bg-surface-hover [@media(hover:hover)]:hover:text-foreground`;
 
 /* ========================================================================== */
 /*  Markdown (small, streaming-friendly, never touches innerHTML)             */
@@ -324,7 +307,7 @@ function Link({ href, children }: { href: string | undefined; children: React.Re
     <Hint content={host ? `${host} — ${safe}` : safe}>
       <a href={safe} target="_blank" rel="noopener noreferrer nofollow ugc" referrerPolicy="no-referrer" className={className}>
         {children}
-        <Ico d={PATHS.external} className="h-[0.7em] w-[0.7em] translate-y-[0.05em] self-center text-muted-foreground" sw={2} />
+        <ArrowUpRight aria-hidden className="size-[0.7em] translate-y-[0.05em] self-center text-muted-foreground" />
       </a>
     </Hint>
   );
@@ -369,7 +352,7 @@ function Caret() {
       data-caret=""
       className="ml-[3px] inline-block h-[1.05em] w-[2px] translate-y-[0.2em] rounded-full bg-current"
       animate={reduce ? { opacity: 0.7 } : { opacity: [1, 0.15, 1] }}
-      transition={reduce ? undefined : { repeat: Infinity, duration: 1.1, ease: "easeInOut" }}
+      transition={reduce ? undefined : { ...motionTransitions.easeSoft, repeat: Infinity, duration: 1.1 }}
     />
   );
 }
@@ -404,9 +387,9 @@ function Orb({ active }: { active: boolean }) {
   return (
     <motion.span
       aria-hidden
-      className="relative block h-[18px] w-[18px] shrink-0 rounded-full bg-[conic-gradient(from_200deg,var(--chart-compare-1),var(--chart-compare-2),var(--chart-compare-3),var(--chart-compare-4),var(--chart-compare-1))] ring-1 ring-border accent:bg-(image:--brand-fill)"
+      className="relative block size-[18px] shrink-0 rounded-full bg-[conic-gradient(from_200deg,var(--chart-compare-1),var(--chart-compare-2),var(--chart-compare-3),var(--chart-compare-4),var(--chart-compare-1))] ring-1 ring-border accent:bg-(image:--brand-fill)"
       animate={active && !reduce ? { rotate: 360 } : { rotate: 0 }}
-      transition={active && !reduce ? { repeat: Infinity, duration: 7, ease: "linear" } : { duration: 0.3 }}
+      transition={active && !reduce ? { repeat: Infinity, duration: 7, ease: "linear" } : motionTransitions.easeSoft}
     />
   );
 }
@@ -448,7 +431,7 @@ export const AIResponseHeader: React.FC<AIResponseHeaderProps> = ({
       <div className={`flex shrink-0 items-center gap-3 text-xs ${muted}`} role="status" aria-live="polite">
         {status === "streaming" && (
           <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-positive" aria-hidden />
+            <span className="size-1.5 animate-pulse rounded-full bg-positive" aria-hidden />
             Streaming
           </span>
         )}
@@ -473,9 +456,9 @@ function Dots() {
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
-          className="block h-[5px] w-[5px] rounded-full bg-current"
+          className="block size-[5px] rounded-full bg-current"
           animate={reduce ? { opacity: [0.35, 1, 0.35] } : { opacity: [0.35, 1, 0.35], y: [0, -3, 0] }}
-          transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.16, ease: "easeInOut" }}
+          transition={{ ...motionTransitions.easeSoft, repeat: Infinity, duration: 1.2, delay: i * 0.16 }}
         />
       ))}
     </span>
@@ -586,7 +569,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
             key={i}
             className={`h-2.5 rounded-full bg-surface-hover ${w}`}
             animate={reduce ? undefined : { opacity: [0.5, 1, 0.5] }}
-            transition={reduce ? undefined : { repeat: Infinity, duration: 1.6, delay: i * 0.15, ease: "easeInOut" }}
+            transition={reduce ? undefined : { ...motionTransitions.easeSoft, repeat: Infinity, duration: 1.6, delay: i * 0.15 }}
           />
         ))}
       </div>
@@ -595,13 +578,13 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
 
   if (status === "error") {
     return (
-      <div role="alert" className="my-5 flex items-start gap-3 rounded-xl bg-negative/[0.06] p-4 ring-1 ring-negative/25">
-        <Ico d={PATHS.alert} className="mt-0.5 h-4 w-4 shrink-0 text-negative" />
+      <div role="alert" className="my-5 flex items-start gap-3 rounded-xl bg-negative/5 p-4 ring-1 ring-negative/30 dark:bg-negative/10">
+        <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-negative" />
         <div className="min-w-0 flex-1 text-sm leading-relaxed">
           <p className="font-medium text-foreground">Couldn’t finish this response</p>
           <p className={`mt-0.5 break-words ${muted}`}>{content || "The connection dropped or the model timed out."}</p>
           {onRegenerate && (
-            <button type="button" onClick={onRegenerate} className="mt-2 rounded-md text-sm font-medium text-foreground underline decoration-border underline-offset-4">
+            <button type="button" onClick={onRegenerate} className="mt-2 cursor-pointer rounded-md text-sm font-medium text-foreground underline decoration-border underline-offset-2">
               Try again
             </button>
           )}
@@ -673,7 +656,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
           case "table":
             return wrap(
               // ioiti-ui: positioned, so that what it scrolls (its words for screen readers too) stays in it.
-              <div className={`relative overflow-x-auto rounded-xl ${hair}`}>
+              <div className="relative overflow-x-auto rounded-xl border border-border/60">
                 <table className="w-full min-w-[320px] border-collapse text-left text-sm">
                   <thead>
                     <tr className={`${wash} text-xs font-medium ${muted}`}>
@@ -682,7 +665,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-border/40">
                     {b.rows.map((row, r) => (
                       <tr key={r}>
                         {row.map((cell, c) => (
@@ -731,9 +714,9 @@ export const AIResponseSources: React.FC<AIResponseSourcesProps> = ({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="inline-flex h-8 items-center gap-1.5 rounded-lg pr-2 text-sm text-muted-foreground transition-colors duration-150 [@media(hover:hover)]:hover:text-foreground"
+        className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg pr-2 text-sm text-muted-foreground transition-colors duration-150 [@media(hover:hover)]:hover:text-foreground"
       >
-        <Ico d={PATHS.chevron} className={cx("h-3.5 w-3.5 transition-transform duration-200", open && "rotate-180")} />
+        <ChevronDown aria-hidden className={cx("size-3.5 motion-safe:transition-transform duration-200 ease-fast", open && "rotate-180")} />
         {title}
         <span className="tabular-nums text-muted-foreground">{sources.length}</span>
       </button>
@@ -761,10 +744,10 @@ export const AIResponseSources: React.FC<AIResponseSourcesProps> = ({
                     </span>
                     {s.snippet && <span className={`mt-0.5 line-clamp-1 block text-xs ${muted}`}>{s.snippet}</span>}
                   </span>
-                  {href && isExternal(href) && <Ico d={PATHS.external} className="mt-0.5 h-3 w-3 shrink-0 text-muted-foreground" />}
+                  {href && isExternal(href) && <ArrowUpRight aria-hidden className="mt-0.5 size-3 shrink-0 text-muted-foreground" />}
                 </>
               );
-              const row = "flex items-start gap-3 rounded-xl px-2.5 py-2";
+              const row = "flex items-start gap-3 rounded-lg px-2.5 py-2";
               const linkRow = `${row} transition-colors duration-150 [@media(hover:hover)]:hover:bg-surface-hover`;
               return (
                 <li key={s.id ?? i}>
@@ -830,11 +813,11 @@ export const AIResponseToolsSummary: React.FC<AIResponseToolsSummaryProps> = ({
           setOpen((v) => !v);
           onToggleDetails?.();
         }}
-        className={`inline-flex h-8 items-center gap-2 rounded-full bg-surface-hover pl-3 pr-2.5 text-sm text-muted-foreground ${hair} transition-[color,background-color,transform] duration-150 active:scale-[0.98] [@media(hover:hover)]:hover:text-foreground`}
+        className={`inline-flex h-8 items-center gap-2 rounded-full bg-surface-hover pl-3 pr-2.5 text-sm text-muted-foreground ${hair} transition-[color,background-color,transform] duration-150 ${PRESSABLE} [@media(hover:hover)]:hover:text-foreground`}
       >
-        <Ico d={PATHS.tool} className="h-3 w-3" />
+        <Wrench aria-hidden className="size-3" />
         Used {toolCount} {toolCount === 1 ? "tool" : "tools"}
-        <Ico d={PATHS.chevron} className={cx("h-3 w-3 transition-transform duration-200", open && "rotate-180")} />
+        <ChevronDown aria-hidden className={cx("size-3 motion-safe:transition-transform duration-200 ease-fast", open && "rotate-180")} />
       </button>
 
       <AnimatePresence initial={false}>
@@ -850,7 +833,7 @@ export const AIResponseToolsSummary: React.FC<AIResponseToolsSummaryProps> = ({
             {tools.map((t, i) => (
               <li key={i} className="flex items-center justify-between gap-3 px-1 py-1.5 text-[13px]">
                 <span className="flex min-w-0 items-center gap-2.5">
-                  <span className={cx("h-1.5 w-1.5 shrink-0 rounded-full", DOT[t.status ?? "success"])} aria-hidden />
+                  <span className={cx("size-1.5 shrink-0 rounded-full", DOT[t.status ?? "success"])} aria-hidden />
                   <span className="truncate font-mono text-foreground">{t.name}</span>
                   <span className="sr-only">{t.status ?? "success"}</span>
                 </span>
@@ -884,14 +867,18 @@ export const AIResponseActions: React.FC<AIResponseActionsProps> = ({ className 
     <div className={cx("-ml-2 flex items-center gap-0.5 pt-3", className)}>
       <Hint content={copied ? "Copied" : "Copy"}>
         <button type="button" onClick={copyContent} className={iconBtn} aria-label={copied ? "Response copied" : "Copy response"}>
-          <Ico d={copied ? PATHS.check : PATHS.copy} className={cx("h-[15px] w-[15px]", copied && "text-positive")} sw={copied ? 2.2 : 1.7} />
+          {copied ? (
+            <Check aria-hidden className="size-[15px] text-positive" />
+          ) : (
+            <Copy aria-hidden className="size-[15px]" />
+          )}
         </button>
       </Hint>
 
       {onRegenerate && (
         <Hint content="Regenerate" wrap={busy}>
-          <button type="button" onClick={onRegenerate} disabled={busy} className={`${iconBtn} disabled:pointer-events-none disabled:opacity-30`} aria-label="Regenerate response">
-            <Ico d={PATHS.retry} className={cx("h-[15px] w-[15px]", busy && "motion-safe:animate-spin")} />
+          <button type="button" onClick={onRegenerate} disabled={busy} className={iconBtn} aria-label="Regenerate response">
+            <RotateCcw aria-hidden className={cx("size-[15px]", busy && "motion-safe:animate-spin")} />
           </button>
         </Hint>
       )}
@@ -908,7 +895,7 @@ export const AIResponseActions: React.FC<AIResponseActionsProps> = ({ className 
               aria-label="Good response"
               className={cx(iconBtn, feedback === "like" && chosen)}
             >
-              <Ico d={PATHS.up} className="h-[15px] w-[15px]" />
+              <ThumbsUp aria-hidden className="size-[15px]" />
             </button>
           </Hint>
           <Hint content="Poor response">
@@ -919,7 +906,7 @@ export const AIResponseActions: React.FC<AIResponseActionsProps> = ({ className 
               aria-label="Poor response"
               className={cx(iconBtn, feedback === "dislike" && chosen)}
             >
-              <Ico d={PATHS.up} className="h-[15px] w-[15px] rotate-180" />
+              <ThumbsDown aria-hidden className="size-[15px]" />
             </button>
           </Hint>
         </>
@@ -989,10 +976,9 @@ export const AIResponse: React.FC<AIResponseProps> = ({
       <article
         aria-label="AI response"
         aria-busy={status === "streaming" || status === "generating"}
-        // ioiti-ui: the design's surface and border (EasyUI's white and #0b0b0c), glass under the glass material.
+        // ioiti-ui: a section, as a Panel (its border, its surface, no shadow), glass under the glass material.
         className={cx(
-          "w-full min-w-0 rounded-[20px] bg-surface p-4 text-foreground antialiased shadow-sm sm:p-6 glass-card",
-          hair,
+          "w-full min-w-0 rounded-2xl border border-border/70 bg-surface/50 p-4 text-foreground antialiased sm:p-6 dark:bg-surface/25 glass-card",
           className,
         )}
       >

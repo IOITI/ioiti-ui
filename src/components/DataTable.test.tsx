@@ -81,7 +81,7 @@ describe('the data table, as the pages use it', () => {
     await waitFor(() => expect(screen.queryByRole('toolbar', { name: 'Bulk actions toolbar' })).not.toBeInTheDocument())
 
     // "All" is every row the search leaves that can be chosen, on every page: Row 10, 11 and 12.
-    await user.type(screen.getByPlaceholderText('Search...'), 'Row 1')
+    await user.type(screen.getByPlaceholderText('Search…'), 'Row 1')
     await user.click(screen.getByRole('checkbox', { name: 'Select Row 10' }))
     const searched = within(await screen.findByRole('toolbar', { name: 'Bulk actions toolbar' }))
     await user.click(searched.getByRole('button', { name: 'All (3)' }))
@@ -96,7 +96,7 @@ describe('the data table, as the pages use it', () => {
     await user.click(screen.getByRole('button', { name: 'Next page' }))
     expect(shown()[0]).toMatch(/^Row 6/)
 
-    await user.type(screen.getByPlaceholderText('Search...'), 'Row 1')
+    await user.type(screen.getByPlaceholderText('Search…'), 'Row 1')
 
     // Row 1, 10, 11, 12: from the first of them.
     expect(shown()[0]).toMatch(/^Row 1(?!\d)/)
@@ -389,7 +389,7 @@ describe('the table state a page holds, arrays and sorting (0.9.0)', () => {
     // Odd rows (2, 4, …, 12), the name sorted down: "Row 8" before "Row 6", "Row 12" last.
     expect(shown()[0]).toMatch(/^Row 8/)
     expect(shown()).toHaveLength(6)
-    await user.type(screen.getByPlaceholderText('Search...'), '1')
+    await user.type(screen.getByPlaceholderText('Search…'), '1')
     expect(changes.at(-1)).toEqual({ search: '1', filters: { kind: ['odd'] }, sort: { column: 'name', direction: 'desc' }, page: 1 })
     expect(shown()).toEqual([expect.stringMatching(/^Row 12/), expect.stringMatching(/^Row 10/)])
   })

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Clock, AlertCircle, AlertTriangle, Loader2, GitCommit, Copy, CheckCheck, ChevronDown } from 'lucide-react';
 import { cn, copyToClipboard } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { PRESSABLE } from '../../lib/recipes.js';
 import { Hint } from '../Hint.js';
 
 // ioiti-ui: `warning`, a step that went on but not as it should (amber).
@@ -97,50 +98,50 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
   const getStatusIcon = (status: TimelineStatus) => {
     switch (status) {
       case 'completed':
-        return <Check className="w-3.5 h-3.5 text-blue-600 dark:text-white accent:text-brand-text" />;
+        return <Check className="size-3.5 text-accent-blue dark:text-foreground accent:text-brand-text" />;
       case 'in-progress':
-        return <Loader2 className="w-3.5 h-3.5 text-blue-600 dark:text-white accent:text-brand-text animate-spin" />;
+        return <Loader2 className="size-3.5 text-accent-blue dark:text-foreground accent:text-brand-text animate-spin" />;
       case 'failed':
-        return <AlertCircle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />;
+        return <AlertCircle className="size-3.5 text-negative" />;
       case 'warning':
-        return <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />;
+        return <AlertTriangle className="size-3.5 text-warning" />;
       case 'pending':
       default:
-        return <Clock className="w-3.5 h-3.5 text-neutral-500 dark:text-[#606060]" />;
+        return <Clock className="size-3.5 text-muted-foreground" />;
     }
   };
 
   const getStatusBadgeStyle = (status: TimelineStatus) => {
     switch (status) {
       case 'completed':
-        return 'bg-neutral-100 text-neutral-700 border-neutral-200 dark:bg-white/10 dark:text-white dark:border-white/20';
+        return 'bg-muted text-text-secondary border-border';
       case 'in-progress':
-        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-white/15 dark:text-white dark:border-white/30 dark:shadow-[0_0_12px_rgba(255,255,255,0.15)] accent:bg-brand-soft accent:text-brand-text accent:border-brand/30';
+        return 'bg-info/5 text-info border-info/30 dark:bg-info/10 accent:bg-brand-soft accent:text-brand-text accent:border-brand/30';
       case 'failed':
-        return 'bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-300';
+        return 'bg-negative/5 text-negative border-negative/30 dark:bg-negative/10';
       case 'warning':
-        return 'bg-amber-500/10 text-amber-800 border-amber-500/30 dark:text-amber-300';
+        return 'bg-warning/5 text-warning border-warning/30 dark:bg-warning/10';
       case 'pending':
       default:
-        return 'bg-neutral-100 text-neutral-600 border-neutral-200 dark:bg-[#141414] dark:text-muted-foreground dark:border-[#1F1F1F]';
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   const getStatusNodeStyle = (status: TimelineStatus, isSelected: boolean) => {
     switch (status) {
       case 'completed':
-        return 'bg-white border-blue-500 text-blue-600 ring-1 ring-blue-500/20 dark:bg-[#141414] dark:border-[#3B82F6] dark:text-[#3B82F6] dark:ring-[#3B82F6]/20 accent:border-brand accent:text-brand-text accent:ring-brand/20';
+        return 'bg-surface border-accent-blue text-accent-blue ring-1 ring-accent-blue/20 accent:border-brand accent:text-brand-text accent:ring-brand/20';
       case 'in-progress':
-        return 'bg-white border-blue-500 text-blue-600 shadow-xs ring-2 ring-blue-500/30 dark:bg-[#141414] dark:border-[#3B82F6] dark:text-[#3B82F6] dark:ring-[#3B82F6]/30 accent:border-brand accent:text-brand-text accent:ring-brand/30';
+        return 'bg-surface border-accent-blue text-accent-blue shadow-subtle ring-2 ring-accent-blue/30 accent:border-brand accent:text-brand-text accent:ring-brand/30';
       case 'failed':
-        return 'bg-rose-500/10 border-rose-500 text-rose-600 ring-1 ring-rose-500/30 dark:text-rose-400';
+        return 'bg-negative/5 border-negative text-negative ring-1 ring-negative/30 dark:bg-negative/10';
       case 'warning':
-        return 'bg-amber-500/10 border-amber-500 text-amber-600 ring-1 ring-amber-500/30 dark:text-amber-400';
+        return 'bg-warning/5 border-warning text-warning ring-1 ring-warning/30 dark:bg-warning/10';
       case 'pending':
       default:
         return isSelected
-          ? 'bg-neutral-100 border-neutral-400 text-neutral-600 dark:bg-[#141414] dark:border-[#4A4A4A] dark:text-[#A1A1A1]'
-          : 'bg-white border-neutral-200 text-neutral-500 dark:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:text-muted-foreground';
+          ? 'bg-surface-hover border-border-hover text-muted-foreground'
+          : 'bg-surface border-border text-muted-foreground';
     }
   };
 
@@ -158,19 +159,20 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
   return (
     <div
       className={cn(
-        'w-full rounded-xl border border-neutral-200 bg-white p-3.5 sm:p-5 text-neutral-900 dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-[#FAFAFA]',
+        // ioiti-ui: a section, as a Panel: its border, its surface, glass under the glass material (glass-card).
+        'w-full rounded-2xl border border-border/70 bg-surface/50 p-4 sm:p-5 text-foreground dark:bg-surface/25 glass-card',
         className
       )}
       {...props}
     >
       <div className="relative">
         {/* Continuous Background Track Line */}
-        <div className="absolute left-[17px] top-6 bottom-6 w-[2px] bg-neutral-200 dark:bg-[#1F1F1F]" />
+        <div className="absolute left-[15px] top-6 bottom-6 w-[2px] bg-border" />
 
         {/* Animated Progress Filled Line */}
         <motion.div
           // ioiti-ui: in the accent, where the theme has one (accent:).
-          className="absolute left-[17px] top-6 w-[2px] bg-gradient-to-b from-[#3B82F6] via-[#3B82F6]/80 to-transparent accent:from-brand accent:via-brand/80 origin-top"
+          className="absolute left-[15px] top-6 w-[2px] bg-gradient-to-b from-accent-blue via-accent-blue/80 to-transparent accent:from-brand accent:via-brand/80 origin-top"
           initial={{ height: 0 }}
           animate={{ height: `${progressPercent}%` }}
           transition={motionTransitions.springGentle}
@@ -201,13 +203,14 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                   aria-controls={collapsible && details ? itemId : undefined}
                   className={cn(
                     // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                    'relative z-10 w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-200 shrink-0 cursor-pointer',
+                    'relative z-10 size-8 rounded-full flex items-center justify-center border transition-[color,background-color,border-color,box-shadow] duration-200 shrink-0',
+                    PRESSABLE,
                     getStatusNodeStyle(item.status, isSelected)
                   )}
                 >
                   {getStatusIcon(item.status)}
                   {item.status === 'in-progress' && (
-                    <span className="absolute inset-0 rounded-full animate-ping bg-[#3B82F6]/20 accent:bg-brand/20 -z-10" />
+                    <span className="absolute inset-0 rounded-full animate-ping bg-accent-blue/20 accent:bg-brand/20 -z-10" />
                   )}
                 </button>
                 </Hint>
@@ -216,28 +219,28 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                 <div
                   onClick={() => handleToggleExpand(item)}
                   className={cn(
-                    'flex-1 min-w-0 rounded-xl border transition-all duration-200 cursor-pointer overflow-hidden p-3.5 sm:p-4',
+                    'flex-1 min-w-0 rounded-xl border transition-colors duration-200 cursor-pointer overflow-hidden p-4',
                     isSelected
-                      ? 'bg-neutral-50 border-neutral-300 shadow-xs dark:bg-[#141414] dark:border-[#4A4A4A]'
-                      : 'bg-white border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 dark:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:hover:bg-[#141414]'
+                      ? 'bg-surface-hover border-foreground/30'
+                      : 'bg-surface border-border/60 hover:border-border-hover hover:bg-surface-hover'
                   )}
                 >
                   {/* Item Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] truncate">
+                        <span className="text-sm font-medium text-foreground truncate">
                           {item.title}
                         </span>
                         {item.tag && (
-                          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-neutral-100 border border-neutral-200 text-neutral-600 dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]">
+                          <span className="text-[11px] font-mono px-2 py-0.5 rounded-sm bg-surface-raised border border-border text-muted-foreground">
                             {item.tag}
                           </span>
                         )}
                         {item.statusLabel && (
                           <span
                             className={cn(
-                              'text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border',
+                              'text-[11px] font-medium px-2 py-0.5 rounded-full border',
                               getStatusBadgeStyle(item.status)
                             )}
                           >
@@ -255,10 +258,10 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                       {collapsible && details && (
                         <motion.div
                           animate={{ rotate: isExpanded ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="text-muted-foreground group-hover:text-neutral-900 dark:group-hover:text-[#FAFAFA] p-1"
+                          transition={motionTransitions.easeFast}
+                          className="text-muted-foreground group-hover:text-foreground p-1"
                         >
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown className="size-4" />
                         </motion.div>
                       )}
                     </div>
@@ -275,9 +278,9 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                         transition={motionTransitions.springGentle}
                         className="overflow-hidden"
                       >
-                        <div className="pt-3 mt-3 border-t border-neutral-200 dark:border-[#1F1F1F] space-y-3">
+                        <div className="pt-3 mt-3 border-t border-border/40 space-y-3">
                           {item.description && (
-                            <p className="text-sm text-neutral-600 dark:text-[#A1A1A1] leading-relaxed [overflow-wrap:anywhere]">
+                            <p className="text-sm text-muted-foreground leading-relaxed [overflow-wrap:anywhere]">
                               {item.description}
                             </p>
                           )}
@@ -288,12 +291,12 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                               {item.metrics.map((m, i) => (
                                 <div
                                   key={i}
-                                  className="p-2.5 rounded-lg bg-neutral-50 border border-neutral-200 dark:bg-[#0E0E0E] dark:border-[#1F1F1F]"
+                                  className="p-2.5 rounded-lg bg-surface-raised border border-border/60"
                                 >
-                                  <span className="text-xs font-mono text-muted-foreground block uppercase">
+                                  <span className="text-xs font-medium text-muted-foreground block">
                                     {m.label}
                                   </span>
-                                  <span className="text-sm font-mono font-medium text-neutral-900 dark:text-[#FAFAFA]">
+                                  <span className="text-sm font-mono font-medium text-foreground">
                                     {m.value}
                                   </span>
                                 </div>
@@ -306,8 +309,8 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                             <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-xs font-mono text-muted-foreground">
                               {item.author && (
                                 <div className="flex items-center gap-1.5">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 dark:bg-[#6B6B6B]" />
-                                  <span className="text-neutral-600 dark:text-[#A1A1A1]">{item.author.name}</span>
+                                  <span className="size-1.5 rounded-full bg-muted-foreground" />
+                                  <span className="text-muted-foreground">{item.author.name}</span>
                                   {item.author.role && (
                                     <span className="text-muted-foreground">({item.author.role})</span>
                                   )}
@@ -322,14 +325,17 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                                   aria-label={`Copy the commit hash ${item.commitHash.slice(0, 7)}`}
                                   onClick={(e) => handleCopyHash(e, item.commitHash!)}
                                   // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer dark:bg-[#0E0E0E] dark:hover:bg-[#141414] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA]"
+                                  className={cn(
+                                    'inline-flex items-center gap-1.5 px-2 py-1 rounded-md border border-border bg-surface text-muted-foreground transition-colors hover:border-border-hover hover:bg-surface-hover hover:text-foreground',
+                                    PRESSABLE
+                                  )}
                                 >
-                                  <GitCommit className="w-3 h-3" />
+                                  <GitCommit className="size-3" />
                                   <span>{item.commitHash.slice(0, 7)}</span>
                                   {copiedHash === item.commitHash ? (
-                                    <CheckCheck className="w-3 h-3 text-neutral-900 dark:text-white" />
+                                    <CheckCheck className="size-3 text-foreground" />
                                   ) : (
-                                    <Copy className="w-3 h-3 text-muted-foreground" />
+                                    <Copy className="size-3 text-muted-foreground" />
                                   )}
                                 </button>
                                 </Hint>
