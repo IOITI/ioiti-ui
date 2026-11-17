@@ -86,6 +86,12 @@ otherwise).
   transitions while one plays, and only then, as a name at rest would make the layer the root of its glass's
   backdrop, which would then blur nothing of the page. The sidebar's trigger gives when pressed (`motion-safe:`). What a component does of
   its own (a box drawing its mark, a switch stretching, the island growing) keeps EasyUI's motion.
+- **Text by its role** (0.22.0). Every size is one of the design's (`design-system/guide/README.md`, Type): what is
+  read or acted on (an option, a row, a message, a label of a choice, a button from `sm`) is `text-sm`; what is typed
+  in a field `text-base sm:text-sm`; what supports it (a caption, a description, a timestamp, a group's heading) is
+  `text-xs`; a count, a key, a chart's tick or an index 11 px, never less. EasyUI's 9, 10, 10.5, 11.5, 12.5, 13, 13.5,
+  14.5 and 15 px, and its `text-[12px]` and `text-[14px]` for Tailwind's own sizes, are gone; `ai-response`'s headings
+  are `text-lg`, `text-base` and `text-sm` over a 14 px answer. `check-source` holds it.
 - **Narrow screens** (0.4.3). Nothing of a copy is wider than its place, where on a phone the page scrolled
   sideways. The charts measured to their width (`bar-chart`, `donut-chart`, `funnel-chart`, `activity-heatmap`,
   `live-line-chart`, `stat-card`'s line) take it from their container alone (`contain-inline-size` on the box

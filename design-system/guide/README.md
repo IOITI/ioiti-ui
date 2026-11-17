@@ -57,7 +57,10 @@ An accent colours what is **chosen, current or primary**: a filled primary butto
 ## Type
 
 - **Geist** (`sans`) for everything read; **JetBrains Mono** (`mono`) for what is typed exactly: ids (IT-1042), keys, code, logs. Both are variable fonts served with the application, nothing from another origin.
-- A few sizes, used the same way on every page: `page-title` once a page (PageHeader); `section-title` for a panel; `body` for running text and descriptions; `small` for captions, a table's head and a tile's label, in `muted-foreground`; `field-label` in `text-secondary`; `figure` for a tile's number; `code` for ids. **Nothing under 11px** (`badge`).
+- A few sizes, each for a role, the same on every page: `page-title` once a page (PageHeader); `section-title` for a panel; `figure` for a tile's number.
+- **What a user reads or acts on is `body` (14px)**: running text, a row's content, an option of a list or a menu, a tab, a button from `sm` up, a toast's or a notification's words. What is typed in a field is `field-value`: 16px on a phone (a smaller field zooms the page in when it takes the focus), 14px from 640px.
+- `small` (12px, in `muted-foreground`) only for what supports it: a caption, a description under a title, a table's head, a tile's label, the help and the error under a field, a timestamp, an inline button (`xs`); `field-label` in `text-secondary`; `badge`; `code` for ids, `code-block` (13px) for code and logs. A screen of data may ask for `small` rows (a `compact` table, a `compressed` list); nothing else is small by default.
+- **Nothing under 11px** (`micro`: a count, a key, a chart's tick, an avatar's initials). A size written by hand is 11px, 13px for code, or a display figure of 18px and more: `check-source` refuses any other.
 - Headings are set tighter than the text: `tracking-tight-heading` on h1, `tracking-snug` on h3, `tracking-body` on everything else.
 - Figures that line up share one width: `tabular-nums` in tables, columns and lists of amounts. A tile's large figure keeps proportional digits.
 

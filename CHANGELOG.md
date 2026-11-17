@@ -3,6 +3,36 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.22.0] - 2026-11-17
+
+- **Text by its role, read at 14 px.** What a user reads or acts on is body-size (`text-sm`, 14 px) where it was
+  12 px or less: the options of `SpringSelect`, `SplitButton` (sm), `AdvancedDataTable`'s filters and columns, the
+  rows of `DataTable` and its card view, a toast's title and action (`ToastProvider`, `UndoToast`), a notification's
+  words and the bell's error, `SpotlightSearch`'s error, the labels of a radio, a switch, `StretchSwitch` and
+  `DrawCheckbox`, a timeline's items, `RecoveryLedger`'s entries, `SmartComparison`'s rows, the tabs of `AnimatedTabs`
+  and `ScrollProgressNav` on a phone, `PeekCard`'s body, `DynamicIsland`'s pill, `AIResponse`'s answer (from 14.5 px),
+  its sources and tools, `AIAgentActivity`'s steps on a phone, the sidebar's sub-entries (from 13 px), LookPicker's
+  choices. A button `sm` is 14 px (`Button`, `SegmentedControl`, `CopyButton`, `SplitButton`); `xs`, inline in a
+  row, stays 12 px.
+- **What is typed in a field is 16 px on a phone, 14 px from 640 px** (`text-base sm:text-sm`), where it was 12 px:
+  `Input` and its units, `Textarea`, `Select`, `NumberInput`, `MultiSelect`, `SpringSelect`, `TimeRangePicker`'s
+  time, `DataTable`'s searches and its rows per page, `SmartComparison`'s search. A field under 16 px made a phone
+  zoom the page in when it took the focus.
+- **`Table` reads at 14 px by default**: a new density, `regular` (the default), has its rows in body-size text under
+  a 12 px head, apart by a line. `compact`, as before (12 px throughout), is now asked for: `density="compact"` for a
+  screen of data. `TableDensity` is `'regular' | 'compact' | 'dense'`.
+- **Nothing under 11 px.** A count, a key, a chart's tick or label, an avatar's initials are 11 px where they were 9
+  to 10.5 px (`Avatar` xs and sm, `NotificationBell`'s count, `LineChart`'s and `FanChart`'s reference labels,
+  `ActivityHeatmap`, `AirportMatrixClock`, `DependencyTrace`, `AnimatedTabs`' counts); captions, timestamps and
+  descriptions that were 10 or 11 px are 12 px. Sizes off the scale are on it: 11.5 and 12.5 px are 12 px, 13 px
+  outside code is 14 px, `NotFoundState`'s words 16 px; code (`CodeBlock`, `LogViewer`, the code editors) is 13 px
+  (from 12.5 px). `check-source` refuses a size written by hand under 11 px or off the scale.
+- **The design's type scale** (`design-system/config.json`, the guide, the gallery's Type page) names the roles:
+  `field-value`, `micro` (11 px); `badge` is the 12 px Badge has always had.
+
+An application's pages show more text at 14 px; an application that wants its tables small writes
+`density="compact"`. Nothing else changes for it.
+
 ## [0.21.0] - 2026-11-16
 
 - **`FanChart`**, new: what was expected as ranges that widen, and what happened over them. A simulation's or a

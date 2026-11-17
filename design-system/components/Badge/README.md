@@ -9,4 +9,4 @@ A short state beside what it describes: soft, solid or outline, in a tone; a dot
 ```
 
 - A tone means something; never colour a badge for decoration. The word carries the meaning, the colour repeats it.
-- Set in `badge` (11px), `radius-full`. For a health check's state, use `StatusBadge`.
+- Set in `badge` (12px, medium), `radius-full`. A count in a dot or beside a menu's entry is `micro` (11px). For a health check's state, use `StatusBadge`.

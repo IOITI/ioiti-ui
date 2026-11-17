@@ -74,6 +74,28 @@ for (const file of filesUnder('src')) {
   }
 }
 
+// Text has a size by its role (design-system/guide/README.md, Type): Tailwind's text-xs (12px), text-sm (14px) and
+// above, or one written by hand of 11px (a badge's count, a key, a chart's tick), 13px (code) or a display figure of
+// 18px and more. Nothing under 11px, nothing in between: the scale drifted to 9, 10, 12.5 and 13.5px without it.
+const TEXT_SIZE = /\btext-\[(\d+(?:\.\d+)?)px\]|\bfontSize:\s*['"](\d+(?:\.\d+)?)px['"]/g
+const CLASS_OF = { 12: 'text-xs', 14: 'text-sm', 16: 'text-base' }
+for (const file of [...filesUnder('src'), ...filesUnder(join('gallery', 'src')), ...filesUnder('templates')]) {
+  if (!/\.(ts|tsx)$/.test(file) || /\.test\.(ts|tsx)$/.test(file)) continue
+  readFileSync(join(root, file), 'utf8')
+    .split('\n')
+    .forEach((line, index) => {
+      for (const match of line.matchAll(TEXT_SIZE)) {
+        const px = Number(match[1] ?? match[2])
+        if (px === 11 || px === 13 || px >= 18) continue
+        if (CLASS_OF[px]) {
+          if (match[1]) problems.push(`${file}:${index + 1}: text-[${px}px] is ${CLASS_OF[px]}`)
+          continue
+        }
+        problems.push(`${file}:${index + 1}: text of ${px}px, off the scale (11px, text-xs, 13px for code, text-sm and up)`)
+      }
+    })
+}
+
 // The gallery is an application made with the package: it imports `ioiti-ui`, never the package's source.
 for (const file of filesUnder(join('gallery', 'src'))) {
   const text = readFileSync(join(root, file), 'utf8')
@@ -117,4 +139,4 @@ if (problems.length) {
   console.error(`\ncheck-source: ${problems.length} problem${problems.length === 1 ? '' : 's'}`)
   process.exit(1)
 }
-console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, examples import what an application would, no name of the original application')
+console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, text sizes on the scale, examples import what an application would, no name of the original application')

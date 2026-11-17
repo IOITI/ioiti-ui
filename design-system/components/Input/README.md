@@ -13,5 +13,5 @@ A field that takes a line of text: a name, an address, an amount and its unit, a
 
 - It goes under its label in a `Field`, which says what is wrong under it: `error` on the field marks its border only.
 - A unit goes in the field (`prefix` "€", "https://"; `suffix` "ms", "kg"), not in the label: the text keeps clear of it, and a screen reader hears it with the field.
-- 40px high, its text 12px, `radius-lg`; in focus its border darkens, the accent's `brand` with one, and no ring is drawn.
+- 40px high, its text `field-value` (16px on a phone, where a smaller field zooms the page in when it takes the focus; 14px from 640px), `radius-lg`; in focus its border darkens, the accent's `brand` with one, and no ring is drawn.
 - A number changed by steps is a `NumberInput`; several lines, a `Textarea`.

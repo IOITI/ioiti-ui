@@ -107,9 +107,19 @@ off there, in a block of its own after the ring's; the field's caret and its bor
 forced colours (Windows' contrast themes), where a border no longer changes: the ring stays there. The
 reference was taken again from the starter template's build: the 25 blocks as WATA built them, and this one.
 
+## Text by its role
+
+A change of the design made on purpose, in 0.22.0: what a user reads or acts on is 14 px, what is typed in a field
+16 px on a phone and 14 px from 640 px, nothing under 11 px (`design-system/guide/README.md`, Type). It changes no
+token and no block of the reference, only the classes of components. Of the shell compared in §2, the sidebar's
+sub-entries are 14 px (13 px in WATA 0.50.1) and the detail under the application's name 12 px (11 px); the sidebar's
+entries, its sections, the top bar, the trail, the page's title and description and a panel's title are as they
+were. A form's fields and a table's rows (`Table`'s default density is `regular`, 14 px; `compact`, WATA's 12 px, is
+asked for) read larger than WATA's pages did.
+
 ## What the package changed, and why
 
-Nothing of the design's values but the focus ring of a field that takes text (above). The differences an
+Nothing of the design's values but the focus ring of a field that takes text, and the sizes of text by their role (above). The differences an
 application can see are listed in `docs/easyui-changes.md` under "ioiti-ui's own changes": defaults that were
 WATA's usage (the series blue of the one-series charts), a selection basket that no longer runs off a phone's
 screen in `inline` mode, and the like.

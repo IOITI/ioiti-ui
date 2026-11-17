@@ -1,8 +1,8 @@
 # Table
 
-The plain table of the pages: `Table`, `TableHead`, `TableBody`, `TableRow`, `TableHeaderCell`, `TableCell`, in two densities.
+The plain table of the pages: `Table`, `TableHead`, `TableBody`, `TableRow`, `TableHeaderCell`, `TableCell`, in three densities.
 
-**You provide** `aria-label` (every table is named), the rows; `density="dense"` for figures side by side (compact is the default, for records in a panel); `numeric` on the cells of figures.
+**You provide** `aria-label` (every table is named), the rows; `density="dense"` for figures side by side (`regular` is the default, for records in a panel; `compact`, the same in `small`, only for a screen of data that asks for it); `numeric` on the cells of figures.
 
 ```tsx
 <Table aria-label="Latest orders">
@@ -11,6 +11,6 @@ The plain table of the pages: `Table`, `TableHead`, `TableBody`, `TableRow`, `Ta
 </Table>
 ```
 
-- Figures go right, in `tabular-nums`; ids in `mono`; the head in `small`, `muted-foreground`.
+- The rows in `body` (14px), the head in `small`, `muted-foreground`. Figures go right, in `tabular-nums`; ids in `mono`.
 - Rows are apart by `border` at 40%. Wider than the page, a table scrolls sideways in its own frame. Sorting, filters and pages: `DataTable`.
 - Nothing to show: an `EmptyState` across its columns (compact).

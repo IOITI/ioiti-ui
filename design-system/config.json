@@ -429,7 +429,16 @@
           "fontWeight": 400,
           "letterSpacing": "-0.011em",
           "sample": "The order was sent to the warehouse.",
-          "usage": "Running text, descriptions (text-sm)."
+          "usage": "Running text, descriptions, and what a user reads or acts on: a row's content, an option of a list or a menu, a tab, a button (sm and up), a toast's or a notification's words (text-sm)."
+        },
+        {
+          "name": "field-value",
+          "fontSize": "14px",
+          "lineHeight": "20px",
+          "fontWeight": 400,
+          "letterSpacing": "-0.011em",
+          "sample": "Acme Corporation",
+          "usage": "What is typed in a field (Input, Textarea, Select, NumberInput…): 16px on a phone, where a smaller field zooms the page in when it takes the focus, 14px from 640px (text-base sm:text-sm)."
         },
         {
           "name": "small",
@@ -438,7 +447,7 @@
           "fontWeight": 400,
           "letterSpacing": "-0.011em",
           "sample": "Updated 2 min ago",
-          "usage": "Captions, a table's head, a tile's label (text-xs text-muted-foreground)."
+          "usage": "What supports it: a caption, a description under a title, a table's head, a tile's label, the help and the error under a field, a timestamp, a group's heading in a list, an inline button (xs) (text-xs text-muted-foreground). A table of a screen of data may ask for it in its rows (density compact)."
         },
         {
           "name": "field-label",
@@ -451,12 +460,21 @@
         },
         {
           "name": "badge",
-          "fontSize": "11px",
+          "fontSize": "12px",
           "lineHeight": "16px",
           "fontWeight": 500,
           "letterSpacing": "-0.011em",
           "sample": "Healthy",
-          "usage": "A badge: the smallest text there is. Nothing goes under 11px."
+          "usage": "A badge's word (Badge, StatusBadge: text-xs font-medium)."
+        },
+        {
+          "name": "micro",
+          "fontSize": "11px",
+          "lineHeight": "16px",
+          "fontWeight": 500,
+          "letterSpacing": "-0.011em",
+          "sample": "12",
+          "usage": "A count in a dot or beside a menu's entry, a key (Kbd), a chart's tick, an avatar's initials: the smallest text there is. Nothing goes under 11px (check-source holds it)."
         }
       ]
     },
