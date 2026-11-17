@@ -165,7 +165,8 @@ describe('a data table loading its records', () => {
       />,
     )
     const loading = screen.getByRole('status', { name: 'Loading the records' })
-    expect(loading.firstElementChild).toHaveClass('dark:bg-neutral-800/70')
+    // The skeleton's ground is a token: it shows in both themes.
+    expect(loading.firstElementChild).toHaveClass('bg-muted')
     expect(screen.getByText('Loading…')).toBeInTheDocument()
     expect(screen.queryByText(/Showing/)).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled()

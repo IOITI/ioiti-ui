@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import { Check, X, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
 
 export type VelocityToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
@@ -55,23 +56,23 @@ const positionClasses: Record<VelocityToastPosition, string> = {
   'bottom-right': 'bottom-5 right-5 items-end',
 };
 
-// ioiti-ui: the action's look, UndoToast's Undo in this toast's tokens.
+// ioiti-ui: the action's look, UndoToast's Undo: a small button raised on the toast.
 const ACTION_CLASS =
-  'inline-flex shrink-0 items-center px-2.5 py-1 rounded-md border border-[var(--border)] bg-[var(--surface-raised)] text-sm font-medium text-[var(--text-primary)] hover:border-[var(--text-subtle)] transition-colors focus-ring';
+  'inline-flex shrink-0 items-center gap-1 px-2.5 py-1 rounded-md border border-border bg-surface-raised text-sm font-medium text-foreground transition-[color,background-color,border-color,scale] hover:bg-surface-hover hover:border-border-hover focus-ring';
 
 const variantIcon = (variant: VelocityToastVariant, custom?: React.ReactNode) => {
   if (custom) return custom;
   switch (variant) {
     case 'success':
-      return <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />;
+      return <Check className={cn('size-4', TONE_TEXT.positive)} />;
     case 'warning':
-      return <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />;
+      return <AlertTriangle className={cn('size-4', TONE_TEXT.warning)} />;
     case 'error':
-      return <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />;
+      return <AlertCircle className={cn('size-4', TONE_TEXT.negative)} />;
     case 'info':
-      return <Info className="w-4 h-4 text-sky-600 dark:text-sky-400" />;
+      return <Info className={cn('size-4', TONE_TEXT.info)} />;
     default:
-      return <Info className="w-4 h-4 text-[var(--text-secondary)]" />;
+      return <Info className="size-4 text-muted-foreground" />;
   }
 };
 
@@ -202,22 +203,23 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
               if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsFocused(false);
             }}
             className={cn(
-              // ioiti-ui: glass under the glass material (glass-float).
-              'pointer-events-auto relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] p-3.5 sm:p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none glass-float',
+              // ioiti-ui: a toast's surface (recipes.ts), as UndoToast's; glass under the glass material (glass-float).
+              TOAST,
+              'pointer-events-auto relative overflow-hidden p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none',
               className
             )}
             role="status"
             aria-live="polite"
           >
             <div className="flex items-center justify-between gap-3 relative z-10">
-              <div className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--border)] flex items-center justify-center shrink-0">
+              <div className="size-8 rounded-lg bg-surface-raised border border-border flex items-center justify-center shrink-0">
                 {variantIcon(variant, icon)}
               </div>
 
               <div className="flex-1 min-w-0 pr-1">
-                <p className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 break-words">{title}</p>
+                <p className="text-sm font-medium text-foreground line-clamp-2 break-words text-balance">{title}</p>
                 {description && (
-                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5">{description}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2 break-words mt-0.5 text-pretty">{description}</p>
                 )}
               </div>
 
@@ -230,7 +232,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
                       action.onClick?.();
                       handleDismiss();
                     }}
-                    className={ACTION_CLASS}
+                    className={cn(ACTION_CLASS, 'motion-safe:active:scale-[0.97]')}
                   >
                     {action.label}
                   </LinkComponent>
@@ -241,7 +243,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
                       action.onClick?.();
                       handleDismiss();
                     }}
-                    className={cn(ACTION_CLASS, 'cursor-pointer')}
+                    className={cn(ACTION_CLASS, PRESSABLE)}
                   >
                     {action.label}
                   </button>
@@ -250,18 +252,18 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
               <button
                 type="button"
                 onClick={handleDismiss}
-                className="p-1 rounded-md text-[var(--text-subtle)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-colors focus-ring cursor-pointer"
+                className={cn(CLOSE_SM, 'focus-ring')}
                 aria-label="Close notification"
               >
-                <X className="w-3.5 h-3.5" />
+                <X />
               </button>
             </div>
 
             {showProgress && (
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--border)] overflow-hidden">
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-border overflow-hidden">
                 {/* ioiti-ui: the time left in the accent, where the theme has one (accent:). */}
                 <motion.div
-                  className="h-full bg-[var(--text-primary)] accent:bg-brand"
+                  className="h-full bg-foreground accent:bg-brand"
                   style={{ width: progressWidth }}
                 />
               </div>

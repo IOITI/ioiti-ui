@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { FLOATING } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
 
 export interface PeekCardProps {
@@ -214,20 +215,20 @@ export const PeekCard: React.FC<PeekCardProps> = ({
                   onPointerLeave={(event) => {
                     if (event.pointerType !== 'touch') closeSoon();
                   }}
-                  // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`; glass under
-                  // the glass material (glass-float).
-                  className="w-full rounded-xl border border-neutral-200 bg-white p-4 text-left text-sm text-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,0.14)] cursor-default dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-[#A1A1A1] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] glass-float"
+                  // ioiti-ui: what floats beside its trigger (FLOATING), its words in the label grey; glass under the glass
+                  // material (glass-float).
+                  className={cn(FLOATING, 'w-full p-4 text-left text-sm text-text-secondary cursor-default')}
                 >
                   {renderContent()}
                   {href && (
-                    <div className="mt-3 border-t border-neutral-200 pt-2.5 dark:border-[#1F1F1F]">
+                    <div className="mt-3 border-t border-border pt-2.5">
                       <LinkComponent
                         href={href}
                         onClick={close}
-                        className="inline-flex items-center gap-1.5 font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-[#FAFAFA]"
+                        className="inline-flex items-center gap-1.5 font-medium text-foreground underline-offset-4 hover:underline"
                       >
                         {hrefLabel}
-                        <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                        <ArrowRight className="size-4" aria-hidden="true" />
                       </LinkComponent>
                     </div>
                   )}

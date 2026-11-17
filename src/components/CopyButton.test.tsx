@@ -36,8 +36,8 @@ describe('CopyButton', () => {
 
     await user.click(screen.getByRole('button', { name: 'Copy' }))
 
-    expect(await screen.findByRole('button', { name: "Couldn't copy" })).toBeInTheDocument()
-    await waitFor(() => expect(announcer()).toHaveTextContent("Couldn't copy"))
+    expect(await screen.findByRole('button', { name: 'Couldn’t copy' })).toBeInTheDocument()
+    await waitFor(() => expect(announcer()).toHaveTextContent('Couldn’t copy'))
   })
 
   it('reads its value when pressed, from a function', async () => {

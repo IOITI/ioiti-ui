@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom'
 
 import { useAnchoredLayer } from '../lib/anchor.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
+import { FLOATING, PRESSABLE } from '../lib/recipes.js'
 import { ACCENT_LABEL, ACCENTS, lookLabel, MATERIAL_LABEL, MATERIALS } from '../lib/theme.js'
 import { cn } from '../lib/utils.js'
 
@@ -52,7 +53,11 @@ export function LookPicker({ className }: { className?: string }) {
           aria-controls={open ? `${id}-choices` : undefined}
           onClick={() => setOpen(!open)}
           onKeyDown={layer.onTriggerKeyDown}
-          className="grid size-9 shrink-0 place-items-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-200/70 hover:text-neutral-900 focus-ring aria-expanded:bg-neutral-200/70 aria-expanded:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white dark:aria-expanded:bg-neutral-800 dark:aria-expanded:text-white"
+          // The top bar's icon buttons' look (IconButton's), held as pressed while its choices are open.
+          className={cn(
+            PRESSABLE,
+            'grid size-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-[color,background-color,scale] hover:bg-surface-hover hover:text-foreground focus-ring aria-expanded:bg-surface-hover aria-expanded:text-foreground',
+          )}
         >
           <Palette className="size-[18px]" aria-hidden />
         </button>
@@ -75,7 +80,7 @@ export function LookPicker({ className }: { className?: string }) {
                 exit={{ opacity: 0, scale: 0.97, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springSnappy}
                 style={{ ...layer.style, transformOrigin: layer.side === 'top' ? 'bottom right' : 'top right' }}
-                className="z-50 w-72 space-y-3 overflow-auto rounded-xl border border-border bg-surface p-3 text-foreground shadow-elevated outline-none glass-float"
+                className={cn(FLOATING, 'z-50 w-72 space-y-3 overflow-auto p-3 outline-none')}
               >
                 <Choices legend="Accent">
                   {ACCENTS.map((value) => (

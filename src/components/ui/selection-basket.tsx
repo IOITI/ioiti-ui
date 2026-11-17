@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { CLOSE_SM, PRESSABLE, TONE_LINE, TONE_SOFT, TOAST } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
 import { DirectionalTooltip } from './directional-tooltip.js';
 import { Hint } from '../Hint.js';
@@ -55,10 +56,10 @@ export interface SelectionBasketProps {
 }
 
 const defaultActions: SelectionActionItem[] = [
-  { id: 'export', label: 'Export', icon: <Download className="w-3.5 h-3.5" /> },
-  { id: 'move', label: 'Move to Folder', icon: <FolderInput className="w-3.5 h-3.5" /> },
-  { id: 'share', label: 'Share', icon: <Share2 className="w-3.5 h-3.5" /> },
-  { id: 'delete', label: 'Delete', icon: <Trash2 className="w-3.5 h-3.5" />, variant: 'danger' },
+  { id: 'export', label: 'Export', icon: <Download className="size-3.5" /> },
+  { id: 'move', label: 'Move to Folder', icon: <FolderInput className="size-3.5" /> },
+  { id: 'share', label: 'Share', icon: <Share2 className="size-3.5" /> },
+  { id: 'delete', label: 'Delete', icon: <Trash2 className="size-3.5" />, variant: 'danger' },
 ];
 
 export const SelectionBasket: React.FC<SelectionBasketProps> = ({
@@ -88,7 +89,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
       : // ioiti-ui: no wider than its container either, its bar scrolling inside (a phone).
         'relative mt-4 mx-auto w-fit max-w-full z-20';
 
-  // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`.
+  // ioiti-ui: the design's tokens, its recipes (recipes.ts) for the bar, its tones and its close.
   return (
     <AnimatePresence>
       {isVisible && (
@@ -100,20 +101,22 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
             exit={{ opacity: 0, y: 16, scale: 0.95, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
             className={cn(
-              // ioiti-ui: glass under the glass material (glass-float).
-              'pointer-events-auto flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-2xl border border-neutral-200 bg-white/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-x-auto max-w-full dark:border-[#1F1F1F] dark:bg-[#0E0E0E]/95 dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] glass-float',
+              // ioiti-ui: a bar that floats over the page, a toast's surface (TOAST), its own padding round its
+              // buttons; glass under the glass material (glass-float).
+              TOAST,
+              'pointer-events-auto flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 overflow-x-auto max-w-full',
               className
             )}
             role="toolbar"
             aria-label="Bulk actions toolbar"
           >
             {/* Selected Count Indicator */}
-            <div className="flex items-center gap-2 pl-3 pr-2 py-1 border-r border-neutral-200 dark:border-[#1F1F1F] shrink-0">
+            <div className="flex items-center gap-2 pl-3 pr-2 py-1 border-r border-border shrink-0">
               {/* ioiti-ui: the count, and the primary action below, in the accent (accent:). */}
-              <span className="min-w-5 h-5 px-1 rounded-full bg-neutral-900 text-white dark:bg-[#FAFAFA] dark:text-[#050505] accent:bg-brand accent:text-brand-foreground text-[11px] font-bold font-mono flex items-center justify-center">
+              <span className="min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground accent:bg-brand accent:text-brand-foreground text-[11px] font-semibold font-mono tabular-nums flex items-center justify-center">
                 {selectedCount}
               </span>
-              <span className="text-sm font-medium text-neutral-900 dark:text-[#FAFAFA] whitespace-nowrap">
+              <span className="text-sm font-medium text-foreground whitespace-nowrap">
                 {selectedCount === 1 ? `${noun[0]} selected` : `${noun[1]} selected`}
               </span>
 
@@ -122,7 +125,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
                 <button
                   type="button"
                   onClick={onSelectAll}
-                  className="text-xs font-mono text-muted-foreground hover:text-neutral-900 dark:hover:text-white transition-colors ml-1 underline underline-offset-2 cursor-pointer"
+                  className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors ml-1 underline underline-offset-2 cursor-pointer"
                 >
                   {isAllSelected ? 'Select none' : `All (${totalCount})`}
                 </button>
@@ -134,13 +137,16 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
               {actions.map((action) => {
                 const isDanger = action.variant === 'danger';
                 const isPrimary = action.variant === 'primary';
+                // ioiti-ui: Button's looks: the negative tone soft at rest and filled under the pointer (not when it is
+                // disabled), ink, or a raised control.
                 const classes = cn(
-                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-ring whitespace-nowrap cursor-pointer disabled:cursor-not-allowed disabled:opacity-40',
+                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-[color,background-color,border-color,opacity,scale] focus-ring whitespace-nowrap',
+                  PRESSABLE,
                   isDanger
-                    ? 'bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/30 text-rose-700 dark:text-rose-400 disabled:hover:bg-rose-500/10 disabled:hover:text-rose-700 dark:disabled:hover:text-rose-400'
+                    ? cn(TONE_SOFT.negative, 'border', TONE_LINE.negative, 'not-disabled:hover:bg-negative dark:not-disabled:hover:bg-negative not-disabled:hover:text-background')
                     : isPrimary
-                    ? 'bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-[#FAFAFA] dark:hover:bg-white dark:text-[#050505] accent:bg-brand accent:hover:bg-brand/90 accent:text-brand-foreground'
-                    : 'bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-400 text-neutral-700 hover:text-neutral-900 dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA]'
+                    ? 'bg-primary text-primary-foreground not-disabled:hover:opacity-90 accent:bg-brand accent:hover:bg-brand/90 accent:text-brand-foreground'
+                    : 'bg-surface hover:bg-surface-hover border border-border hover:border-border-hover text-text-secondary hover:text-foreground'
                 );
                 const content = (
                   <>
@@ -183,10 +189,10 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
               <button
                 type="button"
                 onClick={onClearSelection}
-                className="w-7 h-7 rounded-lg bg-neutral-100 hover:bg-white border border-neutral-200 hover:border-neutral-400 flex items-center justify-center text-muted-foreground hover:text-neutral-900 transition-colors focus-ring shrink-0 ml-1 cursor-pointer dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:hover:text-[#FAFAFA]"
+                className={cn(CLOSE_SM, 'ml-1 focus-ring')}
                 aria-label="Clear the selection"
               >
-                <X className="w-3.5 h-3.5" />
+                <X />
               </button>
               </Hint>
             )}

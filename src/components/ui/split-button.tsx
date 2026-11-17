@@ -11,6 +11,7 @@ import React, {
 import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { FLOATING, MENU_ROW, TONE_SOLID } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 import { useLinkComponent } from '../link-context.js';
 
@@ -89,65 +90,49 @@ const SIZE_STYLES: Record<
     menuText: string;
   }
 > = {
+  // ioiti-ui: Button's sizes (32, 40 and 48 px tall, its radius: md for sm, lg above).
   sm: {
-    primary: 'gap-1.5 px-3.5 py-1.5 text-sm',
-    chevron: 'px-2 py-1.5',
-    radius: 'rounded-[8px]',
+    primary: 'h-8 gap-1.5 px-3 text-sm',
+    chevron: 'h-8 px-2',
+    radius: 'rounded-md',
     menuText: 'text-sm',
   },
 
   md: {
-    primary: 'gap-2 px-5 py-2.5 text-sm',
-    chevron: 'px-2.5 py-2.5',
-    radius: 'rounded-[8px]',
+    primary: 'h-10 gap-2 px-4.5 text-sm',
+    chevron: 'h-10 px-2.5',
+    radius: 'rounded-lg',
     menuText: 'text-sm',
   },
 
   lg: {
-    primary: 'gap-2.5 px-7 py-3.5 text-base',
-    chevron: 'px-3 py-3.5',
-    radius: 'rounded-[10px]',
+    primary: 'h-12 gap-2.5 px-6 text-base',
+    chevron: 'h-12 px-3',
+    radius: 'rounded-lg',
     menuText: 'text-sm',
   },
 };
 
-const TRANSITION =
-  'transition-[background-color,border-color,box-shadow,transform] duration-200 ease-out ' +
-  'active:translate-y-0 active:scale-[0.98]';
+// ioiti-ui: Button's look in its tokens (the hair of a filled one, the accent's glow as Button's), and its press.
+// Disabled, the group is at half its strength (the divider too), not each button again.
+const TRANSITION = 'transition-[color,background-color,border-color,opacity,scale] duration-200 ease-fast cursor-pointer motion-safe:active:scale-[0.97]';
 
 const VARIANT_STYLES: Record<'primary' | 'secondary' | 'danger' | 'info', string> = {
   primary:
-    // light: dark pill on a light canvas · dark: light pill on a dark canvas (mirrors your existing button)
-    'bg-[#151515] text-[#F5F5F5] hover:bg-black ' +
-    'dark:bg-[#F5F5F5] dark:text-[#050505] dark:hover:bg-white ' +
-    'shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.25)] ' +
-    'dark:shadow-[0_0_20px_-3px_rgba(255,255,255,0.15)] dark:hover:shadow-[0_0_28px_-4px_rgba(255,255,255,0.28)] ' +
-    // ioiti-ui: the accent's fill and glow, under a theme that has one (accent:).
+    'bg-primary text-primary-foreground hover:opacity-90 shadow-subtle ' +
+    // ioiti-ui: the accent's fill and glow, under a theme that has one (accent:), as Button's.
     'accent:bg-brand accent:text-brand-foreground accent:hover:bg-brand/90 ' +
     'accent:shadow-[0_4px_14px_-6px_var(--brand-glow)] accent:hover:shadow-[0_8px_20px_-6px_var(--brand-glow)] ' +
     TRANSITION,
 
   secondary:
-    'border border-[#E3E3E8] bg-[#F4F4F9] text-[#151515] hover:border-[#D2D2D8] hover:bg-[#ECECF2] ' +
-    'dark:border-border dark:bg-surface-raised dark:text-text-primary ' +
-    'dark:hover:border-border-hover dark:hover:bg-surface-hover ' +
-    'shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_16px_-8px_rgba(0,0,0,0.15)] ' +
-    'dark:shadow-none dark:hover:shadow-[0_6px_16px_-8px_rgba(0,0,0,0.5)] ' +
+    'border border-border bg-surface text-foreground hover:border-border-hover hover:bg-surface-hover ' +
     TRANSITION,
 
-  danger:
-    'bg-[#DC2626] text-white hover:bg-[#E23F3F] ' +
-    'dark:bg-[#DC2626]/90 dark:hover:bg-[#EF4444] ' +
-    'shadow-[0_0_0_1px_rgba(220,38,38,0.15)] hover:shadow-[0_8px_20px_-6px_rgba(220,38,38,0.4)] ' +
-    'dark:shadow-[0_0_18px_-4px_rgba(220,38,38,0.35)] dark:hover:shadow-[0_0_26px_-6px_rgba(220,38,38,0.5)] ' +
-    TRANSITION,
+  // ioiti-ui: the tones filled (recipes.ts), as a destructive action is.
+  danger: `${TONE_SOLID.negative} hover:opacity-90 shadow-subtle ${TRANSITION}`,
 
-  info:
-    'bg-[#3B82F6] text-white hover:bg-[#529BF8] ' +
-    'dark:bg-[#3B82F6]/90 dark:hover:bg-[#60A5FA] ' +
-    'shadow-[0_0_0_1px_rgba(59,130,246,0.15)] hover:shadow-[0_8px_20px_-6px_rgba(59,130,246,0.4)] ' +
-    'dark:shadow-[0_0_18px_-4px_rgba(59,130,246,0.35)] dark:hover:shadow-[0_0_26px_-6px_rgba(59,130,246,0.5)] ' +
-    TRANSITION,
+  info: `${TONE_SOLID.info} hover:opacity-90 shadow-subtle ${TRANSITION}`,
 };
 
 // -----------------------------------------------------------------------------
@@ -434,7 +419,7 @@ export function SplitButton({
         className={cn(
           'inline-flex overflow-hidden',
           sizeStyles.radius,
-          disabled && 'pointer-events-none opacity-30',
+          disabled && 'pointer-events-none opacity-50',
         )}
       >
         {/* -------------------------------------------------------------------
@@ -447,9 +432,7 @@ export function SplitButton({
             className={cn(
               'relative inline-flex items-center justify-center',
               'select-none font-medium',
-              'cursor-pointer',
               'focus-ring',
-              'transition-colors duration-200',
               sizeStyles.primary,
               VARIANT_STYLES[variant],
             )}
@@ -465,10 +448,7 @@ export function SplitButton({
             className={cn(
               'relative inline-flex items-center justify-center',
               'select-none font-medium',
-              'cursor-pointer',
               'focus-ring',
-              'transition-colors duration-200',
-              'disabled:cursor-not-allowed',
               sizeStyles.primary,
               VARIANT_STYLES[variant],
             )}
@@ -488,7 +468,7 @@ export function SplitButton({
           className={cn(
             'my-1.5 w-px self-stretch',
             variant === 'primary'
-              ? 'bg-black/10'
+              ? 'bg-current/10'
               : 'bg-border',
           )}
         />
@@ -508,10 +488,7 @@ export function SplitButton({
           className={cn(
             'relative inline-flex items-center justify-center',
             'select-none',
-            'cursor-pointer',
             'focus-ring',
-            'transition-colors duration-200',
-            'disabled:cursor-not-allowed',
             sizeStyles.chevron,
             VARIANT_STYLES[variant],
           )}
@@ -524,10 +501,7 @@ export function SplitButton({
             transition={menuTransition}
             className="flex items-center justify-center"
           >
-            <ChevronDown
-              className="h-4 w-4"
-              strokeWidth={2}
-            />
+            <ChevronDown className="size-4" />
           </motion.span>
         </button>
       </div>
@@ -565,16 +539,11 @@ export function SplitButton({
             }}
             transition={menuTransition}
             className={cn(
+              // ioiti-ui: what floats beside its trigger (recipes.ts), glass under the glass material (glass-float).
+              FLOATING,
               'absolute right-0 z-30',
               'min-w-[10rem]',
-              'rounded-xl',
-              'border border-border',
-              'bg-surface-raised',
               'p-1',
-              // ioiti-ui: a lighter shadow in the light theme, EasyUI's kept for the dark one; glass under the
-              // glass material (glass-float).
-              'shadow-[0_12px_30px_-10px_rgba(0,0,0,0.25)] dark:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)]',
-              'glass-float',
               'origin-top-right',
               placement === 'bottom'
                 ? 'top-[calc(100%+8px)]'
@@ -609,43 +578,20 @@ export function SplitButton({
                     }
                   }}
                   className={cn(
-                    'flex w-full items-center gap-2',
-                    'rounded-lg',
-                    'px-3 py-2',
-                    'text-left',
-                    'font-medium',
-                    'select-none',
-                    'transition-colors duration-150',
+                    // ioiti-ui: a menu's row (recipes.ts), as DropdownMenu's.
+                    MENU_ROW,
+                    'w-full text-left',
                     sizeStyles.menuText,
-
-                    option.disabled
-                      ? [
-                          'cursor-not-allowed',
-                          'text-text-muted',
-                        ]
-                      : option.tone === 'danger'
-                        ? ['cursor-pointer', 'text-negative', 'hover:bg-surface-hover']
-                        : [
-                            'cursor-pointer',
-                            'text-text-secondary',
-                            'hover:bg-surface-hover',
-                            'hover:text-text-primary',
-                          ],
-
-                    isActive && [
-                      'bg-surface-hover',
-                      option.tone !== 'danger' && 'text-text-primary',
-                    ],
+                    'aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
+                    !option.disabled && 'hover:bg-surface-hover',
+                    option.tone === 'danger' && 'text-negative',
+                    isActive && 'bg-surface-hover',
                   )}
                 >
                   {option.icon && (
                     <span
                       aria-hidden="true"
-                      className={cn(
-                        'flex shrink-0 items-center justify-center',
-                        '[&_svg]:h-3.5',
-                        '[&_svg]:w-3.5',
-                      )}
+                      className="flex shrink-0 items-center justify-center [&_svg]:size-4"
                     >
                       {option.icon}
                     </span>
@@ -654,7 +600,7 @@ export function SplitButton({
                   <span className="min-w-0">
                     <span className="block truncate">{option.label}</span>
                     {option.description && (
-                      <span className="block whitespace-normal text-xs font-normal text-text-muted">{option.description}</span>
+                      <span className="block whitespace-normal text-xs text-muted-foreground">{option.description}</span>
                     )}
                   </span>
                 </Item>

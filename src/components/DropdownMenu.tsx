@@ -9,6 +9,7 @@ import type { AnchorAlign, AnchorSide } from '../lib/anchor.js'
 import { useControllableState } from '../lib/controllable.js'
 import { isPlainClick } from '../lib/links.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
+import { FLOATING, MENU_ROW } from '../lib/recipes.js'
 import { assignRef } from '../lib/refs.js'
 import { cn } from '../lib/utils.js'
 import { Kbd } from './Kbd.js'
@@ -90,8 +91,9 @@ export type DropdownMenuItem =
   | DropdownMenuGroup
   | DropdownMenuSubmenu
 
+// A menu's row (recipes.ts): what is under the pointer or the keyboard, the accent's tint where the look has one.
 const ROW =
-  'flex w-full cursor-default select-none items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-sm text-text-primary outline-none ' +
+  `${MENU_ROW} w-full text-left ` +
   'hover:bg-surface-hover focus:bg-surface-hover accent:focus:bg-brand-soft accent:focus:text-brand-text ' +
   'aria-disabled:cursor-not-allowed aria-disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0'
 
@@ -250,7 +252,7 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
         const labelId = `${id}-${k}`
         return (
           <div key={k} role="group" aria-labelledby={labelId}>
-            <div id={labelId} className="px-2.5 pb-1 pt-2 text-xs font-medium text-text-muted">
+            <div id={labelId} className="px-2.5 pb-1 pt-2 text-xs font-medium text-muted-foreground">
               {item.label}
             </div>
             {render(item.items)}
@@ -262,7 +264,7 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
         return (
           <div key={k} role="group" aria-labelledby={item.label ? labelId : undefined}>
             {item.label && (
-              <div id={labelId} className="px-2.5 pb-1 pt-2 text-xs font-medium text-text-muted">
+              <div id={labelId} className="px-2.5 pb-1 pt-2 text-xs font-medium text-muted-foreground">
                 {item.label}
               </div>
             )}
@@ -329,7 +331,7 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
           >
             {item.icon}
             <Content label={item.label} description={item.description} />
-            <ChevronRight aria-hidden className="ml-auto text-text-muted" />
+            <ChevronRight aria-hidden className="ml-auto text-muted-foreground" />
           </button>
         )
       }
@@ -401,7 +403,7 @@ function MenuLayer({ id, open, onClose, items, label, triggerRef, point, side, a
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.98, transition: motionTransitions.easeExit }}
           transition={motionTransitions.springSnappy}
-          className="z-50 min-w-48 max-w-xs overflow-auto rounded-xl border border-border bg-surface p-1 shadow-lg outline-none glass-float"
+          className={cn(FLOATING, 'z-50 min-w-48 max-w-xs overflow-auto p-1 outline-none')}
         >
           <AnimatePresence initial={false} mode="popLayout">
             <motion.div

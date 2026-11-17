@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
 
 export interface SkeletonProps extends React.ComponentProps<"div"> {}
@@ -11,14 +12,16 @@ export function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div
       aria-hidden
-      className={cn("relative overflow-hidden rounded-md bg-neutral-200/70 dark:bg-neutral-800/70", className)}
+      className={cn("relative overflow-hidden rounded-md bg-muted", className)}
       {...props}
     >
       <motion.span
-        className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--sk),transparent)] [--sk:rgb(255_255_255/0.65)] dark:[--sk:rgb(255_255_255/0.07)]"
+        // ioiti-ui: the sweep in the design's tokens (the surface's light, a hint of the text's in dark), its loop's own
+        // time on the design's curve.
+        className="absolute inset-0 bg-linear-to-r from-transparent via-surface/65 to-transparent dark:via-foreground/7"
         initial={{ x: "-100%" }}
         animate={{ x: "100%" }}
-        transition={{ duration: 1.6, ease: "easeInOut", repeat: Infinity, repeatDelay: 0.2 }}
+        transition={{ ...motionTransitions.easeSoft, duration: 1.6, repeat: Infinity, repeatDelay: 0.2 }}
       />
     </div>
   );
@@ -95,7 +98,7 @@ export function SkeletonReveal({
             key="content"
             initial={{ opacity: 0, y: 6, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+            transition={motionTransitions.easeSoft}
           >
             {children}
           </motion.div>

@@ -24,7 +24,7 @@ describe('a field', () => {
     // Named by its label alone: the error describes it, out of the label, and marks it invalid.
     const input = screen.getByRole('textbox', { name: 'Seed' })
     expect(input.closest('label')).toHaveClass('flex', 'flex-col', 'gap-1')
-    expect(screen.getByText('Seed')).toHaveClass('text-xs', 'font-semibold', 'text-text-primary')
+    expect(screen.getByText('Seed')).toHaveClass('text-xs', 'font-semibold', 'text-foreground')
     expect(screen.getByText('A whole number')).toHaveClass('text-xs', 'text-negative')
     expect(input).toHaveAccessibleDescription('A whole number')
     expect(input).toHaveAttribute('aria-invalid', 'true')
@@ -84,7 +84,7 @@ describe('an icon button', () => {
     render(<IconButton label="Search" icon={<Search />} />)
 
     expect(screen.getByRole('button', { name: 'Search' })).toHaveClass(
-      'grid', 'size-9', 'rounded-lg', 'text-neutral-500', 'hover:bg-neutral-200/70', 'dark:text-neutral-400', 'dark:hover:bg-neutral-800', 'focus-ring',
+      'grid', 'size-9', 'rounded-lg', 'text-muted-foreground', 'hover:bg-surface-hover', 'hover:text-foreground', 'focus-ring',
     )
   })
 
@@ -184,7 +184,7 @@ describe('a dense table', () => {
     expect(screen.getByRole('columnheader', { name: 'After' }).parentElement).toHaveClass('text-xs', 'text-muted-foreground')
     expect(screen.getByRole('columnheader', { name: 'After' })).toHaveClass('p-2', 'text-left', 'font-medium')
     expect(screen.getByRole('rowheader', { name: '5 min' })).toHaveAttribute('scope', 'row')
-    expect(screen.getByRole('rowheader', { name: '5 min' }).parentElement).toHaveClass('border-t', 'border-border/50')
+    expect(screen.getByRole('rowheader', { name: '5 min' }).parentElement).toHaveClass('border-t', 'border-border/40')
     expect(screen.getByRole('cell', { name: '42' })).toHaveClass('p-2', 'text-right')
   })
 })

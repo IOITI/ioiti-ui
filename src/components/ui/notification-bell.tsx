@@ -8,6 +8,7 @@ import { useAnchoredLayer } from '../../lib/anchor.js';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { CLOSE_SM, FLOATING, PRESSABLE, TONE_LINE, TONE_MARK, TONE_SOFT, TONE_SOLID } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
 // ioiti-ui: a moment is said from now, its full date in a hint.
 import { RelativeTime } from '../RelativeTime.js';
@@ -65,13 +66,13 @@ export interface NotificationBellProps {
   className?: string;
 }
 
-// ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`.
+// ioiti-ui: the design's tones (recipes.ts), as a dot.
 const DOT: Record<NotificationTone, string> = {
-  neutral: 'bg-neutral-400 dark:bg-neutral-500',
-  info: 'bg-blue-500',
-  success: 'bg-emerald-500',
-  warning: 'bg-amber-500',
-  danger: 'bg-rose-500 animate-pulse',
+  neutral: TONE_MARK.neutral,
+  info: TONE_MARK.info,
+  success: TONE_MARK.positive,
+  warning: TONE_MARK.warning,
+  danger: `${TONE_MARK.negative} animate-pulse`,
 };
 
 export const NotificationBell: React.FC<NotificationBellProps> = ({
@@ -139,7 +140,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     <button
       type="button"
       onClick={onRetry}
-      className="shrink-0 rounded-md px-1.5 py-0.5 text-sm font-medium text-neutral-900 underline-offset-2 hover:underline focus-ring cursor-pointer dark:text-[#FAFAFA]"
+      className="shrink-0 rounded-md px-1.5 py-0.5 text-sm font-medium text-foreground underline-offset-2 hover:underline focus-ring cursor-pointer"
     >
       Try again
     </button>
@@ -160,7 +161,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               }
             : {}
         }
-        transition={{ duration: 0.5, ease: 'easeInOut' }}
+        transition={{ ...motionTransitions.easeSoft, duration: 0.5 }}
         aria-expanded={isPanelOpen}
         aria-label={
           unreadCount > 0
@@ -173,10 +174,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             // ioiti-ui: the top bar's icon buttons' look (IconButton), where it sits: square, quiet until hovered, giving
             // a little when pressed; held as pressed while its panel is open. EasyUI's was a bordered box that grew.
             cn(
-              'grid size-9 shrink-0 place-items-center rounded-lg transition motion-safe:active:scale-95 [&>svg]:size-[18px]',
-              isPanelOpen
-                ? 'bg-neutral-200/70 text-neutral-900 dark:bg-neutral-800 dark:text-white'
-                : 'text-neutral-500 hover:bg-neutral-200/70 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white'
+              'grid size-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-[color,background-color,scale] hover:bg-surface-hover hover:text-foreground [&>svg]:size-[18px]',
+              PRESSABLE,
+              isPanelOpen && 'bg-surface-hover text-foreground'
             )
         )}
       >
@@ -191,10 +191,11 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               exit={{ scale: 0, opacity: 0 }}
               transition={motionTransitions.springSnappy}
               className={cn(
-                'absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-rose-600 text-white font-mono font-bold border-2 border-background',
+                'absolute -top-1 -right-1 flex items-center justify-center rounded-full font-mono font-semibold tabular-nums border-2 border-background',
+                TONE_SOLID.negative,
                 showCount
                   ? 'min-w-[18px] h-[18px] px-1 text-[11px]'
-                  : 'w-2.5 h-2.5'
+                  : 'size-2.5'
               )}
             >
               {showCount && (unreadCount > 99 ? '99+' : unreadCount)}
@@ -222,14 +223,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             aria-label="Notifications"
             // ioiti-ui: on a phone the panel spans the screen but its edges (centred on the bell, it went past the edge).
             // Glass under the glass material (glass-float), its header clear on it.
-            className="flex w-[calc(100vw-2rem)] flex-col outline-none sm:w-96 rounded-2xl bg-white/95 backdrop-blur-xl border border-neutral-200 shadow-[0_16px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden dark:bg-[#0E0E0E]/95 dark:border-[#1F1F1F] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] glass-float"
+            className={cn(FLOATING, 'flex w-[calc(100vw-2rem)] flex-col outline-none sm:w-96 z-50 overflow-hidden')}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 bg-neutral-50 dark:border-[#1F1F1F] dark:bg-[#141414] glass:bg-transparent">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-raised glass:bg-transparent">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-neutral-900 dark:text-[#FAFAFA]">Notifications</span>
+                <span className="text-sm font-semibold text-foreground">Notifications</span>
                 {unreadCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-rose-500/10 text-rose-700 border border-rose-500/20 text-[11px] font-mono dark:text-rose-400">
+                  <span className={cn('px-1.5 py-0.5 rounded-full border text-[11px] font-mono tabular-nums', TONE_SOFT.negative, TONE_LINE.negative)}>
                     {unreadCount} new
                   </span>
                 )}
@@ -242,9 +243,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                     <button
                       type="button"
                       onClick={onMarkAllAsRead}
-                      className="p-1 rounded-lg text-xs text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors flex items-center gap-1 cursor-pointer dark:hover:text-white dark:hover:bg-[#141414]"
+                      className={cn('p-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-[color,background-color,scale] flex items-center gap-1', PRESSABLE)}
                     >
-                      <CheckCheck className="w-3.5 h-3.5" />
+                      <CheckCheck className="size-3.5" />
                       <span>Read all</span>
                     </button>
                   </Hint>
@@ -252,37 +253,37 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 <button
                   type="button"
                   onClick={() => setPanelOpen(false)}
-                  className="p-1 rounded-lg text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors cursor-pointer dark:hover:text-white dark:hover:bg-[#141414]"
+                  className={CLOSE_SM}
                   aria-label="Close notifications"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X />
                 </button>
               </div>
             </div>
 
             {/* ioiti-ui: the last list read stays under an error, which says it is not up to date. */}
             {failed && notifications.length > 0 && (
-              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-neutral-200 px-4 py-2 text-sm text-negative dark:border-[#1F1F1F]">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-2 text-sm text-negative">
                 <span className="min-w-0">{failedSaid}</span>
                 {retry}
               </div>
             )}
 
             {/* List */}
-            <div className="min-h-0 max-h-80 overflow-y-auto divide-y divide-neutral-200 dark:divide-[#1F1F1F]">
+            <div className="min-h-0 max-h-80 overflow-y-auto divide-y divide-border/40">
               {notifications.length === 0 && failed ? (
                 // ioiti-ui: what is true when nothing could be read: not "No notifications right now".
                 <div className="py-8 px-4 text-center">
-                  <AlertCircle aria-hidden="true" className="w-6 h-6 text-negative mx-auto mb-2" />
+                  <AlertCircle aria-hidden="true" className="size-6 text-negative mx-auto mb-2" />
                   <p className="text-sm text-negative">{failedSaid}</p>
                   {retry && <div className="mt-3 flex justify-center">{retry}</div>}
                 </div>
               ) : notifications.length === 0 && loading ? (
                 // ioiti-ui: entries to come, as high as they will be; named for screen readers.
-                <div role="status" aria-label="Loading the notifications" className="divide-y divide-neutral-200 dark:divide-[#1F1F1F]">
+                <div role="status" aria-label="Loading the notifications" className="divide-y divide-border/40">
                   {[0, 1, 2].map((row) => (
                     <div key={row} className="p-3 flex items-start gap-3">
-                      <Skeleton className="w-2 h-2 rounded-full mt-1.5 shrink-0" />
+                      <Skeleton className="size-2 rounded-full mt-1.5 shrink-0" />
                       <div className="flex-1 space-y-2">
                         <Skeleton className="h-3 w-4/5" />
                         <Skeleton className="h-2.5 w-1/4" />
@@ -292,14 +293,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="py-8 px-4 text-center">
-                  <Bell className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+                  <Bell className="size-6 text-muted-foreground mx-auto mb-2" />
                   <p className="text-xs text-muted-foreground">No notifications right now</p>
                 </div>
               ) : (
                 notifications.map((item) => {
                   const messageClass = cn(
-                    'text-sm leading-relaxed text-neutral-600 dark:text-[#A1A1A1]',
-                    !item.read && 'font-medium text-neutral-900 dark:text-[#FAFAFA]'
+                    'text-sm leading-relaxed text-muted-foreground',
+                    !item.read && 'font-medium text-foreground'
                   );
 
                   return (
@@ -308,14 +309,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className={cn(
-                        'p-3 flex items-start gap-3 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]',
-                        !item.read && 'bg-neutral-50 dark:bg-[#141414]'
+                        'p-3 flex items-start gap-3 transition-colors hover:bg-surface-hover',
+                        !item.read && 'bg-surface-hover'
                       )}
                     >
                       <span
                         aria-hidden="true"
                         className={cn(
-                          'w-2 h-2 rounded-full mt-1.5 shrink-0',
+                          'size-2 rounded-full mt-1.5 shrink-0',
                           item.read ? 'bg-transparent' : DOT[item.tone ?? 'danger']
                         )}
                       />
@@ -351,10 +352,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                           <button
                             type="button"
                             onClick={() => onMarkAsRead(item.id)}
-                            className="p-1 rounded text-muted-foreground hover:text-neutral-900 hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer dark:hover:text-white dark:hover:bg-[#0E0E0E]"
+                            className={cn('p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-raised transition-[color,background-color,scale] shrink-0', PRESSABLE)}
                             aria-label="Mark notification as read"
                           >
-                            <CheckCheck className="w-3.5 h-3.5" />
+                            <CheckCheck className="size-3.5" />
                           </button>
                         </Hint>
                       )}
@@ -365,7 +366,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             </div>
 
             {footer && (
-              <div className="border-t border-neutral-200 px-4 py-2.5 text-xs text-muted-foreground dark:border-[#1F1F1F]">{footer}</div>
+              <div className="border-t border-border px-4 py-2.5 text-xs text-muted-foreground">{footer}</div>
             )}
           </motion.div>
         )}

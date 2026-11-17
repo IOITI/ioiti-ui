@@ -2,6 +2,7 @@ import { Check, Copy, TriangleAlert } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { announce } from '../lib/announce.js'
+import { PRESSABLE } from '../lib/recipes.js'
 import { cn, copyToClipboard } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 
@@ -20,7 +21,7 @@ interface CopyButtonProps {
   className?: string
 }
 
-const SAID: Record<Outcome, string> = { idle: '', copied: 'Copied', failed: "Couldn't copy" }
+const SAID: Record<Outcome, string> = { idle: '', copied: 'Copied', failed: 'Couldn’t copy' }
 
 /** Copies a value to the clipboard, and says it did: a check for two seconds, and the words for a screen reader. */
 export function CopyButton({ value, label = 'Copy', showLabel = false, size = 'md', onCopy, className }: CopyButtonProps) {
@@ -57,8 +58,10 @@ export function CopyButton({ value, label = 'Copy', showLabel = false, size = 'm
       aria-label={showLabel ? undefined : label}
       onClick={copy}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md text-text-secondary transition hover:bg-surface-hover hover:text-text-primary motion-safe:active:scale-95',
-        size === 'sm' ? 'h-7 min-w-7 text-sm [&>svg]:size-3.5' : 'h-8 min-w-8 text-sm [&>svg]:size-4',
+        'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md text-text-secondary transition-[color,background-color,scale] hover:bg-surface-hover hover:text-foreground',
+        PRESSABLE,
+        // Small, inline in a chip or a bar's corner (24 px); else a small control's 32 px.
+        size === 'sm' ? 'h-6 min-w-6 text-sm [&>svg]:size-3.5' : 'h-8 min-w-8 text-sm [&>svg]:size-4',
         showLabel && 'px-2',
         className,
       )}

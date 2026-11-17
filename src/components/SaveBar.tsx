@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 
 import { announce } from '../lib/announce.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
+import { TOAST } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { ToastInsetContext } from './toast-context.js'
 import { Button } from './ui/button.js'
@@ -84,12 +85,14 @@ export function SaveBar({
           exit={{ opacity: 0, y: 16, transition: motionTransitions.easeExit }}
           transition={motionTransitions.springSheet}
           className={cn(
-            'sticky bottom-4 z-30 mx-auto flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-border bg-surface px-4 py-3 shadow-lg glass-float',
+            // A bar that floats over the page: a toast's surface and padding.
+            TOAST,
+            'sticky bottom-4 z-30 mx-auto flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 p-4',
             className,
           )}
         >
           <div className="min-w-0 flex-1 text-sm">
-            <p className="font-medium text-text-primary">{message}</p>
+            <p className="font-medium text-foreground">{message}</p>
             {error && (
               <p role="alert" className="text-xs text-negative">
                 {error}

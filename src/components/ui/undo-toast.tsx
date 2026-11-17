@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
 
 export type UndoToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 export type UndoToastPosition =
@@ -53,6 +54,10 @@ export interface UndoToastProps {
   /** ioiti-ui: classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom (as velocity-toast's). */
   wrapperClassName?: string;
 }
+
+// ioiti-ui: the action beside a toast's words, the same as VelocityToast's: a small button raised on the toast.
+const TOAST_ACTION_CLASS =
+  'inline-flex shrink-0 items-center gap-1 px-2.5 py-1 rounded-md border border-border bg-surface-raised text-sm font-medium text-foreground transition-[color,background-color,border-color,scale] hover:bg-surface-hover hover:border-border-hover focus-ring';
 
 export const UndoToast: React.FC<UndoToastProps> = ({
   open = true,
@@ -149,15 +154,15 @@ export const UndoToast: React.FC<UndoToastProps> = ({
     if (icon) return icon;
     switch (variant) {
       case 'success':
-        return <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />;
+        return <Check className={cn('size-4', TONE_TEXT.positive)} />;
       case 'warning':
-        return <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-400" />;
+        return <AlertTriangle className={cn('size-4', TONE_TEXT.warning)} />;
       case 'error':
-        return <AlertCircle className="w-4 h-4 text-rose-700 dark:text-rose-400" />;
+        return <AlertCircle className={cn('size-4', TONE_TEXT.negative)} />;
       case 'info':
-        return <Info className="w-4 h-4 text-sky-700 dark:text-sky-400" />;
+        return <Info className={cn('size-4', TONE_TEXT.info)} />;
       default:
-        return <Trash2 className="w-4 h-4 text-neutral-500 dark:text-[#A1A1A1]" />;
+        return <Trash2 className="size-4 text-muted-foreground" />;
     }
   };
 
@@ -187,10 +192,10 @@ export const UndoToast: React.FC<UndoToastProps> = ({
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsPaused(false);
             }}
-            // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`; glass under the
-            // glass material (glass-float).
+            // ioiti-ui: a toast's surface (recipes.ts), as VelocityToast's; glass under the glass material (glass-float).
             className={cn(
-              'pointer-events-auto relative overflow-hidden rounded-xl border border-neutral-200 bg-white text-neutral-900 shadow-[0_12px_32px_rgba(0,0,0,0.14)] p-3.5 sm:p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:text-[#FAFAFA] dark:shadow-[0_12px_32px_rgba(0,0,0,0.6)] glass-float',
+              TOAST,
+              'pointer-events-auto relative overflow-hidden p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none',
               className
             )}
             role="status"
@@ -198,14 +203,14 @@ export const UndoToast: React.FC<UndoToastProps> = ({
           >
             <div className="flex items-center justify-between gap-3 relative z-10">
               {/* Icon / Status indicator */}
-              <div className="w-8 h-8 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center shrink-0 dark:bg-[#141414] dark:border-[#1F1F1F]">
+              <div className="size-8 rounded-lg bg-surface-raised border border-border flex items-center justify-center shrink-0">
                 {isRestored ? (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={motionTransitions.springSnappy}
                   >
-                    <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                    <Check className={cn('size-4', TONE_TEXT.positive)} />
                   </motion.div>
                 ) : (
                   getVariantIcon()
@@ -214,11 +219,11 @@ export const UndoToast: React.FC<UndoToastProps> = ({
 
               {/* Text copy */}
               <div className="flex-1 min-w-0 pr-1">
-                <p className="text-sm font-semibold text-neutral-900 line-clamp-2 break-words dark:text-[#FAFAFA]">
+                <p className="text-sm font-medium text-foreground line-clamp-2 break-words text-balance">
                   {isRestored ? restoredMessage : title}
                 </p>
                 {description && !isRestored && (
-                  <p className="text-xs text-neutral-600 line-clamp-2 break-words mt-0.5 dark:text-[#A1A1A1]">
+                  <p className="text-xs text-muted-foreground line-clamp-2 break-words mt-0.5 text-pretty">
                     {description}
                   </p>
                 )}
@@ -230,9 +235,9 @@ export const UndoToast: React.FC<UndoToastProps> = ({
                   <button
                     type="button"
                     onClick={handleUndoClick}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-neutral-100 hover:bg-white border border-neutral-200 hover:border-neutral-400 text-sm font-medium text-neutral-900 transition-colors focus-ring cursor-pointer dark:bg-[#141414] dark:hover:bg-[#0E0E0E] dark:border-[#1F1F1F] dark:hover:border-[#4A4A4A] dark:text-[#FAFAFA]"
+                    className={cn(TOAST_ACTION_CLASS, PRESSABLE)}
                   >
-                    <Undo2 className="w-3 h-3 text-neutral-500 dark:text-[#A1A1A1]" />
+                    <Undo2 className="size-3.5 text-muted-foreground" />
                     <span>{undoLabel}</span>
                   </button>
                 )}
@@ -240,22 +245,22 @@ export const UndoToast: React.FC<UndoToastProps> = ({
                 <button
                   type="button"
                   onClick={handleDismiss}
-                  className="p-1 rounded-md text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-ring cursor-pointer dark:text-[#6B6B6B] dark:hover:text-[#FAFAFA] dark:hover:bg-[#141414]"
+                  className={cn(CLOSE_SM, 'focus-ring')}
                   aria-label="Close notification"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X />
                 </button>
               </div>
             </div>
 
             {/* Live Progress Bar countdown indicator */}
             {showProgress && !isRestored && (
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-neutral-100 dark:bg-[#050505]">
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-border">
                 {/* ioiti-ui: the time left in the accent, where the theme has one (accent:). Its width set at each frame,
                     with no transition: EasyUI's (50 ms), started again at each frame, never left its start, and the bar
                     stood full. */}
                 <div
-                  className="h-full bg-neutral-900 dark:bg-[#FAFAFA] accent:bg-brand"
+                  className="h-full bg-foreground accent:bg-brand"
                   style={{ width: `${progress}%` }}
                 />
               </div>

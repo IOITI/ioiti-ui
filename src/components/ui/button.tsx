@@ -5,6 +5,7 @@ import { motion, type HTMLMotionProps } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 
 export type ButtonVariant =
   | 'default'
@@ -39,31 +40,33 @@ export interface ButtonProps
   children?: React.ReactNode;
 }
 
-// ioiti-ui: under a theme with an accent (accent:), a filled button is the accent's, a soft glow of it under
-// it, its gradient and grain over the fill where the accent has them (bloom and the others), with the text they take; a link
-// is in its colour. Under the glass material, the glass's glow (the accent's where there is one).
+// ioiti-ui: under a theme with an accent (accent:), a filled button is the accent's, its gradient and grain over the
+// fill where the accent has them (bloom and the others), with the text they take, and a soft glow of it under; a link
+// is in its colour. Under the glass material, the glass's glow (the accent's where there is one). The looks add them.
 const FILLED_THEMED =
   'accent:bg-brand accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground accent:shadow-[0_4px_14px_-6px_var(--brand-glow)] glass:shadow-[var(--glass-glow)]';
 
 const variantStyles: Record<ButtonVariant, string> = {
   default:
-    `bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer ${FILLED_THEMED}`,
+    `bg-primary text-primary-foreground hover:opacity-90 shadow-subtle border border-transparent font-medium cursor-pointer ${FILLED_THEMED}`,
   primary:
-    `bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 shadow-xs border border-transparent font-medium cursor-pointer ${FILLED_THEMED}`,
+    `bg-primary text-primary-foreground hover:opacity-90 shadow-subtle border border-transparent font-medium cursor-pointer ${FILLED_THEMED}`,
   secondary:
-    'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] cursor-pointer',
+    'bg-surface border border-border text-foreground hover:bg-surface-hover hover:border-border-hover cursor-pointer',
   outline:
-    'bg-transparent border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] cursor-pointer',
+    'bg-transparent border border-border text-foreground hover:bg-surface-hover hover:border-border-hover cursor-pointer',
   ghost:
-    'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] border border-transparent cursor-pointer',
+    'bg-transparent text-text-secondary hover:text-foreground hover:bg-surface-hover border border-transparent cursor-pointer',
+  // ioiti-ui: the design's tones (recipes.ts): soft at rest, filled under the pointer (in dark too: its soft ground's
+  // `dark:` came after a plain `hover:`), the page's own colour on it.
   destructive:
-    'bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-400 hover:bg-rose-600 dark:hover:bg-rose-500 hover:text-white cursor-pointer',
+    `${TONE_SOFT.negative} border ${TONE_LINE.negative} hover:bg-negative dark:hover:bg-negative hover:text-background cursor-pointer`,
   success:
-    'bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white cursor-pointer',
+    `${TONE_SOFT.positive} border ${TONE_LINE.positive} hover:bg-positive dark:hover:bg-positive hover:text-background cursor-pointer`,
   link:
-    'bg-transparent text-[var(--text-primary)] underline-offset-4 hover:underline p-0 h-auto border-0 focus-ring shadow-none inline-flex cursor-pointer accent:text-brand-text',
+    'bg-transparent text-foreground underline-offset-4 hover:underline p-0 h-auto border-0 focus-ring shadow-none inline-flex cursor-pointer accent:text-brand-text',
   gradient:
-    'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] relative overflow-hidden cursor-pointer',
+    'bg-surface border border-border text-foreground hover:bg-surface-hover hover:border-border-hover relative overflow-hidden cursor-pointer',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -72,7 +75,7 @@ const sizeStyles: Record<ButtonSize, string> = {
   sm: 'h-8 px-3 text-sm rounded-md gap-1.5',
   md: 'h-10 px-4.5 text-sm rounded-lg gap-2',
   lg: 'h-12 px-6 text-base rounded-lg gap-2.5',
-  icon: 'h-10 w-10 p-0 rounded-lg justify-center shrink-0',
+  icon: 'size-10 p-0 rounded-lg justify-center shrink-0',
 };
 
 /**
@@ -152,14 +155,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           variant,
           size,
           fullWidth,
-          className: cn(isDisabled && 'opacity-30 cursor-not-allowed pointer-events-none', className),
+          className: cn(isDisabled && 'opacity-50 cursor-not-allowed pointer-events-none', className),
         })}
         {...props}
       >
         {/* Subtle shimmer gradient for gradient variant */}
         {variant === 'gradient' && (
           <div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-fast pointer-events-none"
             aria-hidden="true"
           />
         )}

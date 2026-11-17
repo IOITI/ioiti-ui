@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
 
 export interface LoaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -20,7 +21,7 @@ export interface LoaderProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Loader: React.FC<LoaderProps> = ({
   size = 32,
   variant = 'arc',
-  label = 'Loading...',
+  label = 'Loading…',
   reduceMotion = false,
   color = 'currentColor',
   className,
@@ -32,7 +33,7 @@ export const Loader: React.FC<LoaderProps> = ({
       aria-busy="true"
       aria-label={label}
       // ioiti-ui: in the accent where the theme has one (accent:); `color` still gives it another.
-      className={cn('inline-flex flex-col items-center justify-center gap-2 text-neutral-900 dark:text-[#FAFAFA] accent:text-brand', className)}
+      className={cn('inline-flex flex-col items-center justify-center gap-2 text-foreground accent:text-brand', className)}
       {...props}
     >
       {/* 1. Rotating Arc Variant */}
@@ -50,7 +51,7 @@ export const Loader: React.FC<LoaderProps> = ({
               cy="20"
               r="16"
               strokeWidth="3"
-              className="stroke-neutral-300 opacity-60 dark:stroke-[#1F1F1F]"
+              className="stroke-border"
             />
             <motion.circle
               cx="20"
@@ -89,11 +90,12 @@ export const Loader: React.FC<LoaderProps> = ({
                       opacity: [0.3, 1, 0.3],
                     }
               }
+              // ioiti-ui: the loop's own time, the design's curve.
               transition={{
+                ...motionTransitions.easeSoft,
                 duration: 1.4,
                 repeat: Infinity,
                 delay: i * 0.22,
-                ease: 'easeInOut',
               }}
             />
           ))}
@@ -104,7 +106,7 @@ export const Loader: React.FC<LoaderProps> = ({
       {variant === 'line' && (
         <div
           style={{ width: size * 2, height: Math.max(3, size * 0.08) }}
-          className="relative rounded-full bg-neutral-200 dark:bg-[#141414] overflow-hidden"
+          className="relative rounded-full bg-muted overflow-hidden"
         >
           <motion.div
             className="absolute top-0 bottom-0 rounded-full"
@@ -120,9 +122,9 @@ export const Loader: React.FC<LoaderProps> = ({
                   }
             }
             transition={{
+              ...motionTransitions.easeSoft,
               duration: 1.8,
               repeat: Infinity,
-              ease: [0.4, 0, 0.2, 1],
             }}
           />
         </div>
@@ -147,10 +149,10 @@ export const Loader: React.FC<LoaderProps> = ({
                     }
               }
               transition={{
+                ...motionTransitions.easeSoft,
                 duration: 2.2,
                 repeat: Infinity,
                 delay: i * 0.9,
-                ease: 'easeOut',
               }}
             />
           ))}

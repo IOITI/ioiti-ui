@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls, type PanInfo } from "framer-motion";
 import { X } from "lucide-react";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+import { CLOSE_MD, SCRIM } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 
 /*
@@ -44,6 +45,10 @@ function useControllableState<T, D>(
 
 // ioiti-ui: the sheets' and the drawer's motion, the design's own (EasyUI's was 380/38/0.9).
 const spring = motionTransitions.springSheet;
+// ioiti-ui: a sheet let go past its place comes back as it slides, with springSheet's stiffness and damping (EasyUI's
+// were 700 and 45).
+const sheetSpring = motionTransitions.springSheet as Record<"stiffness" | "damping", number>;
+const DRAG_RETURN = { bounceStiffness: sheetSpring.stiffness, bounceDamping: sheetSpring.damping };
 
 export type FlysheetSide = "right" | "left" | "top" | "bottom";
 
@@ -593,7 +598,7 @@ export function FlysheetContent({
       onPointerDown={(e) => controls.start(e)}
       className="flex h-7 shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
     >
-      <span className="h-1 w-9 rounded-full bg-neutral-200 dark:bg-neutral-800" />
+      <span className="h-1 w-9 rounded-full bg-border" />
     </div>
   );
 
@@ -618,8 +623,8 @@ export function FlysheetContent({
       >
         <span
           className={cn(
-            "absolute left-1/2 top-1/2 h-10 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-300 transition-colors group-hover:bg-neutral-400 dark:bg-neutral-700 dark:group-hover:bg-neutral-500",
-            resizing && "bg-neutral-500 dark:bg-neutral-400"
+            "absolute left-1/2 top-1/2 h-10 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-border-hover transition-colors group-hover:bg-text-subtle",
+            resizing && "bg-muted-foreground"
           )}
         />
       </div>
@@ -634,11 +639,13 @@ export function FlysheetContent({
       aria-label="Close"
       onClick={() => setOpen(false, { reason: "close-button" })}
       className={cn(
-        "absolute z-10 grid size-8 place-items-center rounded-lg text-[var(--text-subtle)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--text-primary)] active:scale-95",
-        outside ? cn("rounded-full bg-white shadow-md dark:bg-neutral-900", OUTSIDE[side]) : "right-3 top-3"
+        CLOSE_MD,
+        "absolute z-10",
+        // Outside, it floats beside the panel, on the scrim.
+        outside ? cn("rounded-full bg-surface shadow-elevated", OUTSIDE[side]) : "right-3 top-3"
       )}
     >
-      <X className="size-4" />
+      <X />
     </button>
   ) : null;
 
@@ -656,7 +663,8 @@ export function FlysheetContent({
       tabIndex={-1}
       className={cn(
         // ioiti-ui: the panel no longer clips (its contents do): the close button may be outside it.
-        "pointer-events-auto absolute flex flex-col border-neutral-200 bg-white text-neutral-900 shadow-2xl outline-none dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100",
+        // ioiti-ui: a dialog's surface, line and shadow (DIALOG's), on the sides its place gives it (its border and radius).
+        "pointer-events-auto absolute flex flex-col border-border bg-surface text-foreground shadow-elevated outline-none",
         cfg.pos,
         // ioiti-ui: glass under the glass material: floating over the page (glass-float), or a bar beside it.
         pushing ? "shadow-none glass-bar" : "glass-float",
@@ -678,7 +686,7 @@ export function FlysheetContent({
       dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
       dragElastic={cfg.elastic}
       dragMomentum={false}
-      dragTransition={{ bounceStiffness: 700, bounceDamping: 45 }}
+      dragTransition={DRAG_RETURN}
       onDragEnd={(_, info) => {
         if (cfg.dismiss(info)) setOpen(false, { reason: "drag" });
       }}
@@ -724,7 +732,7 @@ export function FlysheetContent({
                 <motion.div
                   aria-hidden
                   // ioiti-ui: lighter under the glass material, as the other dialogs' scrims.
-                  className="absolute inset-0 bg-neutral-950/30 backdrop-blur-[2px] dark:bg-black/60 glass:bg-[var(--glass-scrim)]"
+                  className={cn("absolute inset-0", SCRIM)}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
@@ -821,7 +829,7 @@ export function FlysheetFooter({ className, ...props }: React.ComponentProps<"di
   return (
     <div
       className={cn(
-        "flex items-center justify-end gap-2 border-t border-neutral-200 dark:border-neutral-800",
+        "flex items-center justify-end gap-2 border-t border-border",
         pad.footer,
         className
       )}

@@ -4,36 +4,26 @@ import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X, type LucideIcon } from "lucide-react";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+import { CLOSE_MD, TONE_LINE, TONE_SOFT, TONE_TEXT, type Tone } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 
 export type AlertTone = "neutral" | "info" | "success" | "warning" | "danger";
 
+// ioiti-ui: the design's tones (recipes.ts): an alert's box is the tone's faint ground and line, its icon the tone.
+const TONE: Record<AlertTone, Tone> = { neutral: "neutral", info: "info", success: "positive", warning: "warning", danger: "negative" };
+
+const tone = (alert: AlertTone, Icon: LucideIcon) => ({
+  box: cn(TONE_SOFT[TONE[alert]], TONE_LINE[TONE[alert]]),
+  icon: TONE_TEXT[TONE[alert]],
+  Icon,
+});
+
 const tones: Record<AlertTone, { box: string; icon: string; Icon: LucideIcon }> = {
-  neutral: {
-    box: "border-neutral-200 bg-neutral-50/70 dark:border-neutral-800 dark:bg-neutral-900/60",
-    icon: "text-neutral-500 dark:text-neutral-400",
-    Icon: Info,
-  },
-  info: {
-    box: "border-sky-200 bg-sky-50/70 dark:border-sky-500/30 dark:bg-sky-500/12",
-    icon: "text-sky-600 dark:text-sky-400",
-    Icon: Info,
-  },
-  success: {
-    box: "border-emerald-200 bg-emerald-50/70 dark:border-emerald-500/30 dark:bg-emerald-500/12",
-    icon: "text-emerald-600 dark:text-emerald-400",
-    Icon: CircleCheck,
-  },
-  warning: {
-    box: "border-amber-200 bg-amber-50/70 dark:border-amber-500/30 dark:bg-amber-500/12",
-    icon: "text-amber-600 dark:text-amber-400",
-    Icon: TriangleAlert,
-  },
-  danger: {
-    box: "border-red-200 bg-red-50/70 dark:border-red-500/30 dark:bg-red-500/12",
-    icon: "text-red-600 dark:text-red-400",
-    Icon: CircleAlert,
-  },
+  neutral: tone("neutral", Info),
+  info: tone("info", Info),
+  success: tone("success", CircleCheck),
+  warning: tone("warning", TriangleAlert),
+  danger: tone("danger", CircleAlert),
 };
 
 export interface AlertProps extends Omit<React.ComponentProps<"div">, "title"> {
@@ -88,9 +78,9 @@ export function Alert({
                 aria-label="Dismiss"
                 onClick={() => setVisible(false)}
                 // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                className="-mr-1 -mt-1 grid size-7 shrink-0 place-items-center rounded-lg text-neutral-400 outline-none transition hover:bg-black/5 hover:text-neutral-900 active:scale-95 dark:hover:bg-white/10 dark:hover:text-white"
+                className={cn(CLOSE_MD, "-mr-1.5 -mt-1.5 outline-none")}
               >
-                <X className="size-4" />
+                <X />
               </button>
             )}
           </div>
@@ -101,10 +91,10 @@ export function Alert({
 }
 
 export function AlertTitle({ className, ...props }: React.ComponentProps<"p">) {
-  return <p className={cn("font-medium text-neutral-900 dark:text-neutral-100", className)} {...props} />;
+  return <p className={cn("font-medium text-foreground text-balance", className)} {...props} />;
 }
 
 // ioiti-ui: a div, not a p: a description may hold a list, paragraphs, a Disclosure (in a p, invalid HTML).
 export function AlertDescription({ className, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn("mt-0.5 text-neutral-600 dark:text-neutral-400", className)} {...props} />;
+  return <div className={cn("mt-0.5 text-muted-foreground text-pretty", className)} {...props} />;
 }

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { CLOSE_MD, DIALOG, SCRIM } from '../../lib/recipes.js';
 
 export interface SettleModalProps {
   open: boolean;
@@ -145,7 +146,7 @@ export const SettleModal: React.FC<SettleModalProps> = ({
         >
           {/* Backdrop fades in softly. ioiti-ui: lighter under the glass material, and the panel glass (glass-float). */}
           <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-md glass:bg-[var(--glass-scrim)]"
+            className={cn('absolute inset-0', SCRIM)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
@@ -164,7 +165,8 @@ export const SettleModal: React.FC<SettleModalProps> = ({
             style={{ transformOrigin: origin }}
             className={cn(
               // ioiti-ui: no taller than the screen; what does not fit scrolls inside it (a phone, a long form).
-              'relative w-full max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] p-6 sm:p-8 focus:outline-none glass-float',
+              DIALOG,
+              'relative w-full max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 focus:outline-none',
               sizeMap[size],
               className
             )}
@@ -174,9 +176,9 @@ export const SettleModal: React.FC<SettleModalProps> = ({
                 type="button"
                 aria-label="Close"
                 onClick={onClose}
-                className="absolute top-3.5 right-3.5 p-1.5 rounded-md text-[var(--text-subtle)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-colors focus-ring cursor-pointer"
+                className={cn(CLOSE_MD, 'absolute top-3 right-3 focus-ring')}
               >
-                <X className="w-3.5 h-3.5" />
+                <X />
               </button>
             )}
 
@@ -185,13 +187,13 @@ export const SettleModal: React.FC<SettleModalProps> = ({
               {title && (
                 <h2
                   id={titleId}
-                  className="text-lg sm:text-xl font-semibold tracking-tight text-[var(--text-primary)] pr-8"
+                  className="text-lg sm:text-xl font-semibold tracking-tight text-foreground text-balance pr-8"
                 >
                   {title}
                 </h2>
               )}
               {description && (
-                <p id={`${titleId}-description`} className="text-sm text-[var(--text-secondary)] mt-1.5 leading-relaxed">{description}</p>
+                <p id={`${titleId}-description`} className="text-sm text-muted-foreground mt-1.5 leading-relaxed text-pretty">{description}</p>
               )}
 
               {children && <div className="mt-5">{children}</div>}

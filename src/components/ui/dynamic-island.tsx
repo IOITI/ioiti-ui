@@ -7,6 +7,8 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import { X } from 'lucide-react';
+import { motionTransitions } from '../../lib/motion-tokens.js';
+import { CLOSE_SM, FLOATING } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 
 export type DynamicIslandState = 'collapsed' | 'expanded';
@@ -101,29 +103,15 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
     };
   }, [currentState, handleStateChange]);
 
-  // Spring physics matching EasyUI motion philosophy
-  const springTransition = shouldReduceMotion
-    ? { duration: 0 }
-    : {
-        type: 'spring' as const,
-        stiffness: 400,
-        damping: 30,
-        mass: 0.8,
-      };
+  // ioiti-ui: the design's motion: the island grows from the pill as what floats in (springSnappy, no overshoot),
+  // its content fades in quickly (easeFast).
+  const springTransition = shouldReduceMotion ? { duration: 0 } : motionTransitions.springSnappy;
 
-  const contentTransition = shouldReduceMotion
-    ? { duration: 0 }
-    : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const };
+  const contentTransition = shouldReduceMotion ? { duration: 0 } : motionTransitions.easeFast;
 
   // ioiti-ui: glass under the glass material (glass-float): the pill and the open island are siblings, neither
-  // holding a fixed child.
-  const surface = cn(
-    'border backdrop-blur-md transition-colors glass-float',
-    'bg-white/95 dark:bg-[#141416]/95',
-    'border-black/[0.08] dark:border-white/[0.12]',
-    'text-[#0A0A0A] dark:text-[#F4F4F5]',
-    'shadow-[0_12px_32px_-6px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] dark:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)]'
-  );
+  // holding a fixed child. The pill is a control in the bar, lifted a hair; the open island floats (FLOATING).
+  const pillSurface = 'border border-border bg-surface text-foreground shadow-subtle transition-[color,background-color,scale] glass-float';
 
   const expanded = currentState === 'expanded';
 
@@ -139,8 +127,8 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
         aria-expanded={expanded}
         aria-controls={expanded ? `${instanceId}-panel` : undefined}
         className={cn(
-          surface,
-          'inline-flex h-8 items-center gap-2 rounded-full px-3 text-sm font-medium cursor-pointer hover:bg-white dark:hover:bg-[#1A1A1D]',
+          pillSurface,
+          'inline-flex h-8 items-center gap-2 rounded-full px-3 text-sm font-medium cursor-pointer motion-safe:active:scale-[0.97] hover:bg-surface-hover',
           expanded && 'invisible'
         )}
       >
@@ -159,10 +147,10 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
             layoutId={instanceId}
             transition={springTransition}
             className={cn(
-              surface,
+              FLOATING,
               // From the pill's left edge, over the page rather than the menu beside it; on a phone across the screen
               // under the top bar.
-              'fixed inset-x-4 top-16 z-40 overflow-hidden rounded-[26px] sm:absolute sm:inset-x-auto sm:left-0 sm:top-0 sm:w-[22rem]'
+              'fixed inset-x-4 top-16 z-40 overflow-hidden sm:absolute sm:inset-x-auto sm:left-0 sm:top-0 sm:w-[22rem]'
             )}
           >
             <motion.div
@@ -177,9 +165,9 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
                 type="button"
                 onClick={() => handleStateChange('collapsed')}
                 aria-label={`Close ${label.toLowerCase()}`}
-                className="absolute right-3 top-3 w-7 h-7 flex items-center justify-center rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
+                className={cn(CLOSE_SM, 'absolute right-3 top-3')}
               >
-                <X className="w-3.5 h-3.5" />
+                <X />
               </button>
               {children}
             </motion.div>

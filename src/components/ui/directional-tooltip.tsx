@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { TOOLTIP } from '../../lib/recipes.js';
 
 export type TooltipSide = 'top' | 'right' | 'bottom' | 'left';
 export type TooltipAlign = 'start' | 'center' | 'end';
@@ -235,7 +236,8 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
                 transition={motionTransitions.springSnappy}
                 // ioiti-ui: long hints wrap, within the screen; glass under the glass material (glass-float).
                 className={cn(
-                  'fixed z-[60] w-max max-w-[min(20rem,calc(100vw-1rem))] whitespace-normal rounded-md border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-elevated)] px-2.5 py-1.5 text-xs leading-relaxed pointer-events-none glass-float',
+                  TOOLTIP,
+                  'fixed z-[60] w-max max-w-[min(20rem,calc(100vw-1rem))] whitespace-normal px-2.5 py-1.5 text-xs leading-relaxed pointer-events-none',
                   className
                 )}
                 style={place ? { left: place.left, top: place.top } : { left: -9999, top: -9999 }}
@@ -244,7 +246,7 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
                 {showArrow && (
                   <span
                     aria-hidden="true"
-                    className={cn('absolute w-2 h-2 border-4', arrowStyles[place?.side ?? side].position)}
+                    className={cn('absolute size-2 border-4', arrowStyles[place?.side ?? side].position)}
                     style={
                       {
                         [arrowStyles[place?.side ?? side].borderColorSide]: 'var(--border)',

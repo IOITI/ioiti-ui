@@ -52,10 +52,10 @@ export function ShortcutsDialog({ open, onOpenChange, title = 'Keyboard shortcut
         {Array.from(groups.entries()).map(([group, shortcuts]) => (
           <section key={group}>
             <h3 className="mb-2 text-xs font-medium text-text-secondary">{group}</h3>
-            <dl className="flex flex-col divide-y divide-border text-sm">
+            <dl className="flex flex-col divide-y divide-border/40 text-sm">
               {shortcuts.map((shortcut) => (
                 <div key={`${shortcut.keys}\n${shortcut.description}`} className="flex items-center justify-between gap-4 py-2">
-                  <dt className="text-text-primary">{shortcut.description}</dt>
+                  <dt className="text-foreground">{shortcut.description}</dt>
                   <dd>
                     <Kbd keys={shortcut.keys} />
                   </dd>

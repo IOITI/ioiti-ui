@@ -13,6 +13,8 @@ import {
 } from "framer-motion";
 
 import { motionTransitions } from "../../lib/motion-tokens.js";
+import { DIALOG, SCRIM_FILL } from "../../lib/recipes.js";
+import { cn } from "../../lib/utils.js";
 import { Button } from "./button.js";
 
 /* -------------------------------------------------------------------------- */
@@ -457,8 +459,8 @@ export function ProductTour({
                 <motion.rect x={sx} y={sy} width={safeW} height={safeH} rx={safeR} fill="black" />
               </mask>
             </defs>
-            {/* ioiti-ui: the design's scrim, lighter under the glass material. */}
-            <rect width="100%" height="100%" className="fill-black/50 glass:fill-(--glass-scrim)" mask={`url(#${uid}-mask)`} />
+            {/* ioiti-ui: the design's scrim (SCRIM's, as a fill), lighter under the glass material. */}
+            <rect width="100%" height="100%" className={SCRIM_FILL} mask={`url(#${uid}-mask)`} />
             <motion.rect
               x={sx}
               y={sy}
@@ -483,7 +485,7 @@ export function ProductTour({
             // ioiti-ui: named by its step's title.
             aria-labelledby={titleId}
             // ioiti-ui: the surface, the text and the glass of a dialog.
-            className="absolute left-0 top-0 w-[calc(100vw-24px)] max-w-[440px] overflow-hidden rounded-2xl border border-border bg-surface text-text-primary shadow-2xl shadow-black/20 sm:w-[340px] sm:max-w-none glass-float"
+            className={cn(DIALOG, "absolute left-0 top-0 w-[calc(100vw-24px)] max-w-[440px] overflow-hidden sm:w-[340px] sm:max-w-none")}
             style={{ x: cx, y: cy }}
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: ready ? 1 : 0, scale: ready ? 1 : 0.96 }}
@@ -494,7 +496,7 @@ export function ProductTour({
                 {index + 1} of {steps.length}
               </span>
               {/* ioiti-ui: the package's buttons, the global focus ring. */}
-              <Button variant="ghost" size="sm" className="-my-1.5 -mr-2 h-7 px-2 text-xs" onClick={() => onClose("skip")}>
+              <Button variant="ghost" size="xs" className="-my-1 -mr-2" onClick={() => onClose("skip")}>
                 Skip
               </Button>
             </div>
@@ -514,10 +516,10 @@ export function ProductTour({
                   transition={motionTransitions.easeFast}
                   className="px-4 pb-1 pt-2"
                 >
-                  <h2 id={titleId} className="text-base font-semibold tracking-tight text-text-primary">
+                  <h2 id={titleId} className="text-base font-semibold tracking-tight text-foreground text-balance">
                     {step.title}
                   </h2>
-                  <div className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.body}</div>
+                  <div className="mt-1 text-sm leading-relaxed text-muted-foreground text-pretty">{step.body}</div>
                 </motion.div>
               </AnimatePresence>
             </motion.div>
@@ -531,11 +533,11 @@ export function ProductTour({
                     aria-label={`Go to step ${i + 1}`}
                     aria-current={i === index}
                     onClick={() => go(i)}
-                    className="group rounded-full px-[3px] py-2 [-webkit-tap-highlight-color:transparent] max-sm:px-1 max-sm:py-3"
+                    className="group cursor-pointer rounded-full px-[3px] py-2 [-webkit-tap-highlight-color:transparent] max-sm:px-1 max-sm:py-3"
                   >
                     {/* ioiti-ui: the current step in the text's colour, the accent's under an accent. */}
                     <span
-                      className={`block h-1.5 rounded-full transition-[width,background-color] duration-200 ${
+                      className={`block h-1.5 rounded-full transition-[width,background-color] duration-200 ease-fast ${
                         i === index ? "w-4 bg-foreground accent:bg-brand" : "w-1.5 bg-foreground/20"
                       }`}
                     />

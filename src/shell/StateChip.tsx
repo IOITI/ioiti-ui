@@ -2,14 +2,15 @@ import type { ReactNode } from 'react'
 
 import { Hint } from '../components/Hint.js'
 import { useLinkComponent } from '../components/link-context.js'
+import { TONE_SOFT } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 
-// The 400 steps are made for a dark surface; on a light one the 800 steps carry the text.
+// The design's tones (recipes.ts), their faint ground, a step stronger under the pointer: each word keeps 4.5:1 on both.
 const CHIP_TONE = {
-  warning: 'bg-amber-500/15 text-amber-800 hover:bg-amber-500/25 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20',
-  danger: 'bg-red-500/10 text-red-700 hover:bg-red-500/20 dark:text-red-400',
+  warning: cn(TONE_SOFT.warning, 'hover:bg-warning/10 dark:hover:bg-warning/20'),
+  danger: cn(TONE_SOFT.negative, 'hover:bg-negative/10 dark:hover:bg-negative/20'),
   // Good news not to miss either (approved, merged): still a link to where it goes on.
-  success: 'bg-emerald-500/15 text-emerald-800 hover:bg-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20',
+  success: cn(TONE_SOFT.positive, 'hover:bg-positive/10 dark:hover:bg-positive/20'),
 }
 
 interface StateChipProps {
@@ -39,7 +40,7 @@ export function StateChip({ to, tone, icon, label, hint }: StateChipProps) {
         href={to}
         aria-label={label}
         className={cn(
-          'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full px-2 text-xs font-medium transition-colors lg:px-2.5',
+          'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-xs font-medium transition-colors lg:px-2.5',
           CHIP_TONE[tone],
         )}
       >

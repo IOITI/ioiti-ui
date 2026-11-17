@@ -1,6 +1,7 @@
 import { ChevronDown, LogOut } from 'lucide-react'
 import type { ReactNode } from 'react'
 
+import { PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { useAppearanceItems } from './appearance.js'
 import { Avatar } from './Avatar.js'
@@ -75,7 +76,9 @@ export function UserMenu({
         <button
           type="button"
           className={cn(
-            'relative flex h-9 shrink-0 items-center gap-2 rounded-lg p-0.5 text-left transition-colors hover:bg-neutral-200/70 focus-ring aria-expanded:bg-neutral-200/70 sm:pr-2 dark:hover:bg-neutral-800 dark:aria-expanded:bg-neutral-800',
+            // The top bar's buttons' hover and press (IconButton's), held as pressed while its menu is open.
+            PRESSABLE,
+            'relative flex h-9 shrink-0 items-center gap-2 rounded-lg p-0.5 text-left transition-[background-color,scale] hover:bg-surface-hover focus-ring aria-expanded:bg-surface-hover sm:pr-2',
             className,
           )}
         >

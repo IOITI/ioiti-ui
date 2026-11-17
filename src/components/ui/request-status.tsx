@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import { Check, AlertCircle, Copy, Send, Hourglass, CircleHelp, ArrowRight, X } from 'lucide-react';
 import { cn, copyToClipboard } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { CLOSE_SM, TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
 
 // ioiti-ui: EasyUI's payment-status, made the steps of what the user asked for (an action sent from a page) rather
@@ -41,8 +42,9 @@ export interface RequestStatusProps {
   className?: string;
 }
 
-// ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`.
-const BADGE = 'w-11 h-11 shrink-0 rounded-full flex items-center justify-center relative border';
+// ioiti-ui: the design's tokens, and its tones (recipes.ts) for an outcome.
+const BADGE = 'size-11 shrink-0 rounded-full flex items-center justify-center relative border';
+const QUIET = 'bg-surface-raised border-border';
 
 // ioiti-ui: no Retry, no other payment method, no receipt to view or download: the card follows what was asked and
 // acts on nothing. Laid out in a row (the badge beside the words): docked at the edge of the screen, EasyUI's
@@ -76,8 +78,8 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
   return (
     <div
       className={cn(
-        // ioiti-ui: glass under the glass material, as a card (glass-card).
-        'w-full rounded-2xl border border-neutral-200 bg-white p-5 text-left font-sans shadow-[0_12px_30px_-10px_rgba(0,0,0,0.18)] transition-all dark:border-[#1F1F1F] dark:bg-[#0E0E0E] dark:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.6)] glass-card',
+        // ioiti-ui: a card in the page, with no shadow (it does not float); glass under the glass material (glass-card).
+        'w-full rounded-2xl border border-border bg-surface p-5 text-left font-sans text-foreground glass-card',
         className
       )}
     >
@@ -85,25 +87,25 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
         {/* Status Indicator Badge */}
         <div className="relative" aria-hidden="true">
           {status === 'processing' && (
-            <div className={cn(BADGE, 'bg-neutral-100 border-neutral-200 dark:bg-[#141414] dark:border-[#1F1F1F]')}>
+            <div className={cn(BADGE, QUIET)}>
               {/* ioiti-ui: sending, in the accent where the theme has one (accent:). */}
               <motion.div
-                className="absolute inset-0 rounded-full border border-neutral-900/25 border-t-neutral-900 dark:border-white/30 dark:border-t-white accent:border-brand/25 accent:border-t-brand"
+                className="absolute inset-0 rounded-full border border-foreground/25 border-t-foreground accent:border-brand/25 accent:border-t-brand"
                 animate={spin}
                 transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
               />
-              <Send className="w-4 h-4 text-neutral-500 dark:text-[#A1A1A1]" />
+              <Send className="size-4 text-muted-foreground" />
             </div>
           )}
 
           {status === 'verifying' && (
-            <div className={cn(BADGE, 'bg-neutral-100 border-neutral-200 dark:bg-[#141414] dark:border-[#1F1F1F]')}>
+            <div className={cn(BADGE, QUIET)}>
               <motion.div
-                className="absolute inset-1 rounded-full border border-sky-600/30 border-t-sky-600 dark:border-sky-400/40 dark:border-t-sky-400"
+                className="absolute inset-1 rounded-full border border-info/30 border-t-info"
                 animate={spin}
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               />
-              <Hourglass className="w-5 h-5 text-sky-700 dark:text-sky-400" />
+              <Hourglass className="size-5 text-info" />
             </div>
           )}
 
@@ -112,14 +114,14 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={motionTransitions.springSnappy}
-              className={cn(BADGE, 'bg-emerald-500/10 border-emerald-600/30 text-emerald-700 dark:border-emerald-500/30 dark:text-emerald-400')}
+              className={cn(BADGE, TONE_SOFT.positive, TONE_LINE.positive)}
             >
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <motion.path
                   d="M20 6L9 17l-5-5"
                   initial={{ pathLength: reduce ? 1 : 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
+                  transition={{ ...motionTransitions.easeSoft, delay: 0.1 }}
                 />
               </svg>
             </motion.div>
@@ -130,9 +132,9 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={motionTransitions.springSnappy}
-              className={cn(BADGE, 'bg-rose-500/10 border-rose-600/30 text-rose-700 dark:border-rose-500/30 dark:text-rose-400')}
+              className={cn(BADGE, TONE_SOFT.negative, TONE_LINE.negative)}
             >
-              <AlertCircle className="w-6 h-6" />
+              <AlertCircle className="size-6" />
             </motion.div>
           )}
 
@@ -141,23 +143,23 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={motionTransitions.springSnappy}
-              className={cn(BADGE, 'bg-neutral-100 border-neutral-200 text-neutral-500 dark:bg-[#141414] dark:border-[#1F1F1F] dark:text-[#A1A1A1]')}
+              className={cn(BADGE, QUIET, 'text-muted-foreground')}
             >
-              <CircleHelp className="w-6 h-6" />
+              <CircleHelp className="size-6" />
             </motion.div>
           )}
         </div>
 
         {/* ioiti-ui: read out as it changes. */}
         <div className="min-w-0 flex-1" role="status" aria-live="polite">
-          <h3 className="text-base font-semibold text-neutral-900 tracking-tight dark:text-[#FAFAFA]">{title}</h3>
+          <h3 className="text-base font-semibold text-foreground tracking-tight text-balance">{title}</h3>
           {description && (
-            <p className="text-sm text-neutral-600 mt-1 dark:text-[#A1A1A1]">{description}</p>
+            <p className="text-sm text-muted-foreground mt-1 text-pretty">{description}</p>
           )}
           {/* Amount Pill. ioiti-ui: what it is about. */}
           {subject && (
-            <div className="mt-3 inline-flex max-w-full items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 dark:bg-[#141414] dark:border-[#1F1F1F]">
-              <span className="truncate text-xs font-medium text-neutral-900 dark:text-[#FAFAFA]">{subject}</span>
+            <div className="mt-3 inline-flex max-w-full items-center gap-1.5 px-3 py-1 rounded-full bg-surface-raised border border-border">
+              <span className="truncate text-xs font-medium text-foreground">{subject}</span>
             </div>
           )}
         </div>
@@ -167,9 +169,9 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
             type="button"
             onClick={onDismiss}
             aria-label="Close"
-            className="-mr-1 -mt-1 shrink-0 rounded-md p-1 text-neutral-500 transition-colors hover:text-neutral-900 dark:text-[#6B6B6B] dark:hover:text-[#FAFAFA]"
+            className={cn(CLOSE_SM, '-mr-1 -mt-1')}
           >
-            <X className="w-4 h-4" />
+            <X />
           </button>
         )}
       </div>
@@ -182,29 +184,29 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={motionTransitions.springGentle}
-            className="mt-4 pt-4 border-t border-neutral-200 space-y-1.5 text-sm dark:border-[#1F1F1F]"
+            className="mt-4 pt-4 border-t border-border space-y-1.5 text-sm"
           >
             {figures.map((figure) => (
               <div key={figure.label} className="flex items-baseline justify-between gap-3 py-0.5">
-                <span className="text-neutral-600 dark:text-[#A1A1A1]">{figure.label}</span>
-                <span className="min-w-0 text-right tabular-nums text-neutral-900 dark:text-[#FAFAFA]">{figure.value}</span>
+                <span className="text-muted-foreground">{figure.label}</span>
+                <span className="min-w-0 text-right tabular-nums text-foreground">{figure.value}</span>
               </div>
             ))}
 
             {reference && (
               <div className="flex items-center justify-between gap-3 py-0.5">
-                <span className="text-neutral-600 dark:text-[#A1A1A1]">{reference.label}</span>
+                <span className="text-muted-foreground">{reference.label}</span>
                 <button
                   type="button"
                   onClick={handleCopyId}
-                  className="inline-flex min-w-0 items-center gap-1 font-mono text-neutral-600 hover:text-neutral-900 transition-colors px-1.5 py-0.5 rounded bg-neutral-100 border border-neutral-200 cursor-pointer dark:text-[#A1A1A1] dark:hover:text-[#FAFAFA] dark:bg-[#141414] dark:border-[#1F1F1F]"
+                  className="inline-flex min-w-0 items-center gap-1 font-mono text-muted-foreground hover:text-foreground transition-[color,scale] px-1.5 py-0.5 rounded-md bg-surface-raised border border-border cursor-pointer motion-safe:active:scale-[0.97]"
                   aria-label={`Copy ${reference.label.toLowerCase()} ${reference.value}`}
                 >
                   <span className="truncate">{reference.value}</span>
                   {copied ? (
-                    <Check className="w-3 h-3 shrink-0 text-emerald-700 dark:text-emerald-400" />
+                    <Check className="size-3.5 shrink-0 text-positive" />
                   ) : (
-                    <Copy className="w-3 h-3 shrink-0 text-neutral-500 dark:text-[#6B6B6B]" />
+                    <Copy className="size-3.5 shrink-0 text-muted-foreground" />
                   )}
                 </button>
               </div>
@@ -214,10 +216,10 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
               <div className="pt-2">
                 <LinkComponent
                   href={link.href}
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-[#FAFAFA]"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground underline-offset-4 hover:underline"
                 >
                   {link.label}
-                  <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                  <ArrowRight className="size-4" aria-hidden="true" />
                 </LinkComponent>
               </div>
             )}

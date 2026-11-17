@@ -21,6 +21,9 @@ export const MENU_ROW =
 /** What is behind a dialog, a sheet, the drawer, the search, a tour. */
 export const SCRIM = 'bg-neutral-950/40 dark:bg-black/60 backdrop-blur-[2px] glass:bg-[var(--glass-scrim)]'
 
+/** The scrim as an SVG fill, where a mask cuts a hole in it (a tour's step). */
+export const SCRIM_FILL = 'fill-black/40 dark:fill-black/60 glass:fill-(--glass-scrim)'
+
 /** What can't be used: half its strength, the pointer saying so. */
 export const DISABLED = 'disabled:cursor-not-allowed disabled:opacity-50'
 

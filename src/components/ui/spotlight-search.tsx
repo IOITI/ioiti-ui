@@ -13,6 +13,7 @@ import { findEntry, forgetEntry, readRemembered, rememberEntry, rememberedKey, s
 import type { RememberedEntry } from '../../lib/spotlight.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+import { DIALOG, PRESSABLE, SCRIM } from '../../lib/recipes.js';
 import { Hint } from '../Hint.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
 import { useShortcut } from '../shortcuts-context.js';
@@ -165,7 +166,7 @@ function Marked({ text, words }: { text: string; words: string[] }) {
   for (const [start, end] of ranges) {
     if (start > at) parts.push(text.slice(at, start));
     parts.push(
-      <mark key={start} className="bg-transparent text-text-primary underline decoration-text-muted underline-offset-[3px] accent:decoration-brand">
+      <mark key={start} className="bg-transparent text-foreground underline decoration-muted-foreground underline-offset-[3px] accent:decoration-brand">
         {text.slice(start, end)}
       </mark>
     );
@@ -628,7 +629,7 @@ function Palette({
         onRetry();
         inputRef.current?.focus({ preventScroll: true });
       }}
-      className="shrink-0 cursor-pointer rounded-md px-1.5 py-0.5 text-sm font-medium text-text-primary underline-offset-2 hover:underline"
+      className="shrink-0 cursor-pointer rounded-md px-1.5 py-0.5 text-sm font-medium text-foreground underline-offset-2 hover:underline"
     >
       Try again
     </button>
@@ -637,8 +638,8 @@ function Palette({
   const renderRow = (row: Row) => {
     const isActive = row.key === activeRowKey;
     const rowClass = cn(
-      'relative flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer transition-colors text-sm',
-      isActive ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
+      'relative flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors text-sm',
+      isActive ? 'text-foreground' : 'text-text-secondary hover:text-foreground'
     );
 
     if (row.kind === 'search') {
@@ -653,7 +654,7 @@ function Palette({
           className={rowClass}
         >
           <span className="flex min-w-0 items-center gap-3">
-            <History aria-hidden className="size-4 shrink-0 text-text-muted" />
+            <History aria-hidden className="size-4 shrink-0 text-muted-foreground" />
             <span className="truncate">{row.text}</span>
           </span>
         </div>
@@ -680,7 +681,7 @@ function Palette({
               <Marked text={item.title} words={words} />
             </span>
             {item.description && (
-              <span className="block truncate text-xs text-text-muted">
+              <span className="block truncate text-xs text-muted-foreground">
                 <Marked text={item.description} words={words} />
               </span>
             )}
@@ -700,11 +701,11 @@ function Palette({
               </span>
             )
           )}
-          {(!grouped || row.kind === 'remembered') && <span className="text-xs text-text-muted">{item.category}</span>}
+          {(!grouped || row.kind === 'remembered') && <span className="text-xs text-muted-foreground">{item.category}</span>}
           {/* ioiti-ui: chosen already. */}
-          {isPicked && <Check aria-hidden className="size-4 shrink-0 text-text-primary accent:text-brand" />}
+          {isPicked && <Check aria-hidden className="size-4 shrink-0 text-foreground accent:text-brand" />}
           {/* ioiti-ui: a list of its own, opened when chosen. */}
-          {isList && <ChevronRight aria-hidden className="size-4 shrink-0 text-text-muted" />}
+          {isList && <ChevronRight aria-hidden className="size-4 shrink-0 text-muted-foreground" />}
         </span>
       </>
     );
@@ -770,7 +771,7 @@ function Palette({
         exit={{ opacity: 0, transition: motionTransitions.easeExit }}
         transition={motionTransitions.easeFast}
         onClick={finish}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm glass:bg-[var(--glass-scrim)]"
+        className={cn('fixed inset-0', SCRIM)}
       />
 
       {/* Ultra-minimal Spotlight Container */}
@@ -788,7 +789,8 @@ function Palette({
         exit={{ opacity: 0, scale: 0.98, y: -6, transition: motionTransitions.easeExit }}
         transition={motionTransitions.springSnappy}
         className={cn(
-          'relative w-full max-w-lg rounded-2xl border border-border bg-surface-raised shadow-elevated overflow-hidden z-10 glass-float',
+          DIALOG,
+          'relative w-full max-w-lg overflow-hidden z-10',
           className
         )}
       >
@@ -796,9 +798,9 @@ function Palette({
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
           {/* ioiti-ui: searching, it turns (still where motion is reduced: --animate-spin). */}
           {loading ? (
-            <Loader2 aria-hidden className="w-4 h-4 text-text-subtle shrink-0 animate-spin" />
+            <Loader2 aria-hidden className="size-4 text-muted-foreground shrink-0 animate-spin" />
           ) : (
-            <Search aria-hidden className="w-4 h-4 text-text-subtle shrink-0" />
+            <Search aria-hidden className="size-4 text-muted-foreground shrink-0" />
           )}
           {/* ioiti-ui: the list shown, its title: pressed, back to the entries it is in, the focus in the field. */}
           {scope && (
@@ -817,7 +819,10 @@ function Palette({
                   inputRef.current?.focus({ preventScroll: true });
                 }}
                 aria-label={`Back from ${scope.title}`}
-                className="inline-flex min-w-0 max-w-full cursor-pointer items-center gap-1 rounded-md border border-border bg-surface px-1.5 py-0.5 text-xs font-medium text-text-secondary transition-colors hover:text-text-primary"
+                className={cn(
+                  'inline-flex min-w-0 max-w-full items-center gap-1 rounded-md border border-border bg-surface px-1.5 py-0.5 text-xs font-medium text-text-secondary transition-[color,background-color,scale] hover:bg-surface-hover hover:text-foreground',
+                  PRESSABLE
+                )}
               >
                 <ChevronLeft aria-hidden className="size-3.5 shrink-0" />
                 <span className="truncate">{scope.title}</span>
@@ -830,7 +835,7 @@ function Palette({
             value={query}
             onChange={(event) => type(event.target.value)}
             placeholder={scope?.placeholder ?? placeholder}
-            className="min-w-0 flex-1 bg-transparent text-base text-text-primary placeholder-text-muted focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent text-base text-foreground placeholder:text-text-subtle focus:outline-none"
             aria-label={scope ? `Search ${scope.title}` : 'Search'}
             role="combobox"
             aria-expanded="true"
@@ -848,7 +853,7 @@ function Palette({
             tabIndex={-1}
             onClick={finish}
             aria-label="Close"
-            className="shrink-0 cursor-pointer rounded transition-opacity hover:opacity-80"
+            className="shrink-0 cursor-pointer rounded-sm transition-opacity hover:opacity-80"
           >
             <Kbd>Esc</Kbd>
           </button>
@@ -887,7 +892,7 @@ function Palette({
                 initial={false}
                 animate={{ y: box.y, height: box.h }}
                 transition={reduceMotion ? { duration: 0 } : motionTransitions.springSnappy}
-                className="pointer-events-none absolute inset-x-1.5 top-0 rounded-xl bg-surface-hover border border-border-hover accent:bg-brand-soft accent:border-brand/30"
+                className="pointer-events-none absolute inset-x-1.5 top-0 rounded-lg bg-surface-hover border border-border-hover accent:bg-brand-soft accent:border-brand/30"
               />
             )}
             {sections.map((section) => {
@@ -896,7 +901,7 @@ function Palette({
               return (
                 // ioiti-ui: a heading names its group; hidden itself, as the group says it.
                 <div key={section.key} role="group" aria-labelledby={headingId} className="space-y-0.5">
-                  <div id={headingId} aria-hidden className="px-3.5 pb-1 pt-2.5 text-xs font-medium text-text-muted">
+                  <div id={headingId} aria-hidden className="px-3.5 pb-1 pt-2.5 text-xs font-medium text-muted-foreground">
                     {section.heading}
                   </div>
                   {section.rows.map(renderRow)}
@@ -927,18 +932,18 @@ function Palette({
               </div>
             ) : (
               query !== '' && (
-                <div className="py-10 text-center text-xs text-text-muted">
-                  No results found for <span className="text-text-primary">"{query}"</span>
+                <div className="py-10 text-center text-xs text-muted-foreground">
+                  No results found for <span className="text-foreground">“{query}”</span>
                 </div>
               )
             ))}
           {more > 0 && (
-            <p className="px-3.5 py-2 text-xs text-text-muted">
+            <p className="px-3.5 py-2 text-xs text-muted-foreground">
               {more} more: type to narrow them down.
             </p>
           )}
         </div>
-        {footer && <div className="border-t border-border px-4 py-2.5 text-xs text-text-muted">{footer}</div>}
+        {footer && <div className="border-t border-border px-4 py-2.5 text-xs text-muted-foreground">{footer}</div>}
         {/* ioiti-ui: what an entry with a list says of itself (aria-describedby). */}
         <span id={listOpensId} hidden>
           Opens its list

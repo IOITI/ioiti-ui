@@ -117,7 +117,7 @@ describe('the top bar', () => {
 
     const chip = screen.getByRole('link', { name: 'Approved' })
     expect(chip).toHaveAttribute('href', '/changes')
-    expect(chip).toHaveClass('text-emerald-800', 'dark:text-emerald-400')
+    expect(chip).toHaveClass('text-positive', 'bg-positive/5')
   })
 })
 

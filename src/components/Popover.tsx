@@ -7,6 +7,7 @@ import { useAnchoredLayer } from '../lib/anchor.js'
 import type { AnchorAlign, AnchorSide } from '../lib/anchor.js'
 import { useControllableState } from '../lib/controllable.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
+import { FLOATING } from '../lib/recipes.js'
 import { assignRef } from '../lib/refs.js'
 import { cn } from '../lib/utils.js'
 
@@ -124,7 +125,8 @@ export function Popover({
                 exit={{ opacity: 0, scale: 0.98, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springSnappy}
                 className={cn(
-                  'z-50 overflow-auto rounded-xl border border-border bg-surface p-3 text-sm text-text-primary shadow-lg outline-none glass-float',
+                  FLOATING,
+                  'z-50 overflow-auto p-3 text-sm outline-none',
                   className,
                 )}
               >

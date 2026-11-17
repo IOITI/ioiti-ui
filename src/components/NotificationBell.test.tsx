@@ -19,7 +19,7 @@ describe('NotificationBell', () => {
 
     await user.click(bell)
     expect(bell).toHaveAttribute('aria-expanded', 'true')
-    expect(bell).toHaveClass('bg-neutral-200/70')
+    expect(bell).toHaveClass('bg-surface-hover')
   })
 
   it('says a moment from now, its full date in a hint, and a time the application wrote as it wrote it', async () => {
