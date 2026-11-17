@@ -6,6 +6,8 @@ import { ChevronDown, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+// ioiti-ui: the units inside a field, measured as they change.
+import { useUnitPadding } from '../../lib/unit-padding.js';
 
 /* ==========================================================================
    1. Form Root & Layout Items
@@ -158,14 +160,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const invalid = invalidOf(error, props['aria-invalid']);
     const computedType = isPassword && showPassword ? 'text' : type;
 
-    // ioiti-ui: the units inside the field, measured, the text keeping clear of them; each describes the field.
+    // ioiti-ui: the units inside the field, measured (again whenever their size changes: 16px on a phone, 14px from
+    // 640px), the text keeping clear of them; each describes the field.
     const unitId = React.useId();
     const before = React.useRef<HTMLSpanElement>(null);
     const after = React.useRef<HTMLSpanElement>(null);
-    const [pad, setPad] = React.useState({ left: 0, right: 0 });
-    React.useLayoutEffect(() => {
-      setPad({ left: before.current?.offsetWidth ?? 0, right: after.current?.offsetWidth ?? 0 });
-    }, [prefix, suffix]);
+    const pad = useUnitPadding(before, after, [prefix, suffix]);
     const describedBy =
       [props['aria-describedby'], prefix ? `${unitId}-prefix` : null, suffix ? `${unitId}-suffix` : null].filter(Boolean).join(' ') || undefined;
 

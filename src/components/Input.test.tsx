@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { act, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { Field } from './Field.js'
 import { Input, Select, Textarea } from './ui/form.js'
@@ -43,5 +43,33 @@ describe('what is typed in a field', () => {
     ]) {
       expect(field).toHaveClass('text-base', 'sm:text-sm')
     }
+  })
+})
+
+describe('the room a field keeps for its unit', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('follows the unit as it changes size (16px on a phone, then 14px from 640px; a web font arriving late)', () => {
+    let width = 75
+    let resized = () => {}
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          resized = callback
+        }
+        observe() {}
+        disconnect() {}
+      },
+    )
+    const offsetWidth = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(() => width)
+    render(<Input aria-label="Site" prefix="https://" />)
+    const field = screen.getByRole('textbox', { name: 'Site' })
+    expect(field).toHaveStyle({ paddingLeft: '75px' })
+
+    width = 68
+    act(() => resized())
+    expect(field).toHaveStyle({ paddingLeft: '68px' })
+    offsetWidth.mockRestore()
   })
 })

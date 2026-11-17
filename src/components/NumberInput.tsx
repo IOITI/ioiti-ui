@@ -1,9 +1,10 @@
 import { Minus, Plus } from 'lucide-react'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
 import { fieldBorder, invalidOf } from '../lib/field-border.js'
+import { useUnitPadding } from '../lib/unit-padding.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 
@@ -137,10 +138,7 @@ export function NumberInput({
   // The units and the buttons sit inside the field: its text keeps clear of them.
   const before = useRef<HTMLSpanElement>(null)
   const after = useRef<HTMLSpanElement>(null)
-  const [pad, setPad] = useState({ left: 0, right: 0 })
-  useLayoutEffect(() => {
-    setPad({ left: before.current?.offsetWidth ?? 0, right: after.current?.offsetWidth ?? 0 })
-  }, [prefix, suffix, steppers])
+  const pad = useUnitPadding(before, after, [prefix, suffix, steppers])
 
   const unit = typeof suffix === 'string' ? ` ${suffix}` : ''
   const lead = typeof prefix === 'string' ? `${prefix} ` : ''
