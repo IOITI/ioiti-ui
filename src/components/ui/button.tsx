@@ -87,6 +87,9 @@ const iconSizeStyles: Record<ButtonSize, string> = {
   icon: "[&>svg:not([class*='size-'])]:size-4",
 };
 
+/** ioiti-ui: the spinner of a busy button, as large as the icon it stands in for (it was 12 px in sm, 16 px in lg). */
+const SPINNER_SIZE: Record<ButtonSize, string> = { xs: 'size-3', sm: 'size-3.5', md: 'size-4', lg: 'size-5', icon: 'size-4' };
+
 /** ioiti-ui: the box of a button's icon, before or after its words (Button, ButtonLink). */
 export function buttonIconClassName(size: ButtonSize = 'md'): string {
   return cn('inline-flex shrink-0', iconSizeStyles[size]);
@@ -163,7 +166,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
         {/* Loading Spinner or Left Icon */}
         {isLoading ? (
-          <Loader2 className={cn('animate-spin shrink-0', size === 'xs' || size === 'sm' ? 'w-3 h-3' : 'w-4 h-4')} />
+          <Loader2 className={cn('animate-spin shrink-0', SPINNER_SIZE[size ?? 'md'])} />
         ) : (
           leftIcon && <span className={buttonIconClassName(size)}>{leftIcon}</span>
         )}

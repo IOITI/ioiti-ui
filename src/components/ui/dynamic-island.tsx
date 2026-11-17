@@ -5,7 +5,7 @@
 // bar it sits in, and the opened island grows from it below (shared layoutId), so the bar keeps its height.
 
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 
@@ -51,7 +51,7 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotionConfig();
 
   const handleStateChange = useCallback(
     (nextState: DynamicIslandState) => {

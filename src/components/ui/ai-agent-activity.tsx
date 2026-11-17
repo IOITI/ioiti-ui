@@ -2,7 +2,7 @@
 
 import React, { useState, createContext, useContext, useId } from 'react';
 // ioiti-ui: useReducedMotionConfig for what MotionConfig does not reduce (a height, a caret's blink).
-import { motion, AnimatePresence, useReducedMotion, useReducedMotionConfig } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import {
   Check,
   RotateCw,
@@ -249,7 +249,7 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
   const { expandedIds, toggleExpand, inputLabel, outputLabel } = useAgentActivity();
   const isExpanded = expandedIds.has(activity.id);
   const hasDetails = Boolean(activity.details || activity.metadata);
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotionConfig();
   const detailsId = useId();
   // ioiti-ui: an item that opens is a button (EasyUI's was a div taking clicks alone): the keyboard opens it too.
   const Header = hasDetails ? 'button' : 'div';
@@ -614,7 +614,6 @@ export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
     <AgentActivityContext.Provider value={contextValue}>
       <div
         style={{
-          fontFamily: "var(--font-sans, 'Geist', sans-serif)",
           ...(accentColor ? ({ '--accent-custom': accentColor } as React.CSSProperties) : {}),
         }}
         className={cn(

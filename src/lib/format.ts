@@ -44,10 +44,12 @@ export function formatPercent(value: number | null | undefined, withSign = false
 
 export function formatNumber(value: number | null | undefined, digits = 0): string {
   if (!isNumber(value)) return EMPTY
-  return new Intl.NumberFormat('en-GB', {
+  const text = new Intl.NumberFormat('en-GB', {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
-  }).format(value)
+  }).format(Math.abs(value))
+  // A true minus, as formatMoney and formatPercent write it (Intl writes a hyphen); none on a zero rounded from below.
+  return value < 0 && Number(text.replace(/,/g, '')) !== 0 ? `${MINUS}${text}` : text
 }
 
 function parseDate(value: string | null | undefined): Date | null {
@@ -180,7 +182,7 @@ export function toneOf(value: number | null | undefined): Tone {
 
 /** A size on disk, in the units a person reads: 48.2 kB, 14.0 MB. */
 export function formatBytes(bytes: number | null | undefined): string {
-  if (bytes === null || bytes === undefined) return '-'
+  if (bytes === null || bytes === undefined) return EMPTY
   const units = ['B', 'kB', 'MB', 'GB']
   let size = bytes
   let unit = 0

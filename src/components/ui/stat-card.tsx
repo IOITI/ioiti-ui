@@ -12,7 +12,7 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
+  useReducedMotionConfig,
   useSpring,
   useTransform,
 } from "framer-motion";
@@ -76,7 +76,7 @@ export function StatCard({
   animated = true,
   className = "",
 }: StatCardProps) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
   const uid = useId().replace(/:/g, "");
   const [boxRef, width] = useElementWidth<HTMLDivElement>(220);

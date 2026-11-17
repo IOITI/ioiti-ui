@@ -7,7 +7,7 @@
 // a light theme.
 
 import React, { useState, useMemo, useId } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotionConfig } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -82,6 +82,8 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
   label = 'Dependency Relationship Graph',
   className,
 }) => {
+  // ioiti-ui: the pulse of the node traced is a loop: it stops where motion is reduced (IoitiProvider or the system).
+  const reduceMotion = useReducedMotionConfig() ?? false;
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const markerId = `${useId().replace(/:/g, '')}-arrow`;
@@ -275,8 +277,8 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
                   stroke="rgba(59, 130, 246, 0.4)"
                   className="accent:stroke-[var(--brand-glow)]"
                   strokeWidth="2"
-                  animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.2, 0.6] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
+                  animate={reduceMotion ? { opacity: 0.4 } : { scale: [1, 1.15, 1], opacity: [0.6, 0.2, 0.6] }}
+                  transition={reduceMotion ? { duration: 0 } : { repeat: Infinity, duration: 2 }}
                 />
               )}
 

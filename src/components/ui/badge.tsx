@@ -72,7 +72,7 @@ export function Badge({
 
   return (
     <motion.span
-      style={{ fontFamily: "var(--font-sans, 'Geist', sans-serif)", ...props.style }}
+      style={props.style}
       className={cn(
         "font-sans relative inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full border border-transparent px-2.5 text-xs font-medium",
         styles[variant][tone],

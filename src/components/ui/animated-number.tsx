@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { motion, useReducedMotion, useSpring, useTransform } from 'framer-motion';
+import { motion, useReducedMotionConfig, useSpring, useTransform } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
 
 export interface AnimatedNumberProps {
@@ -89,7 +89,7 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   compact = false,
   className,
 }) => {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionConfig();
   const formatNumber = (val: number): string => {
     if (compact) {
       const formatter = new Intl.NumberFormat('en-US', {
@@ -108,7 +108,8 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
       formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
-    const sign = val < 0 ? '-' : '';
+    // ioiti-ui: a true minus, as the package's formats write it.
+    const sign = val < 0 ? '−' : '';
     return decPart !== undefined ? `${sign}${formattedInt}.${decPart}` : `${sign}${formattedInt}`;
   };
 

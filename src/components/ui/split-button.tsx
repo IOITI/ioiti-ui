@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
@@ -186,7 +186,7 @@ export function SplitButton({
 }: SplitButtonProps) {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionConfig();
   const menuName = menuLabel ?? `More ${label} options`;
   // ioiti-ui: the option the arrows are on is announced (aria-activedescendant): the menu has the focus, not it.
   const idPrefix = useId();

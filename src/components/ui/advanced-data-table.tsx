@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, createContext, useContext, useId, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import {
   ChevronDown,
   ChevronUp,
@@ -173,7 +173,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
   const [isColumnPickerOpen, setIsColumnPickerOpen] = useState(false);
   // ioiti-ui: the selection basket says what is selected and what can be done with it: said once.
   const selectedCount = selectionBasket ? 0 : selectedRowIds.size;
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotionConfig();
 
   return (
     <div className={cn('px-3.5 py-3 sm:px-7 sm:py-5 border-b border-border/50 space-y-3 sm:space-y-4 select-none', className)}>
@@ -305,7 +305,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                     type="button"
                     whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
                     onClick={() => onBulkDelete(Array.from(selectedRowIds))}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors text-sm font-normal cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-negative transition-colors text-sm font-normal cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                     <span>Delete</span>
@@ -740,7 +740,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
   if (error) {
     return (
       <div className="py-12 px-6 text-center flex flex-col items-center justify-center gap-2 font-sans">
-        <AlertCircle className="w-5 h-5 text-rose-500" />
+        <AlertCircle className="w-5 h-5 text-negative" />
         <p className="text-sm font-medium text-foreground">Failed to load data</p>
         <p className="text-xs text-muted-foreground max-w-sm">{error}</p>
       </div>
@@ -1071,7 +1071,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
     totalFilteredCount,
     isLoading,
   } = useDataTable();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotionConfig();
 
   const startRecord = totalFilteredCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endRecord = Math.min(currentPage * pageSize, totalFilteredCount);
@@ -1516,7 +1516,6 @@ export function DataTable<T = any>({
     <DataTableContext.Provider value={contextValue}>
       <div
         style={{
-          fontFamily: "var(--font-sans, 'Geist', sans-serif)",
           ...(accentColor ? ({ '--accent-custom': accentColor } as React.CSSProperties) : {}),
         }}
         className={cn(

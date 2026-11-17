@@ -1,7 +1,7 @@
 'use client';
 
 import React, { forwardRef, useEffect, useId, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotionConfig } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -43,7 +43,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
     const invalid = error || props['aria-invalid'] === true || props['aria-invalid'] === 'true';
     const [isChecked, setIsChecked] = useState(defaultChecked || false);
     // ioiti-ui: drawn at once, without the pop, where motion is reduced.
-    const reduceMotion = useReducedMotion() ?? false;
+    const reduceMotion = useReducedMotionConfig() ?? false;
 
     const isControlled = checked !== undefined;
     const currentChecked = isControlled ? checked : isChecked;

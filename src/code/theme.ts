@@ -15,6 +15,12 @@ const mix = (token: string, percent: number) => `color-mix(in oklab, var(${token
 /** A mark under changed text: a line two pixels high, as the merge view draws it. */
 const underline = (token: string) => `linear-gradient(${mix(token, 55)}, ${mix(token, 55)}) bottom / 100% 2px no-repeat`
 
+// The design's faces, as its classes (font-sans, font-mono) write them: `var(--font-sans)` is EasyUI's tokens.css at
+// run time, which names faces the package does not register ("Geist", "JetBrains Mono"), so the editor fell back on
+// the system's.
+const SANS = "'Geist Variable', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+const MONO = "'JetBrains Mono Variable', 'JetBrains Mono', 'Fira Code', monospace"
+
 const theme = EditorView.theme({
   '&': {
     color: 'var(--text-primary)',
@@ -23,7 +29,7 @@ const theme = EditorView.theme({
   },
   // The frame shows the focus (its border), as a field that takes text: no outline of the editor's own.
   '&.cm-focused': { outline: 'none' },
-  '.cm-scroller': { fontFamily: 'var(--font-mono, ui-monospace, monospace)', lineHeight: '1.625' },
+  '.cm-scroller': { fontFamily: MONO, lineHeight: '1.625' },
   '.cm-content': { caretColor: 'var(--text-primary)', padding: '10px 0' },
   '.cm-line': { padding: '0 12px' },
   '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--text-primary)' },
@@ -95,7 +101,7 @@ const theme = EditorView.theme({
     background: 'var(--surface-hover)',
     borderTop: '1px solid var(--border)',
     borderBottom: '1px solid var(--border)',
-    fontFamily: 'var(--font-sans, system-ui, sans-serif)',
+    fontFamily: SANS,
     fontSize: '12px',
   },
   '&.cm-merge-a.cm-merge-a .cm-changedLineGutter, &.cm-editor.cm-editor .cm-deletedLineGutter': { background: 'var(--negative)' },

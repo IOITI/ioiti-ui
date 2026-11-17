@@ -10,7 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotionConfig } from "framer-motion";
 import {
   Tooltip,
   clamp,
@@ -125,7 +125,7 @@ export function ActivityHeatmap({
   ariaLabel,
   className = "",
 }: ActivityHeatmapProps) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
   const [rootRef, width] = useElementWidth<HTMLDivElement>(720);
   const [active, setActive] = useState<{ c: number; r: number } | null>(null);

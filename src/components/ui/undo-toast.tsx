@@ -214,11 +214,11 @@ export const UndoToast: React.FC<UndoToastProps> = ({
 
               {/* Text copy */}
               <div className="flex-1 min-w-0 pr-1">
-                <p className="text-sm font-semibold text-neutral-900 truncate dark:text-[#FAFAFA]">
+                <p className="text-sm font-semibold text-neutral-900 line-clamp-2 break-words dark:text-[#FAFAFA]">
                   {isRestored ? restoredMessage : title}
                 </p>
                 {description && !isRestored && (
-                  <p className="text-xs text-neutral-600 truncate mt-0.5 dark:text-[#A1A1A1]">
+                  <p className="text-xs text-neutral-600 line-clamp-2 break-words mt-0.5 dark:text-[#A1A1A1]">
                     {description}
                   </p>
                 )}

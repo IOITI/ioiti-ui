@@ -17,6 +17,7 @@ import {
   Code
 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
+import { formatBytes } from '../../lib/format.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { useLinkComponent } from '../link-context.js';
 
@@ -83,13 +84,8 @@ export interface AnimatedFileUploadProps {
   className?: string;
 }
 
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-};
+// ioiti-ui: sizes written as the package writes them everywhere (formatBytes: kB of 1000 bytes), not KB of 1024.
+const formatFileSize = (bytes: number): string => formatBytes(bytes);
 
 const getFileIcon = (fileName: string, mimeType: string) => {
   const ext = fileName.split('.').pop()?.toLowerCase() || '';

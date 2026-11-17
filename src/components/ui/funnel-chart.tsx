@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotionConfig } from "framer-motion";
 import {
   clamp,
   cx,
@@ -62,7 +62,7 @@ export function FunnelChart({
   noun = "Users",
   emptyText = "No data",
 }: FunnelChartProps) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
   const [rootRef, width] = useElementWidth<HTMLDivElement>(480);
   const [active, setActive] = useState<number | null>(null);

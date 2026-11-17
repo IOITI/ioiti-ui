@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useEffect, useMemo, useState, type PointerEvent, type ReactNode } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
 
@@ -172,7 +172,7 @@ export function AirportMatrixClock({
   size = 'md',
   className = '',
 }: AirportMatrixClockProps) {
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReducedMotionConfig() ?? false;
   const [now, setNow] = useState(() => Date.now());
   const selectedCities = useMemo(() => cities.slice(0, 5), [cities]);
 

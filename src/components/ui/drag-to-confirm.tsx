@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate, useReducedMotionConfig } from 'framer-motion';
 import { ChevronRight, Check, Trash2, Lock, Unlock, Archive, ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -107,7 +107,7 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   const [dragMax, setDragMax] = useState(200);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotionConfig();
   const x = useMotionValue(0);
 
   const currentSize = SIZE_CONFIG[size] || SIZE_CONFIG.md;

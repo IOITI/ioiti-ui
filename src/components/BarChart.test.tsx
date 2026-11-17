@@ -18,14 +18,14 @@ describe('BarChart', () => {
     render(<BarChart ariaLabel="Profit by day" data={DAYS} series={[{ key: 'profit', label: 'Profit' }]} animated={false} />)
 
     const table = screen.getByRole('table', { name: 'Profit by day' })
-    expect(within(table).getByRole('row', { name: 'Tue -80' })).toBeInTheDocument()
+    expect(within(table).getByRole('row', { name: 'Tue −80' })).toBeInTheDocument()
   })
 
   it('draws an axis below zero for losses', () => {
     const { container } = render(<BarChart data={DAYS} series={[{ key: 'profit', label: 'Profit' }]} animated={false} />)
     const ticks = Array.from(container.querySelectorAll('svg text')).map((text) => text.textContent)
     expect(ticks).toContain('0')
-    expect(ticks.some((tick) => tick?.startsWith('-'))).toBe(true)
+    expect(ticks.some((tick) => tick?.startsWith('−'))).toBe(true)
   })
 
   it('colours one series in the series colour, things compared in the compare colours', () => {
@@ -91,7 +91,7 @@ describe('BarChart', () => {
     )
 
     const table = screen.getByRole('table', { name: 'Profit by day' })
-    expect(within(table).getByRole('row', { name: 'Tueday -80 Fees 9' })).toBeInTheDocument()
+    expect(within(table).getByRole('row', { name: 'Tueday −80 Fees 9' })).toBeInTheDocument()
     await user.tab()
     await user.keyboard('{Home}')
     const tooltip = document.querySelector('.glass-float') as HTMLElement

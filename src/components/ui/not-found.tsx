@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useReducedMotionConfig, useSpring, useTransform } from "framer-motion";
 import { Hint } from "../Hint.js";
 import { useLinkComponent } from "../link-context.js";
 
@@ -123,7 +123,7 @@ const CSS = `
 /* -------------------------------- Illustration ------------------------------ */
 
 export function Illustration({ parallax = true }: { parallax?: boolean }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionConfig();
   const uid = useId().replace(/:/g, "");
   const wrapRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState<number | null>(null);
@@ -354,7 +354,7 @@ export function NotFound({
   footer,
   className = "",
 }: NotFoundProps) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionConfig();
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const Anchor: ElementType = useLinkComponent(LinkComponent);
   const headingRef = useRef<HTMLHeadingElement>(null);

@@ -215,9 +215,9 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
               </div>
 
               <div className="flex-1 min-w-0 pr-1">
-                <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{title}</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 break-words">{title}</p>
                 {description && (
-                  <p className="text-xs text-[var(--text-secondary)] truncate mt-0.5">{description}</p>
+                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5">{description}</p>
                 )}
               </div>
 

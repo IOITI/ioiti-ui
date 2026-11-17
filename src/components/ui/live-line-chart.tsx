@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotionConfig } from "framer-motion";
 import {
   clamp,
   cx,
@@ -94,7 +94,7 @@ export function LiveLineChart({
   ariaLabel,
   className = "",
 }: LiveLineChartProps) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionConfig();
   const uid = useId().replace(/:/g, "");
   const [rootRef, width] = useElementWidth<HTMLDivElement>(640);
   const wrapRef = useRef<HTMLDivElement>(null);

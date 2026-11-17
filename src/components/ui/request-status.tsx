@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import { Check, AlertCircle, Copy, Send, Hourglass, CircleHelp, ArrowRight, X } from 'lucide-react';
 import { cn, copyToClipboard } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -62,7 +62,7 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
   const [copied, setCopied] = useState(false);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionConfig();
   // ioiti-ui: a spinner stands still where motion is reduced.
   const spin = reduce ? undefined : { rotate: 360 };
 

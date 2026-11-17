@@ -8,6 +8,7 @@ import {
   formatDuration,
   formatSpan,
   formatMoney,
+  formatNumber,
   formatMoneyCompact,
   formatPercent,
   formatRelative,
@@ -127,6 +128,14 @@ describe('formatBytes', () => {
     expect([0, 999, 1000, 48_200, 600_000, 14_000_000, 2_340_000_000].map(formatBytes)).toEqual([
       '0 B', '999 B', '1.0 kB', '48.2 kB', '600 kB', '14.0 MB', '2.3 GB',
     ])
-    expect(formatBytes(undefined)).toBe('-')
+    expect(formatBytes(undefined)).toBe('—')
+  })
+})
+
+describe('formatNumber', () => {
+  it('writes a true minus, as formatMoney and formatPercent do, and none on a zero rounded from below', () => {
+    expect(formatNumber(-1234)).toBe('−1,234')
+    expect(formatNumber(1234.5, 1)).toBe('1,234.5')
+    expect(formatNumber(-0.04, 1)).toBe('0.0')
   })
 })

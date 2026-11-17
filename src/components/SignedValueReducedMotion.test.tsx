@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { MotionConfig } from 'framer-motion'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { SignedValue } from './status.js'
@@ -20,7 +21,12 @@ beforeAll(() => {
 
 describe('a rolling signed value where motion is reduced', () => {
   it('is the value as plain text', () => {
-    const { container } = render(<SignedValue value={1.25} kind="percent" animate />)
+    // As IoitiProvider sets it by default: the system's preference.
+    const { container } = render(
+      <MotionConfig reducedMotion="user">
+        <SignedValue value={1.25} kind="percent" animate />
+      </MotionConfig>,
+    )
 
     expect(screen.getByText('+1.25%')).not.toHaveClass('sr-only')
     expect(container.querySelector('[aria-hidden="true"]')).toBeNull()

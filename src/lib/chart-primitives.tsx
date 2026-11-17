@@ -20,8 +20,6 @@ import { motionTransitions } from "./motion-tokens.js";
 /*  registry generator ships it as a shared `registry:lib` dependency.         */
 /* -------------------------------------------------------------------------- */
 
-export const CHART_COLORS = ["#6d7cff", "#34d1bf", "#ffb44c", "#ff6b8b", "#a78bfa", "#5ac8fa"];
-
 export const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 export const SPRING = { type: "spring", duration: 0.5, bounce: 0 } as const;
 
@@ -30,8 +28,10 @@ export const cx = (...a: (string | false | null | undefined)[]) => a.filter(Bool
 
 const compactFmt = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
 export const fullFmt = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
-export const defaultFormat = (n: number) => fullFmt.format(n);
-export const defaultTick = (n: number) => compactFmt.format(n);
+// ioiti-ui: a true minus, as the package's formats write it (Intl writes a hyphen).
+const trueMinus = (text: string) => text.replace(/^-/, "−");
+export const defaultFormat = (n: number) => trueMinus(fullFmt.format(n));
+export const defaultTick = (n: number) => trueMinus(compactFmt.format(n));
 
 export const ring = "ring-1 ring-black/[0.07] dark:ring-white/[0.07]";
 // ioiti-ui: the design's muted text, 4.5:1 on every surface of every look (neutral-500 was 3.6:1 on the dark card).
@@ -145,38 +145,6 @@ export function Tooltip({
 
 export function Dot({ color }: { color: string }) {
   return <span className="inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: color }} aria-hidden />;
-}
-
-/* ---------------------------------- Card ----------------------------------- */
-
-export function ChartCard({
-  title,
-  description,
-  actions,
-  children,
-  className = "",
-}: {
-  title: string;
-  description?: string;
-  actions?: ReactNode;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <section
-      className={`min-w-0 rounded-[20px] bg-white p-4 text-neutral-700 dark:bg-[#0b0b0c] dark:text-neutral-300 sm:p-5 ${ring} ${className}`}
-      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 24px 48px -32px rgba(0,0,0,0.18)" }}
-    >
-      <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="text-sm font-medium tracking-[-0.01em] text-neutral-900 dark:text-neutral-100">{title}</h3>
-          {description && <p className={`mt-0.5 text-xs ${muted}`}>{description}</p>}
-        </div>
-        {actions}
-      </header>
-      {children}
-    </section>
-  );
 }
 
 export function SegmentedControl<T extends string>({
