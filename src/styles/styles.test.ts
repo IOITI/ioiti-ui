@@ -14,7 +14,7 @@ import { motionTransitions } from '../lib/motion-tokens.js'
 const STYLES = fileURLToPath(new URL('.', import.meta.url))
 const MODULES = resolve(STYLES, '../../node_modules')
 // ioiti-ui's own stylesheets, which only add to the design.
-const NEW_IMPORTS = /^@import "\.\/(accents|glass|motion|type)\.css";\n/gm
+const NEW_IMPORTS = /^@import "\.\/(accents|glass|motion|type|finish)\.css";\n/gm
 
 /** A stylesheet the compiler asks for: one of the package's, or a package's own (its `style`, else its `main`). */
 function load(id: string, base: string, withoutLooks: boolean) {
@@ -154,7 +154,7 @@ describe('the stylesheets, as an application builds them', () => {
     expect(added.length).toBeGreaterThan(0)
     for (const block of added) {
       expect(block, block.slice(0, 80)).toMatch(
-        /^(:root\[data-(accent|material|reduced-motion)=|@supports not \(\(backdrop-filter|@media \(prefers-reduced-(transparency|motion)|@keyframes ioiti-|::view-transition|:root(:not\()?\[data-look-change\]|code,\s*kbd,\s*samp,\s*pre,\s*\.font-mono)/,
+        /^(:root\[data-(accent|material|reduced-motion)=|@supports not \(\(backdrop-filter|@media \(prefers-reduced-(transparency|motion)|@keyframes ioiti-|::view-transition|:root(:not\()?\[data-look-change\]|code,\s*kbd,\s*samp,\s*pre,\s*\.font-mono|::selection|:root\[data-accent\] ::selection|:root ::-webkit-scrollbar-track|@supports \(-moz-appearance)/,
       )
     }
   })

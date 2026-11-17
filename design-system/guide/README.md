@@ -18,6 +18,7 @@ Three choices combine into a **look**: a theme (`light` or `dark`), an accent (`
 
 - **Name a token, never a colour.** Text is `foreground`; secondary text `muted-foreground`; the page `background`; fields, buttons and rows `surface`, under the pointer `surface-hover`; a box nested in a panel `surface-raised`; every line `border`, under the pointer `border-hover`. `check-source` refuses a hex, an `rgba()`, a palette's step (`neutral-500`, `rose-600`) or white and black in a component.
 - **Three greys for text, by role**: `foreground` for what is read, `text-secondary` for a label (a field's, a group's heading in a control, a term), `muted-foreground` for what supports it (a caption, a description, a timestamp), and `text-subtle` for a placeholder or a disabled label only.
+- **What is selected** is a faint step of the text's own colour, the accent's tint where the look has one; a scrollbar's track shows what is under it (`finish.css`), thin in Firefox.
 - **Lines by depth**: rows of a list or a table `border` at 40%, a nested box at 60%, a section at 70%.
 - **A tone by recipe** (`src/lib/recipes.ts`): its word (`text-negative`), on a faint ground of its colour (5% in light, 10% in dark, so that the word keeps 4.5:1 on a hovered row), with a line at 30%, or filled with the page's colour on it. Danger is `negative` everywhere, never a rose or a palette's red.
 - **Two values for every colour.** Each colour token has a light and a dark value; a component names tokens, so it is right in both themes.

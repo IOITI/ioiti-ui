@@ -8,7 +8,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 
 | Path | Content |
 |---|---|
-| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `type.css` (what is typed exactly, without ligatures or tracking: ioiti-ui's own), `grain-*.png` (the gradient accents' grains, the glass backdrop's) |
+| `src/styles/` | `styles.css` (Tailwind + the design), `design.css` (the design alone), `tokens.css` (EasyUI's, unchanged), `theme.css` (what the design adds), `accents.css` and `glass.css` (the accents and the glass material, ioiti-ui's own), `motion.css` (the motion's curves, a page's and a look's changes, motion reduced: ioiti-ui's own), `type.css` (what is typed exactly, without ligatures or tracking: ioiti-ui's own), `finish.css` (what is selected, the scrollbars in every browser: ioiti-ui's own), `grain-*.png` (the gradient accents' grains, the glass backdrop's) |
 | `src/theme.js` | the pre-paint theme script, a file of its own (no inline script under a strict CSP) |
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |

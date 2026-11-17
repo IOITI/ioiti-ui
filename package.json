@@ -36,6 +36,7 @@
     "./glass.css": "./dist/styles/glass.css",
     "./motion.css": "./dist/styles/motion.css",
     "./type.css": "./dist/styles/type.css",
+    "./finish.css": "./dist/styles/finish.css",
     "./theme.js": "./dist/theme.js",
     "./package.json": "./package.json"
   },

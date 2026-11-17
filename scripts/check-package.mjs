@@ -83,6 +83,7 @@ const FILES = [
   'dist/styles/glass.css',
   'dist/styles/motion.css',
   'dist/styles/type.css',
+  'dist/styles/finish.css',
   ...GRAINS.map((grain) => `dist/styles/${grain}.png`),
   'dist/theme.js',
   'dist/vite/index.js',

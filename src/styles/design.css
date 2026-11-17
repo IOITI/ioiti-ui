@@ -22,6 +22,8 @@
 @import "./motion.css";
 /* ioiti-ui's own: what is typed exactly, without ligatures or tracking. It adds too. */
 @import "./type.css";
+/* ioiti-ui's own: what is selected, the scrollbars in every browser. It adds too. */
+@import "./finish.css";
 
 @custom-variant dark (&:is(.dark *));
 /* ioiti-ui's own, after `dark`, so that their classes come after its own too (and outrank them). */
