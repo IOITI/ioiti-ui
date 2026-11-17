@@ -85,6 +85,7 @@ const GLASS = { x: -151, y: -31, w: 288, h: 142 };
 // Folder outline (tab on the top-left), in glass-local px
 const FOLDER =
   "M12 0H64Q72 0 78 6L90 20Q94 26 102 26H276Q288 26 288 38V130Q288 142 276 142H12Q0 142 0 130V12Q0 0 12 0Z";
+const FOLDER_CLIP = `path("${FOLDER}")`;
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -192,14 +193,6 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
     >
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
-      {/* clip shape for the glass (kept in the DOM, zero size) */}
-      <svg width="0" height="0" className="absolute" aria-hidden>
-        <defs>
-          <clipPath id={`${uid}-folder`} clipPathUnits="objectBoundingBox">
-            <path d={FOLDER} transform={`scale(${1 / GLASS.w} ${1 / GLASS.h})`} />
-          </clipPath>
-        </defs>
-      </svg>
 
       <div className="absolute left-0 top-0 origin-top-left" style={{ width: W, height: H, transform: `scale(${scale ?? 1})` }}>
         <motion.div
@@ -279,9 +272,12 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
                     filter: "blur(22px)",
                   }}
                 />
+                {/* ioiti-ui: cut to the folder by a CSS path (the glass is GLASS.w × GLASS.h px, the path in those px). An
+                    SVG <clipPath> by url() cut what the glass paints but not its backdrop-filter: the blur showed
+                    outside the folder, a rectangle around it. */}
                 <motion.div
                   className="np404-glass"
-                  style={{ position: "absolute", inset: 0, clipPath: `url(#${uid}-folder)`, WebkitClipPath: `url(#${uid}-folder)` }}
+                  style={{ position: "absolute", inset: 0, clipPath: FOLDER_CLIP, WebkitClipPath: FOLDER_CLIP }}
                   initial={reduce ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.25, ease: EASE_OUT }}
