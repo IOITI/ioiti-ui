@@ -5,13 +5,16 @@ import { changeLook, LOOK_CHANGE_ATTRIBUTE, LOOK_CHANGE_WAIT } from './motion.js
 const html = document.documentElement
 
 interface Started {
+  /** Settled once its animation starts; rejected when it is skipped first. Resolved unless a test says otherwise. */
+  ready?: Promise<void>
   finished: Promise<void>
   skipTransition: () => void
 }
 
 /** The browser's view transitions, as a test makes them: when the update is called, how one ends. */
 function browserStarts(start: (update: () => void) => Started) {
-  Object.defineProperty(document, 'startViewTransition', { configurable: true, writable: true, value: vi.fn(start) })
+  const browser = (update: () => void) => ({ ready: Promise.resolve(), ...start(update) })
+  Object.defineProperty(document, 'startViewTransition', { configurable: true, writable: true, value: vi.fn(browser) })
 }
 
 /** The promises already settled have their callbacks run. */
@@ -72,6 +75,37 @@ describe('a change of look', () => {
 
     vi.advanceTimersByTime(LOOK_CHANGE_WAIT)
     expect(update).toHaveBeenCalledOnce()
+  })
+
+  it('reads the rejection of a transition skipped before its first frame: nothing is left uncaught', async () => {
+    vi.useFakeTimers()
+    const uncaught: unknown[] = []
+    const listen = (reason: unknown) => uncaught.push(reason)
+    process.on('unhandledRejection', listen)
+    try {
+      let end = () => {}
+      let refuse: (reason: unknown) => void = () => {}
+      browserStarts((update) => ({
+        // As a browser's: never ready, refused once skipped.
+        ready: new Promise<void>((_, reject) => (refuse = reject)),
+        finished: new Promise<void>((resolve) => (end = resolve)),
+        skipTransition: () => {
+          refuse(new DOMException('Transition was skipped', 'AbortError'))
+          update()
+          end()
+        },
+      }))
+      const update = vi.fn()
+      changeLook(update)
+      vi.advanceTimersByTime(LOOK_CHANGE_WAIT)
+      expect(update).toHaveBeenCalledOnce()
+      vi.useRealTimers()
+      // Node says a rejection uncaught once the microtasks are done, and a turn of the loop after.
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      expect(uncaught).toEqual([])
+    } finally {
+      process.off('unhandledRejection', listen)
+    }
   })
 
   it('is made all the same when a transition ends without calling it', async () => {

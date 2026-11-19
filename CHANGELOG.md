@@ -20,6 +20,9 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   under the application's key, and every page opens the sidebar so; `defaultCollapsed` until one is kept.
 - **A badge is said apart from its entry's name**: "Orders, 38" for a screen reader, where it heard "Orders38" (the
   sidebar, its pages under an entry, the rail's menu beside an entry).
+- **A change of look in a window the browser does not paint leaves no uncaught error.** Skipped before its first
+  frame (`changeLook`, 300 ms), a view transition rejects its `ready`, which nothing read: every change of the theme,
+  the accent or the material there logged "Uncaught (in promise) AbortError: Transition was skipped". It is read now.
 
 ## [0.22.0] - 2026-11-17
 

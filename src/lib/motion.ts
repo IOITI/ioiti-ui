@@ -32,7 +32,8 @@ let lookChanges = 0
  *
  * A click is answered at once: the browser draws the change at its next frame, and where none comes
  * soon (a window it no longer paints), the change is drawn without its fade; a transition that ends
- * without calling `update` (cut short) has it called then. Never lost, never twice.
+ * without calling `update` (cut short) has it called then. Never lost, never twice. A transition skipped
+ * so rejects its `ready`, which nothing here waits on: it is read, or the browser says it uncaught.
  */
 export function changeLook(update: () => void, root: HTMLElement = document.documentElement): void {
   if (typeof document.startViewTransition !== 'function') {
@@ -57,5 +58,8 @@ export function changeLook(update: () => void, root: HTMLElement = document.docu
   root.setAttribute(LOOK_CHANGE_ATTRIBUTE, '')
   const transition = document.startViewTransition(run)
   skip = () => transition.skipTransition()
+  // Skipped before its first frame, its animation never starts: `ready` rejects (AbortError, "Transition was
+  // skipped"). Unread, it was an uncaught error of the page at each change of look in a window not painted.
+  transition.ready.catch(() => {})
   transition.finished.then(done, done)
 }
