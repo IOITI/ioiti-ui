@@ -1,0 +1,14 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Lock } from 'lucide-react';
+import { ThemeToggle } from '../components/ThemeToggle.js';
+import { cn } from '../lib/utils.js';
+import { useTabTitle } from './page-trail-context.js';
+import { SECTION } from '../lib/recipes.js';
+/**
+ * The page of a sign-in, outside the shell: one card in the middle of the screen. The application's mark (or a
+ * lock) above its name, a notice above the form, help at the card's foot.
+ */
+export function AuthLayout({ title, description, logo, icon, notice, footer, themeToggle = true, tabTitle, className, children }) {
+    useTabTitle(tabTitle ?? title);
+    return (_jsxs("main", { className: cn('relative grid min-h-dvh place-items-center p-6', className), children: [themeToggle && _jsx(ThemeToggle, { className: "absolute right-4 top-4" }), _jsxs("div", { className: cn(SECTION, "w-full max-w-sm p-8 shadow-elevated"), children: [_jsxs("div", { className: "mb-6 flex flex-col gap-1.5", children: [logo ? (_jsx("div", { className: "mb-3 flex", children: logo })) : (_jsx("div", { className: "mb-3 grid size-10 place-items-center rounded-xl border border-border bg-surface-raised", children: icon ?? _jsx(Lock, { className: "size-4 text-foreground", "aria-hidden": true }) })), _jsx("h1", { className: "text-balance break-words text-xl font-semibold tracking-tight", children: title }), description && _jsx("p", { className: "text-pretty text-sm text-muted-foreground", children: description })] }), notice && _jsx("div", { className: "mb-5 empty:hidden", children: notice }), children, footer && _jsx("div", { className: "mt-6 border-t border-border/70 pt-5 text-sm text-muted-foreground", children: footer })] })] }));
+}

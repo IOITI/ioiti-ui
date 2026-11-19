@@ -1,0 +1,20 @@
+/* -----------------------------------------------------------------------------
+   The type, where a class can't say it. ioiti-ui's own, not the design it was
+   taken from: it adds, as the accents, the glass and the motion do, and
+   writes nothing in the design's layers or its selectors.
+
+   What is typed exactly reads as it was typed: JetBrains Mono's ligatures
+   draw `->` as an arrow and `!=` as a sign, in an id, a key or a log line,
+   and the body's tracking (set in pixels on <body>, -0.011em of 16px) closes
+   a monospaced column up. Neither: no ligature, no tracking. The code
+   editors write the same in their own theme (src/code/theme.ts).
+   --------------------------------------------------------------------------- */
+
+code,
+kbd,
+samp,
+pre,
+.font-mono {
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+}
