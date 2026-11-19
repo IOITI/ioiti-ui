@@ -33,7 +33,7 @@ interface StateSummaryProps {
 
 /**
  * The states the user must not miss, in one control of the top bar (AppShell's `topBarChips`): the gravest one's
- * words and icon in its tone, "+N" for the others, and a dot while all is well. It opens on every state, the
+ * words and icon in its tone, "+N" for the others (its icon and how many under 1280px), and a dot while all is well. It opens on every state, the
  * gravest first and the quiet ones after, each a link to where it is dealt with. Where several StateChips would
  * take the top bar's room: one is still a StateChip.
  */
@@ -57,7 +57,7 @@ export function StateSummary({ items, label = 'State', okLabel = 'All good', foo
           aria-label={`${label}: ${sentence}`}
           className={cn(
             PRESSABLE,
-            'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-xs font-medium transition-[background-color,color,scale] focus-ring lg:px-2.5 [&_svg]:size-3.5 [&_svg]:shrink-0',
+            'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-xs font-medium transition-[background-color,color,scale] focus-ring xl:px-2.5 [&_svg]:size-3.5 [&_svg]:shrink-0',
             PILL[tone],
             className,
           )}
@@ -65,11 +65,12 @@ export function StateSummary({ items, label = 'State', okLabel = 'All good', foo
           {lead ? (
             <>
               {lead.icon ?? <Dot tone={lead.tone} />}
-              <span className="hidden max-w-48 truncate lg:inline">{lead.label}</span>
+              {/* Its words from 1280px: the trail before it, and the bar's end after it, take the room under that. */}
+              <span className="hidden max-w-48 truncate xl:inline">{lead.label}</span>
               {out.length > 1 && (
                 <span className="tabular-nums">
-                  <span className="hidden lg:inline">+{out.length - 1}</span>
-                  <span className="lg:hidden">{out.length}</span>
+                  <span className="hidden xl:inline">+{out.length - 1}</span>
+                  <span className="xl:hidden">{out.length}</span>
                 </span>
               )}
             </>

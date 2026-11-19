@@ -142,6 +142,20 @@ const UNSEEN_WORDS: Record<SidebarBadgeTone, string> = {
   negative: ", with something wrong",
 };
 
+/**
+ * ioiti-ui: between an entry's name and its badge, for a screen reader alone: "Orders, 38", not "Orders38" (the two
+ * are drawn apart, nothing written between them).
+ */
+function BadgeSeparator() {
+  // As UserMenu says its detail: the comma alone hidden, the space a text of its own (inside the hidden span, it was
+  // trimmed away: "Orders,38").
+  return (
+    <>
+      <span className="sr-only">,</span>{" "}
+    </>
+  );
+}
+
 /** ioiti-ui: the dot that says badges are out of sight, in the gravest tone among them; a count's in grey. */
 function UnseenDot({ tone, className }: { tone: SidebarBadgeTone; className?: string }) {
   return (
@@ -424,6 +438,7 @@ function Panel({
       ) : (
         <span className="flex items-center gap-2">
           <span className="truncate">{label}</span>
+          <BadgeSeparator />
           <span className={cn("text-[11px] tabular-nums", tone && tone !== "neutral" ? cn("font-medium", BADGE_TONE[tone]) : "text-muted-foreground")}>
             {badge}
           </span>
@@ -531,6 +546,7 @@ function Panel({
             >
               {item.label}
             </motion.span>
+            {!collapsed && item.badge !== undefined && <BadgeSeparator />}
             {!collapsed && item.badge !== undefined && (
               <motion.span
                 initial={{ opacity: 0 }}
@@ -644,6 +660,7 @@ function Panel({
                         />
                       )}
                       <span className="flex-1 truncate text-left">{c.label}</span>
+                      {c.badge !== undefined && <BadgeSeparator />}
                       {c.badge !== undefined && (
                         <span
                           className={cn(

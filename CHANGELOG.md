@@ -6,7 +6,7 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 ## [0.23.0] - 2026-11-19
 
 - **`StateSummary`, the states not to miss in one control of the top bar** (`topBarChips`): the gravest one's words
-  and icon in its tone, "+N" for the others (its icon and how many under 1024px), a dot while all is well. Opened
+  and icon in its tone, "+N" for the others (its icon and how many under 1280px), a dot while all is well. Opened
   (a `Popover`), every state, the gravest first and the quiet ones after, each a link to where it is dealt with,
   and a `footer`. Its tones go from `danger`, `warning` and `success`, which stand out, to `neutral` (to know,
   asking nothing: grey, in its words) and `ok`. New exports: `StateSummary`, `gravestTone`, the types `StateItem`
@@ -18,6 +18,8 @@ application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
   wrong"; ", with counts" for a count).
 - **The rail as the reader left it**: `collapsedStorageKey` (`AppShell`, `Sidebar`) keeps the choice in the browser,
   under the application's key, and every page opens the sidebar so; `defaultCollapsed` until one is kept.
+- **A badge is said apart from its entry's name**: "Orders, 38" for a screen reader, where it heard "Orders38" (the
+  sidebar, its pages under an entry, the rail's menu beside an entry).
 
 ## [0.22.0] - 2026-11-17
 

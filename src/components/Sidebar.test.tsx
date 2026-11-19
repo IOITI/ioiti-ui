@@ -17,6 +17,9 @@ const SECTIONS = sidebarSections({
 describe('the sidebar\'s entries', () => {
   it('end with a count, quiet, or a state in its tone with a dot', () => {
     render(<Sidebar sections={SECTIONS} activeId="orders" />)
+    // Said apart from the name, for a screen reader.
+    expect(screen.getByRole('link', { name: 'Orders, 38' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'API, Degraded' })).toBeInTheDocument()
     expect(screen.getByText('38')).toHaveClass('rounded-md', 'tabular-nums')
     expect(screen.getByText('Degraded')).toHaveClass('text-warning')
     expect(screen.getByText('2 open')).toHaveClass('text-negative')
@@ -158,7 +161,7 @@ describe('an entry with entries under it, in the rail', () => {
     const menu = await screen.findByRole('menu', { name: 'Rules' })
     // Its first page is at its own address: listed once, as Library.
     const links = within(menu).getAllByRole('menuitem')
-    expect(links.map((link) => link.textContent)).toEqual(['Library', 'Updates4'])
+    expect(links.map((link) => link.textContent)).toEqual(['Library', 'Updates, 4'])
     expect(within(menu).getByRole('menuitem', { name: 'Library' })).toHaveAttribute('href', '/rules')
     expect(within(menu).getByRole('menuitem', { name: /Updates/ })).toHaveAttribute('aria-current', 'page')
     expect(rules).toHaveAttribute('aria-expanded', 'true')
