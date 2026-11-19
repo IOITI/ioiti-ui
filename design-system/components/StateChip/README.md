@@ -15,3 +15,4 @@ A state the user must not miss, in the top bar of every page while it applies: a
 - Under 1024px the icon alone shows; its words are its name, its meaning its `Hint` (hover, keyboard focus, a tap).
 - The tones keep their colours (amber, red and emerald washes, darker words on light), never the accent's.
 - It is a link (the application's, `LinkProvider`). A state of one page only is an `Alert` on that page.
+- Several states that would take the top bar's room go together in one `StateSummary`.

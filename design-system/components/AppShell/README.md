@@ -2,7 +2,7 @@
 
 The frame of every page: the sidebar with the application's menu, the top bar with the trail of where the page is, and the page in a column of `page-max-width`.
 
-**You provide** `menu` (`{ sections, entries: [{ id, path, label, section, icon, badge?, badgeTone? }] }`), the `pathname` shown, the page as `children`; optionally `appName` (IoitiProvider's by default), `appDetail` (a version), `brandMark`, `sidebarFooter` (a `SidebarFooterButton` to sign out), `topBarChips`, `topBarEnd` (the theme button by default), `isWide(pathname)` for pages that need the whole width; `hash` (the part of the page the address shows, scrolled to; `RouterAppShell` gives it), `search` (the address's query, for entries that say values of it; `RouterAppShell` gives it), `className` (`h-full` in a box), `tabTitle` (whether its pages name the tab: not by default inside another shell). An entry under another takes `parent`. Its links are the application's (`LinkProvider`, or `RouterAppShell` with React Router).
+**You provide** `menu` (`{ sections, entries: [{ id, path, label, section, icon, badge?, badgeTone? }] }`), the `pathname` shown, the page as `children`; optionally `appName` (IoitiProvider's by default), `appDetail` (a version), `brandMark`, `sidebarFooter` (a `SidebarFooterButton` to sign out), `topBarChips` (a `StateChip` each, or a `StateSummary` of them all), `topBarEnd` (the theme button by default; a `UserMenu`), `collapsedStorageKey` (where the browser keeps the reader's choice of the rail), `isWide(pathname)` for pages that need the whole width; `hash` (the part of the page the address shows, scrolled to; `RouterAppShell` gives it), `search` (the address's query, for entries that say values of it; `RouterAppShell` gives it), `className` (`h-full` in a box), `tabTitle` (whether its pages name the tab: not by default inside another shell). An entry under another takes `parent`. Its links are the application's (`LinkProvider`, or `RouterAppShell` with React Router).
 
 ```tsx
 <AppShell menu={MENU} pathname={location.pathname} appDetail="v1.2.0"
@@ -13,7 +13,7 @@ The frame of every page: the sidebar with the application's menu, the top bar wi
 </AppShell>
 ```
 
-- The sidebar is beside the page from 768px, a drawer below; ⌘B (Ctrl+B) folds it. Under glass the sidebar and the top bar are `glass-bar`, unblurred over the still backdrop; what floats from them is drawn in `document.body`.
+- The sidebar is beside the page from 768px, a drawer below; ⌘B (Ctrl+B) folds it, and with `collapsedStorageKey` every page opens it as the reader left it. Under glass the sidebar and the top bar are `glass-bar`, unblurred over the still backdrop; what floats from them is drawn in `document.body`.
 - An entry ends with a count (`badge: 38`), quiet, or a state in a word in its tone (`badge: 'Degraded', badgeTone: 'warning'`, or `negative`), with a dot.
 - The shell puts `page-gap` between the page's blocks: a page returns them side by side, no margins of its own.
 - A change of page fades the page alone; the sidebar and the top bar stay still and in use.

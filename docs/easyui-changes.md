@@ -198,6 +198,14 @@ otherwise).
   that says a state ("Degraded", "2 open") is in its tone's text colour with a dot, without the count's grey
   pill. The tip naming an entry of the folded sidebar is drawn in `document.body`, as every layer: a sidebar
   that took a blur, a filter or a transform would be the tip's containing block, its overflow cutting the tip.
+- `sidebar`: badges out of sight are said (0.23.0). In the rail, an entry's badge is a dot on its icon in its tone
+  (its children's gravest for an entry with children), its words in its name ("Orders, 38") and in its tip, after
+  the entry's name, in its tone; EasyUI's rail drew no badge. A folded section's dot takes the gravest tone among
+  its entries' badges and their children's (it was grey, and only for its entries' own). A screen reader hears
+  ", with counts", ", with a warning" or ", with something wrong" after what holds them.
+- `sidebar`: `collapsedStorageKey` keeps the reader's choice of the rail in `localStorage` (0.23.0), read once as
+  it is first drawn; `defaultCollapsed` until a choice is kept, nothing kept without it or while `collapsed` is
+  given.
 - `notification-bell`: its panel is a layer in `document.body`, placed under the bell by `useAnchoredLayer`
   (`src/lib/anchor.ts`), which gives it its keys: a press elsewhere, Escape and a Tab past its ends close it, and
   the focus goes into it and back to the bell (EasyUI's closed it at a mouse press only, and left the focus on

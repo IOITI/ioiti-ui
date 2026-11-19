@@ -3,6 +3,22 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [0.23.0] - 2026-11-19
+
+- **`StateSummary`, the states not to miss in one control of the top bar** (`topBarChips`): the gravest one's words
+  and icon in its tone, "+N" for the others (its icon and how many under 1024px), a dot while all is well. Opened
+  (a `Popover`), every state, the gravest first and the quiet ones after, each a link to where it is dealt with,
+  and a `footer`. Its tones go from `danger`, `warning` and `success`, which stand out, to `neutral` (to know,
+  asking nothing: grey, in its words) and `ok`. New exports: `StateSummary`, `gravestTone`, the types `StateItem`
+  and `StateTone`.
+- **The sidebar says the badges it hides.** In the rail, a badge is a dot on its entry's icon in its tone (its
+  pages' gravest for an entry with pages under it), its words in the entry's name and tip; it showed none. A folded
+  section's dot is in the gravest tone among its entries' badges and their pages' (grey, and for its entries' own
+  only, before). What a screen reader hears after them says the tone (", with a warning", ", with something
+  wrong"; ", with counts" for a count).
+- **The rail as the reader left it**: `collapsedStorageKey` (`AppShell`, `Sidebar`) keeps the choice in the browser,
+  under the application's key, and every page opens the sidebar so; `defaultCollapsed` until one is kept.
+
 ## [0.22.0] - 2026-11-17
 
 - **Text by its role, read at 14 px.** What a user reads or acts on is body-size (`text-sm`, 14 px) where it was

@@ -30,6 +30,39 @@ describe('the sidebar\'s entries', () => {
     expect(tip).toBeDefined()
     expect(tip.closest('.fixed')!.parentElement).toBe(document.body)
   })
+
+  it('in the rail, keep their badges: a dot on the icon in its tone, the words in the name and the tip', () => {
+    const { container } = render(<Sidebar sections={SECTIONS} activeId="orders" defaultCollapsed />)
+    const orders = screen.getByRole('link', { name: 'Orders, 38' })
+    expect(orders.querySelector('[aria-hidden].rounded-full')).toHaveClass('bg-muted-foreground')
+    const incidents = screen.getByRole('link', { name: 'Incidents, 2 open' })
+    expect(incidents.querySelector('[aria-hidden].rounded-full')).toHaveClass('bg-current', 'text-negative')
+
+    fireEvent.mouseEnter(screen.getByRole('link', { name: 'API, Degraded' }))
+    const tip = screen.getAllByText('Degraded').find((element) => !container.contains(element))!
+    expect(tip).toHaveClass('text-warning')
+    expect(tip.closest('.fixed')).toHaveTextContent('APIDegraded')
+  })
+})
+
+describe('a folded section', () => {
+  const FOLDED = sidebarSections({
+    sections: ['Main', { id: 'Tools', foldable: true }],
+    entries: [
+      { id: 'home', path: '/', label: 'Home', section: 'Main' },
+      { id: 'reports', path: '/reports', label: 'Reports', section: 'Tools', badge: 3 },
+      { id: 'system', path: '/system', label: 'System', section: 'Tools' },
+      { id: 'disk', path: '/system/disk', label: 'Disk', section: 'Tools', parent: 'system', badge: 'Critical', badgeTone: 'negative' },
+    ],
+  })
+
+  it('says the gravest badge folded under it, its entries\' pages\' too, in its tone', () => {
+    window.localStorage.clear()
+    render(<Sidebar sections={FOLDED} activeId="home" />)
+    const tools = screen.getByRole('button', { name: 'Tools, with something wrong' })
+    expect(tools).toHaveAttribute('aria-expanded', 'false')
+    expect(tools.querySelector('[aria-hidden].rounded-full')).toHaveClass('bg-current', 'text-negative')
+  })
 })
 
 const NESTED = sidebarSections({
@@ -88,7 +121,7 @@ describe('an entry with entries under it', () => {
       ],
     })
     render(<Sidebar sections={sections} activeId="customers" />)
-    const orders = screen.getByRole('link', { name: 'Orders, with counts' })
+    const orders = screen.getByRole('link', { name: 'Orders, with a warning' })
     expect(orders.querySelector('.rounded-full[aria-hidden]')).toHaveClass('bg-current', 'text-warning')
     // Open, its pages say their own.
     fireEvent.click(screen.getByRole('button', { name: 'The pages under Orders' }))
@@ -114,7 +147,8 @@ describe('an entry with entries under it, in the rail', () => {
   it('shows its pages beside it, the one shown marked, and has the pill while it holds it', async () => {
     const user = userEvent.setup()
     render(<Sidebar sections={SHARED} activeId="updates" defaultCollapsed />)
-    const rules = screen.getByRole('button', { name: 'Rules' })
+    // A page under it has a count: said in its name, a dot on its icon.
+    const rules = screen.getByRole('button', { name: 'Rules, with counts' })
     expect(rules).toHaveAttribute('aria-haspopup', 'menu')
     expect(rules).toHaveAttribute('aria-expanded', 'false')
     expect(rules.querySelector('[class*="bg-surface-hover"]')).not.toBeNull()
@@ -150,7 +184,7 @@ describe('an entry with entries under it, in the rail', () => {
   it('opened, gives no tip: its pages are beside it', async () => {
     const user = userEvent.setup()
     const { container } = render(<Sidebar sections={SHARED} activeId="home" defaultCollapsed />)
-    const rules = screen.getByRole('button', { name: 'Rules' })
+    const rules = screen.getByRole('button', { name: 'Rules, with counts' })
     fireEvent.mouseEnter(rules)
     expect(screen.getAllByText('Rules').some((element) => !container.contains(element))).toBe(true)
     await user.click(rules)

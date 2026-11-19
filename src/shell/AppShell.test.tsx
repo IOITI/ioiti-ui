@@ -27,10 +27,11 @@ interface Options {
   end?: ReactNode
   onSignOut?: () => void
   menu?: Menu
+  collapsedStorageKey?: string
 }
 
 /** An application on React Router, as the starter template builds one. */
-function renderShell({ path = '/orders', chips, end, onSignOut, menu = MENU }: Options = {}) {
+function renderShell({ path = '/orders', chips, end, onSignOut, menu = MENU, collapsedStorageKey }: Options = {}) {
   return render(
     <IoitiProvider appName="Test App">
       <MemoryRouter initialEntries={[path]}>
@@ -41,6 +42,7 @@ function renderShell({ path = '/orders', chips, end, onSignOut, menu = MENU }: O
                 <RouterAppShell
                   menu={menu}
                   appDetail="v1.2.0"
+                  collapsedStorageKey={collapsedStorageKey}
                   topBarChips={chips}
                   topBarEnd={end}
                   sidebarFooter={onSignOut && <SidebarFooterButton icon={<LogOut />} label="Sign out" onClick={onSignOut} />}
@@ -375,6 +377,24 @@ describe('the sidebar', () => {
       expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeInTheDocument()
       await user.keyboard('{Meta>}b{/Meta}')
       expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
+    })
+
+    it('opens as the reader left it, where the application gives a key to keep it under', async () => {
+      window.localStorage.clear()
+      const user = userEvent.setup()
+      const first = renderShell({ collapsedStorageKey: 'app.sidebar.collapsed' })
+      await user.click(screen.getByRole('button', { name: 'Collapse sidebar' }))
+      expect(window.localStorage.getItem('app.sidebar.collapsed')).toBe('true')
+      first.unmount()
+
+      const second = renderShell({ collapsedStorageKey: 'app.sidebar.collapsed' })
+      expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
+      second.unmount()
+
+      // Without a key, nothing is kept: it opens as it always does.
+      renderShell()
+      expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeInTheDocument()
+      window.localStorage.clear()
     })
   })
 })

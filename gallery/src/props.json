@@ -1069,7 +1069,7 @@
    {
     "name": "topBarChips",
     "type": "ReactNode",
-    "description": "States the user must not miss, after the trail (StateChip); nothing takes room while there is none."
+    "description": "States the user must not miss, after the trail: a StateChip each while they are few, or all of them in one StateSummary; nothing takes room while there is none."
    },
    {
     "name": "topBarEnd",
@@ -1099,6 +1099,11 @@
    {
     "name": "defaultCollapsed",
     "type": "boolean"
+   },
+   {
+    "name": "collapsedStorageKey",
+    "type": "string",
+    "description": "Where the browser keeps the reader's choice of the folded sidebar (the rail: ⌘B, Collapse), so that every page opens it as it was left (`'app.sidebar.collapsed'`); `defaultCollapsed` until a choice is kept. Not kept without it."
    },
    {
     "name": "shortcutsDialog",
@@ -6341,7 +6346,7 @@
    {
     "name": "topBarChips",
     "type": "ReactNode",
-    "description": "States the user must not miss, after the trail (StateChip); nothing takes room while there is none."
+    "description": "States the user must not miss, after the trail: a StateChip each while they are few, or all of them in one StateSummary; nothing takes room while there is none."
    },
    {
     "name": "topBarEnd",
@@ -6366,6 +6371,11 @@
    {
     "name": "defaultCollapsed",
     "type": "boolean"
+   },
+   {
+    "name": "collapsedStorageKey",
+    "type": "string",
+    "description": "Where the browser keeps the reader's choice of the folded sidebar (the rail: ⌘B, Collapse), so that every page opens it as it was left (`'app.sidebar.collapsed'`); `defaultCollapsed` until a choice is kept. Not kept without it."
    },
    {
     "name": "shortcutsDialog",
@@ -6865,6 +6875,11 @@
    {
     "name": "onCollapsedChange",
     "type": "(collapsed: boolean) => void"
+   },
+   {
+    "name": "collapsedStorageKey",
+    "type": "string",
+    "description": "Where the browser keeps the reader's choice of the rail (`localStorage`), so that the sidebar opens as it was left; `defaultCollapsed` until a choice is kept. Not kept without it, nor while `collapsed` is given."
    },
    {
     "name": "mobileOpen",
@@ -7710,6 +7725,39 @@
     "type": "ReactNode",
     "required": true,
     "description": "What it means and what to do, for the tooltip."
+   }
+  ]
+ },
+ "StateSummary": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/StateSummary.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "StateItem[]",
+    "required": true,
+    "description": "The states, each while it applies; the quiet ones too (all is well, a fallback), said once it is opened."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "default": "'State'",
+    "description": "Its name: the button's, before what it says (\"State: 1 to fix\"), and the panel's."
+   },
+   {
+    "name": "okLabel",
+    "type": "string",
+    "default": "'All good'",
+    "description": "What it says while nothing stands out and nothing is neutral."
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "Under the states, in the panel: a link to the page where they all are."
+   },
+   {
+    "name": "className",
+    "type": "string"
    }
   ]
  },

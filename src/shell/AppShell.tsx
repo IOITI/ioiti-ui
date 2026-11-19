@@ -40,7 +40,10 @@ export interface AppShellProps<S extends string = string> {
   sidebarHeader?: ReactNode
   /** At the bottom of the sidebar, above its Collapse button: a sign-out (SidebarFooterButton). */
   sidebarFooter?: ReactNode
-  /** States the user must not miss, after the trail (StateChip); nothing takes room while there is none. */
+  /**
+   * States the user must not miss, after the trail: a StateChip each while they are few, or all of them in one
+   * StateSummary; nothing takes room while there is none.
+   */
   topBarChips?: ReactNode
   /** The right end of the top bar (search, notifications…): the theme button by default, `null` for nothing. */
   topBarEnd?: ReactNode
@@ -57,6 +60,11 @@ export interface AppShellProps<S extends string = string> {
   /** What draws the menu's links; the application's (LinkProvider) by default. */
   linkComponent?: ElementType
   defaultCollapsed?: boolean
+  /**
+   * Where the browser keeps the reader's choice of the folded sidebar (the rail: ⌘B, Collapse), so that every page
+   * opens it as it was left (`'app.sidebar.collapsed'`); `defaultCollapsed` until a choice is kept. Not kept without it.
+   */
+  collapsedStorageKey?: string
   /**
    * The list of the keyboard shortcuts registered with a description (useShortcut), on `?`; `false` for none.
    * @default true
@@ -102,6 +110,7 @@ function Shell<S extends string>({
   home,
   linkComponent,
   defaultCollapsed,
+  collapsedStorageKey,
   shortcutsDialog = true,
   className,
 }: AppShellProps<S>) {
@@ -159,6 +168,7 @@ function Shell<S extends string>({
         header={sidebarHeader ?? <AppBrand name={name} detail={appDetail} mark={brandMark} />}
         footer={sidebarFooter}
         defaultCollapsed={defaultCollapsed}
+        collapsedStorageKey={collapsedStorageKey}
         mobileOpen={mobileOpen}
         onMobileOpenChange={setMobileOpen}
       />

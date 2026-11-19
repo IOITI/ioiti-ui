@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import { StateSummary } from '../shell/StateSummary.js'
 import { CopyChip } from './CopyChip.js'
 import { LineChart } from './LineChart.js'
 import { Panel } from './Panel.js'
@@ -200,5 +201,17 @@ describe('on a narrow screen, no part is wider than its place', () => {
     // The span that takes the focus for the hint: it held the text at its whole width.
     expect(text.parentElement).toHaveAttribute('tabindex', '0')
     expect(text.parentElement).toHaveClass('min-w-0')
+  })
+
+  it("the top bar's summary of states cuts its words to its pill, and opens a panel within the screen", async () => {
+    render(
+      <StateSummary
+        items={[{ id: 'long', tone: 'warning', label: 'A state whose words would run on past the room of a top bar', href: '/x' }]}
+      />,
+    )
+    const button = screen.getByRole('button', { name: /^State:/ })
+    expect(button.querySelector('.truncate')).toHaveClass('max-w-48')
+    fireEvent.click(button)
+    expect(await screen.findByRole('dialog', { name: 'State' })).toHaveClass('max-w-[calc(100vw-2rem)]')
   })
 })

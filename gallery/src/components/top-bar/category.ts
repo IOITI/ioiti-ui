@@ -6,7 +6,7 @@ const topBar: CategoryInfo = {
   slug: 'top-bar',
   label: 'Top bar and account',
   icon: PanelTop,
-  summary: 'What stands at the end of the top bar: who is signed in, the look they chose, the states not to miss, what happened, a way to any page, and the keys.',
+  summary: 'What stands at the end of the top bar: who is signed in, the look they chose, the states not to miss (one by one, or summed up), what happened, a way to any page, and the keys.',
   families: [
     {
       slug: 'user-menu',
@@ -59,6 +59,16 @@ const topBar: CategoryInfo = {
       examples: [
         { id: 'tones', title: 'Its tones', description: 'Something to watch (warning), to fix (danger), good news (success): a link to where it is dealt with, its meaning in its hint.' },
         { id: 'in-the-top-bar', title: 'In the top bar', description: 'After the trail, while the state applies: nothing takes room once it is dealt with. Below 1024 px, the icon alone, its words still its name.' },
+      ],
+    },
+    {
+      slug: 'state-summary',
+      name: 'StateSummary',
+      names: ['StateSummary'],
+      keywords: ['status', 'states', 'health', 'summary', 'top bar', 'chips', 'warning'],
+      examples: [
+        { id: 'in-the-top-bar', title: 'In the top bar', description: 'Several states in one control after the trail: the gravest in its words and tone, how many more, a dot while all is well. Opened, each state leads where it is dealt with, the quiet ones after; a link under them.' },
+        { id: 'its-tones', title: 'Its tones', description: 'Something to fix (danger), to watch (warning), good news (success); something to know that asks nothing (neutral), grey in its words; all well (ok), a dot.' },
       ],
     },
     {

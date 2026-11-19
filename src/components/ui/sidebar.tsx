@@ -122,15 +122,59 @@ const BADGE_TONE: Record<Exclude<SidebarBadgeTone, "neutral">, string> = {
 };
 
 /**
- * ioiti-ui: what the badges of an entry's children say, while they are out of sight (the entry closed): nothing, a
+ * ioiti-ui: what badges say while they are out of sight (an entry closed, a section folded, the rail): nothing, a
  * count (neutral), or the gravest state among them.
  */
-function childrenBadge(item: SidebarItem): SidebarBadgeTone | null {
-  const badged = item.children?.filter((c) => c.badge !== undefined) ?? [];
+function gravestBadge(entries: { badge?: string | number; badgeTone?: SidebarBadgeTone }[]): SidebarBadgeTone | null {
+  const badged = entries.filter((c) => c.badge !== undefined);
   if (!badged.length) return null;
   if (badged.some((c) => c.badgeTone === "negative")) return "negative";
   if (badged.some((c) => c.badgeTone === "warning")) return "warning";
   return "neutral";
+}
+
+const childrenBadge = (item: SidebarItem) => gravestBadge(item.children ?? []);
+
+/** ioiti-ui: what a screen reader hears of badges out of sight, after the name of what holds them. */
+const UNSEEN_WORDS: Record<SidebarBadgeTone, string> = {
+  neutral: ", with counts",
+  warning: ", with a warning",
+  negative: ", with something wrong",
+};
+
+/** ioiti-ui: the dot that says badges are out of sight, in the gravest tone among them; a count's in grey. */
+function UnseenDot({ tone, className }: { tone: SidebarBadgeTone; className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "size-1.5 shrink-0 rounded-full",
+        tone === "neutral" ? "bg-muted-foreground accent:bg-brand" : cn("bg-current", BADGE_TONE[tone]),
+        className
+      )}
+    />
+  );
+}
+
+// ioiti-ui: the rail kept or not, by the key an application gives (`collapsedStorageKey`); the browser may refuse to
+// keep it, and the sidebar then opens as `defaultCollapsed` says.
+function readCollapsed(key: string | undefined): boolean | undefined {
+  if (!key) return undefined;
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw === "true" ? true : raw === "false" ? false : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function keepCollapsed(key: string | undefined, collapsed: boolean) {
+  if (!key) return;
+  try {
+    window.localStorage.setItem(key, String(collapsed));
+  } catch {
+    // Not kept: the choice lasts as long as the page.
+  }
 }
 
 const SidebarContext = React.createContext({ collapsed: false });
@@ -152,6 +196,11 @@ export interface SidebarProps {
   collapsed?: boolean;
   defaultCollapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
+  /**
+   * ioiti-ui: where the browser keeps the reader's choice of the rail (`localStorage`), so that the sidebar opens as
+   * it was left; `defaultCollapsed` until a choice is kept. Not kept without it, nor while `collapsed` is given.
+   */
+  collapsedStorageKey?: string;
   mobileOpen?: boolean;
   onMobileOpenChange?: (open: boolean) => void;
   className?: string;
@@ -161,12 +210,19 @@ export function Sidebar({
   collapsed: collapsedProp,
   defaultCollapsed = false,
   onCollapsedChange,
+  collapsedStorageKey,
   mobileOpen: mobileProp,
   onMobileOpenChange,
   className,
   ...content
 }: SidebarProps) {
-  const [collapsed, setCollapsed] = useControllableState(collapsedProp, defaultCollapsed, onCollapsedChange);
+  // ioiti-ui: the reader's choice kept, read once, as the sidebar is first drawn.
+  const [kept] = React.useState(() => readCollapsed(collapsedStorageKey));
+  const [collapsed, setShown] = useControllableState(collapsedProp, kept ?? defaultCollapsed, onCollapsedChange);
+  const setCollapsed = (next: boolean) => {
+    if (collapsedProp === undefined) keepCollapsed(collapsedStorageKey, next);
+    setShown(next);
+  };
   const [mobileOpen, setMobileOpen] = useControllableState(mobileProp, false, onMobileOpenChange);
 
   // ioiti-ui: ⌘B on an Apple computer, Ctrl B elsewhere (useShortcut), listed by ShortcutsDialog.
@@ -271,6 +327,9 @@ export function SidebarTrigger({ className, ...props }: React.ComponentProps<"bu
 
 /* ───────────────────────── internals ───────────────────────── */
 
+/** ioiti-ui: what a rail's tip says after an entry's name: its badge, in its tone. */
+type TipNote = { text: string; tone: SidebarBadgeTone };
+
 type PanelProps = Pick<SidebarProps, "sections" | "activeId" | "onActiveChange" | "header" | "footer" | "linkComponent"> & {
   collapsed: boolean;
   onToggle?: () => void;
@@ -292,7 +351,7 @@ function Panel({
   const uid = React.useId();
   const [hoverBox, setHoverBox] = React.useState<{ y: number; h: number } | null>(null);
   const [hovering, setHovering] = React.useState(false);
-  const [tip, setTip] = React.useState<{ label: string; keys?: string; x: number; y: number } | null>(null);
+  const [tip, setTip] = React.useState<{ label: string; keys?: string; note?: TipNote; x: number; y: number } | null>(null);
   // ioiti-ui: the entries open on their children: those the reader opened, and the one that is or holds the page
   // shown, again at each page (EasyUI's opened it at the first page only).
   const [chosen, setChosen] = React.useState<Set<string>>(() => new Set());
@@ -338,20 +397,20 @@ function Panel({
   const flyoutLinks = React.useMemo(() => ({ ...links, component: LinkComponent }), [links, LinkComponent]);
 
   // ioiti-ui: the rail's tip, beside an entry; none while a flyout shows its pages.
-  const tipAt = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>, label: string) => {
+  const tipAt = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>, label: string, note?: TipNote) => {
     if (!collapsed || flyout !== null) {
       setTip(null);
       return;
     }
     const r = e.currentTarget.getBoundingClientRect();
-    setTip({ label, x: r.right + 10, y: r.top + r.height / 2 });
+    setTip({ label, note, x: r.right + 10, y: r.top + r.height / 2 });
   };
 
-  const enter = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>, label: string) => {
+  const enter = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>, label: string, note?: TipNote) => {
     const el = e.currentTarget;
     setHoverBox({ y: el.offsetTop, h: el.offsetHeight });
     setHovering(true);
-    tipAt(e, label);
+    tipAt(e, label, note);
   };
 
   /** ioiti-ui: the pages of an entry, in its flyout: its own first (unless one of its children's), then theirs. */
@@ -411,9 +470,15 @@ function Panel({
     const pilled = isActive || (collapsed && childActive);
     // ioiti-ui: closed, an entry says that a page under it has a badge to read, in the gravest tone among them.
     const unseen = hasChildren && !isOpen && !collapsed && item.badge === undefined ? childrenBadge(item) : null;
+    // ioiti-ui: in the rail, its badge is a dot on its icon, in its tone (or its pages' gravest), and its words in its
+    // tip and its name.
+    const railTone = !collapsed ? null : item.badge !== undefined ? (item.badgeTone ?? "neutral") : childrenBadge(item);
+    const railNote: TipNote | undefined =
+      railTone === null ? undefined : { text: item.badge !== undefined ? String(item.badge) : UNSEEN_WORDS[railTone].slice(2), tone: railTone };
+    const railName = !collapsed ? undefined : railNote === undefined ? item.label : item.badge !== undefined ? `${item.label}, ${item.badge}` : `${item.label}${UNSEEN_WORDS[railNote.tone]}`;
     // ioiti-ui: the hover box is measured in the list; at the foot, an entry is lit by its own hover.
     const point = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>) =>
-      place === "footer" ? tipAt(e, item.label) : enter(e, item.label);
+      place === "footer" ? tipAt(e, item.label, railNote) : enter(e, item.label, railNote);
 
     const onClick = (e: React.MouseEvent) => {
       // In the rail, the flyout's (DropdownMenu's own click, after this one).
@@ -433,7 +498,7 @@ function Panel({
             onClick={onClick}
             onMouseEnter={point}
             onFocus={point}
-            aria-label={collapsed ? item.label : undefined}
+            aria-label={railName}
             aria-expanded={hasChildren && !linked && !flies ? isOpen : undefined}
             aria-current={isActive ? "page" : undefined}
             className={cn(
@@ -454,7 +519,10 @@ function Panel({
                 className="absolute inset-0 rounded-lg bg-surface-hover accent:bg-brand-soft"
               />
             )}
-            <span className="relative grid size-5 shrink-0 place-items-center [&>svg]:size-[18px]">{item.icon}</span>
+            <span className="relative grid size-5 shrink-0 place-items-center [&>svg]:size-[18px]">
+              {item.icon}
+              {railTone && <UnseenDot tone={railTone} className="absolute -right-1 -top-0.5" />}
+            </span>
             <motion.span
               initial={false}
               animate={{ opacity: collapsed ? 0 : 1 }}
@@ -479,14 +547,8 @@ function Panel({
             )}
             {unseen && (
               <>
-                <span
-                  aria-hidden
-                  className={cn(
-                    "relative size-1.5 shrink-0 rounded-full",
-                    unseen === "neutral" ? "bg-muted-foreground accent:bg-brand" : cn("bg-current", BADGE_TONE[unseen])
-                  )}
-                />
-                <span className="sr-only">, with counts</span>
+                <UnseenDot tone={unseen} className="relative" />
+                <span className="sr-only">{UNSEEN_WORDS[unseen]}</span>
               </>
             )}
             {!collapsed && hasChildren && !linked && (
@@ -642,7 +704,8 @@ function Panel({
             // ioiti-ui: the rail shows every icon; folding is for the open sidebar.
             const foldable = !!section.foldable && !collapsed;
             const folded = foldable && !unfolded.has(key);
-            const counted = section.items.some((item) => item.badge !== undefined);
+            // ioiti-ui: the badges folded under it, its entries' and their pages', said by the gravest.
+            const counted = gravestBadge(section.items.flatMap((item) => [item, ...(item.children ?? [])]));
             const listId = `${uid}-section-${i}`;
             return (
               <div key={key} className="space-y-0.5">
@@ -663,11 +726,11 @@ function Panel({
                         aria-hidden
                         className={cn("size-3 shrink-0 motion-safe:transition-transform duration-200 ease-fast", !folded && "rotate-90")}
                       />
-                      {/* ioiti-ui: folded, it says that an entry under it has a count to read. */}
+                      {/* ioiti-ui: folded, it says that an entry under it has a badge to read, in the gravest tone. */}
                       {folded && counted && (
                         <>
-                          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-muted-foreground accent:bg-brand" />
-                          <span className="sr-only">, with counts</span>
+                          <UnseenDot tone={counted} />
+                          <span className="sr-only">{UNSEEN_WORDS[counted]}</span>
                         </>
                       )}
                     </button>
@@ -762,6 +825,11 @@ function Panel({
                   className={cn("whitespace-nowrap px-2 py-1 text-xs font-medium", TOOLTIP)}
                 >
                   {tip.label}
+                  {tip.note && (
+                    <span className={cn("ml-1.5", tip.note.tone === "neutral" ? "text-muted-foreground" : BADGE_TONE[tip.note.tone])}>
+                      {tip.note.text}
+                    </span>
+                  )}
                   {tip.keys && <span className="ml-1.5 text-muted-foreground">{tip.keys}</span>}
                 </motion.div>
               </div>
