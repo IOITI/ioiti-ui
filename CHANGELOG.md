@@ -3,7 +3,7 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
-## [Unreleased]
+## [0.23.1] - 2026-11-23
 
 - **A timeline's line no longer shows through a failed or a warning step** (`InteractiveTimeline`): their nodes'
   tint was over nothing, so the line ran across their icon; it is painted over the surface now, as the other
