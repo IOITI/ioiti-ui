@@ -133,10 +133,12 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
         return 'bg-surface border-accent-blue text-accent-blue ring-1 ring-accent-blue/20 accent:border-brand accent:text-brand-text accent:ring-brand/20';
       case 'in-progress':
         return 'bg-surface border-accent-blue text-accent-blue shadow-subtle ring-2 ring-accent-blue/30 accent:border-brand accent:text-brand-text accent:ring-brand/30';
+      // ioiti-ui: the tint painted over the surface (a gradient of one colour), not over nothing: the line runs
+      // behind the nodes and showed through a tint alone.
       case 'failed':
-        return 'bg-negative/5 border-negative text-negative ring-1 ring-negative/30 dark:bg-negative/10';
+        return 'bg-surface bg-linear-to-b from-negative/5 to-negative/5 dark:from-negative/10 dark:to-negative/10 border-negative text-negative ring-1 ring-negative/30';
       case 'warning':
-        return 'bg-warning/5 border-warning text-warning ring-1 ring-warning/30 dark:bg-warning/10';
+        return 'bg-surface bg-linear-to-b from-warning/5 to-warning/5 dark:from-warning/10 dark:to-warning/10 border-warning text-warning ring-1 ring-warning/30';
       case 'pending':
       default:
         return isSelected
