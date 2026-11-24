@@ -11,6 +11,8 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-11-24
+
 ### Added
 
 - **A GitHub Release for every tag pushed**: its notes are its section here, the line that installs it and the
@@ -1161,7 +1163,8 @@ tokens and the same shell, in both themes (`docs/fidelity.md`).
 - **`ioiti-ui/vite`**: `ioiti()`, the pre-paint script in the pages, no font as a `data:` URI, one React.
 - **The gallery** (`npm run gallery`) and **the starter template** (`templates/app`).
 
-[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.23.2...main
+[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.24.0...main
+[0.24.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.24.0
 [0.23.2]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.23.2
 [0.23.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.23.1
 [0.23.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.23.0
