@@ -41,7 +41,7 @@ npm run preview    # serves dist/
 
 ## ioiti-ui
 
-`package.json` names the version used: `github:IOITI/ioiti-ui#v0.28.0`. Another version is another
+`package.json` names the version used: `github:IOITI/ioiti-ui#v0.29.0`. Another version is another
 tag (its CHANGELOG says what changed). `src/index.css` imports Tailwind CSS and the design in one
 line; it never imports `tailwindcss` itself as well.
 
