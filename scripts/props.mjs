@@ -5,7 +5,7 @@
 //   node scripts/props.mjs --check   fails when it is not what the types say (npm run lint)
 //
 // A component is a PascalCase export of `ioiti-ui`, `ioiti-ui/react-router` or `ioiti-ui/code` that can be
-// called. Its props are the properties of its first parameter's type, those declared in src/ (its own) one by
+// called, or a class constructed with its props. Its props are the properties of its first parameter's type, those declared in src/ (its own) one by
 // one: the type as written (an alias such as `ButtonVariant` kept), the values of a union of literals, whether
 // it is required, its JSDoc, and its default (a `@default` tag, else the default of its destructuring). Those it
 // takes from elsewhere (React's attributes of an element, framer-motion's) are counted, and said by the element
@@ -266,7 +266,8 @@ function componentOf(name, symbol, entry) {
   const declaration = target.valueDeclaration ?? target.getDeclarations()?.[0]
   if (!declaration) return undefined
   const type = checker.getTypeOfSymbolAtLocation(target, declaration)
-  const signature = type.getCallSignatures()[0]
+  // A function component is called with its props; a class component (ErrorBoundary) constructed with them.
+  const signature = type.getCallSignatures()[0] ?? (ts.isClassDeclaration(declaration) ? type.getConstructSignatures()[0] : undefined)
   if (!signature) return undefined
   const fn = functionOf(declaration)
   const parameter = signature.getParameters()[0]

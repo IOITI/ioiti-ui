@@ -15,7 +15,7 @@ interface, as a package any application can install. React 19, Tailwind CSS 4, f
 - **Motion**: calm and the same everywhere, framer-motion's springs and the stylesheets' curves alike. A page
   changes in one cross-fade, the shell still; a look in one cross-fade of the whole page; what floats arrives and
   leaves the same way. Reduced where the system asks.
-- **185 components** (counting their parts): 50 of EasyUI's, reworked for the keyboard, screen readers,
+- **188 components** (counting their parts): 50 of EasyUI's, reworked for the keyboard, screen readers,
   phones and a light theme; the blocks pages are made of (panels, tiles, tables, fields, charts, menus, inputs,
   a range of time, a tour); and the shell (sidebar, top bar, the trail of where a page is, keyboard shortcuts).
 - **Checked**: every text colour is 4.5:1 on every surface of every look (36), one focus ring everywhere, links
@@ -77,26 +77,34 @@ toasts) and `RouterAppShell` (the shell).
 ```tsx
 // src/main.tsx
 createRoot(document.getElementById('root')!).render(
-  <IoitiProvider appName="My App">
+  // onError: every error a page shows in place of itself, told once, for the application's error tracker.
+  <IoitiProvider appName="My App" onError={reportError}>
     <RouterProvider router={router} />
   </IoitiProvider>,
 )
 
 // src/router.tsx
 import { NotFoundPage } from 'ioiti-ui'
-import { RouterAppShell, RouterRoot } from 'ioiti-ui/react-router'
+import { RouterAppShell, RouterErrorPage, RouterRoot } from 'ioiti-ui/react-router'
 
 export const router = createBrowserRouter([
   {
     element: <RouterRoot />,
+    errorElement: <RouterErrorPage />, // the last resort, outside the shell
     children: [
       { path: '/login', element: <LoginPage /> },
       {
         element: <RouterAppShell menu={MENU} appDetail="v1.0.0" />,
         children: [
-          { index: true, element: <HomePage /> },
-          { path: 'orders', element: <OrdersPage /> },
-          { path: '*', element: <NotFoundPage /> },
+          {
+            // A page that fails to load or to draw shows what went wrong in the shell, which stays.
+            errorElement: <RouterErrorPage />,
+            children: [
+              { index: true, element: <HomePage /> },
+              { path: 'orders', element: <OrdersPage /> },
+              { path: '*', element: <NotFoundPage /> },
+            ],
+          },
         ],
       },
     ],

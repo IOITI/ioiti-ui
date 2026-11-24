@@ -86,22 +86,28 @@ export default defineConfig({
       <Demo
         id="react-router"
         title="With React Router"
-        description="The core imports no router. This entry gives the router's links to every component (a link opens in another tab with ⌘ or Ctrl, as any link), and the shell its address and outlet."
-        names={['RouterRoot', 'RouterAppShell', 'RouterLink']}
+        description="The core imports no router. This entry gives the router's links to every component (a link opens in another tab with ⌘ or Ctrl, as any link), the shell its address and outlet, and a route that fails its page of an error, the shell kept around it."
+        names={['RouterRoot', 'RouterAppShell', 'RouterLink', 'RouterErrorPage']}
         from="ioiti-ui/react-router"
         className="flex flex-col items-start gap-3"
       >
         <CodeBlock language="tsx" code={`const router = createBrowserRouter([
   {
     element: <RouterRoot />,
+    errorElement: <RouterErrorPage />,
     children: [
       { path: '/login', element: <LoginPage /> },
       {
         element: <RouterAppShell menu={MENU} appDetail="v1.0.0" />,
         children: [
-          { index: true, element: <HomePage /> },
-          { path: 'orders', element: <OrdersPage /> },
-          { path: '*', element: <NotFoundPage /> },
+          {
+            errorElement: <RouterErrorPage />,
+            children: [
+              { index: true, element: <HomePage /> },
+              { path: 'orders', element: <OrdersPage /> },
+              { path: '*', element: <NotFoundPage /> },
+            ],
+          },
         ],
       },
     ],

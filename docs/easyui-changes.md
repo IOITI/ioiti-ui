@@ -611,6 +611,8 @@ otherwise).
   found in a cell. The `aria-label`, `aria-labelledby` and `aria-describedby` given to it name the table.
 - `flysheet` (0.25.0): its trigger says it opens a dialog (`aria-haspopup`) only while the sheet covers the page: one
   pushing the page aside is a region beside it, which it says nothing of; the content tells the trigger.
+- `loader` (0.26.0): `delay`, the milliseconds before it is drawn (`300` while a page's code or data arrives): a wait
+  shorter than that shows nothing, where a spinner would flash.
 
 ## ioiti-ui's own changes
 

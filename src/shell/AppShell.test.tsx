@@ -694,3 +694,60 @@ describe("a phone's drawer", () => {
     expect(screen.getByRole('button', { name: 'Open navigation' })).toHaveFocus()
   })
 })
+
+describe('a page that throws', () => {
+  function Broken(): never {
+    throw new Error('The page drew nothing')
+  }
+
+  it('shows what went wrong in its place, the shell kept, and another page clears it', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const onError = vi.fn()
+    const shell = (path: string, page: ReactNode) => (
+      <IoitiProvider appName="Test App" onError={onError}>
+        <AppShell menu={MENU} pathname={path}>
+          {page}
+        </AppShell>
+      </IoitiProvider>
+    )
+    const { rerender } = render(shell('/orders', <Broken />))
+    expect(screen.getByRole('heading', { level: 1, name: 'Something went wrong' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument()
+    expect(onError).toHaveBeenCalledTimes(1)
+    expect(onError.mock.calls[0][1]).toMatchObject({ source: 'boundary' })
+    rerender(shell('/customers', <h1>Customers</h1>))
+    expect(screen.getByRole('heading', { level: 1, name: 'Customers' })).toBeInTheDocument()
+    vi.restoreAllMocks()
+  })
+
+  it('reaches a boundary of the application, with errorFallback={false}', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    expect(() =>
+      render(
+        <AppShell menu={MENU} pathname="/orders" errorFallback={false}>
+          <Broken />
+        </AppShell>,
+      ),
+    ).toThrow('The page drew nothing')
+    vi.restoreAllMocks()
+  })
+})
+
+describe('the next page on its way', () => {
+  it('says the page busy, and draws its bar', () => {
+    const { rerender } = render(
+      <AppShell menu={MENU} pathname="/orders">
+        <h1>Orders</h1>
+      </AppShell>,
+    )
+    expect(screen.getByRole('main')).not.toHaveAttribute('aria-busy')
+    rerender(
+      <AppShell menu={MENU} pathname="/orders" pending>
+        <h1>Orders</h1>
+      </AppShell>,
+    )
+    expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'true')
+    expect(screen.getByRole('banner').querySelector('span[aria-hidden].absolute')).toHaveClass('opacity-100')
+  })
+})
+

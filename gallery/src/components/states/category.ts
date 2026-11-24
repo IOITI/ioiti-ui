@@ -76,6 +76,17 @@ const states: CategoryInfo = {
       ],
     },
     {
+      slug: 'error-state',
+      name: 'ErrorState',
+      names: ['ErrorState', 'ErrorBoundary'],
+      keywords: ['error', 'failed', 'crash', 'exception', 'boundary', 'retry', 'try again', 'reload', 'offline'],
+      examples: [
+        { id: 'page', title: 'A page that failed', description: 'What AppShell shows in place of a page that throws as it draws: what went wrong, Try again and the way home; in development, the error under Details. Its heading takes the focus on a page of its own; drawn in a part of a page, as here, focusOnMount={false} leaves it.' },
+        { id: 'part', title: 'A part of a page that failed', description: 'An ErrorBoundary around the part that may throw (a chart of another service’s figures): it says what went wrong in its place, the rest of the page stays. Its Try again draws the part again, which works once its data is whole.' },
+        { id: 'reload', title: 'A part whose code is gone', description: 'A part whose code failed to load, a new version published since the page was opened: Reload gets it, in place of Try again, which would load the same.' },
+      ],
+    },
+    {
       slug: 'not-found-state',
       name: 'NotFoundState',
       names: ['NotFoundState', 'NotFoundPage', 'NotFound'],

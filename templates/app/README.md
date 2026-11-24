@@ -30,6 +30,11 @@ npm run preview    # serves dist/
 - **The menu**: `src/menu.tsx`. Each entry is a page; a page deeper than the menu (`/items/42`)
   stands under the entry its address starts with, and names itself with `PageHeader`.
 - **The pages**: `src/pages/`, routed in `src/router.tsx`. The data of `src/data.ts` are examples.
+- **The errors**: a page that fails to draw or to load shows what went wrong in the shell, which stays
+  (`RouterErrorPage`, `src/router.tsx`), and is told to `src/errors.ts` (`IoitiProvider`'s `onError`): send it to
+  your error tracker there.
+- **The pages loaded later**: `items` is loaded the first time it is opened (`lazy` in `src/router.tsx`), its code a
+  file of its own; a thin bar under the top bar shows while the next page loads.
 - **The sign-in**: `src/pages/LoginPage.tsx` checks nothing yet. Its single sign-on button leads to a
   placeholder address (`/api/auth/sso/login`): give it your server's, which sends the browser on to the
   identity provider, or take `PROVIDERS` out for the password alone.

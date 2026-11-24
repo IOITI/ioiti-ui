@@ -2,6 +2,8 @@ import { useId, useLayoutEffect, useMemo, useRef, useState, ViewTransition } fro
 import type { ComponentProps, ElementType, MouseEvent, ReactNode, RefObject } from 'react'
 
 import { useAppName } from '../components/app-context.js'
+import { ErrorBoundary } from '../components/ErrorBoundary.js'
+import type { ErrorBoundaryProps } from '../components/ErrorBoundary.js'
 import { MainScrollContext } from '../components/main-scroll-context.js'
 import { ShortcutsDialog } from '../components/ShortcutsDialog.js'
 import { ThemeToggle } from '../components/ThemeToggle.js'
@@ -10,6 +12,7 @@ import { isPlainClick } from '../lib/links.js'
 import { cn } from '../lib/utils.js'
 import { menuEntry, sidebarSections } from './navigation.js'
 import type { Menu } from './navigation.js'
+import { ErrorState } from './ErrorState.js'
 import { PageTrailProvider, TopBarTrail } from './PageTrail.js'
 
 export interface AppShellProps<S extends string = string> {
@@ -77,6 +80,17 @@ export interface AppShellProps<S extends string = string> {
    * a page, which names the tab itself).
    */
   tabTitle?: boolean
+  /**
+   * What a page that throws as it draws shows in its place, the sidebar and the top bar kept: an ErrorState by default
+   * (Try again draws it again; another page clears it). A node, or a function given the error and `reset`; `false` for
+   * no boundary of the shell's (the application's own, or the router's error page, catch it then).
+   */
+  errorFallback?: ErrorBoundaryProps['fallback'] | false
+  /**
+   * The next page is on its way (a router loading its data or its code: `useNavigation().state === 'loading'`): a thin
+   * bar under the top bar, after a moment (a quick change shows nothing), and the page said busy to screen readers.
+   */
+  pending?: boolean
 }
 
 /**
@@ -113,6 +127,8 @@ function Shell<S extends string>({
   collapsedStorageKey,
   shortcutsDialog = true,
   className,
+  errorFallback,
+  pending = false,
 }: AppShellProps<S>) {
   const providedName = useAppName()
   const name = appName ?? providedName ?? ''
@@ -177,7 +193,7 @@ function Shell<S extends string>({
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6 glass-bar">
+        <header className="relative flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6 glass-bar">
           <SidebarTrigger onClick={() => setMobileOpen(true)} aria-expanded={mobileOpen} aria-controls={mobileOpen ? drawerId : undefined} />
           {/* Where the page is, on every page: it takes the room left, and gives it up first. */}
           <div className="flex min-w-0 flex-1 items-center">
@@ -185,19 +201,38 @@ function Shell<S extends string>({
           </div>
           <div className="flex shrink-0 items-center gap-2 empty:hidden">{topBarChips}</div>
           {topBarEnd === undefined ? <ThemeToggle /> : topBarEnd}
+          {/* The next page on its way: a thin bar along the top bar's edge, after a moment, calm (it pulses where motion
+              is allowed); nothing for a quick change. The page says it busy (aria-busy, below). */}
+          <span
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-x-0 -bottom-px h-0.5 bg-foreground/40 transition-opacity duration-300 ease-soft accent:bg-brand',
+              pending ? 'opacity-100 delay-300 motion-safe:animate-pulse' : 'opacity-0',
+            )}
+          />
         </header>
 
         {/* Positioned, so that what it scrolls stays in it: text for screen readers placed
             against the page would otherwise make the window itself scroll, onto nothing. The
             transition takes it whole, cut to what it shows. */}
         <ViewTransition key={page} name={frameName} default="none" enter="ioiti-page" exit="ioiti-page" share="ioiti-page">
-          <main ref={main} id={mainId} className="relative flex-1 overflow-y-auto">
+          <main ref={main} id={mainId} aria-busy={pending || undefined} className="relative flex-1 overflow-y-auto">
             {/* The page never scrolls sideways: what is wider than the screen scrolls in a frame of its
                 own (Table), and what would still stand beyond the page (text for screen readers placed
                 out of a frame) is cut at its edge, where on a phone the page slid sideways onto nothing.
                 Clipped, not scrolled: what sticks to the top of the page still does. */}
             <div className={cn('relative mx-auto flex w-full flex-col gap-6 overflow-x-clip p-4 sm:p-6', wide ? 'max-w-none' : 'max-w-7xl')}>
-              <MainScrollContext.Provider value={main}>{children}</MainScrollContext.Provider>
+              <MainScrollContext.Provider value={main}>
+                {/* A page that throws as it draws shows what went wrong in its place, the shell kept; another page
+                    clears it (resetKeys). The router's error page, where one is given, catches it first. */}
+                {errorFallback === false ? (
+                  children
+                ) : (
+                  <ErrorBoundary resetKeys={[pathname]} fallback={errorFallback ?? pageFallback}>
+                    {children}
+                  </ErrorBoundary>
+                )}
+              </MainScrollContext.Provider>
             </div>
           </main>
         </ViewTransition>
@@ -206,6 +241,9 @@ function Shell<S extends string>({
     </div>
   )
 }
+
+/** What a page that failed shows by default: an ErrorState of a page, its Try again drawing it again. */
+const pageFallback: NonNullable<ErrorBoundaryProps['fallback']> = ({ error, reset }) => <ErrorState error={error} onRetry={reset} />
 
 /**
  * The part of the page an address shows (`#rules`), scrolled to the top of the page once it is there: the browser

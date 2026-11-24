@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
@@ -16,6 +16,11 @@ export interface LoaderProps extends React.HTMLAttributes<HTMLDivElement> {
   reduceMotion?: boolean;
   /** Custom stroke / fill color. Default inherits or neutral. */
   color?: string;
+  /**
+   * ioiti-ui: drawn only once this many milliseconds have passed (`300`, as a page's code or data loads): a wait shorter
+   * than that shows nothing, where a spinner would flash. At once by default.
+   */
+  delay?: number;
 }
 
 export const Loader: React.FC<LoaderProps> = ({
@@ -24,9 +29,18 @@ export const Loader: React.FC<LoaderProps> = ({
   label = 'Loading…',
   reduceMotion = false,
   color = 'currentColor',
+  delay = 0,
   className,
   ...props
 }) => {
+  // ioiti-ui: nothing until `delay` has passed.
+  const [due, setDue] = useState(delay <= 0);
+  useEffect(() => {
+    if (delay <= 0) return;
+    const timer = window.setTimeout(() => setDue(true), delay);
+    return () => window.clearTimeout(timer);
+  }, [delay]);
+  if (!due) return null;
   return (
     <div
       role="status"

@@ -16,3 +16,4 @@ createRoot(document.getElementById('root')!).render(
 - With React Router, `RouterRoot` (`ioiti-ui/react-router`) adds the router's links and the toasts under it; without, put `LinkProvider` and `ToastProvider` there yourself.
 - The Vite plugin's script writes the theme on `<html>` before the first paint (`ioiti({ themeStorageKey })`): give the provider the same key, or none.
 - Reduced (the system's setting, or `always`), movement goes and fades stay: framer-motion's and the stylesheets' alike.
+- `onError` is told once of every error a page shows in place of itself (AppShell's boundary, an `ErrorBoundary`, `RouterErrorPage`), with where it was caught: send it to the application's error tracker.

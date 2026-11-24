@@ -11,6 +11,11 @@ export interface ExampleInfo {
   title: string
   /** What it shows, and when to do so. */
   description?: string
+  /**
+   * It makes a router of its own (`createMemoryRouter`), as an application's whole: drawn apart from the gallery's
+   * (RouterApart), which React Router would not let it stand inside.
+   */
+  ownRouter?: boolean
 }
 
 /**

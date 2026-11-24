@@ -2,11 +2,14 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  BarList,
   Button,
   ButtonLink,
   EmptyState,
   EmptyText,
+  ErrorState,
   ErrorText,
+  formatMoney,
   KpiGrid,
   PageHeader,
   Panel,
@@ -66,6 +69,49 @@ function Query() {
       >
         <Loaded />
       </QueryState>
+    </div>
+  )
+}
+
+type Failure = 'threw' | 'offline' | 'outdated' | 'drawn'
+
+// What a part of a page fails on, as the browser throws it.
+const FAILURES: Record<Exclude<Failure, 'drawn'>, Error> = {
+  // Its code met data it did not expect, as it drew.
+  threw: new TypeError("Cannot read properties of undefined (reading 'map')"),
+  // A request that found no network.
+  offline: new TypeError('Failed to fetch'),
+  // Its code, a file of its own, gone from the server since a new version was published.
+  outdated: new TypeError('Failed to fetch dynamically imported module: https://app.example.com/assets/SalesByShop-3f9a1c.js'),
+}
+
+function Failed() {
+  const [failure, setFailure] = useState<Failure>('threw')
+  return (
+    <div className="w-full space-y-4">
+      <SegmentedControl
+        label="What failed"
+        size="sm"
+        value={failure}
+        onChange={setFailure}
+        options={(['threw', 'offline', 'outdated', 'drawn'] as const).map((each) => ({ value: each, label: each }))}
+      />
+      <Panel title="Sales by shop" description="This week, every shop.">
+        {failure === 'drawn' ? (
+          <BarList
+            label="Sales by shop"
+            items={[
+              { label: 'North', value: 18_420 },
+              { label: 'Harbour', value: 12_260 },
+              { label: 'Station', value: 9_310 },
+            ]}
+            format={(value) => formatMoney(value)}
+          />
+        ) : (
+          // Here Try again works: the part draws.
+          <ErrorState page={false} error={FAILURES[failure]} onRetry={() => setFailure('drawn')} />
+        )}
+      </Panel>
     </div>
   )
 }
@@ -154,6 +200,15 @@ export function States() {
       >
         <Button size="sm">Send the invoice</Button>
         <ErrorText>Could not send the invoice: the mail server does not answer.</ErrorText>
+      </Demo>
+
+      <Demo
+        id="failed"
+        title="ErrorState"
+        description="What a page, or a part of one, shows in place of itself when it failed: what went wrong, in words for its kind, and the way on. A page that throws keeps the shell around it (AppShell); a part, the page around it (ErrorBoundary). Data that could not load is QueryState's, above."
+        names={['ErrorState']}
+      >
+        <Failed />
       </Demo>
 
       <Panel title="A feature switched off" description="Said where it would be, with what switches it on.">

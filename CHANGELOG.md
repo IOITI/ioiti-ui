@@ -11,6 +11,44 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- **`ErrorState`**, what a page or a part of one shows in place of itself when it failed: what went wrong, in words for
+  the kind of error (a part of the application that failed to load is reloaded; a server out of reach, tried again), the
+  way on (Try again, Reload, home), and in development its details. As a page, it names the trail and the tab and its
+  heading takes the focus; `page={false}` for a part, said where the focus is.
+- **`ErrorBoundary`**, around a part of a page that may throw as it draws (a chart of data from elsewhere): the part
+  shows an `ErrorState` (or its `fallback`), the rest of the page stays; `resetKeys` draws it again once they change.
+- **`RouterErrorPage`** (`ioiti-ui/react-router`), a route's `errorElement`: a loader's 404 is the page not found, a
+  401 a session to sign in again (`signIn`), a 403 a page the person may not see, anything else an `ErrorState` whose
+  Try again runs the route again, the shell's `pending` bar showing meanwhile. On a route under the shell's that holds
+  every page, the shell stays around it; `focusOnMount={false}` where a router is drawn in a part of a page.
+- **`IoitiProvider`'s `onError`**, told once of every error a page shows in place of itself, with where it was caught:
+  the application's error tracker (`useErrorReporter`, the types `ErrorReport` and `ErrorReporter`).
+- **`AppShell`'s `pending`**, the next page on its way (`useNavigation().state === 'loading'`): a thin bar under the
+  top bar after a moment, nothing for a quick change, and the page said busy to screen readers.
+- **`Loader`'s `delay`**: nothing drawn before it (`300` while a page's code arrives), where a spinner would flash.
+
+### Changed
+
+- **A page that throws as it draws no longer takes the application down with it** (`AppShell`): an `ErrorState` shows
+  in its place, the sidebar and the top bar kept, and another page clears it; `errorFallback` gives another, `false`
+  none (an application's own boundary, or the router's error page, catch it then).
+- **The starter template** keeps its shell around a page that fails (`RouterErrorPage` on the route of its pages, and
+  on the root), loads `items` the first time it is opened (`lazy`, its code a file of its own), shows the shell's
+  `pending`, and reports what fails to `src/errors.ts`.
+- **What an application bundles grows by 4.8 kB gzipped** (the template 187.0 kB, React and the rest with it): what
+  shows a failed page and keeps the shell. The React Router entry whole by 9.4 kB: its error page draws the page not
+  found.
+
+### Upgrading
+
+An application changes nothing; a page that throws shows its error in the shell now. To keep the shell around a page
+whose loader fails too, give the router's error page to a route without a path under `RouterAppShell`'s, holding the
+pages (`{ errorElement: <RouterErrorPage />, children: [...] }`), and to the root as the last resort; and
+`IoitiProvider onError={…}` to report. An application whose own boundary caught the shell's pages keeps it with
+`errorFallback={false}`.
+
 ## [0.25.0] - 2026-11-24
 
 ### Added

@@ -1,6 +1,7 @@
 import { CodeBlock, Disclosure, Panel } from 'ioiti-ui'
 import type { ReactNode } from 'react'
 
+import { RouterApart } from './RouterApart'
 import type { Example, ExampleInfo } from './types'
 
 interface ExamplePanelProps {
@@ -22,7 +23,15 @@ export function ExamplePanel({ info, example, title, description, action, code =
   return (
     <Panel id={id ?? info.id} title={title ?? info.title} description={description ?? info.description} action={action} className="scroll-mt-20">
       <div data-example={info.id} className="min-w-0">
-        {example ? <example.Component /> : <p className="text-sm text-negative">No file for this example.</p>}
+        {!example ? (
+          <p className="text-sm text-negative">No file for this example.</p>
+        ) : info.ownRouter ? (
+          <RouterApart>
+            <example.Component />
+          </RouterApart>
+        ) : (
+          <example.Component />
+        )}
       </div>
       {code && example && (
         <Disclosure className="mt-5" summary="Code">

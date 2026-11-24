@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`the React Router adapter's interface > is the list of names it was 1`] = `
+[
+  "RouterAppShell",
+  "RouterErrorPage",
+  "RouterLeaveGuard",
+  "RouterLink",
+  "RouterRoot",
+]
+`;

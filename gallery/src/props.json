@@ -1120,6 +1120,16 @@
     "name": "tabTitle",
     "type": "boolean",
     "description": "Whether its pages name the browser's tab (PageHeader): yes, unless it is drawn inside another shell (a demo in a page, which names the tab itself)."
+   },
+   {
+    "name": "errorFallback",
+    "type": "ErrorBoundaryProps['fallback'] | false",
+    "description": "What a page that throws as it draws shows in its place, the sidebar and the top bar kept: an ErrorState by default (Try again draws it again; another page clears it). A node, or a function given the error and `reset`; `false` for no boundary of the shell's (the application's own, or the router's error page, catch it then)."
+   },
+   {
+    "name": "pending",
+    "type": "boolean",
+    "description": "The next page is on its way (a router loading its data or its code: `useNavigation().state === 'loading'`): a thin bar under the top bar, after a moment (a quick change shows nothing), and the page said busy to screen readers."
    }
   ]
  },
@@ -3514,6 +3524,110 @@
    }
   ]
  },
+ "ErrorBoundary": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ErrorBoundary.tsx",
+  "props": [
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   },
+   {
+    "name": "fallback",
+    "type": "ReactNode | ((props: ErrorFallbackProps) => ReactNode)",
+    "description": "What is shown in place of what failed: a node, or a function given the error and `reset`. By default an ErrorState of a part of a page, its Try again drawing it again."
+   },
+   {
+    "name": "onError",
+    "type": "(error: unknown, info: { componentStack?: string }) => void",
+    "description": "Told of the error as it is caught, with the components it was thrown in; IoitiProvider's `onError` is told too."
+   },
+   {
+    "name": "resetKeys",
+    "type": "readonly unknown[]",
+    "description": "Values which, once one changes, draw what failed again by themselves: the page's address (AppShell's)."
+   }
+  ]
+ },
+ "ErrorState": {
+  "entry": "ioiti-ui",
+  "file": "src/shell/ErrorState.tsx",
+  "props": [
+   {
+    "name": "title",
+    "type": "string",
+    "description": "The heading, what failed (\"The orders could not be loaded\"); by default, words for the kind of error."
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "description": "What happened, and what to do about it; by default, words for the kind of error."
+   },
+   {
+    "name": "error",
+    "type": "unknown",
+    "description": "What was thrown or caught. Its kind chooses the words and the way out (a part of the application that failed to load is reloaded, not tried again); in development, its message and stack are under \"Details\"."
+   },
+   {
+    "name": "onRetry",
+    "type": "() => void",
+    "description": "What tries again (a request made again, a boundary's `reset`): a \"Try again\" button; none without it."
+   },
+   {
+    "name": "retrying",
+    "type": "boolean",
+    "description": "Trying again, under way: its button busy, and no second press."
+   },
+   {
+    "name": "home",
+    "type": "{ href: string; label: string } | null",
+    "description": "The way home, a link; `null` for none (a part of a page has none by default)."
+   },
+   {
+    "name": "page",
+    "type": "boolean",
+    "description": "A page (the default): it names the top bar's trail and the browser's tab, its heading is the page's (level 1), and takes the focus as it appears. `false`: a part of a page (a panel's content), smaller, naming nothing, said to a screen reader where the focus is."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "What the trail and the tab call the page, the heading by default (a page only)."
+   },
+   {
+    "name": "parents",
+    "type": "Crumb[]",
+    "description": "The pages between its entry of the menu and itself, as PageHeader takes them (a page only)."
+   },
+   {
+    "name": "focusOnMount",
+    "type": "boolean",
+    "description": "Its heading takes the focus as it appears: a page's does (but in a shell drawn in a part of a page, which names no tab), a part's does not."
+   },
+   {
+    "name": "headingLevel",
+    "type": "1 | 2 | 3 | 4 | 5 | 6",
+    "values": [
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
+    ],
+    "description": "The level of its heading: 1 for a page, 3 for a part (under a panel's) by default."
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "description": "In place of the kind's icon, in the neutral tone: a lock for a page the person may not see."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
  "ErrorText": {
   "entry": "ioiti-ui",
   "file": "src/components/messages.tsx",
@@ -4262,6 +4376,11 @@
     "description": "Animations reduced as the system asks (`user`, the default), always, or never: framer-motion's, and the stylesheets' too (a change of page, the loops of spinners, `motion-safe:` and `motion-reduce:`). Reduced, movement goes and fades stay."
    },
    {
+    "name": "onError",
+    "type": "ErrorReporter",
+    "description": "Told of every error a page shows instead of itself: one AppShell's boundary caught, or an ErrorBoundary, or the router's error page (RouterErrorPage). Its place to report it: the application's error tracker, its server's log. Once per error, with where it was caught (`source`) and, from a boundary, the components it was thrown in."
+   },
+   {
     "name": "children",
     "type": "ReactNode",
     "required": true
@@ -4708,6 +4827,12 @@
     "type": "string",
     "default": "'currentColor'",
     "description": "Custom stroke / fill color. Default inherits or neutral."
+   },
+   {
+    "name": "delay",
+    "type": "number",
+    "default": "0",
+    "description": "Drawn only once this many milliseconds have passed (`300`, as a page's code or data loads): a wait shorter than that shows nothing, where a spinner would flash. At once by default."
    }
   ],
   "inherits": {
@@ -6390,9 +6515,41 @@
     "description": "Whether its pages name the browser's tab (PageHeader): yes, unless it is drawn inside another shell (a demo in a page, which names the tab itself)."
    },
    {
+    "name": "errorFallback",
+    "type": "ErrorBoundaryProps['fallback'] | false",
+    "description": "What a page that throws as it draws shows in its place, the sidebar and the top bar kept: an ErrorState by default (Try again draws it again; another page clears it). A node, or a function given the error and `reset`; `false` for no boundary of the shell's (the application's own, or the router's error page, catch it then)."
+   },
+   {
+    "name": "pending",
+    "type": "boolean",
+    "description": "The next page is on its way (a router loading its data or its code: `useNavigation().state === 'loading'`): a thin bar under the top bar, after a moment (a quick change shows nothing), and the page said busy to screen readers."
+   },
+   {
     "name": "children",
     "type": "ReactNode",
     "description": "The page; the router's child routes (`<Outlet />`) by default."
+   }
+  ]
+ },
+ "RouterErrorPage": {
+  "entry": "ioiti-ui/react-router",
+  "file": "src/react-router/RouterErrorPage.tsx",
+  "props": [
+   {
+    "name": "report",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether the error is told to IoitiProvider's `onError` (once): yes, unless the application reports the router's errors itself (RouterProvider's `onError`)."
+   },
+   {
+    "name": "signIn",
+    "type": "{ href: string; label?: string }",
+    "description": "Where a person signs in, for a 401 (a session that ended): a \"Sign in\" link, in place of the way home. Without it, the way home."
+   },
+   {
+    "name": "focusOnMount",
+    "type": "boolean",
+    "description": "Its heading takes the focus as it appears, as a page's does: yes, but in a shell drawn in a part of a page (which names no tab), and `false` where a router is drawn in a part of a page."
    }
   ]
  },

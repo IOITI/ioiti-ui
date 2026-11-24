@@ -3,10 +3,10 @@
   "tolerance": 0.05,
   "gzipped": {
     "Button, alone": 13694,
-    "ioiti-ui, whole": 186987,
-    "ioiti-ui/react-router, whole": 34788,
+    "ioiti-ui, whole": 189669,
+    "ioiti-ui/react-router, whole": 44413,
     "ioiti-ui/code, whole (its languages included)": 19708,
-    "the template: its JavaScript": 186565,
-    "the template: its CSS": 25342
+    "the template: its JavaScript": 191483,
+    "the template: its CSS": 25438
   }
 }

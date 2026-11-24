@@ -21,3 +21,5 @@ The frame of every page: the sidebar with the application's menu, the top bar wi
 - A page's tab kept in the query is an entry of its own when its `path` says the values (`/ops?tab=history`): the longest path wins, then the entry that says more of the query.
 - An entry under another may be at its parent's address: it is the parent's first page ("Rules › Library"), and the trail says the parent without a link. A parent with a page of its own is a link in the trail.
 - A section placed at the foot (`place: 'footer'`) is drawn above Collapse; the trail does not say its heading.
+- A page that throws as it draws shows an `ErrorState` in its place, the sidebar and the top bar kept; another page clears it. `errorFallback` gives another, `false` none (the router's error page, or the application's boundary, catch it then).
+- `pending` while the next page is on its way (`useNavigation().state === 'loading'`): a thin bar under the top bar after a moment, and the page said busy.

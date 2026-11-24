@@ -43,6 +43,27 @@ const shell: CategoryInfo = {
       ],
     },
     {
+      slug: 'router-error-page',
+      name: 'RouterErrorPage',
+      names: ['RouterErrorPage'],
+      entry: 'ioiti-ui/react-router',
+      keywords: ['errorElement', 'error page', 'route error', 'loader', 'crash', '404', '403', 'retry', 'revalidate'],
+      examples: [
+        {
+          id: 'loader-fails',
+          title: 'A loader that failed',
+          description: 'Open the orders: their loader throws the first time (the server answered 500), and the page says what went wrong in the shell, which stays. Try again runs the route again, which loads. A router of its own, in memory, drawn in a box.',
+          ownRouter: true,
+        },
+        {
+          id: 'not-found',
+          title: 'A 404 or a 403, from a loader',
+          description: 'A loader throws the server’s answer. 404 for an order that is not there (Order 2026-0017): the page not found, which suggests the entry its address is under. 403 for a page the account may not see (Team): no Try again, which would change nothing.',
+          ownRouter: true,
+        },
+      ],
+    },
+    {
       slug: 'app-shell',
       name: 'AppShell',
       names: ['AppShell', 'AppBrand', 'SidebarFooterButton'],

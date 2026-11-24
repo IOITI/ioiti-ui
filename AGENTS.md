@@ -107,6 +107,10 @@ npm run check:package -- --update-budget   # test/size-budget.json, after a chan
   page shown (`#part`) is a plain `<a>`, never a route: the browser scrolls what holds it and keeps the query
   (`RouterLink` draws it so).
 - **A `Hint`, never a `title`**, for what a control means (the theme button's `title` is the original's).
+- **A page that fails shows what went wrong in its place, the shell kept**: AppShell's boundary (`ErrorBoundary`, an
+  `ErrorState` of a page), `RouterErrorPage` on the router's routes; an error is told to the application once
+  (`reportOnce`, `src/components/error-context.ts`: IoitiProvider's `onError`), its kind read by `src/lib/errors.ts`.
+  The details of an error show in development only.
 - **One dialog at a time**, in `document.body`, keeping the focus. A layer that holds the page (a dialog, the
   sidebar's drawer: `aria-modal`) keeps it with `useFocusScope` (`src/lib/focus-scope.ts`): moved in, kept in by Tab,
   given back, the latest opened keeping it; no trap written by hand.

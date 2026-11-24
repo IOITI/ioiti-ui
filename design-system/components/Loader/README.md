@@ -11,3 +11,4 @@ A wait without a known end, named for screen readers: an arc, dots, a line or ri
 
 - A page or a block that loads is a `QueryState` with a `Skeleton` of what is coming, never a loader over it. Work of a known length is a `ProgressBar`.
 - It is drawn near-black (near-white in dark), the accent's `brand` under an accent; `color` gives it another.
+- `delay` (ms) draws nothing before it: `300` while a page's code arrives (a route's `hydrateFallbackElement`), where a wait shorter than that would flash a spinner.
