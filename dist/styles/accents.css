@@ -1,0 +1,464 @@
+/* -----------------------------------------------------------------------------
+   The accents: a colour for what is chosen, current or primary (a filled
+   button, the page in the menu, a checked box, a selected day, a progress), for
+   links, the focus ring and one-series charts. ioiti-ui's own, not the design
+   it was taken from.
+
+   `neutral` writes nothing on <html>: the page is the design as it was, ink on
+   paper. A preset writes `data-accent` there, and the components' `accent:`
+   classes then draw with these tokens (src/lib/theme.ts, LookPicker).
+
+   - --brand            the fill
+   - --brand-foreground text and icons on the fill, 4.5:1 on it
+   - --brand-soft       the tint of a chosen item, a row, a range
+   - --brand-text       the accent as text on every surface, 4.5:1, on the tint too
+   - --brand-glow       a coloured shadow
+   - --brand-wash       the accent's colour in the glass backdrop (glass.css)
+   - --brand-reflection the accent's colour in the glass itself, a corner of it
+   - --brand-tile-glow  the glow of a glass tile (glass.css), in light: about
+                        half the strength of its wash, as strong as its text
+                        keeps 4.5:1 where the glow is strongest, over the
+                        reflection; none on a dark tile (transparent)
+   - --brand-fill       what a filled, primary control draws over --brand
+                        (accent:bg-(image:--brand-fill)): the accent's gradient
+                        under its grain where it has them, nothing otherwise
+   - --brand-fill-foreground
+                        the text on it (accent:text-brand-fill-foreground),
+                        4.5:1 on every point of it; --brand-foreground where the
+                        accent has no gradient
+
+   Each preset writes its light values under :root[data-accent="…"]:not(.dark)
+   and its dark ones under :root[data-accent="…"].dark: (0,3,0), more specific
+   than every :root and .dark block of the design, which design.css writes
+   after this file; what both share, under :root[data-accent="…"]. One selector
+   per block: the gallery reads them by name and holds every one to its
+   contrast (gallery/src/tokens.test.ts). No preset's colour is green, red,
+   amber, orange or teal: those say gain, loss and warning here.
+
+   Light fills are a 600 step with white on them; dark ones a lighter step with
+   the dark page's ink on them, as the design's own inverted fills are. Funnel
+   ramps (components/ui/funnel-chart.tsx): one hue, OKLCH lightness 0.06 to 0.08
+   apart a step, the first stage the strongest on its card and the last one
+   2.4:1 at least on it (dataviz validator, --ordinal). Blue keeps the design's
+   own chart colours.
+
+   Bloom is a printed flyer's colours, a soft gradient with a grain. Its colour
+   is the flyer's orchid, its fills and ramps as every preset's. A filled button
+   and the application's mark take the gradient itself, lilac to pink to
+   tangerine (--brand-gradient): light in both themes, as the flyer is, with the
+   dark page's ink on it. The gradient is no mark: what it fills says what it is
+   in its text. Under glass, the backdrop is the flyer: its pink, its tangerine
+   and its mustard (--brand-wash, -2, -3). Tangerine and mustard are the
+   gradient's and the backdrop's alone, never a mark's or a text's.
+
+   Four more are made as bloom is: a colour of their own on what is chosen and
+   on text, a gradient on a filled button and the mark, three washes under
+   glass, its grains. Each gradient is light in both themes, the dark page's ink
+   on it, and its colours are the gradient's and the backdrop's alone.
+   - Lagoon, a travel poster's sea: cerulean; periwinkle to sky to aqua; under
+     glass, sky, aqua and sand.
+   - Aurora, the northern lights: fuchsia; sky to violet to magenta; under
+     glass, magenta, cyan and violet.
+   - Dusk, the sky once the sun has set: a slate violet, quieter than violet's;
+     lavender to mauve to peach; under glass, the same three.
+   - Golden hour (`golden`), the light before sunset: a dusky rose; gold to
+     apricot to rose; under glass, rose, apricot and gold. Its gold and apricot
+     are never a mark's: they would read as warning.
+
+   Each lies under a grain (--brand-grain: grain-white.png and grain-black.png,
+   beside this file, made by scripts/grains.mjs), its specks of the page's own
+   colour: white in light, black in dark. They pull the backdrop toward the page,
+   away from every text on it, which keeps the washes as strong as the tests
+   allow without one. A speck to a pixel of a retina screen (the tile at 2x),
+   faint: a tooth, not a texture.
+   --------------------------------------------------------------------------- */
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-text: var(--brand-text);
+  --color-brand-fill-foreground: var(--brand-fill-foreground, var(--brand-foreground));
+}
+
+:root[data-accent="violet"]:not(.dark) {
+  --brand: #7c3aed;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(124 58 237 / 0.12);
+  --brand-text: #6d28d9;
+  --brand-glow: rgb(124 58 237 / 0.35);
+  --brand-wash: rgb(124 58 237 / 0.12);
+  --brand-tile-glow: rgb(124 58 237 / 0.06);
+  --brand-reflection: rgb(124 58 237 / 0.08);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #5400b0;
+  --chart-funnel-2: #681ed1;
+  --chart-funnel-3: #7c3aed;
+  --chart-funnel-4: #8e58ff;
+  --chart-funnel-5: #a281ff;
+}
+
+:root[data-accent="violet"].dark {
+  --brand: #a78bfa;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(167 139 250 / 0.16);
+  --brand-text: #c4b5fd;
+  --brand-glow: rgb(167 139 250 / 0.3);
+  --brand-wash: rgb(167 139 250 / 0.18);
+  --brand-tile-glow: transparent;
+  --brand-reflection: rgb(167 139 250 / 0.08);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #9569fe;
+  --chart-funnel-1: #c0b0fe;
+  --chart-funnel-2: #aa8fff;
+  --chart-funnel-3: #9569fe;
+  --chart-funnel-4: #8348f4;
+  --chart-funnel-5: #702cdb;
+}
+
+:root[data-accent="indigo"]:not(.dark) {
+  --brand: #4f46e5;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(79 70 229 / 0.12);
+  --brand-text: #4338ca;
+  --brand-glow: rgb(79 70 229 / 0.35);
+  --brand-wash: rgb(79 70 229 / 0.12);
+  --brand-tile-glow: rgb(79 70 229 / 0.06);
+  --brand-reflection: rgb(79 70 229 / 0.08);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #320caf;
+  --chart-funnel-2: #3f30c7;
+  --chart-funnel-3: #4f46e5;
+  --chart-funnel-4: #6061f8;
+  --chart-funnel-5: #7982ff;
+}
+
+:root[data-accent="indigo"].dark {
+  --brand: #818cf8;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(129 140 248 / 0.16);
+  --brand-text: #a5b4fc;
+  --brand-glow: rgb(129 140 248 / 0.3);
+  --brand-wash: rgb(129 140 248 / 0.18);
+  --brand-tile-glow: transparent;
+  --brand-reflection: rgb(129 140 248 / 0.08);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #727aff;
+  --chart-funnel-1: #adb8fe;
+  --chart-funnel-2: #8e9aff;
+  --chart-funnel-3: #727aff;
+  --chart-funnel-4: #5e5df4;
+  --chart-funnel-5: #4d46dc;
+}
+
+:root[data-accent="blue"]:not(.dark) {
+  --brand: #2563eb;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(37 99 235 / 0.12);
+  --brand-text: #1d4ed8;
+  --brand-glow: rgb(37 99 235 / 0.35);
+  --brand-wash: rgb(37 99 235 / 0.12);
+  --brand-tile-glow: rgb(37 99 235 / 0.05);
+  --brand-reflection: rgb(37 99 235 / 0.08);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+}
+
+:root[data-accent="blue"].dark {
+  --brand: #60a5fa;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(96 165 250 / 0.16);
+  --brand-text: #93c5fd;
+  --brand-glow: rgb(96 165 250 / 0.3);
+  --brand-wash: rgb(96 165 250 / 0.18);
+  --brand-tile-glow: transparent;
+  --brand-reflection: rgb(96 165 250 / 0.08);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+}
+
+/* Bloom. Its grains' urls, in the blocks of each theme, are this file's: an application's Tailwind and Vite
+   rewrite them for the page, and write the files beside the application's own. -webkit-image-set, which
+   every engine reads, where image-set is newer in some. */
+:root[data-accent="bloom"] {
+  --brand-fill: var(--brand-grain), var(--brand-gradient);
+}
+
+:root[data-accent="bloom"]:not(.dark) {
+  --brand: #c2398b;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(194 57 139 / 0.12);
+  --brand-text: #a62675;
+  --brand-glow: rgb(194 57 139 / 0.35);
+  --brand-wash: rgb(243 154 200 / 0.24);
+  --brand-wash-2: rgb(250 135 73 / 0.18);
+  --brand-wash-3: rgb(228 178 97 / 0.26);
+  --brand-reflection: rgb(194 57 139 / 0.08);
+  --brand-tile-glow: rgb(231 122 181 / 0.08);
+  --brand-grain: -webkit-image-set(url("./grain-white.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #d58ecf, #e77ab5 50%, #fa8749);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #89195f;
+  --chart-funnel-2: #a62675;
+  --chart-funnel-3: #c2398b;
+  --chart-funnel-4: #d6559f;
+  --chart-funnel-5: #e477b2;
+}
+
+:root[data-accent="bloom"].dark {
+  --brand: #f39ac8;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(243 154 200 / 0.16);
+  --brand-text: #fabcda;
+  --brand-glow: rgb(243 154 200 / 0.3);
+  --brand-wash: rgb(214 85 159 / 0.22);
+  --brand-wash-2: rgb(250 135 73 / 0.18);
+  --brand-wash-3: rgb(161 146 84 / 0.2);
+  --brand-reflection: rgb(243 154 200 / 0.08);
+  --brand-tile-glow: transparent;
+  --brand-grain: -webkit-image-set(url("./grain-black.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #f0b5e2, #f39ac8 50%, #fca676);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #e77ab5;
+  --chart-funnel-1: #fabcda;
+  --chart-funnel-2: #f39ac8;
+  --chart-funnel-3: #e77ab5;
+  --chart-funnel-4: #d65da1;
+  --chart-funnel-5: #c2428d;
+}
+
+/* Lagoon, Aurora, Dusk and Golden hour: gradients as bloom's, under its grains, written as its blocks are. */
+:root[data-accent="lagoon"] {
+  --brand-fill: var(--brand-grain), var(--brand-gradient);
+}
+
+:root[data-accent="lagoon"]:not(.dark) {
+  --brand: #0369a1;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(3 105 161 / 0.12);
+  --brand-text: #075985;
+  --brand-glow: rgb(3 105 161 / 0.35);
+  --brand-wash: rgb(125 211 252 / 0.26);
+  --brand-wash-2: rgb(103 232 249 / 0.2);
+  --brand-wash-3: rgb(232 211 160 / 0.28);
+  --brand-reflection: rgb(3 105 161 / 0.08);
+  --brand-tile-glow: rgb(125 211 252 / 0.1);
+  --brand-grain: -webkit-image-set(url("./grain-white.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #a5b4fc, #7dd3fc 50%, #67e8f9);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #024166;
+  --chart-funnel-2: #015583;
+  --chart-funnel-3: #0369a1;
+  --chart-funnel-4: #317eb3;
+  --chart-funnel-5: #5593c1;
+}
+
+:root[data-accent="lagoon"].dark {
+  --brand: #7cc4fa;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(124 196 250 / 0.16);
+  --brand-text: #bae6fd;
+  --brand-glow: rgb(124 196 250 / 0.3);
+  --brand-wash: rgb(49 126 179 / 0.22);
+  --brand-wash-2: rgb(34 170 190 / 0.16);
+  --brand-wash-3: rgb(150 135 95 / 0.18);
+  --brand-reflection: rgb(124 196 250 / 0.08);
+  --brand-tile-glow: transparent;
+  --brand-grain: -webkit-image-set(url("./grain-black.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #c3cdfd, #9ad9fb 50%, #8ceaf7);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #65ace1;
+  --chart-funnel-1: #a5d8ff;
+  --chart-funnel-2: #80c2f5;
+  --chart-funnel-3: #65ace1;
+  --chart-funnel-4: #5596c6;
+  --chart-funnel-5: #4a80a8;
+}
+
+:root[data-accent="aurora"] {
+  --brand-fill: var(--brand-grain), var(--brand-gradient);
+}
+
+:root[data-accent="aurora"]:not(.dark) {
+  --brand: #a21caf;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(162 28 175 / 0.12);
+  --brand-text: #86198f;
+  --brand-glow: rgb(162 28 175 / 0.35);
+  --brand-wash: rgb(232 121 249 / 0.2);
+  --brand-wash-2: rgb(103 232 249 / 0.2);
+  --brand-wash-3: rgb(167 139 250 / 0.22);
+  --brand-reflection: rgb(162 28 175 / 0.08);
+  --brand-tile-glow: rgb(185 164 255 / 0.1);
+  --brand-grain: -webkit-image-set(url("./grain-white.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #8ec5ff, #b9a4ff 50%, #f0a6f0);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #6b0275;
+  --chart-funnel-2: #880194;
+  --chart-funnel-3: #a21caf;
+  --chart-funnel-4: #b542c1;
+  --chart-funnel-5: #c565cf;
+}
+
+:root[data-accent="aurora"].dark {
+  --brand: #e9a0f5;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(233 160 245 / 0.16);
+  --brand-text: #f5d0fe;
+  --brand-glow: rgb(233 160 245 / 0.3);
+  --brand-wash: rgb(181 66 193 / 0.22);
+  --brand-wash-2: rgb(34 170 210 / 0.16);
+  --brand-wash-3: rgb(124 90 230 / 0.2);
+  --brand-reflection: rgb(233 160 245 / 0.08);
+  --brand-tile-glow: transparent;
+  --brand-grain: -webkit-image-set(url("./grain-black.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #b5d8ff, #cdbcff 50%, #f5bdf5);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #cd85d9;
+  --chart-funnel-1: #f5b7ff;
+  --chart-funnel-2: #e19eec;
+  --chart-funnel-3: #cd85d9;
+  --chart-funnel-4: #b373be;
+  --chart-funnel-5: #9963a2;
+}
+
+:root[data-accent="dusk"] {
+  --brand-fill: var(--brand-grain), var(--brand-gradient);
+}
+
+:root[data-accent="dusk"]:not(.dark) {
+  --brand: #5b4b8a;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(91 75 138 / 0.12);
+  --brand-text: #4a3c75;
+  --brand-glow: rgb(91 75 138 / 0.35);
+  --brand-wash: rgb(167 155 225 / 0.24);
+  --brand-wash-2: rgb(215 166 201 / 0.24);
+  --brand-wash-3: rgb(246 188 154 / 0.26);
+  --brand-reflection: rgb(91 75 138 / 0.08);
+  --brand-tile-glow: rgb(215 166 201 / 0.1);
+  --brand-grain: -webkit-image-set(url("./grain-white.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #b8b0f0, #d7a6c9 50%, #f6bc9a);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #352859;
+  --chart-funnel-2: #483971;
+  --chart-funnel-3: #5b4b8a;
+  --chart-funnel-4: #6e609c;
+  --chart-funnel-5: #8276ac;
+}
+
+:root[data-accent="dusk"].dark {
+  --brand: #b3a6e0;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(179 166 224 / 0.16);
+  --brand-text: #d4ccf0;
+  --brand-glow: rgb(179 166 224 / 0.3);
+  --brand-wash: rgb(110 96 156 / 0.26);
+  --brand-wash-2: rgb(160 100 140 / 0.2);
+  --brand-wash-3: rgb(180 120 90 / 0.18);
+  --brand-reflection: rgb(179 166 224 / 0.08);
+  --brand-tile-glow: transparent;
+  --brand-grain: -webkit-image-set(url("./grain-black.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #cdc6f6, #e5bfd9 50%, #f9cfb4);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #a89bd4;
+  --chart-funnel-1: #d3c9fb;
+  --chart-funnel-2: #bdb1e8;
+  --chart-funnel-3: #a89bd4;
+  --chart-funnel-4: #9286ba;
+  --chart-funnel-5: #7d739e;
+}
+
+:root[data-accent="golden"] {
+  --brand-fill: var(--brand-grain), var(--brand-gradient);
+}
+
+:root[data-accent="golden"]:not(.dark) {
+  --brand: #b0436e;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(176 67 110 / 0.12);
+  --brand-text: #95325a;
+  --brand-glow: rgb(176 67 110 / 0.35);
+  --brand-wash: rgb(240 150 180 / 0.22);
+  --brand-wash-2: rgb(247 185 138 / 0.22);
+  --brand-wash-3: rgb(243 211 138 / 0.28);
+  --brand-reflection: rgb(176 67 110 / 0.08);
+  --brand-tile-glow: rgb(247 185 138 / 0.1);
+  --brand-grain: -webkit-image-set(url("./grain-white.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #f3d38a, #f7b98a 50%, #f2a0a8);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: var(--brand);
+  --chart-funnel-1: #7a2247;
+  --chart-funnel-2: #95325a;
+  --chart-funnel-3: #b0436e;
+  --chart-funnel-4: #c45d83;
+  --chart-funnel-5: #d47998;
+}
+
+:root[data-accent="golden"].dark {
+  --brand: #f4a6c4;
+  --brand-foreground: #111113;
+  --brand-soft: rgb(244 166 196 / 0.16);
+  --brand-text: #fbcfe0;
+  --brand-glow: rgb(244 166 196 / 0.3);
+  --brand-wash: rgb(196 93 131 / 0.22);
+  --brand-wash-2: rgb(220 130 80 / 0.18);
+  --brand-wash-3: rgb(170 140 70 / 0.16);
+  --brand-reflection: rgb(244 166 196 / 0.08);
+  --brand-tile-glow: transparent;
+  --brand-grain: -webkit-image-set(url("./grain-black.png") 2x);
+  --brand-gradient: linear-gradient(110deg, #f7dfa6, #f9c9a3 50%, #f5b6bd);
+  --brand-fill-foreground: #111113;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --focus-ring: var(--brand);
+  --chart-series: #d68aa8;
+  --chart-funnel-1: #febbd4;
+  --chart-funnel-2: #eaa2be;
+  --chart-funnel-3: #d68aa8;
+  --chart-funnel-4: #bc7792;
+  --chart-funnel-5: #a0667d;
+}

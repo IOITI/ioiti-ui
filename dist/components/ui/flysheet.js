@@ -1,0 +1,563 @@
+"use client";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import * as React from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useDragControls } from "framer-motion";
+import { X } from "lucide-react";
+import { motionTransitions } from "../../lib/motion-tokens.js";
+import { CLOSE_MD, SCRIM } from "../../lib/recipes.js";
+import { useScrollRegion } from "../../lib/scroll-region.js";
+import { cn } from "../../lib/utils.js";
+// ioiti-ui: its controls named in the provider's language, its width written in its locale.
+import { useMessages } from "../locale-context.js";
+/*
+ * ioiti-ui: EasyUI's sheet, renamed flysheet, with what Elastic UI's flyout (EuiFlyout) does, written
+ * here from its documentation: a side sheet's width (three sizes, or pixels, between a minimum and a
+ * maximum), which the reader may change by its inner edge or with the arrow keys on it; the page pushed
+ * aside rather than covered, from a window wide enough; no backdrop, the page still in use; a child
+ * sheet beside its parent, or over it where there is no room; the padding of its parts; its close
+ * button outside it; why it closed. Each change is marked.
+ */
+function useControllableState(value, defaultValue, onChange) {
+    const [internal, setInternal] = React.useState(defaultValue);
+    const controlled = value !== undefined;
+    const current = controlled ? value : internal;
+    const onChangeRef = React.useRef(onChange);
+    React.useEffect(() => {
+        onChangeRef.current = onChange;
+    });
+    // ioiti-ui: what goes with a change (why a sheet closed) is passed on.
+    const set = React.useCallback((next, details) => {
+        if (!controlled)
+            setInternal(next);
+        onChangeRef.current?.(next, details);
+    }, [controlled]);
+    return [current, set];
+}
+// ioiti-ui: the sheets' and the drawer's motion, the design's own (EasyUI's was 380/38/0.9).
+const spring = motionTransitions.springSheet;
+// ioiti-ui: a sheet let go past its place comes back as it slides, with springSheet's stiffness and damping (EasyUI's
+// were 700 and 45).
+const sheetSpring = motionTransitions.springSheet;
+const DRAG_RETURN = { bounceStiffness: sheetSpring.stiffness, bounceDamping: sheetSpring.damping };
+// ioiti-ui: a side sheet's width is a style (FlysheetContent's `size`) instead of EasyUI's
+// `w-[88vw] max-w-[26rem]`, which stays its default: `md`, and 88% of the window at most.
+const SIDES = {
+    right: {
+        pos: "inset-y-0 right-0 h-full border-l",
+        from: { x: "100%" },
+        to: { x: 0 },
+        axis: "x",
+        elastic: { left: 0, right: 0.6 },
+        dismiss: (i) => i.offset.x > 96 || i.velocity.x > 500,
+    },
+    left: {
+        pos: "inset-y-0 left-0 h-full border-r",
+        from: { x: "-100%" },
+        to: { x: 0 },
+        axis: "x",
+        elastic: { left: 0.6, right: 0 },
+        dismiss: (i) => i.offset.x < -96 || i.velocity.x < -500,
+    },
+    top: {
+        pos: "inset-x-0 top-0 mx-auto max-h-[85dvh] w-full max-w-lg rounded-b-2xl border-x border-b",
+        from: { y: "-100%" },
+        to: { y: 0 },
+        axis: "y",
+        elastic: { top: 0.6, bottom: 0 },
+        dismiss: (i) => i.offset.y < -96 || i.velocity.y < -500,
+    },
+    bottom: {
+        pos: "inset-x-0 bottom-0 mx-auto max-h-[85dvh] w-full max-w-lg rounded-t-2xl border-x border-t",
+        from: { y: "100%" },
+        to: { y: 0 },
+        axis: "y",
+        elastic: { top: 0, bottom: 0.6 },
+        dismiss: (i) => i.offset.y > 96 || i.velocity.y > 500,
+    },
+};
+const SIZES = { sm: 22, md: 26, lg: 40 };
+const MIN_WIDTH = 280;
+/** EasyUI's 88vw: a side sheet, or a sheet and its children, leave the rest of the window to see and tap. */
+const ROOM = 0.88;
+const STEP = 10;
+const STEP_LARGE = 50;
+/** Tailwind's `lg`: narrower, a pushed page would be too narrow to read. */
+const PUSH_MIN_WIDTH = 1024;
+const PADDINGS = {
+    none: { header: "p-0", body: "p-0", footer: "p-0" },
+    sm: { header: "px-4 pb-2 pt-4", body: "px-4 py-2", footer: "px-4 py-3" },
+    md: { header: "px-5 pb-3 pt-5", body: "px-5 py-2", footer: "px-5 py-4" },
+    lg: { header: "px-6 pb-4 pt-6", body: "px-6 py-3", footer: "px-6 py-5" },
+};
+/** The close button outside the panel, on the side facing the page. */
+const OUTSIDE = {
+    right: "right-full top-3 mr-3",
+    left: "left-full top-3 ml-3",
+    top: "right-3 top-full mt-3",
+    bottom: "bottom-full right-3 mb-3",
+};
+const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+function toPixels(size) {
+    if (typeof size === "number")
+        return size;
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return SIZES[size] * (rem > 0 ? rem : 16);
+}
+/** The window's width, followed while `active`: read again before the first paint (it may have changed while closed). */
+function useViewportWidth(active) {
+    const [width, setWidth] = React.useState(() => (typeof window === "undefined" ? 0 : window.innerWidth));
+    React.useLayoutEffect(() => {
+        if (!active)
+            return;
+        const update = () => setWidth(window.innerWidth);
+        update();
+        window.addEventListener("resize", update);
+        return () => window.removeEventListener("resize", update);
+    }, [active]);
+    return width;
+}
+// What the sheets pushing the page take from each side: the body's margin there (the shell's row
+// narrows with it), and a variable for what an application fixes to the window itself.
+const pushes = { left: new Map(), right: new Map() };
+let bodyMargins = null;
+function setPush(id, side, width) {
+    if (width === null)
+        pushes[side].delete(id);
+    else
+        pushes[side].set(id, width);
+    const total = (each) => [...pushes[each].values()].reduce((sum, value) => sum + value, 0);
+    const body = document.body.style;
+    for (const each of ["left", "right"]) {
+        const taken = total(each);
+        if (taken) {
+            bodyMargins ??= { left: body.marginLeft, right: body.marginRight };
+            body.setProperty(`margin-${each}`, `${taken}px`);
+            document.documentElement.style.setProperty(`--flysheet-push-${each}`, `${taken}px`);
+        }
+        else {
+            if (bodyMargins)
+                body.setProperty(`margin-${each}`, bodyMargins[each]);
+            document.documentElement.style.removeProperty(`--flysheet-push-${each}`);
+        }
+    }
+    if (!total("left") && !total("right"))
+        bodyMargins = null;
+}
+const openSheets = [];
+/** An Escape meant for what is open in the sheet (a list, a menu, a picker), which closes first. */
+function forPopup(target) {
+    if (!(target instanceof Element))
+        return false;
+    const expanded = target.getAttribute("aria-expanded") === "true" &&
+        !target.hasAttribute("data-flysheet-trigger") &&
+        (target.hasAttribute("aria-haspopup") || target.getAttribute("role") === "combobox");
+    return expanded || !!target.closest('[role="listbox"], [role="menu"], [role="dialog"]:not([data-flysheet])');
+}
+const SheetContext = React.createContext(null);
+function useSheet() {
+    const ctx = React.useContext(SheetContext);
+    if (!ctx)
+        throw new Error("Flysheet parts must be used inside <Flysheet>");
+    return ctx;
+}
+const LayerContext = React.createContext(null);
+const usePadding = () => PADDINGS[React.useContext(LayerContext)?.padding ?? "md"];
+export function Flysheet({ open, defaultOpen = false, onOpenChange, children }) {
+    const [own, setOpen] = useControllableState(open, defaultOpen, onOpenChange);
+    // ioiti-ui: a sheet inside another closes with it, and says so (`parent`).
+    const parent = React.useContext(SheetContext);
+    const parentOpen = parent ? parent.open : true;
+    React.useEffect(() => {
+        if (own && !parentOpen)
+            setOpen(false, { reason: "parent" });
+    }, [own, parentOpen, setOpen]);
+    const isOpen = own && parentOpen;
+    const [hasDesc, setHasDesc] = React.useState(false);
+    const [hasTitle, setHasTitle] = React.useState(false);
+    const [pushing, setPushing] = React.useState(false);
+    const titleId = React.useId();
+    const descId = React.useId();
+    const contentId = React.useId();
+    const value = React.useMemo(() => ({ open: isOpen, setOpen, titleId, descId, hasDesc, setHasDesc, contentId, hasTitle, setHasTitle, pushing, setPushing }), [isOpen, setOpen, titleId, descId, hasDesc, contentId, hasTitle, pushing]);
+    return _jsx(SheetContext.Provider, { value: value, children: children });
+}
+/** Unstyled button, bring your own classes. ioiti-ui: it closes the sheet too (one that leaves it in reach). */
+export function FlysheetTrigger({ onClick, ...props }) {
+    const { open, setOpen, contentId, pushing } = useSheet();
+    return (_jsx("button", { type: "button", "aria-haspopup": pushing ? undefined : "dialog", "aria-expanded": open, "aria-controls": open ? contentId : undefined, "data-flysheet-trigger": "", ...props, onClick: (e) => {
+            onClick?.(e);
+            setOpen(!open, open ? { reason: "trigger" } : undefined);
+        } }));
+}
+export function FlysheetClose({ onClick, ...props }) {
+    const { setOpen } = useSheet();
+    return (_jsx("button", { type: "button", ...props, onClick: (e) => {
+            onClick?.(e);
+            setOpen(false, { reason: "close-button" });
+        } }));
+}
+export function FlysheetContent({ side: sideProp = "right", size = "md", type = "overlay", pushMinWidth = PUSH_MIN_WIDTH, modal: modalProp = true, closeOnOutsideClick, resizable = false, minWidth = MIN_WIDTH, maxWidth, onResize, padding = "md", showClose = true, closePosition = "inside", "aria-label": ariaLabel, className, children, }) {
+    const { open, setOpen, titleId, descId, hasDesc, contentId, hasTitle } = useSheet();
+    // ioiti-ui: the sheet this one is a child of, if any: it takes its side and its mode, and is drawn
+    // in its layer, beside it while it fits there, over it otherwise.
+    const parent = React.useContext(LayerContext);
+    const isChild = parent !== null;
+    const side = parent ? parent.side : sideProp;
+    const cfg = SIDES[side];
+    const horizontal = side === "left" || side === "right";
+    const rootRef = React.useRef(null);
+    const panelRef = React.useRef(null);
+    const [panel, setPanel] = React.useState(null);
+    const [slot, setSlot] = React.useState(null);
+    const attachPanel = React.useCallback((node) => {
+        panelRef.current = node;
+        setPanel(node);
+    }, []);
+    const controls = useDragControls();
+    const words = useMessages().dialog;
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+    // ioiti-ui: the width (Elastic's sizes and limits), within EasyUI's 88% of the window: what the reader
+    // chose, or the size. A child beside its parent has what the parent leaves of it; over it, it is at
+    // least as wide, to leave nothing of it showing.
+    const viewport = useViewportWidth(open);
+    const [chosen, setChosen] = React.useState(null);
+    const base = React.useMemo(() => (mounted ? toPixels(size) : 0), [mounted, size]);
+    const desired = chosen ?? base;
+    const room = Math.floor(viewport * ROOM);
+    const besideRoom = parent ? room - parent.edge : room;
+    const wanted = Math.max(Math.min(desired, maxWidth ?? Infinity), minWidth);
+    const placement = !parent ? "alone" : horizontal && wanted <= besideRoom ? "beside" : "stacked";
+    const limit = Math.max(Math.min(maxWidth ?? Infinity, placement === "beside" ? besideRoom : room), 0);
+    const floor = Math.min(minWidth, limit);
+    const fitted = clamp(desired, floor, limit);
+    const width = placement === "stacked" && parent ? Math.min(Math.max(fitted, parent.width), room) : fitted;
+    const offset = placement === "beside" && parent ? parent.edge : 0;
+    const z = !parent ? 10 : placement === "beside" ? parent.z - 1 : parent.z + 1;
+    const pushing = type === "push" && horizontal && !isChild && viewport >= pushMinWidth;
+    // ioiti-ui: said to the sheet, whose trigger then says it opens no dialog.
+    const { setPushing } = useSheet();
+    React.useLayoutEffect(() => {
+        setPushing(pushing);
+    }, [pushing, setPushing]);
+    const modal = parent ? parent.modal : modalProp && !pushing;
+    const closesOutside = closeOnOutsideClick ?? modal;
+    // A pushed sheet is part of the page: it neither slides in nor is dragged away.
+    const swipe = !pushing;
+    const modalRef = React.useRef(modal);
+    const onResizeRef = React.useRef(onResize);
+    React.useEffect(() => {
+        modalRef.current = modal;
+        onResizeRef.current = onResize;
+    });
+    // ioiti-ui: a parent knows where its child is: beside it, it keeps its close button inside.
+    const [child, setChild] = React.useState(null);
+    const report = parent?.setChild;
+    React.useEffect(() => {
+        if (!open || !report)
+            return;
+        report(placement);
+        return () => report(null);
+    }, [open, report, placement]);
+    // ioiti-ui: a child over its parent leaves nothing of it in reach, by the keyboard or a screen reader.
+    // Before the focus goes back on closing (an effect's cleanups run in order): it goes back into the parent.
+    const host = parent?.panel ?? null;
+    React.useEffect(() => {
+        if (!open || placement !== "stacked" || !host)
+            return;
+        host.setAttribute("inert", "");
+        return () => host.removeAttribute("inert");
+    }, [open, placement, host]);
+    // focus in, and back out (ioiti-ui: to what opened it, while the focus is in the sheet, not when the
+    // reader went on in the page; a sheet leaving the page in use takes it when it opens, not with the page)
+    const openAtMount = React.useRef(open);
+    React.useEffect(() => {
+        if (!open || !mounted)
+            return;
+        const holder = () => (isChild ? panelRef.current : rootRef.current);
+        const returnTo = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        if (modalRef.current || !openAtMount.current)
+            holder()?.focus({ preventScroll: true });
+        openAtMount.current = false;
+        return () => {
+            const active = document.activeElement;
+            const inside = !active || active === document.body || !!holder()?.contains(active);
+            if (inside && returnTo?.isConnected)
+                returnTo.focus({ preventScroll: true });
+        };
+    }, [open, mounted, isChild]);
+    // scroll lock (ioiti-ui: while the sheet holds the page)
+    React.useEffect(() => {
+        if (!open || !mounted || isChild || !modal)
+            return;
+        const bar = window.innerWidth - document.documentElement.clientWidth;
+        const { overflow, paddingRight } = document.body.style;
+        document.body.style.overflow = "hidden";
+        if (bar > 0)
+            document.body.style.paddingRight = `${bar}px`;
+        return () => {
+            document.body.style.overflow = overflow;
+            document.body.style.paddingRight = paddingRight;
+        };
+    }, [open, mounted, isChild, modal]);
+    // Esc (ioiti-ui: the last sheet open that holds the page or the focus, and not what is open in it)
+    React.useEffect(() => {
+        if (!open || !mounted)
+            return;
+        const holder = () => (isChild ? panelRef.current : rootRef.current);
+        const entry = {
+            modal: () => modalRef.current,
+            contains: (node) => !!node && !!holder()?.contains(node),
+        };
+        openSheets.push(entry);
+        const onKey = (e) => {
+            if (e.key !== "Escape" || e.defaultPrevented || forPopup(e.target))
+                return;
+            const target = e.target instanceof Node ? e.target : null;
+            const top = [...openSheets].reverse().find((sheet) => sheet.modal() || sheet.contains(target));
+            if (top !== entry)
+                return;
+            e.preventDefault();
+            setOpen(false, { reason: "escape" });
+        };
+        document.addEventListener("keydown", onKey);
+        return () => {
+            document.removeEventListener("keydown", onKey);
+            openSheets.splice(openSheets.indexOf(entry), 1);
+        };
+    }, [open, mounted, isChild, setOpen]);
+    // ioiti-ui: the focus stays in the sheet and its children, held from the document as settle-modal holds
+    // it (EasyUI trapped it in the panel, which a child beside it is not in).
+    React.useEffect(() => {
+        if (!open || !mounted || isChild || !modal)
+            return;
+        const onKey = (e) => {
+            const box = rootRef.current;
+            if (e.key !== "Tab" || !box)
+                return;
+            const nodes = Array.from(box.querySelectorAll(FOCUSABLE)).filter((node) => node.tabIndex >= 0 && !node.closest("[inert]"));
+            if (!nodes.length) {
+                e.preventDefault();
+                return;
+            }
+            const first = nodes[0];
+            const last = nodes[nodes.length - 1];
+            const el = document.activeElement;
+            const outside = !box.contains(el) || el === box;
+            if (e.shiftKey && (outside || el === first)) {
+                e.preventDefault();
+                last.focus();
+            }
+            else if (!e.shiftKey && (outside || el === last)) {
+                e.preventDefault();
+                first.focus();
+            }
+        };
+        document.addEventListener("keydown", onKey);
+        return () => document.removeEventListener("keydown", onKey);
+    }, [open, mounted, isChild, modal]);
+    // ioiti-ui: a click on the page closes a sheet that leaves it in use, when asked; not one on its own
+    // trigger, which closes it itself.
+    React.useEffect(() => {
+        if (!open || !mounted || modal || !closesOutside)
+            return;
+        const onDown = (e) => {
+            const target = e.target instanceof Element ? e.target : null;
+            const holder = isChild ? panelRef.current : rootRef.current;
+            if (!target || holder?.contains(target))
+                return;
+            if (target.closest("[aria-controls]")?.getAttribute("aria-controls") === contentId)
+                return;
+            setOpen(false, { reason: "outside-click" });
+        };
+        document.addEventListener("pointerdown", onDown);
+        return () => document.removeEventListener("pointerdown", onDown);
+    }, [open, mounted, modal, closesOutside, isChild, contentId, setOpen]);
+    // ioiti-ui: a pushed sheet takes its width from the page.
+    React.useEffect(() => {
+        if (!open || !mounted || !pushing)
+            return;
+        const edge = side === "left" ? "left" : "right";
+        setPush(contentId, edge, width);
+        return () => setPush(contentId, edge, null);
+    }, [open, mounted, pushing, side, width, contentId]);
+    // ioiti-ui: Elastic's resizable flyout: the inner edge dragged, or the arrow keys on it (Shift for
+    // larger steps, Home and End for its narrowest and widest).
+    const [resizing, setResizing] = React.useState(false);
+    const resizeTo = (next) => {
+        const value = clamp(Math.round(next), floor, limit);
+        if (value === width)
+            return;
+        setChosen(value);
+        onResizeRef.current?.(value);
+    };
+    const startResize = (e) => {
+        if (e.button !== 0)
+            return;
+        e.preventDefault();
+        e.stopPropagation();
+        const grip = e.currentTarget;
+        const from = e.clientX;
+        const start = width;
+        const range = { floor, limit };
+        let current = width;
+        grip.setPointerCapture?.(e.pointerId);
+        setResizing(true);
+        const move = (ev) => {
+            const delta = side === "right" ? from - ev.clientX : ev.clientX - from;
+            const next = clamp(Math.round(start + delta), range.floor, range.limit);
+            if (next === current)
+                return;
+            current = next;
+            setChosen(next);
+            onResizeRef.current?.(next);
+        };
+        const end = () => {
+            grip.removeEventListener("pointermove", move);
+            grip.removeEventListener("pointerup", end);
+            grip.removeEventListener("pointercancel", end);
+            setResizing(false);
+        };
+        grip.addEventListener("pointermove", move);
+        grip.addEventListener("pointerup", end);
+        grip.addEventListener("pointercancel", end);
+    };
+    const resizeByKey = (e) => {
+        const step = e.shiftKey ? STEP_LARGE : STEP;
+        const widen = side === "right" ? "ArrowLeft" : "ArrowRight";
+        const narrow = side === "right" ? "ArrowRight" : "ArrowLeft";
+        const next = e.key === widen ? width + step : e.key === narrow ? width - step : e.key === "Home" ? floor : e.key === "End" ? limit : null;
+        if (next === null)
+            return;
+        e.preventDefault();
+        resizeTo(next);
+    };
+    const layer = React.useMemo(() => ({
+        slot: parent ? parent.slot : slot,
+        panel,
+        side,
+        edge: horizontal ? offset + width : 0,
+        width,
+        z,
+        modal,
+        padding,
+        setChild,
+    }), [parent, slot, panel, side, horizontal, offset, width, z, modal, padding]);
+    if (!mounted)
+        return null;
+    const handle = (_jsx("div", { onPointerDown: (e) => controls.start(e), className: "flex h-7 shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing", children: _jsx("span", { className: "h-1 w-9 rounded-full bg-border" }) }));
+    const resizeHandle = resizable && horizontal ? (_jsx("div", { role: "separator", "aria-orientation": "vertical", "aria-label": words.resize, "aria-controls": contentId, "aria-valuenow": width, "aria-valuemin": floor, "aria-valuemax": limit, "aria-valuetext": words.width(width), tabIndex: 0, onPointerDown: startResize, onKeyDown: resizeByKey, className: cn("group absolute inset-y-0 z-10 w-3 cursor-col-resize touch-none", side === "right" ? "left-0 -translate-x-1/2" : "right-0 translate-x-1/2"), children: _jsx("span", { className: cn("absolute left-1/2 top-1/2 h-10 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-border-hover transition-colors group-hover:bg-text-subtle", resizing && "bg-muted-foreground") }) })) : null;
+    // ioiti-ui: outside the panel when asked (Elastic's), but inside while a child is beside it, which it
+    // would cover; the design's greys (EasyUI's neutral-400 was 2.5:1 on white) and its one focus ring.
+    const outside = closePosition === "outside" && child !== "beside";
+    const closeButton = showClose ? (_jsx("button", { type: "button", "aria-label": words.close, onClick: () => setOpen(false, { reason: "close-button" }), className: cn(CLOSE_MD, "absolute z-10", 
+        // Outside, it floats beside the panel, on the scrim.
+        outside ? cn("rounded-full bg-surface shadow-elevated", OUTSIDE[side]) : "right-3 top-3"), children: _jsx(X, {}) })) : null;
+    const sheet = (_jsxs(motion.div, { ref: attachPanel, id: contentId, 
+        // ioiti-ui: a child is a group of the dialog, named by its own title; the sheet alone is named on
+        // its layer, the dialog, which holds its children too.
+        role: isChild ? "group" : undefined, "aria-labelledby": isChild && hasTitle ? titleId : undefined, "aria-label": isChild && !hasTitle ? ariaLabel : undefined, "aria-describedby": isChild && hasDesc ? descId : undefined, tabIndex: -1, className: cn(
+        // ioiti-ui: the panel no longer clips (its contents do): the close button may be outside it.
+        // ioiti-ui: a dialog's surface, line and shadow (DIALOG's), on the sides its place gives it (its border and radius).
+        "pointer-events-auto absolute flex flex-col border-border bg-surface text-foreground shadow-elevated outline-none", cfg.pos, 
+        // ioiti-ui: glass under the glass material: floating over the page (glass-float), or a bar beside it.
+        pushing ? "shadow-none glass-bar" : "glass-float", resizing && "select-none", className), style: {
+            ...(horizontal ? (side === "left" ? { width, left: offset } : { width, right: offset }) : null),
+            zIndex: z,
+            ...(horizontal && swipe ? { touchAction: "pan-y" } : null),
+        }, initial: pushing ? false : cfg.from, animate: cfg.to, exit: pushing ? undefined : cfg.from, transition: spring, drag: swipe ? cfg.axis : false, dragControls: controls, dragListener: false, dragConstraints: { top: 0, left: 0, right: 0, bottom: 0 }, dragElastic: cfg.elastic, dragMomentum: false, dragTransition: DRAG_RETURN, onDragEnd: (_, info) => {
+            if (cfg.dismiss(info))
+                setOpen(false, { reason: "drag" });
+        }, 
+        // left/right: swipe anywhere on touch. top/bottom: grab the handle.
+        // ioiti-ui: not from a child beside it, whose events React passes on through the portal.
+        onPointerDown: horizontal && swipe
+            ? (e) => {
+                if (e.pointerType !== "mouse" && panelRef.current?.contains(e.target))
+                    controls.start(e);
+            }
+            : undefined, children: [side === "bottom" && handle, _jsx("div", { className: "flex min-h-0 flex-1 flex-col overflow-hidden rounded-[inherit]", children: children }), side === "top" && handle, resizeHandle, closeButton] }, "flysheet-panel"));
+    // ioiti-ui: the dialog is the layer (as settle-modal's), not the panel: a child drawn beside the panel
+    // is in it too. A pushed sheet is no dialog: a region of the page.
+    const content = isChild
+        ? parent.slot && createPortal(_jsx(AnimatePresence, { children: open && sheet }), parent.slot)
+        : createPortal(_jsx(AnimatePresence, { children: open && (_jsxs("div", { ref: rootRef, "data-flysheet": "", role: pushing ? "region" : "dialog", "aria-modal": modal ? true : undefined, "aria-labelledby": hasTitle ? titleId : undefined, "aria-label": hasTitle ? undefined : ariaLabel, "aria-describedby": hasDesc ? descId : undefined, tabIndex: -1, 
+                // ioiti-ui: kept above the page while a page changes, as every layer over it (over-page, motion.css).
+                className: cn("fixed inset-0 outline-none over-page", pushing ? "z-40" : "z-50", !modal && "pointer-events-none"), children: [modal && (_jsx(motion.div, { "aria-hidden": true, 
+                        // ioiti-ui: lighter under the glass material, as the other dialogs' scrims.
+                        className: cn("absolute inset-0", SCRIM), initial: { opacity: 0 }, animate: { opacity: 1 }, 
+                        // ioiti-ui: the scrims' motion: easeFast arriving, easeExit leaving.
+                        exit: { opacity: 0, transition: motionTransitions.easeExit }, transition: motionTransitions.easeFast, onClick: () => closesOutside && setOpen(false, { reason: "outside-click" }) })), sheet, _jsx("div", { ref: setSlot, className: "contents" })] }, "flysheet")) }), document.body);
+    return _jsx(LayerContext.Provider, { value: layer, children: content });
+}
+/* ───────────── layout parts ───────────── */
+// ioiti-ui: their padding is the sheet's (`padding`).
+export function FlysheetHeader({ className, ...props }) {
+    const pad = usePadding();
+    return _jsx("div", { className: cn("flex flex-col gap-1", pad.header, "pr-14", className), ...props });
+}
+export function FlysheetTitle({ className, ...props }) {
+    const { titleId, setHasTitle } = useSheet();
+    // ioiti-ui: the sheet is named by its title when it has one (EasyUI pointed at an id that might be missing).
+    React.useEffect(() => {
+        setHasTitle(true);
+        return () => setHasTitle(false);
+    }, [setHasTitle]);
+    // ioiti-ui: as large as a page's title (PageHeader), which a sheet's is, over the page.
+    // ioiti-ui: its words are its children, in its props (which the linter cannot see).
+    // oxlint-disable-next-line jsx-a11y/heading-has-content -- given by its caller
+    return _jsx("h2", { className: cn("text-2xl font-bold tracking-tight", className), ...props, id: titleId });
+}
+export function FlysheetDescription({ className, ...props }) {
+    const { descId, setHasDesc } = useSheet();
+    React.useEffect(() => {
+        setHasDesc(true);
+        return () => setHasDesc(false);
+    }, [setHasDesc]);
+    // ioiti-ui: the design's muted text, 4.5:1 on every surface, glass too (neutral-500 was not).
+    return _jsx("p", { className: cn("text-sm text-muted-foreground", className), ...props, id: descId });
+}
+/** ioiti-ui: how tall the fade under the header grows, as the body scrolls (px). */
+const BODY_FADE = 32;
+// ioiti-ui: scrolled, the body fades out under the header, the fade as tall as it has scrolled up to BODY_FADE: what
+// went under the header no longer stops at a hard line. A mask, so on any surface, glass too; none at rest, where
+// nothing went under it (what a body holds that floats is drawn in the sheet's layer, out of the mask's reach).
+function fadeUnderHeader(body) {
+    const fade = Math.min(Math.max(body.scrollTop, 0), BODY_FADE);
+    if (fade > 0) {
+        body.dataset.scrolled = "";
+        body.style.setProperty("--flysheet-fade", `${fade}px`);
+    }
+    else {
+        delete body.dataset.scrolled;
+        body.style.removeProperty("--flysheet-fade");
+    }
+}
+export function FlysheetBody({ className, onScroll, ref, ...props }) {
+    const pad = usePadding();
+    const body = React.useRef(null);
+    React.useImperativeHandle(ref, () => body.current);
+    // Opened already scrolled (a body kept between two openings): faded from the start.
+    React.useLayoutEffect(() => {
+        if (body.current)
+            fadeUnderHeader(body.current);
+    }, []);
+    // ioiti-ui: taller than the sheet and holding no control (a record's details), a stop of the keyboard, which scrolls
+    // it, named as the sheet is (src/lib/scroll-region.ts).
+    const sheet = React.useContext(SheetContext);
+    // ioiti-ui: without a title, named in the provider's language.
+    const content = useMessages().dialog.content;
+    const region = useScrollRegion(body, sheet?.hasTitle ? { labelledBy: sheet.titleId } : { label: content });
+    return (_jsx("div", { ref: body, ...region, className: cn("flex-1 overflow-y-auto", "data-[scrolled]:[mask-image:linear-gradient(to_bottom,transparent,#000_var(--flysheet-fade))]", pad.body, className), onScroll: (event) => {
+            fadeUnderHeader(event.currentTarget);
+            onScroll?.(event);
+        }, ...props }));
+}
+export function FlysheetFooter({ className, ...props }) {
+    const pad = usePadding();
+    return (_jsx("div", { className: cn("flex items-center justify-end gap-2 border-t border-border", pad.footer, className), ...props }));
+}
