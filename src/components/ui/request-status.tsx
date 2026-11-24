@@ -7,6 +7,8 @@ import { cn, copyToClipboard } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
+// ioiti-ui: its buttons named in the provider's language.
+import { useMessages } from '../locale-context.js';
 
 // ioiti-ui: EasyUI's payment-status, made the steps of what the user asked for (an action sent from a page) rather
 // than of a payment: asked, sent and waiting for its answer, done, refused, or no news ('unknown'). EasyUI's
@@ -63,6 +65,7 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
+  const words = useMessages().toast;
   const [copied, setCopied] = useState(false);
   const reduce = useReducedMotionConfig();
   // ioiti-ui: a spinner stands still where motion is reduced.
@@ -168,7 +171,7 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
           <button
             type="button"
             onClick={onDismiss}
-            aria-label="Close"
+            aria-label={words.dismiss}
             className={cn(CLOSE_SM, '-mr-1 -mt-1')}
           >
             <X />
@@ -200,7 +203,7 @@ export const RequestStatus: React.FC<RequestStatusProps> = ({
                   type="button"
                   onClick={handleCopyId}
                   className="inline-flex min-w-0 items-center gap-1 font-mono text-muted-foreground hover:text-foreground transition-[color,scale] px-1.5 py-0.5 rounded-md bg-surface-raised border border-border cursor-pointer motion-safe:active:scale-[0.97]"
-                  aria-label={`Copy ${reference.label.toLowerCase()} ${reference.value}`}
+                  aria-label={words.copyReference(reference)}
                 >
                   <span className="truncate">{reference.value}</span>
                   {copied ? (

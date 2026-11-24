@@ -2,7 +2,6 @@ import {
   AirportMatrixClock,
   Badge,
   Button,
-  formatMoney,
   KpiGrid,
   KpiStrip,
   KpiTile,
@@ -21,6 +20,7 @@ import {
   TableHeaderCell,
   TableRow,
   TextLink,
+  useFormat,
 } from 'ioiti-ui'
 import type { HealthStatus } from 'ioiti-ui'
 
@@ -56,6 +56,7 @@ const SERVICES: { name: string; status: HealthStatus; detail: string }[] = [
 ]
 
 export function DashboardPattern() {
+  const { formatMoney } = useFormat()
   return (
     <>
       <PageHeader

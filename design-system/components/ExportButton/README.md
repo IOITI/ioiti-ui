@@ -12,6 +12,6 @@ Saves the rows a page shows as a CSV file named with the day, spreadsheet formul
 ]} />
 ```
 
-- It is an outline `sm` button, "Export CSV" with a download icon, beside the table it saves. With no rows, it cannot be pressed.
+- It is an outline `sm` button, "Export CSV" (in IoitiProvider's language) with a download icon, beside the table it saves. With no rows, it cannot be pressed.
 - Numbers stay numbers; a text cell that starts with `=`, `+`, `-` or `@` is written so that a spreadsheet does not run it. The file starts with a byte-order mark, so Excel reads it as UTF-8.
 - For another trigger, or other words, use `toCsv(rows, columns)` and `downloadCsv(filename, content)`.

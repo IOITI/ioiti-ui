@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { ariaKeyShortcuts, describeKeys, keyLabels, keysText, matchesStroke, parseKeys } from './keys.js'
+import { fr } from '../locales/fr.js'
+import { ariaKeyShortcuts, describeKeys, keyLabels, keysInWords, keysText, matchesStroke, parseKeys } from './keys.js'
 
 const press = (key: string, held: Partial<Record<'ctrlKey' | 'metaKey' | 'altKey' | 'shiftKey', boolean>> = {}) => ({
   key,
@@ -50,5 +51,38 @@ describe('the keys of a shortcut', () => {
     expect(ariaKeyShortcuts('mod+shift+p', false)).toBe('Control+Shift+P')
     expect(ariaKeyShortcuts('escape', false)).toBe('Escape')
     expect(ariaKeyShortcuts('g o', false)).toBeUndefined()
+  })
+})
+
+describe('the keys named in a language', () => {
+  const shown = (keys: string, apple: boolean) => keyLabels(keys, apple, fr.keys).map((stroke) => stroke.map((label) => label.shown))
+
+  it('names a hint\'s keys in words, joined as a hint writes them: English\'s by default', () => {
+    expect(keysInWords('shift+enter', false)).toBe('Shift+Enter')
+    expect(keysInWords('shift+enter', true)).toBe('Shift+Enter')
+    expect(keysInWords('enter', false)).toBe('Enter')
+    expect(keysInWords('mod+k', true)).toBe('Command+K')
+    expect(keysInWords('mod+k', false)).toBe('Ctrl+K')
+    expect(keysInWords('g o', false)).toBe('G then O')
+    // A key cap's own name where it has one, what is said of it where it shows a symbol.
+    expect(keysInWords('ctrl+delete', false)).toBe('Ctrl+Del')
+    expect(keysInWords('alt+arrowup', true)).toBe('Option+Up arrow')
+  })
+
+  it('draws, says and writes them in French, Apple\'s symbols kept, ARIA\'s names English', () => {
+    expect(shown('mod+shift+p', false)).toEqual([['Ctrl', 'Maj', 'P']])
+    expect(shown('mod+shift+p', true)).toEqual([['⇧', '⌘', 'P']])
+    expect(shown('escape', false)).toEqual([['Échap']])
+    expect(shown('delete', false)).toEqual([['Suppr']])
+    expect(shown('space', false)).toEqual([['Espace']])
+    expect(describeKeys('mod+k', true, fr.keys)).toBe('Commande K')
+    expect(describeKeys('alt+arrowup', true, fr.keys)).toBe('Option Flèche haut')
+    expect(describeKeys('g o', false, fr.keys)).toBe('G puis O')
+    expect(keysText('mod+b', false, fr.keys)).toBe('Ctrl B')
+    expect(keysText('g o', true, fr.keys)).toBe('G puis O')
+    expect(keysInWords('shift+enter', false, fr.keys)).toBe('Maj+Entrée')
+    expect(keysInWords('mod+delete', false, fr.keys)).toBe('Ctrl+Suppr')
+    expect(keysInWords('mod+escape', true, fr.keys)).toBe('Commande+Échap')
+    expect(ariaKeyShortcuts('mod+shift+p', false)).toBe('Control+Shift+P')
   })
 })

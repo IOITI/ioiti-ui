@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { isRouteErrorResponse, useLocation, useNavigate, useNavigation, useRouteError } from 'react-router'
 
 import { reportOnce, useErrorReporter } from '../components/error-context.js'
+import { useMessages } from '../components/locale-context.js'
 import { ErrorState } from '../shell/ErrorState.js'
 import { NotFoundPage } from '../shell/NotFoundState.js'
 
@@ -13,8 +14,8 @@ export interface RouterErrorPageProps {
    */
   report?: boolean
   /**
-   * Where a person signs in, for a 401 (a session that ended): a "Sign in" link, in place of the way home. Without it, the
-   * way home.
+   * Where a person signs in, for a 401 (a session that ended): a link, "Sign in" in the provider's language unless its
+   * `label` says otherwise, in place of the way home. Without it, the way home.
    */
   signIn?: { href: string; label?: string }
   /**
@@ -37,6 +38,8 @@ export function RouterErrorPage({ report = true, signIn, focusOnMount }: RouterE
   const navigate = useNavigate()
   const navigation = useNavigation()
   const reporter = useErrorReporter()
+  // What a session that ended and a page not theirs say, in the provider's language.
+  const words = useMessages().router
 
   useEffect(() => {
     if (report) reportOnce(reporter, error, { source: 'route' })
@@ -47,11 +50,11 @@ export function RouterErrorPage({ report = true, signIn, focusOnMount }: RouterE
     if (error.status === 401) {
       return (
         <ErrorState
-          title="Sign in to see this page"
-          description="Your session may have ended: sign in again to come back to it."
+          title={words.signInTitle}
+          description={words.signInDescription}
           error={error}
           icon={<Lock />}
-          home={signIn ? { href: signIn.href, label: signIn.label ?? 'Sign in' } : undefined}
+          home={signIn ? { href: signIn.href, label: signIn.label ?? words.signIn } : undefined}
           focusOnMount={focusOnMount}
         />
       )
@@ -59,8 +62,8 @@ export function RouterErrorPage({ report = true, signIn, focusOnMount }: RouterE
     if (error.status === 403) {
       return (
         <ErrorState
-          title="This page is not yours to see"
-          description="Your account may not open it. Ask whoever runs the application for access, or sign in with another account."
+          title={words.forbiddenTitle}
+          description={words.forbiddenDescription}
           error={error}
           icon={<Lock />}
           focusOnMount={focusOnMount}

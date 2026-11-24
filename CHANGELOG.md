@@ -11,6 +11,53 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- **Every word the package says is in its catalogue, French included**: the tables', the selects', the fields', the
+  statuses', the shell's and its trail's, the look's, the error and not-found pages', the router's parts', the
+  shortcuts', the keys', the code editors' (CodeMirror's own words too: its search, its folds, its diagnostics), the
+  answers' and agents', the uploads', the notifications', the search's, the tour's, the toasts' and the dialogs'. An
+  application in French reads French everywhere; a word written in a component fails `npm run lint`
+  (`scripts/check-strings.mjs`, whose list of words still written is gone, none left).
+- **Keys are named in the language** (`Kbd`, the hints): "Shift+Enter" in English, « Maj+Entrée » in French;
+  `aria-keyshortcuts` keeps ARIA's English.
+- **`accentName`, `materialName` and `themeButtonLabel`**, the look's names and the theme button's words in a language
+  (the types `LookWords` and `TrailWords` with them), in place of the constants deprecated below.
+- **The gallery's examples are held to French**: each one drawn in French holds no word of English's catalogue
+  (`gallery/src/french.test.tsx`), and the browser suite loads every page and runs axe once more with its components in
+  French. Its examples write their numbers and moments with `useFormat()`, as an application does.
+
+### Changed
+
+- **`UndoToast` without a `title` says "Done"** (it said "Project archived", one application's words), and says to its
+  developer, in development, that it has none.
+- **A count of a thousand or more is grouped** as the locale writes numbers, wherever a component counts ("1,234
+  changes", "Showing 1–10 of 1,057 records", "1,100 px").
+- **`SpotlightSearch` draws Escape as its language names the key**, and `StatusHistory` joins its times as the locale
+  lists them (en-US with its serial comma).
+- **What an application bundles grows by 5.0 kB gzipped** (the template 196.9 kB, React and the rest with it): every
+  component's English words, in the catalogue now. French, where it is imported, 9.1 kB.
+
+### Deprecated
+
+- **`HEALTH_STATUS_LABEL`, `ACCENT_LABEL`, `MATERIAL_LABEL`, `themeLabel`, `DEFAULT_HOME` and `PAGE_NOT_FOUND`**:
+  English's words, which no language changes. `useMessages()` says them in the application's (`status.healthOk`…,
+  `look`, `shell.home`, `shell.pageNotFound`), `accentName`, `materialName` and `themeButtonLabel` take them, and
+  `ioiti-ui/locales/en` gives English's outside React. Removed in 1.0.
+
+### Fixed
+
+- **A count of one is said in the singular**: `NotificationBell`'s "1 unread notification", `SmartComparison`'s "1
+  specification", `DependencyTrace`'s "1 connection", `DataTable`'s "Showing 1–1 of 1 record" and a filter's "1 option".
+- **⌘K and ⌘B are listed under one "Navigation"** in every language (`SpotlightSearch` and `Sidebar`): `ShortcutsDialog`
+  groups shortcuts by their group's words, which were two keys.
+
+### Upgrading
+
+An application changes nothing in English. One that reads the deprecated constants takes the catalogue's words instead
+(`useMessages()`), or `accentName`, `materialName` and `themeButtonLabel`: they go in 1.0. Its tests may find an
+`UndoToast` given no title by "Done", read a count of one in the singular and a count of a thousand or more grouped.
+
 ## [0.28.0] - 2026-11-24
 
 ### Added

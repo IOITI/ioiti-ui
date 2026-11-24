@@ -1,4 +1,4 @@
-import { AdvancedDataTable, Badge, formatMoney } from 'ioiti-ui'
+import { AdvancedDataTable, Badge, useFormat } from 'ioiti-ui'
 import type { ColumnDef } from 'ioiti-ui'
 import { Send } from 'lucide-react'
 import { useState } from 'react'
@@ -6,11 +6,18 @@ import { useState } from 'react'
 import { ORDERS, STATUS } from '../../../samples/tables'
 import type { Order } from '../../../samples/tables'
 
+// The columns are made once, outside the page: the amount's cell is a component, which writes it in the
+// application's locale.
+function Amount({ value }: { value: number }) {
+  const { formatMoney } = useFormat()
+  return <span className="tabular-nums">{formatMoney(value, 'EUR')}</span>
+}
+
 const COLUMNS: ColumnDef<Order>[] = [
   { id: 'id', header: 'Order', accessorKey: 'id', cell: ({ value }) => <span className="font-mono">{value}</span> },
   { id: 'customer', header: 'Customer', accessorKey: 'customer' },
   { id: 'status', header: 'Status', accessorKey: 'status', cell: ({ row }) => <Badge tone={STATUS[row.status].tone}>{STATUS[row.status].label}</Badge> },
-  { id: 'amount', header: 'Amount', accessorKey: 'amount', align: 'right', cell: ({ value }) => <span className="tabular-nums">{formatMoney(value, 'EUR')}</span> },
+  { id: 'amount', header: 'Amount', accessorKey: 'amount', align: 'right', cell: ({ value }) => <Amount value={value} /> },
 ]
 
 export default function DataTableHeldSelection() {

@@ -1,4 +1,4 @@
-import { Button, formatMoney, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TextLink } from 'ioiti-ui'
+import { Button, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TextLink, useFormat } from 'ioiti-ui'
 import { Check, Mail } from 'lucide-react'
 import { useState } from 'react'
 
@@ -9,6 +9,7 @@ const INVOICES = [
 ]
 
 export default function TableRowAction() {
+  const { formatMoney } = useFormat()
   const [reminded, setReminded] = useState<string[]>([])
   return (
     <Table aria-label="Unpaid invoices">

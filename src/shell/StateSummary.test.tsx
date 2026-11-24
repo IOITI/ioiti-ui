@@ -4,7 +4,10 @@ import { KeyRound, RotateCw } from 'lucide-react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { describe, expect, it } from 'vitest'
 
+import { IoitiProvider } from '../components/IoitiProvider.js'
 import { TextLink } from '../components/TextLink.js'
+import { bindMessages } from '../lib/messages.js'
+import { fr } from '../locales/fr.js'
 import { RouterRoot } from '../react-router/RouterRoot.js'
 import { byGravity, gravestTone, stateSentence } from './state-summary.js'
 import type { StateItem } from './state-summary.js'
@@ -124,5 +127,47 @@ describe('the summary of states', () => {
     await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(button).toHaveFocus()
+  })
+})
+
+describe('the summary of states in French', () => {
+  /** French's no-break spaces (before a colon) read as spaces. */
+  const spaced = (text: string) => text.replace(/\s/g, ' ')
+
+  it('counts the states of each tone as French counts them', () => {
+    const words = bindMessages(fr, 'fr-FR').shell
+    const news = (id: string): StateItem => ({ id, tone: 'success', label: 'Paiements rétablis' })
+    expect(stateSentence([SIGN_IN, RESTART, { ...RESTART, id: 'deploy' }], words.allGood, words.stateCounts)).toBe('1 à corriger, 2 à surveiller')
+    expect(stateSentence([news('a'), news('b'), RESTART], words.allGood, words.stateCounts)).toBe('1 à surveiller, 2 bonnes nouvelles')
+    expect(stateSentence([news('a'), SIGN_IN], words.allGood, words.stateCounts)).toBe('1 à corriger, 1 bonne nouvelle')
+    expect(stateSentence([SERVICES], words.allGood, words.stateCounts)).toBe('Tout va bien')
+  })
+
+  it('names its button and its panel in French', async () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route element={<RouterRoot />}>
+              <Route path="*" element={<StateSummary items={[RESTART, SIGN_IN]} />} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </IoitiProvider>,
+    )
+    const button = screen.getByRole('button', { name: (name) => spaced(name) === 'État : Sign in again (1 à corriger, 1 à surveiller)' })
+    await userEvent.click(button)
+    expect(await screen.findByRole('dialog', { name: 'État' })).toBeInTheDocument()
+  })
+
+  it("takes an application's own words over the language's", () => {
+    render(
+      <IoitiProvider messages={{ shell: { state: 'Health', allGood: 'Nothing to report' } }}>
+        <MemoryRouter initialEntries={['/']}>
+          <StateSummary items={[]} />
+        </MemoryRouter>
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Health: Nothing to report' })).toBeInTheDocument()
   })
 })

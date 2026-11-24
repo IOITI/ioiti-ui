@@ -7,7 +7,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
 import { IoitiProvider } from '../components/IoitiProvider.js'
+import type { MessagesOverride } from '../components/locale-context.js'
 import { PageHeader } from '../components/Panel.js'
+import { fr } from '../locales/fr.js'
 import { RouterAppShell } from '../react-router/RouterAppShell.js'
 import { RouterRoot } from '../react-router/RouterRoot.js'
 import { MENU } from '../test/menu.js'
@@ -29,12 +31,15 @@ interface Options {
   onSignOut?: () => void
   menu?: Menu
   collapsedStorageKey?: string
+  /** The provider's locale and words. */
+  locale?: string
+  messages?: MessagesOverride
 }
 
 /** An application on React Router, as the starter template builds one. */
-function renderShell({ path = '/orders', chips, end, onSignOut, menu = MENU, collapsedStorageKey }: Options = {}) {
+function renderShell({ path = '/orders', chips, end, onSignOut, menu = MENU, collapsedStorageKey, locale, messages }: Options = {}) {
   return render(
-    <IoitiProvider appName="Test App">
+    <IoitiProvider appName="Test App" locale={locale} messages={messages}>
       <MemoryRouter initialEntries={[path]}>
         <Routes>
           <Route element={<RouterRoot />}>
@@ -796,3 +801,46 @@ describe('the next page on its way', () => {
   })
 })
 
+describe('the shell in French', () => {
+  it('says its skip link, its menu, its trail, its drawer and a page that is none in French', async () => {
+    const user = userEvent.setup()
+    renderShell({ path: '/orders/nothing', locale: 'fr-FR', messages: fr })
+
+    expect(screen.getByRole('link', { name: 'Aller au contenu' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Menu principal' })).toBeInTheDocument()
+    const trail = within(screen.getAllByRole('navigation', { name: 'Fil d’Ariane' })[0])
+    expect(await trail.findByRole('link', { name: 'Accueil' })).toHaveAttribute('href', '/')
+    expect(isCurrent(trail.getByText('Page introuvable'))).toBe(true)
+    expect(document.title).toBe('Page introuvable · Test App')
+    // The page, EasyUI's 404, in the provider's words.
+    expect(screen.getByRole('heading', { level: 1, name: 'Il n’y a pas de page ici.' })).toBeInTheDocument()
+    expect(screen.getByText('Erreur 404')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Un dossier en verre dépoli qui recouvre le nombre 404' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Retour à l’accueil' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('button', { name: 'Page précédente' })).toBeInTheDocument()
+    expect(within(screen.getByRole('navigation', { name: 'Liens utiles' })).getByRole('link', { name: /^Orders/ })).toHaveAttribute('href', '/orders')
+    expect(screen.getByText('Vous cherchiez peut-être')).toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: 'Réduire la barre latérale' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Ouvrir la navigation' }))
+    const drawer = screen.getByRole('dialog', { name: 'Navigation' })
+    expect(within(drawer).getByRole('button', { name: 'Fermer la navigation' })).toBeInTheDocument()
+  })
+
+  it('lists the keyboard shortcuts in French, the sidebar\'s among them', async () => {
+    const user = userEvent.setup()
+    renderShell({ locale: 'fr-FR', messages: fr })
+    await user.keyboard('?')
+    const dialog = await screen.findByRole('dialog', { name: 'Raccourcis clavier' })
+    const navigation = within(dialog).getByRole('heading', { name: 'Navigation' }).parentElement as HTMLElement
+    expect(navigation).toHaveTextContent('Réduire ou développer la barre latérale')
+    expect(dialog).toHaveTextContent('? affiche à nouveau cette liste.')
+  })
+
+  it("takes an application's own words over the language's", async () => {
+    renderShell({ messages: { shell: { home: 'Start', skipToPage: 'To the content', breadcrumb: 'You are here' } } })
+    const trail = within(screen.getAllByRole('navigation', { name: 'You are here' })[0])
+    expect(await trail.findByRole('link', { name: 'Start' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: 'To the content' })).toBeInTheDocument()
+  })
+})

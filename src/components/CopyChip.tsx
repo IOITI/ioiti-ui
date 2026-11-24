@@ -1,11 +1,12 @@
 import { cn } from '../lib/utils.js'
 import { CopyButton } from './CopyButton.js'
 import { Hint } from './Hint.js'
+import { useMessages } from './locale-context.js'
 
 interface CopyChipProps {
   /** What is shown and copied: a reference, a key, an address. */
   value: string
-  /** What it is, for its button: "the key" makes "Copy the key". */
+  /** What it is, for its button, in the provider's language: "the key" makes "Copy the key". */
   label?: string
   /**
    * A long value cut short: in its `middle` (an identifier, whose ends tell it apart), at its `end`, or
@@ -19,6 +20,7 @@ interface CopyChipProps {
 
 /** A value to read and copy, in a chip with its copy button: a reference, an API key, a webhook's address. */
 export function CopyChip({ value, label, truncate = false, keep = { start: 8, end: 6 }, className }: CopyChipProps) {
+  const words = useMessages().field
   const cut = truncate === 'middle' && value.length > keep.start + keep.end + 1
   const shown = cut ? `${value.slice(0, keep.start)}…${value.slice(-keep.end)}` : value
   const short = cut || truncate === 'end'
@@ -37,7 +39,7 @@ export function CopyChip({ value, label, truncate = false, keep = { start: 8, en
       ) : (
         text
       )}
-      <CopyButton value={value} label={label ? `Copy ${label}` : 'Copy'} size="sm" />
+      <CopyButton value={value} label={label ? words.copyNamed(label) : words.copy} size="sm" />
     </span>
   )
 }

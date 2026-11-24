@@ -6,6 +6,8 @@ import { CircleAlert, CircleCheck, Info, TriangleAlert, X, type LucideIcon } fro
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { CLOSE_MD, TONE_LINE, TONE_SOFT, TONE_TEXT, type Tone } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
+// ioiti-ui: its × button's name in the provider's language (`status`).
+import { useMessages } from "../locale-context.js";
 
 export type AlertTone = "neutral" | "info" | "success" | "warning" | "danger";
 
@@ -49,6 +51,7 @@ export function Alert({
 }: AlertProps) {
   const [visible, setVisible] = React.useState(true);
   const t = tones[tone];
+  const words = useMessages().status;
 
   return (
     <AnimatePresence initial={false} onExitComplete={onDismiss}>
@@ -75,7 +78,7 @@ export function Alert({
             {dismissible && (
               <button
                 type="button"
-                aria-label="Dismiss"
+                aria-label={words.dismiss}
                 onClick={() => setVisible(false)}
                 // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
                 className={cn(CLOSE_MD, "-mr-1.5 -mt-1.5 outline-none")}

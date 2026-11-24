@@ -4,6 +4,7 @@ import { Button } from './ui/button.js'
 import { downloadCsv, toCsv } from '../lib/csv.js'
 import type { CsvColumn } from '../lib/csv.js'
 import { toIsoDay } from '../lib/format.js'
+import { useMessages } from './locale-context.js'
 
 interface ExportButtonProps<T> {
   /** File name without date or extension, e.g. "orders": the day of the export is added ("orders-2026-10-26.csv"). */
@@ -12,8 +13,9 @@ interface ExportButtonProps<T> {
   columns: readonly CsvColumn<T>[]
 }
 
-/** Saves the rows currently loaded on the page as a CSV file. */
+/** Saves the rows currently loaded on the page as a CSV file. Its words are the provider's language's. */
 export function ExportButton<T>({ name, rows, columns }: ExportButtonProps<T>) {
+  const words = useMessages().field
   return (
     <Button
       variant="outline"
@@ -22,7 +24,7 @@ export function ExportButton<T>({ name, rows, columns }: ExportButtonProps<T>) {
       disabled={rows.length === 0}
       onClick={() => downloadCsv(`${name}-${toIsoDay(new Date())}.csv`, toCsv(rows, columns))}
     >
-      Export CSV
+      {words.exportCsv}
     </Button>
   )
 }

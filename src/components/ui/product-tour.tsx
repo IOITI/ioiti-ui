@@ -15,6 +15,8 @@ import {
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { DIALOG, SCRIM_FILL } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
+// ioiti-ui: its words in the provider's language, its steps counted in its locale.
+import { useMessages } from "../locale-context.js";
 import { Button } from "./button.js";
 
 /* -------------------------------------------------------------------------- */
@@ -172,6 +174,7 @@ export function ProductTour({
   // ioiti-ui: reduced as the system asks or IoitiProvider's reducedMotion says: the cutout's size and place,
   // animated by hand, are not reduced by MotionConfig.
   const reduce = useReducedMotionConfig();
+  const words = useMessages().tour;
 
   const [mounted, setMounted] = useState(false);
   const [index, setIndex] = useState(startAt);
@@ -492,12 +495,10 @@ export function ProductTour({
             transition={motionTransitions.easeFast}
           >
             <div className="flex items-center justify-between px-4 pt-3 text-xs tabular-nums text-muted-foreground">
-              <span>
-                {index + 1} of {steps.length}
-              </span>
+              <span>{words.position({ step: index + 1, count: steps.length })}</span>
               {/* ioiti-ui: the package's buttons, the global focus ring. */}
               <Button variant="ghost" size="xs" className="-my-1 -mr-2" onClick={() => onClose("skip")}>
-                Skip
+                {words.skip}
               </Button>
             </div>
 
@@ -530,7 +531,7 @@ export function ProductTour({
                   <button
                     key={i}
                     type="button"
-                    aria-label={`Go to step ${i + 1}`}
+                    aria-label={words.goToStep(i + 1)}
                     aria-current={i === index}
                     onClick={() => go(i)}
                     className="group cursor-pointer rounded-full px-[3px] py-2 [-webkit-tap-highlight-color:transparent] max-sm:px-1 max-sm:py-3"
@@ -547,11 +548,11 @@ export function ProductTour({
               <div className="flex gap-1.5">
                 {index > 0 && (
                   <Button variant="ghost" size="sm" onClick={() => go(index - 1)}>
-                    Back
+                    {words.back}
                   </Button>
                 )}
                 <Button ref={nextRef} size="sm" onClick={() => go(index + 1)}>
-                  {isLast ? "Done" : "Next"}
+                  {isLast ? words.done : words.next}
                 </Button>
               </div>
             </div>

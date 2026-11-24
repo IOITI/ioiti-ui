@@ -1,6 +1,7 @@
-import { formatMoney, KpiGrid, KpiTile } from 'ioiti-ui'
+import { KpiGrid, KpiTile, useFormat } from 'ioiti-ui'
 
 export default function KpiTileChange() {
+  const { formatMoney } = useFormat()
   return (
     <KpiGrid period="Compared with last week">
       {/* Up, and up is good: a gain. */}

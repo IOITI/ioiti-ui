@@ -1,4 +1,4 @@
-import { Button, LiveValue } from 'ioiti-ui'
+import { Button, LiveValue, useFormat } from 'ioiti-ui'
 import { useEffect, useState } from 'react'
 
 // What the source sends, one a tick and again: the index moves a little, the queue up and down.
@@ -6,6 +6,7 @@ const PRICE_STEPS = [3.25, -1.5, 4.75, -6, 2.5, -0.75, 5.5, -3.25]
 const QUEUE_STEPS = [2, -3, 1, 0, -2, 3, -1, 1]
 
 export default function LiveValueWatched() {
+  const { formatNumber } = useFormat()
   const [tick, setTick] = useState(0)
   const [stale, setStale] = useState(false)
   useEffect(() => {
@@ -19,7 +20,7 @@ export default function LiveValueWatched() {
     <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm">
       <span className="flex items-baseline gap-2">
         <span className="text-muted-foreground">Index</span>
-        <LiveValue value={price} format={(value) => value.toLocaleString('en-GB', { minimumFractionDigits: 2 })} stale={stale} className="text-lg font-semibold" />
+        <LiveValue value={price} format={(value) => formatNumber(value, 2)} stale={stale} className="text-lg font-semibold" />
       </span>
       <span className="flex items-baseline gap-2">
         <span className="text-muted-foreground">Orders waiting</span>

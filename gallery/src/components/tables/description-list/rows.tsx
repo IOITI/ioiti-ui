@@ -1,6 +1,7 @@
-import { DescriptionList, formatMoney } from 'ioiti-ui'
+import { DescriptionList, useFormat } from 'ioiti-ui'
 
 export default function DescriptionListRows() {
+  const { formatMoney } = useFormat()
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       <DescriptionList

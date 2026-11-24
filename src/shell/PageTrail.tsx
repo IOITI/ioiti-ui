@@ -3,10 +3,10 @@ import { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode, RefObject } from 'react'
 
 import { useLinkComponent } from '../components/link-context.js'
+import { useMessages } from '../components/locale-context.js'
 import { Breadcrumb } from '../components/ui/breadcrumb.js'
 import type { BreadcrumbItem } from '../components/ui/breadcrumb.js'
 import { cn } from '../lib/utils.js'
-import { DEFAULT_HOME } from './navigation.js'
 import type { Menu } from './navigation.js'
 import { NamedContext, PublisherContext, TabTitleContext, TrailContext, usePageTrail } from './page-trail-context.js'
 import type { Named } from './page-trail-context.js'
@@ -96,10 +96,13 @@ function useWholeTrailFits(room: RefObject<HTMLElement | null>, trail: RefObject
  * own name may be cut short, not the steps before it). Narrower, or where the whole trail does not fit, its last
  * two steps. On a phone, where the top bar has room for a word or two, the step before the page alone (a link back
  * when it is one): the page's own name is its heading, just under. The whole trail that does not fit is still laid
- * out, out of sight and of reach, to be measured again.
+ * out, out of sight and of reach, to be measured again. Its first step is `home`: Home (`/`), in the provider's
+ * language, by default.
  */
-export function TopBarTrail({ home = DEFAULT_HOME }: { home?: { label: string; href: string } }) {
+export function TopBarTrail({ home: givenHome }: { home?: { label: string; href: string } }) {
   const Link = useLinkComponent()
+  const words = useMessages().shell
+  const home = givenHome ?? { label: words.home, href: '/' }
   const items: BreadcrumbItem[] = [{ label: home.label, href: home.href, icon: <House aria-hidden /> }, ...usePageTrail()]
   const tail = items.slice(-2)
   const room = useRef<HTMLDivElement>(null)
@@ -116,7 +119,7 @@ export function TopBarTrail({ home = DEFAULT_HOME }: { home?: { label: string; h
         <Breadcrumb items={items} wrap={false} maxItems={items.length} />
       </div>
       {/* As wide as the room: the step before the page takes up to 45% of it, not of the two steps' own width. */}
-      <nav aria-label="Breadcrumb" className={cn('min-w-0 flex-1', fits && 'lg:hidden')}>
+      <nav aria-label={words.breadcrumb} className={cn('min-w-0 flex-1', fits && 'lg:hidden')}>
         <ol className="flex min-w-0 items-center gap-1 text-sm text-muted-foreground">
           {tail.map((item, index) => {
             const last = index === tail.length - 1

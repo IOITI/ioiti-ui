@@ -6,13 +6,14 @@ import { announce } from '../lib/announce.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { TOAST } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
+import { useMessages } from './locale-context.js'
 import { ToastInsetContext } from './toast-context.js'
 import { Button } from './ui/button.js'
 
 interface SaveBarProps {
   /** Shown while there is something to save. */
   open: boolean
-  /** What there is to save: "3 unsaved changes". */
+  /** What there is to save: "3 unsaved changes"; the provider's language's "Unsaved changes" by default. */
   message?: ReactNode
   onSave: () => void
   /** Gives up the changes; no Discard button without it. */
@@ -23,11 +24,13 @@ interface SaveBarProps {
   saveDisabled?: boolean
   /** Why it cannot be saved, or why the last save failed: said at once to a screen reader. */
   error?: ReactNode
+  /** The Save button's words; the provider's language's by default ("Save"). */
   saveLabel?: string
+  /** The Discard button's words; the provider's language's by default ("Discard"). */
   discardLabel?: string
   /** Other actions, before Discard and Save. */
   children?: ReactNode
-  /** Its name for a screen reader. */
+  /** Its name for a screen reader; the provider's language's by default ("Unsaved changes"). */
   label?: string
   className?: string
 }
@@ -40,18 +43,25 @@ interface SaveBarProps {
  */
 export function SaveBar({
   open,
-  message = 'Unsaved changes',
+  message: givenMessage,
   onSave,
   onDiscard,
   saving = false,
   saveDisabled = false,
   error,
-  saveLabel = 'Save',
-  discardLabel = 'Discard',
+  saveLabel: givenSaveLabel,
+  discardLabel: givenDiscardLabel,
   children,
-  label = 'Unsaved changes',
+  label: givenLabel,
   className,
 }: SaveBarProps) {
+  // Its words the provider's language's, its own props given over them.
+  const words = useMessages().field
+  // A `null` given says nothing, as it did.
+  const message = givenMessage === undefined ? words.unsavedChanges : givenMessage
+  const saveLabel = givenSaveLabel ?? words.save
+  const discardLabel = givenDiscardLabel ?? words.discard
+  const label = givenLabel ?? words.unsavedChanges
   const key = useId()
   const bar = useRef<HTMLDivElement>(null)
   const lift = useContext(ToastInsetContext)
@@ -106,7 +116,7 @@ export function SaveBar({
                 {discardLabel}
               </Button>
             )}
-            <Button size="sm" onClick={onSave} isLoading={saving} loadingText="Saving" disabled={saveDisabled}>
+            <Button size="sm" onClick={onSave} isLoading={saving} loadingText={words.saving} disabled={saveDisabled}>
               {saveLabel}
             </Button>
           </div>

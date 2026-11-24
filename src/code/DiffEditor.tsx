@@ -10,12 +10,14 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { IconButton } from '../components/IconButton.js'
+import { useMessages } from '../components/locale-context.js'
 import { DISABLED } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { placeDiagnostics } from './diagnostics.js'
 import type { CodeDiagnostic } from './diagnostics.js'
 import { loadLanguage } from './languages.js'
 import type { CodeEditorLanguage } from './languages.js'
+import { phrasesExtension } from './phrases.js'
 import { editorTheme } from './theme.js'
 
 /** A change the component makes itself (a new `modified` given): not reported back as the user's. */
@@ -36,8 +38,9 @@ export interface DiffEditorProps {
   readOnly?: boolean
   /** What is compared, for the header and a screen reader: "Rule file". */
   label: string
-  /** The names of the two versions, above them: "Saved" and "Yours". */
+  /** The names of the two versions, above them: "Saved" and "Yours"; the provider's language's by default ("Original"). */
   originalLabel?: string
+  /** The changed version's name; the provider's language's by default ("Modified"). */
   modifiedLabel?: string
   /** Long lines wrapped, rather than scrolled sideways. */
   wrap?: boolean
@@ -57,7 +60,7 @@ const COLLAPSE = { margin: 3, minSize: 4 }
 /**
  * Two versions of a text and what changed between them (CodeMirror's merge view): removed in the loss's
  * tone, added in the gain's, long unchanged stretches folded, the buttons of the header moving from one
- * change to the next. The changed side can be edited.
+ * change to the next. The changed side can be edited. Its words, and CodeMirror's, are the provider's language's.
  */
 export function DiffEditor({
   original,
@@ -68,8 +71,8 @@ export function DiffEditor({
   collapseUnchanged = true,
   readOnly = false,
   label,
-  originalLabel = 'Original',
-  modifiedLabel = 'Modified',
+  originalLabel: givenOriginalLabel,
+  modifiedLabel: givenModifiedLabel,
   wrap = false,
   maxHeight,
   actions,
@@ -77,6 +80,10 @@ export function DiffEditor({
   onSave,
   className,
 }: DiffEditorProps) {
+  // Its words, and CodeMirror's, in the provider's language; the names given over its own.
+  const words = useMessages().code
+  const originalLabel = givenOriginalLabel ?? words.original
+  const modifiedLabel = givenModifiedLabel ?? words.modified
   const host = useRef<HTMLDivElement>(null)
   // The editor that shows the changed version: the merge view's second, or the unified one.
   const changed = useRef<EditorView | null>(null)
@@ -88,9 +95,9 @@ export function DiffEditor({
   const [changes, setChanges] = useState(0)
   // The changed text when the view is made again (a new original, layout or option): the user's, kept.
   const latest = useRef(modified)
-  const settings = useRef({ readOnly, wrap, label, originalLabel, modifiedLabel })
+  const settings = useRef({ readOnly, wrap, label, originalLabel, modifiedLabel, words })
   useLayoutEffect(() => {
-    settings.current = { readOnly, wrap, label, originalLabel, modifiedLabel }
+    settings.current = { readOnly, wrap, label, originalLabel, modifiedLabel, words }
   })
   const collapse = collapseUnchanged === false ? undefined : collapseUnchanged === true ? COLLAPSE : { ...COLLAPSE, ...collapseUnchanged }
   // Folding is compared by its values (an object given inline is new at each render).
@@ -101,7 +108,7 @@ export function DiffEditor({
   })
 
   useEffect(() => {
-    const { readOnly: locked, wrap: wrapped, label: name, originalLabel: before, modifiedLabel: after } = settings.current
+    const { readOnly: locked, wrap: wrapped, label: name, originalLabel: before, modifiedLabel: after, words: said } = settings.current
     const languages = [new Compartment(), new Compartment()]
     const lock = new Compartment()
     const count = (state: EditorState) => setChanges(getChunks(state)?.chunks.length ?? 0)
@@ -113,6 +120,8 @@ export function DiffEditor({
       editorTheme,
       wrapped ? EditorView.lineWrapping : [],
       compartment.of([]),
+      // CodeMirror's own words (its search panel, the stretches folded), the provider's language's.
+      phrasesExtension(said),
       // Each side's text is a stop of the keyboard, read-only or not: from it, the arrows move through the text and
       // scroll it. Editable text takes the focus by itself; a tab index says so to what counts only tab indexes (axe,
       // which took the scroller of a long line for a region the keyboard cannot reach).
@@ -150,13 +159,13 @@ export function DiffEditor({
         a: {
           doc: original,
           extensions: [
-            shared(languages[0], `${name}: ${before}`),
+            shared(languages[0], said.side({ label: name, version: before })),
             EditorState.readOnly.of(true),
             keymap.of(searchKeymap),
             EditorView.contentAttributes.of({ 'aria-readonly': 'true' }),
           ],
         },
-        b: { doc: latest.current, extensions: [shared(languages[1], `${name}: ${after}`), editable] },
+        b: { doc: latest.current, extensions: [shared(languages[1], said.side({ label: name, version: after })), editable] },
         collapseUnchanged: folding.current,
         gutter: true,
         highlightChanges: true,
@@ -169,7 +178,7 @@ export function DiffEditor({
         state: EditorState.create({
           doc: latest.current,
           extensions: [
-            shared(languages[1], `${name}: ${after}`),
+            shared(languages[1], said.side({ label: name, version: after })),
             editable,
             unifiedMergeView({ original, mergeControls: false, gutter: true, highlightChanges: true, collapseUnchanged: folding.current }),
           ],
@@ -188,8 +197,8 @@ export function DiffEditor({
       changed.current = null
       parts.current = null
     }
-    // The view is made again when what it compares or how it shows it changes; the rest reconfigures it.
-  }, [original, layout, collapseKey, wrap, label, originalLabel, modifiedLabel])
+    // The view is made again when what it compares or how it shows it changes, its words too; the rest reconfigures it.
+  }, [original, layout, collapseKey, wrap, label, originalLabel, modifiedLabel, words])
 
   useEffect(() => {
     const editor = changed.current
@@ -211,7 +220,7 @@ export function DiffEditor({
     return () => {
       current = false
     }
-  }, [language, original, layout, collapseKey, wrap, label, originalLabel, modifiedLabel])
+  }, [language, original, layout, collapseKey, wrap, label, originalLabel, modifiedLabel, words])
 
   useEffect(() => {
     const editor = changed.current
@@ -223,7 +232,7 @@ export function DiffEditor({
     const editor = changed.current
     if (!editor) return
     editor.dispatch(setDiagnostics(editor.state, placeDiagnostics(editor.state.doc, diagnostics ?? [])))
-  }, [diagnostics, original, layout, collapseKey, wrap, label, originalLabel, modifiedLabel])
+  }, [diagnostics, original, layout, collapseKey, wrap, label, originalLabel, modifiedLabel, words])
 
   const move = (direction: 'next' | 'previous') => {
     const editor = changed.current
@@ -242,20 +251,20 @@ export function DiffEditor({
       <header className="flex items-center gap-2 border-b border-border py-1 pl-3 pr-1.5 text-xs text-muted-foreground">
         <span className="min-w-0 truncate font-medium text-foreground">{label}</span>
         <span role="status" className="shrink-0 tabular-nums">
-          {changes === 0 ? 'No change' : changes === 1 ? '1 change' : `${changes} changes`}
+          {words.changes(changes)}
         </span>
         <span className="ml-auto flex shrink-0 items-center">
           <IconButton
-            label="Previous change"
-            hint="Previous change"
+            label={words.previousChange}
+            hint={words.previousChange}
             icon={<ChevronUp />}
             disabled={changes === 0}
             onClick={() => move('previous')}
             className={cn('size-8', DISABLED)}
           />
           <IconButton
-            label="Next change"
-            hint="Next change"
+            label={words.nextChange}
+            hint={words.nextChange}
             icon={<ChevronDown />}
             disabled={changes === 0}
             onClick={() => move('next')}

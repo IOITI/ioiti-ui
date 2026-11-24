@@ -4,13 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
+// ioiti-ui: its words in the provider's language (`status`).
+import { useMessages } from '../locale-context.js';
 
 export interface LoaderProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Size of the loader in pixels. Default is 32. */
   size?: number;
   /** Visual animation style variant. Default is 'arc'. */
   variant?: 'arc' | 'dots' | 'line' | 'rings';
-  /** Optional accessible text label. */
+  /** Optional accessible text label. ioiti-ui: the provider's language's by default ("Loading…"). */
   label?: string;
   /** Force reduced motion if true. */
   reduceMotion?: boolean;
@@ -26,13 +28,16 @@ export interface LoaderProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Loader: React.FC<LoaderProps> = ({
   size = 32,
   variant = 'arc',
-  label = 'Loading…',
+  label: givenLabel,
   reduceMotion = false,
   color = 'currentColor',
   delay = 0,
   className,
   ...props
 }) => {
+  // ioiti-ui: the provider's word unless one is given.
+  const words = useMessages().status;
+  const label = givenLabel ?? words.loading;
   // ioiti-ui: nothing until `delay` has passed.
   const [due, setDue] = useState(delay <= 0);
   useEffect(() => {

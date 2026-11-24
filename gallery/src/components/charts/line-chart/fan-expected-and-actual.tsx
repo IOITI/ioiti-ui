@@ -1,4 +1,4 @@
-import { FanChart } from 'ioiti-ui'
+import { FanChart, useFormat } from 'ioiti-ui'
 
 // Where 2,000 simulated paths of a strategy's trades stood after each trade (their 5th, 25th, 50th, 75th and 95th
 // percentiles), and the real trades over them: the first twenty-four.
@@ -19,9 +19,10 @@ const PATHS = Array.from({ length: 60 }, (_, index) => {
   }
 })
 
-const percent = (value: number) => `${value > 0 ? '+' : ''}${value.toFixed(1)}%`
-
 export default function FanChartExpectedAndActual() {
+  // Signed, in the provider's locale: "+1.1%", "−3.3%".
+  const { formatPercent } = useFormat()
+  const percent = (value: number) => formatPercent(value, true, 1)
   return (
     <FanChart
       ariaLabel="The real trades' result against where the backtest's simulated paths went"

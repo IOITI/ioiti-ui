@@ -1,5 +1,9 @@
-import { HEALTH_STATUS_LABEL } from './health.js'
+import { en } from '../locales/en.js'
+import type { Messages } from '../locales/en.js'
 import type { HealthStatus } from './health.js'
+import { DEFAULT_LOCALE } from './locale.js'
+import { bindMessages } from './messages.js'
+import type { BoundCatalogue } from './messages.js'
 
 /** A slot of time and the state it was in: one block of StatusHistory. */
 export interface StatusHistorySlot {
@@ -16,25 +20,27 @@ export interface StatusHistoryUnit {
 
 const SHOWN_TIMES = 3
 
-function list(words: string[]): string {
-  return words.length < 2 ? words.join('') : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`
-}
+// The states other than up, the worst first.
+const OTHERS: Exclude<HealthStatus, 'ok'>[] = ['down', 'warning', 'unknown', 'disabled']
 
 /**
  * The strip in words, for a screen reader: how long it was up, then each other state, the worst first, with when it was
- * ("23 hours up, 1 degraded at 14:00"). Three times at most for a state, how many more after them.
+ * ("23 hours up, 1 degraded at 14:00"). Three times at most for a state, how many more after them. In the words given
+ * (the provider's, `useMessages().status`), English's by default; in their unit ("hour" by default) where none is given.
  */
-export function summariseStatusHistory(slots: StatusHistorySlot[], unit: StatusHistoryUnit = { one: 'hour', other: 'hours' }): string {
-  if (slots.length === 0) return 'No history yet'
+export function summariseStatusHistory(
+  slots: StatusHistorySlot[],
+  unit?: StatusHistoryUnit,
+  words: BoundCatalogue<Messages>['status'] = bindMessages(en, DEFAULT_LOCALE).status,
+): string {
+  if (slots.length === 0) return words.historyEmpty
   const up = slots.filter((slot) => slot.status === 'ok').length
-  const parts = up ? [`${up} ${up === 1 ? unit.one : unit.other} up`] : []
-  const others: HealthStatus[] = ['down', 'warning', 'unknown', 'disabled']
-  for (const status of others) {
+  const parts = up ? [words.historyUp({ count: up, unit })] : []
+  for (const status of OTHERS) {
     const times = slots.filter((slot) => slot.status === status).map((slot) => slot.at)
     if (!times.length) continue
-    const shown = times.length > SHOWN_TIMES ? [...times.slice(0, SHOWN_TIMES), `${times.length - SHOWN_TIMES} more`] : times
-    const words = up ? `${times.length}` : `${times.length} ${times.length === 1 ? unit.one : unit.other}`
-    parts.push(`${words} ${HEALTH_STATUS_LABEL[status].toLowerCase()} at ${list(shown)}`)
+    const shown = times.length > SHOWN_TIMES ? [...times.slice(0, SHOWN_TIMES), words.historyMore(times.length - SHOWN_TIMES)] : times
+    parts.push(words.historyState({ status, count: times.length, unit, times: shown, upSaid: up > 0 }))
   }
   return parts.join(', ')
 }

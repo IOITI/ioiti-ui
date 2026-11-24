@@ -1,6 +1,7 @@
-import { formatMoney, KpiGrid, KpiTile, Meter, Sparkline } from 'ioiti-ui'
+import { KpiGrid, KpiTile, Meter, Sparkline, useFormat } from 'ioiti-ui'
 
 export default function KpiTileDashboard() {
+  const { formatMoney } = useFormat()
   return (
     <KpiGrid period="Compared with yesterday">
       <KpiTile lead label="Revenue today" value={formatMoney(12400, 'EUR')} change={8.4} hint="Since midnight">

@@ -6,6 +6,7 @@ import { fieldBorder } from '../lib/field-border.js'
 import { PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
+import { useMessages } from './locale-context.js'
 import { ErrorText } from './messages.js'
 
 /** What a save answered: nothing or `true` for done, `false` to stay in the field, words for what went wrong. */
@@ -17,6 +18,7 @@ interface InlineEditProps {
   onSave: (value: string) => Saved | Promise<Saved>
   /** What the value is, for a screen reader: "Name of the run". */
   label: string
+  /** What an empty value says; the provider's language's by default ("Add a value"). */
   placeholder?: string
   /** `text` in a sentence's size; `title` a heading's (`as` says which). */
   variant?: 'text' | 'title'
@@ -30,19 +32,21 @@ interface InlineEditProps {
 /**
  * A value edited where it is shown: a name, a title. It reads as text; a click or Enter turns it into a
  * field, Enter saves and Escape gives up. A save that takes its time shows it; one that fails says why and
- * keeps the field. As Elastic UI's inline edit does.
+ * keeps the field. As Elastic UI's inline edit does. Its words are the provider's language's.
  */
 export function InlineEdit({
   value,
   onSave,
   label,
-  placeholder = 'Add a value',
+  placeholder: givenPlaceholder,
   variant = 'text',
   as: Tag = variant === 'title' ? 'h2' : 'span',
   validate,
   readOnly = false,
   className,
 }: InlineEditProps) {
+  const words = useMessages().field
+  const placeholder = givenPlaceholder ?? words.addValue
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
   const [saving, setSaving] = useState(false)
@@ -93,7 +97,7 @@ export function InlineEdit({
       if (typeof answer === 'string') setError(answer)
       else if (answer !== false) setEditing(false)
     } catch {
-      setError('Couldn’t save. Try again.')
+      setError(words.saveFailed)
     } finally {
       setSaving(false)
     }
@@ -128,7 +132,7 @@ export function InlineEdit({
           {!readOnly && (
             <>
               <Pencil aria-hidden className="size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
-              <span className="sr-only">, edit the {label.toLowerCase()}</span>
+              <span className="sr-only">, {words.edit(label)}</span>
             </>
           )}
         </button>
@@ -156,10 +160,10 @@ export function InlineEdit({
             size,
           )}
         />
-        <Hint content="Save">
+        <Hint content={words.save}>
           <button
             type="button"
-            aria-label="Save"
+            aria-label={words.save}
             onClick={() => void save()}
             className={cn(
               'grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition enabled:hover:bg-surface-hover enabled:hover:text-foreground [&>svg]:size-4',
@@ -169,10 +173,10 @@ export function InlineEdit({
             {saving ? <Loader2 aria-hidden className="motion-safe:animate-spin" /> : <Check aria-hidden />}
           </button>
         </Hint>
-        <Hint content="Cancel">
+        <Hint content={words.cancel}>
           <button
             type="button"
-            aria-label="Cancel"
+            aria-label={words.cancel}
             disabled={saving}
             onClick={cancel}
             className={cn(

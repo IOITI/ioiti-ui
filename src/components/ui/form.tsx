@@ -21,6 +21,8 @@ import {
   useFieldPartId,
   useFormItemField,
 } from '../field-context.js';
+// ioiti-ui: the password toggle's words in the provider's language (`field`).
+import { useMessages } from '../locale-context.js';
 
 /* ==========================================================================
    1. Form Root & Layout Items
@@ -203,6 +205,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const isPassword = type === 'password';
+    // ioiti-ui: the toggle's name in the provider's language.
+    const words = useMessages().field;
     // ioiti-ui: in error by its own prop, or marked invalid (a Field around it); its id, its description and its
     // error from a FormItem or a Field around it too.
     const control = useFieldControl({
@@ -279,7 +283,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             tabIndex={-1}
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            aria-label={showPassword ? words.hidePassword : words.showPassword}
             className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors focus-ring rounded-md cursor-pointer"
           >
             {showPassword ? (

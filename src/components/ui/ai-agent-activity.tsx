@@ -15,6 +15,8 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
 import { SECTION } from '../../lib/recipes.js';
 import { useScrollRegion } from '../../lib/scroll-region.js';
+// ioiti-ui: its words in the provider's language.
+import { useMessages } from '../locale-context.js';
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -119,6 +121,7 @@ export function getActivityIcon(_type: ActivityType, status: ActivityStatus): Re
 // =============================================================================
 
 export interface AgentActivityHeaderProps {
+  /** ioiti-ui: "Activity" in the provider's language by default. */
   title?: string;
   agentName?: string;
   showControls?: boolean;
@@ -126,12 +129,14 @@ export interface AgentActivityHeaderProps {
 }
 
 export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
-  title = 'Activity',
+  title,
   agentName,
   showControls = true,
   className,
 }) => {
   const { activities, isRunning, expandAll, collapseAll, summary, collapsible, open, setOpen, bodyId } = useAgentActivity();
+  // ioiti-ui: its words in the provider's language, its title given over them; its steps counted in its locale.
+  const words = useMessages().ai;
   // ioiti-ui: the steps alone are counted: a note is no step.
   const steps = activities.filter((a) => (a.kind ?? 'step') === 'step');
   const completedCount = steps.filter((a) => a.status === 'success').length;
@@ -143,7 +148,7 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
     <>
       <span className="flex items-center gap-1.5 sm:gap-2 min-w-0">
         <Title className="text-sm font-semibold text-foreground tracking-tight truncate">
-          {title}
+          {title ?? words.activityTitle}
         </Title>
         {agentName && (
           <span className="text-xs text-muted-foreground font-normal truncate">
@@ -158,12 +163,12 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
         {isRunning ? (
           <span className="flex items-center gap-1.5 text-foreground">
             <span className="size-1.5 rounded-full bg-positive animate-pulse" />
-            Running
+            {words.activityRunning}
           </span>
         ) : (
           <span>
             {/* ioiti-ui: "N of M done"; with no step yet, not "0 of 0". */}
-            {summary ?? (steps.length ? `${completedCount} of ${steps.length} done` : 'Not started')}
+            {summary ?? (steps.length ? words.stepsDone({ done: completedCount, count: steps.length }) : words.notStarted)}
           </span>
         )}
       </span>
@@ -210,7 +215,7 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
             onClick={expandAll}
             className="hover:text-foreground transition-colors cursor-pointer py-1"
           >
-            Expand all
+            {words.expandAll}
           </button>
           <span className="text-border/80">/</span>
           <button
@@ -218,7 +223,7 @@ export const AgentActivityHeader: React.FC<AgentActivityHeaderProps> = ({
             onClick={collapseAll}
             className="hover:text-foreground transition-colors cursor-pointer py-1"
           >
-            Collapse all
+            {words.collapseAll}
           </button>
         </div>
       )}
@@ -238,6 +243,8 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
   className,
 }) => {
   const { expandedIds, toggleExpand, inputLabel, outputLabel } = useAgentActivity();
+  // ioiti-ui: its words in the provider's language.
+  const words = useMessages().ai;
   const isExpanded = expandedIds.has(activity.id);
   const hasDetails = Boolean(activity.details || activity.metadata);
   const shouldReduceMotion = useReducedMotionConfig();
@@ -350,9 +357,9 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
               {activity.details?.codeSnippet && (
                 <div className="space-y-1">
                   <div className="text-xs font-medium text-muted-foreground">
-                    {activity.details.language || 'Code'}
+                    {activity.details.language || words.codeSnippet}
                   </div>
-                  <CodeSnippet label={activity.details.language || 'Code'}>{activity.details.codeSnippet}</CodeSnippet>
+                  <CodeSnippet label={activity.details.language || words.codeSnippet}>{activity.details.codeSnippet}</CodeSnippet>
                 </div>
               )}
 
@@ -378,7 +385,8 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
                       key={key}
                       className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface-raised/50 border border-border/40 text-[11px]"
                     >
-                      <span className="text-muted-foreground">{key}:</span>
+                      {/* ioiti-ui: a key and its colon, as the provider's language writes them. */}
+                      <span className="text-muted-foreground">{words.metadataEntry(key)}</span>
                       <span className="text-foreground font-medium">{String(val)}</span>
                     </span>
                   ))}
@@ -480,12 +488,14 @@ export interface AgentActivityTimelineProps {
 export const AgentActivityTimeline: React.FC<AgentActivityTimelineProps> = ({ className }) => {
   const { activities, collapsible, open, bodyId } = useAgentActivity();
   const reduce = useReducedMotionConfig();
+  // ioiti-ui: its words in the provider's language.
+  const words = useMessages().ai;
 
   // ioiti-ui: each stretch of steps a timeline of its own, its line cut where notes come between them.
   const body =
     activities.length === 0 ? (
       <div className="py-12 text-center text-xs text-muted-foreground font-normal">
-        No activity recorded
+        {words.noActivity}
       </div>
     ) : (
       <div className={cn('px-4 sm:px-8 py-4 sm:py-7 space-y-2', className)}>
@@ -535,11 +545,13 @@ export const AgentActivityTimeline: React.FC<AgentActivityTimelineProps> = ({ cl
 export interface AIAgentActivityProps {
   activities: AgentActivityItemData[];
   isRunning?: boolean;
-  /** ioiti-ui: see the context. */
+  /** ioiti-ui: the name of a step's input: "Asked" in the provider's language by default. */
   inputLabel?: string;
+  /** ioiti-ui: the name of a step's output: "Answer" in the provider's language by default. */
   outputLabel?: string;
+  /** ioiti-ui: in the header, in place of "2 of 3 done" ("Not started" with no step), said in the provider's language. */
   summary?: string;
-  /** ioiti-ui: the name of a group of notes, said to screen readers ("Notes"). */
+  /** ioiti-ui: the name of a group of notes, said to screen readers: "Notes" in the provider's language by default. */
   notesLabel?: string;
   /**
    * ioiti-ui: its steps fold under its header, which opens them again: `open` held by the caller (told by
@@ -549,6 +561,7 @@ export interface AIAgentActivityProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** ioiti-ui: "Activity" in the provider's language by default. */
   title?: string;
   agentName?: string;
   accentColor?: string;
@@ -560,11 +573,12 @@ export interface AIAgentActivityProps {
 export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
   activities = [],
   isRunning = false,
-  // ioiti-ui: what was asked and what came back, in the words of the design (EasyUI's "Parameters", "Output Result").
-  inputLabel = 'Asked',
-  outputLabel = 'Answer',
+  // ioiti-ui: what was asked and what came back, in the words of the design (EasyUI's "Parameters", "Output Result"),
+  // the provider's language's unless given.
+  inputLabel,
+  outputLabel,
   summary,
-  notesLabel = 'Notes',
+  notesLabel,
   collapsible = false,
   open: given,
   defaultOpen = true,
@@ -576,6 +590,7 @@ export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
   className,
   children,
 }) => {
+  const words = useMessages().ai;
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(defaultExpandedIds));
   const [open, setOpen] = useControllableState(given, defaultOpen, onOpenChange);
   const bodyId = useId();
@@ -600,10 +615,10 @@ export const AIAgentActivity: React.FC<AIAgentActivityProps> = ({
   const contextValue: AgentActivityContextValue = {
     activities,
     isRunning,
-    inputLabel,
-    outputLabel,
+    inputLabel: inputLabel ?? words.inputLabel,
+    outputLabel: outputLabel ?? words.outputLabel,
     summary,
-    notesLabel,
+    notesLabel: notesLabel ?? words.notesLabel,
     collapsible,
     open,
     setOpen,

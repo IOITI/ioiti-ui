@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
+import { fr } from '../locales/fr.js'
 import { MENU } from '../test/menu.js'
-import { menuEntry, menuSections, PAGE_NOT_FOUND, sidebarSections, trailFor, UNNAMED, type Menu } from './navigation.js'
+import { DEFAULT_HOME, menuEntry, menuSections, PAGE_NOT_FOUND, sidebarSections, trailFor, UNNAMED, type Menu } from './navigation.js'
 
 const entry = (pathname: string) => menuEntry(MENU, pathname)
 const trail = (pathname: string, page?: Parameters<typeof trailFor>[2]) => trailFor(MENU, pathname, page)
@@ -256,5 +257,19 @@ describe('a section at the foot of the sidebar', () => {
       { label: 'Documentation', href: '/docs' },
       { label: 'Guide' },
     ])
+  })
+})
+
+describe('the trail in a language', () => {
+  it('says an address that is no page in the words given, English\'s by default', () => {
+    expect(trailFor(MENU, '/nothing', null, '', fr.shell)).toEqual([{ label: 'Page introuvable' }])
+    expect(trailFor(MENU, '/nothing')).toEqual([{ label: 'Page not found' }])
+    // A page that names itself names its step, in any language.
+    expect(trailFor(MENU, '/orders/nothing', { title: 'Commande inconnue' }, '', fr.shell).at(-1)).toEqual({ label: 'Commande inconnue' })
+  })
+
+  it('keeps its former constants in English', () => {
+    expect(PAGE_NOT_FOUND).toBe('Page not found')
+    expect(DEFAULT_HOME).toEqual({ label: 'Home', href: '/' })
   })
 })

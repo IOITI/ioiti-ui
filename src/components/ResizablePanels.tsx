@@ -3,6 +3,7 @@ import type { CSSProperties, KeyboardEvent, PointerEvent, ReactElement, ReactNod
 
 import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
+import { useMessages } from './locale-context.js'
 
 interface ResizablePanelProps {
   /** Its share of the room at first, in percent: the shares of all the panels make 100. */
@@ -12,7 +13,10 @@ interface ResizablePanelProps {
   maxSize?: number
   /** Enter on a handle beside it folds it away, and back. */
   collapsible?: boolean
-  /** Its name, for the handle that resizes it. */
+  /**
+   * Its name, for the handle that resizes it ("the editor": "Resize the editor"), and for its frame where it scrolls
+   * ("Panel" in the provider's language otherwise).
+   */
   label?: string
   className?: string
   children?: ReactNode
@@ -26,7 +30,10 @@ export function ResizablePanel(props: ResizablePanelProps): ReactElement | null 
 }
 
 interface ResizableHandleProps {
-  /** What it resizes, for a screen reader: "Resize the editor". */
+  /**
+   * What it resizes, for a screen reader: "Resize the editor". By default, in the provider's language, "Resize" and the
+   * panel before it's `label` ("the editor"), or "Resize" alone.
+   */
   label?: string
 }
 
@@ -60,6 +67,7 @@ const round = (value: number) => Math.round(value * 100) / 100
  * resizable container does.
  */
 export function ResizablePanels({ direction = 'horizontal', onSizesChange, stackBelow, className, children }: ResizablePanelsProps) {
+  const words = useMessages().layout
   const items = Children.toArray(children).filter(isValidElement)
   const panels = items.filter((item): item is ReactElement<ResizablePanelProps> => item.type === ResizablePanel)
   const defaults = panels.map((panel) => panel.props.defaultSize)
@@ -184,7 +192,7 @@ export function ResizablePanels({ direction = 'horizontal', onSizesChange, stack
               key={item.key ?? `handle-${index}`}
               role="separator"
               tabIndex={0}
-              aria-label={handle.label ?? (panels[index]?.props.label ? `Resize ${panels[index].props.label}` : 'Resize')}
+              aria-label={handle.label ?? (panels[index]?.props.label ? words.resizePanel(panels[index].props.label) : words.resize)}
               aria-controls={`${id}-${index}`}
               aria-orientation={horizontal ? 'vertical' : 'horizontal'}
               aria-valuenow={Math.round(sizes[index])}
@@ -227,7 +235,8 @@ export function ResizablePanels({ direction = 'horizontal', onSizesChange, stack
  */
 function Pane({ id, label, className, style, children }: { id: string; label?: string; className?: string; style?: CSSProperties; children?: ReactNode }) {
   const frame = useRef<HTMLDivElement>(null)
-  const region = useScrollRegion(frame, { label: label ?? 'Panel' })
+  const unnamed = useMessages().layout.panel
+  const region = useScrollRegion(frame, { label: label ?? unnamed })
   return (
     <div ref={frame} id={id} {...region} className={cn('min-h-0 min-w-0 overflow-auto', className)} style={style}>
       {children}

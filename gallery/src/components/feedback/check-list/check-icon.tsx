@@ -1,4 +1,4 @@
-import { CheckIcon, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
+import { CheckIcon, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, useFormat } from 'ioiti-ui'
 
 const PAIRS = [
   { text: 'Body text', surface: 'Page', ratio: 15.9 },
@@ -8,6 +8,7 @@ const PAIRS = [
 ]
 
 export default function CheckListCheckIcon() {
+  const { formatNumber } = useFormat()
   return (
     <div className="flex flex-col gap-4">
       {/* On its own, beside a figure: named, the figure says nothing of the outcome. */}
@@ -26,7 +27,7 @@ export default function CheckListCheckIcon() {
               <TableCell>{pair.surface}</TableCell>
               <TableCell numeric>
                 <span className="inline-flex items-center gap-1.5">
-                  {pair.ratio.toFixed(2)}
+                  {formatNumber(pair.ratio, 2)}
                   <CheckIcon state={pair.ratio >= 4.5 ? 'pass' : 'fail'} />
                 </span>
               </TableCell>

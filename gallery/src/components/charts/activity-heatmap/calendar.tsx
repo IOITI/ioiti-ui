@@ -8,7 +8,6 @@ export default function ActivityHeatmapCalendar() {
       ariaLabel="Deliveries made each day"
       data={DELIVERIES_BY_DAY}
       weeks={21}
-      weekStart={1}
       unit="deliveries"
     />
   )

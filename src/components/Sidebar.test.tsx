@@ -1,9 +1,12 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { describe, expect, it } from 'vitest'
 
+import { fr } from '../locales/fr.js'
 import { sidebarSections } from '../shell/navigation.js'
-import { Sidebar } from './ui/sidebar.js'
+import { IoitiProvider } from './IoitiProvider.js'
+import { Sidebar, SidebarTrigger } from './ui/sidebar.js'
 
 const SECTIONS = sidebarSections({
   sections: ['Work'],
@@ -219,5 +222,65 @@ describe('a section at the foot of the sidebar', () => {
     const { container } = render(<Sidebar sections={FOOT} activeId="home" defaultCollapsed />)
     fireEvent.mouseEnter(screen.getByRole('link', { name: 'Documentation' }))
     expect(screen.getAllByText('Documentation').some((element) => !container.contains(element))).toBe(true)
+  })
+})
+
+describe('the sidebar in French', () => {
+  const FRENCH = sidebarSections({
+    sections: ['Travail', { id: 'Outils', foldable: true }],
+    entries: [
+      { id: 'orders', path: '/orders', label: 'Commandes', section: 'Travail' },
+      { id: 'late', path: '/orders/late', label: 'En retard', section: 'Travail', parent: 'orders', badge: '2 en retard', badgeTone: 'warning' },
+      { id: 'customers', path: '/customers', label: 'Clients', section: 'Travail' },
+      { id: 'disk', path: '/disk', label: 'Disque', section: 'Outils', badge: 'Critique', badgeTone: 'negative' },
+    ],
+  })
+  const French = ({ children }: { children: ReactNode }) => (
+    <IoitiProvider locale="fr-FR" messages={fr}>
+      {children}
+    </IoitiProvider>
+  )
+
+  it('names its list, its chevrons, its foot and the badges out of sight', () => {
+    window.localStorage.clear()
+    render(<Sidebar sections={FRENCH} activeId="customers" />, { wrapper: French })
+    expect(screen.getByRole('navigation', { name: 'Menu principal' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Commandes, avec un avertissement' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Les pages sous Commandes' })).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByRole('button', { name: 'Outils, avec un problème' })).toHaveAttribute('aria-expanded', 'false')
+    // Its keys heard in ARIA's names, whatever the language.
+    expect(screen.getByRole('button', { name: 'Réduire la barre latérale' })).toHaveAttribute('aria-keyshortcuts', 'Control+B')
+  })
+
+  it('names the entries of its rail with what their badges say, and its button with its keys', () => {
+    const { container } = render(<Sidebar sections={FRENCH} activeId="customers" defaultCollapsed />, { wrapper: French })
+    expect(screen.getByRole('button', { name: 'Commandes, avec un avertissement' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Disque, Critique' })).toBeInTheDocument()
+    fireEvent.mouseEnter(screen.getByRole('button', { name: 'Développer la barre latérale' }))
+    const tip = screen.getByText('Développer')
+    expect(container).not.toContainElement(tip)
+    // Its keys as this computer writes them (jsdom names no platform: not an Apple one), in the language's words.
+    expect(tip.textContent).toBe('DévelopperCtrl B')
+  })
+
+  it("says its drawer's buttons", () => {
+    render(
+      <>
+        <SidebarTrigger />
+        <Sidebar sections={FRENCH} activeId="customers" mobileOpen />
+      </>,
+      { wrapper: French },
+    )
+    expect(screen.getByRole('button', { name: 'Ouvrir la navigation' })).toBeInTheDocument()
+    const drawer = screen.getByRole('dialog', { name: 'Navigation' })
+    expect(within(drawer).getByRole('button', { name: 'Fermer la navigation' })).toBeInTheDocument()
+  })
+
+  it("takes an application's own words over the language's", () => {
+    render(<Sidebar sections={FRENCH} activeId="customers" />, {
+      wrapper: ({ children }) => <IoitiProvider messages={{ shell: { collapse: 'Fold', collapseTarget: 'the menu', mainNavigation: 'Pages' } }}>{children}</IoitiProvider>,
+    })
+    expect(screen.getByRole('button', { name: 'Fold the menu' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Pages' })).toBeInTheDocument()
   })
 })

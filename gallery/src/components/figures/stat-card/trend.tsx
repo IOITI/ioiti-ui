@@ -1,6 +1,7 @@
-import { formatMoney, StatCard, StatGrid } from 'ioiti-ui'
+import { StatCard, StatGrid, useFormat } from 'ioiti-ui'
 
 export default function StatCardTrend() {
+  const { formatMoney, formatNumber } = useFormat()
   return (
     <StatGrid>
       <StatCard
@@ -20,7 +21,7 @@ export default function StatCardTrend() {
         delta={-6}
         goodWhen="down"
         period="days, vs last month"
-        format={(value) => `${value.toFixed(1)} d`}
+        format={(value) => `${formatNumber(value, 1)} d`}
       />
       <StatCard
         label="New customers"
@@ -29,7 +30,7 @@ export default function StatCardTrend() {
         trendLabels={['Week 39', 'Week 40', 'Week 41', 'Week 42', 'Week 43']}
         previous={102}
         period="vs last week"
-        format={(value) => String(value)}
+        format={(value) => formatNumber(value)}
       />
     </StatGrid>
   )

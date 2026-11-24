@@ -1,4 +1,4 @@
-import { Avatar, formatMoney } from 'ioiti-ui'
+import { Avatar, useFormat } from 'ioiti-ui'
 
 const AVATARS = `${import.meta.env.BASE_URL}avatars`
 
@@ -9,6 +9,7 @@ const ORDERS = [
 ]
 
 export default function AvatarInAList() {
+  const { formatMoney } = useFormat()
   return (
     <ul aria-label="Latest orders" className="max-w-md divide-y divide-border/40 text-sm">
       {ORDERS.map((order) => (

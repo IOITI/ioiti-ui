@@ -20,7 +20,8 @@ import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
-import { useFormat } from '../locale-context.js';
+// ioiti-ui: its words in the provider's language (useMessages), its sizes and progress in its locale (useFormat).
+import { useFormat, useMessages } from '../locale-context.js';
 
 export type FileUploadStatus = 'queued' | 'uploading' | 'processing' | 'complete' | 'error';
 
@@ -49,9 +50,9 @@ export interface AnimatedFileUploadProps {
   maxSize?: number;
   /** Maximum number of files allowed when multiple is true */
   maxFiles?: number;
-  /** Custom label for primary drop title */
+  /** Custom label for primary drop title. ioiti-ui: "Drop files here" in the provider's language by default. */
   dropTitle?: string;
-  /** Custom label for secondary browse action */
+  /** Custom label for secondary browse action. ioiti-ui: "or browse from your device" in the provider's language by default. */
   dropSubtitle?: string;
   /** Layout mode: standard full-size or compact inline */
   variant?: 'standard' | 'compact';
@@ -72,12 +73,13 @@ export interface AnimatedFileUploadProps {
   arrange?: (files: File[]) => Promise<File[]>;
   /** ioiti-ui: one file after the other, each when the one before has ended (EasyUI's started them all at once). */
   sequential?: boolean;
-  /** ioiti-ui: the words of a file's states (EasyUI's "Uploading N%" and "Ready"). */
+  /** ioiti-ui: what a file on its way says: "Uploading 42%" in the provider's language by default (EasyUI's "Uploading N%"). */
   workingLabel?: string;
+  /** ioiti-ui: what a file uploaded says: "Ready" in the provider's language by default. */
   doneLabel?: string;
   /** ioiti-ui: what draws a done file's link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
-  /** ioiti-ui: the name of its file input, what a test or a script finds it by ("Upload files" in EasyUI). */
+  /** ioiti-ui: the name of its file input, what a test or a script finds it by: "Upload files" in the provider's language by default. */
   label?: string;
   /** ioiti-ui: a file taken off the list by its Remove (the application forgets what it did with it). */
   onRemove?: (file: UploadFileItem) => void;
@@ -113,8 +115,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
   accept,
   maxSize = 25 * 1024 * 1024, // 25MB default
   maxFiles = 10,
-  dropTitle = 'Drop files here',
-  dropSubtitle = 'or browse from your device',
+  dropTitle,
+  dropSubtitle,
   variant = 'standard',
   disabled = false,
   initialFiles,
@@ -124,9 +126,9 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
   arrange,
   sequential = false,
   workingLabel,
-  doneLabel = 'Ready',
+  doneLabel,
   linkComponent,
-  label = 'Upload files',
+  label,
   onRemove,
   className,
 }) => {
@@ -135,6 +137,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
   // ioiti-ui: sizes written as the package writes them everywhere (formatBytes: kB of 1000 bytes), not KB of 1024, and
   // a progress as a percentage, both as the provider's locale writes them ("2.0 kB", "42%"; "2,0 ko", "42 %" in French).
   const { formatBytes: formatFileSize, formatPercent } = useFormat();
+  // ioiti-ui: its words in the provider's language, the ones given over them.
+  const words = useMessages().upload;
   const formatProgress = (progress: number) =>
     formatPercent(progress, false, Math.min(20, String(progress).split('.')[1]?.length ?? 0));
   const [isDragOver, setIsDragOver] = useState(false);
@@ -200,7 +204,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
             type: file.type,
             progress: 0,
             status: 'error',
-            errorMessage: `File exceeds maximum allowed size (${formatFileSize(maxSize)})`,
+            errorMessage: words.tooLarge(formatFileSize(maxSize)),
             rawFile: file,
           });
         } else {
@@ -254,7 +258,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                         ? {
                             ...f,
                             status: 'error',
-                            errorMessage: err?.message || 'Upload failed',
+                            // ioiti-ui: without a message of its own, said when it is drawn (words.failed).
+                            errorMessage: err?.message || undefined,
                           }
                         : f
                     )
@@ -267,8 +272,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
         }
       });
     },
-    // ioiti-ui: the locale's sizes (formatFileSize) too.
-    [disabled, arrange, maxSize, multiple, maxFiles, onFilesSelected, onUploadComplete, uploadHandler, simulateUpload, sequential, formatFileSize]
+    // ioiti-ui: the locale's sizes (formatFileSize) and words too.
+    [disabled, arrange, maxSize, multiple, maxFiles, onFilesSelected, onUploadComplete, uploadHandler, simulateUpload, sequential, formatFileSize, words]
   );
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -341,7 +346,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
           setFiles((prev) =>
             prev.map((f) =>
               f.id === fileItem.id
-                ? { ...f, status: 'error', errorMessage: err?.message || 'Upload failed' }
+                ? // ioiti-ui: without a message of its own, said when it is drawn (words.failed).
+                  { ...f, status: 'error', errorMessage: err?.message || undefined }
                 : f
             )
           );
@@ -363,7 +369,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
         onChange={handleFileInputChange}
         disabled={disabled}
         className="hidden"
-        aria-label={label}
+        aria-label={label ?? words.label}
       />
 
       {/* Drop Zone Box */}
@@ -410,12 +416,12 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
         </motion.div>
 
         <div className="space-y-1">
-          <p className="text-sm font-medium text-foreground">{dropTitle}</p>
+          <p className="text-sm font-medium text-foreground">{dropTitle ?? words.dropTitle}</p>
           <p className="text-xs text-muted-foreground">
-            {dropSubtitle}{' '}
+            {dropSubtitle ?? words.dropSubtitle}{' '}
             {maxSize && (
               <span className="text-muted-foreground">
-                (up to {formatFileSize(maxSize)})
+                {words.upTo(formatFileSize(maxSize))}
               </span>
             )}
           </p>
@@ -433,14 +439,14 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
             className="mt-4 space-y-2"
           >
             <div className="flex items-center justify-between px-1 text-xs font-medium text-muted-foreground">
-              <span className="tabular-nums">Files ({files.length})</span>
+              <span className="tabular-nums">{words.files(files.length)}</span>
               {files.some((f) => f.status === 'complete') && (
                 <button
                   type="button"
                   onClick={() => setFiles((prev) => prev.filter((f) => f.status !== 'complete'))}
                   className="hover:text-foreground transition-colors focus-ring rounded-sm cursor-pointer"
                 >
-                  Clear completed
+                  {words.clearCompleted}
                 </button>
               )}
             </div>
@@ -502,13 +508,13 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                             // ioiti-ui: the whole error, wrapped (a script's refusal is a sentence).
                             <span role="alert" className="text-negative flex items-start gap-1">
                               <AlertCircle className="size-3 shrink-0 mt-0.5" />
-                              <span className="break-words">{file.errorMessage || 'Upload failed'}</span>
+                              <span className="break-words">{file.errorMessage || words.failed}</span>
                             </span>
                           ) : isComplete ? (
                             <span className="text-positive flex items-center gap-2">
                               <span className="flex items-center gap-1">
                                 <Check className="size-3 shrink-0" />
-                                <span>{doneLabel}</span>
+                                <span>{doneLabel ?? words.ready}</span>
                               </span>
                               {file.link && (
                                 <LinkComponent href={file.link.href} className="font-medium text-foreground underline underline-offset-2">
@@ -519,12 +525,12 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                           ) : isProcessing ? (
                             <span className="text-muted-foreground flex items-center gap-1.5 font-mono text-xs">
                               <span className="size-1.5 rounded-full bg-muted-foreground animate-pulse" />
-                              Processing…
+                              {words.processing}
                             </span>
                           ) : (
                             <span className="text-muted-foreground font-mono text-xs tabular-nums">
-                              {/* ioiti-ui: its percentage as the locale writes one (formatProgress). */}
-                              {workingLabel ?? `Uploading ${formatProgress(file.progress)}`}
+                              {/* ioiti-ui: its percentage as the locale writes one (formatProgress), in its words. */}
+                              {workingLabel ?? words.uploading(formatProgress(file.progress))}
                             </span>
                           )}
                         </div>
@@ -537,7 +543,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                             type="button"
                             onClick={() => handleRetryFile(file)}
                             className={CLOSE_SM}
-                            aria-label={`Retry uploading ${file.name}`}
+                            aria-label={words.retry(file.name)}
                           >
                             <RotateCcw />
                           </button>
@@ -546,7 +552,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                           type="button"
                           onClick={() => handleRemoveFile(file.id)}
                           className={CLOSE_SM}
-                          aria-label={`Remove ${file.name}`}
+                          aria-label={words.remove(file.name)}
                         >
                           <X />
                         </button>

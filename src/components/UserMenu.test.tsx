@@ -5,9 +5,11 @@ import type { ComponentProps } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ACCENT_ATTRIBUTE, MATERIAL_ATTRIBUTE, THEME_KEY_ATTRIBUTE } from '../lib/theme.js'
+import { fr } from '../locales/fr.js'
 import { stubSystemTheme } from '../test/systemTheme.js'
 
 import type { DropdownMenuItem } from './DropdownMenu.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { LinkProvider } from './LinkProvider.js'
 import { ThemeProvider } from './ThemeProvider.js'
 import { UserMenu } from './UserMenu.js'
@@ -186,5 +188,56 @@ describe('UserMenu, with the look of the interface', () => {
     await waitFor(() => expect(html.getAttribute(MATERIAL_ATTRIBUTE)).toBe('glass'))
     expect(window.localStorage.getItem('my-app.theme.accent')).toBe('violet')
     expect(window.localStorage.getItem('my-app.theme.material')).toBe('glass')
+  })
+})
+
+describe('UserMenu in French', () => {
+  const html = document.documentElement
+
+  beforeEach(() => {
+    window.localStorage.clear()
+    html.classList.remove('dark')
+    html.removeAttribute(THEME_KEY_ATTRIBUTE)
+    html.removeAttribute(ACCENT_ATTRIBUTE)
+    html.removeAttribute(MATERIAL_ATTRIBUTE)
+    stubSystemTheme(true)
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('names its menu and signing out, and says the look of the interface, in the provider\'s words', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <UserMenu name="Ana María Ortiz" detail="Analyste" appearance onSignOut={() => {}} />
+      </IoitiProvider>,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Ana María Ortiz, Analyste' }))
+    const menu = screen.getByRole('menu', { name: 'Compte' })
+    expect(within(menu).getByRole('group', { name: 'Thème' })).toBeInTheDocument()
+    expect(within(menu).getByRole('menuitemradio', { name: /^Système/ })).toHaveTextContent('Comme cet appareil : sombre pour l’instant')
+    expect(within(menu).getByRole('menuitemradio', { name: 'Clair' })).toHaveAttribute('aria-checked', 'false')
+    expect(within(menu).getByRole('menuitemradio', { name: 'Sombre' })).toBeInTheDocument()
+    const rows = within(menu).getAllByRole('menuitem')
+    expect(rows.map((row) => row.textContent)).toEqual(['Couleur et matièreNeutre, opaque', 'Se déconnecter'])
+
+    await user.click(within(menu).getByRole('menuitem', { name: /^Couleur et matière/ }))
+    expect(await screen.findByRole('menuitemradio', { name: 'Boréale' })).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: 'Couleur' })).toBeInTheDocument()
+    expect(screen.getByRole('menuitemradio', { name: 'Verre' })).toBeInTheDocument()
+  })
+
+  it("takes an application's own words over the language's", async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider messages={{ shell: { signOut: 'Log out', account: 'You' } }}>
+        <UserMenu name="Ana María Ortiz" onSignOut={() => {}} />
+      </IoitiProvider>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Ana María Ortiz' }))
+    expect(within(screen.getByRole('menu', { name: 'You' })).getByRole('menuitem')).toHaveTextContent('Log out')
   })
 })

@@ -5,6 +5,7 @@ import { CLOSE_SM } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 import { useLinkComponent } from './link-context.js'
+import { useMessages } from './locale-context.js'
 
 interface AttachmentChipProps {
   /** What it is: a file's name, a record's title. */
@@ -19,7 +20,7 @@ interface AttachmentChipProps {
   href?: string
   /** What draws that link: the application's (LinkProvider) by default; `'a'` for a file the browser opens itself. */
   linkComponent?: ElementType
-  /** It can be taken away: a button named "Remove <label>". */
+  /** It can be taken away: a button named "Remove <label>" (in the provider's language). */
   onRemove?: () => void
   /** `danger`: it could not be taken, `detail` says why. */
   tone?: 'neutral' | 'danger'
@@ -56,6 +57,7 @@ export function AttachmentChip({
 }: AttachmentChipProps) {
   const applicationLink = useLinkComponent()
   const Link = linkComponent ?? applicationLink
+  const words = useMessages().ai
   const danger = tone === 'danger'
   const mark = busy ? (
     <LoaderCircle className="size-3.5 shrink-0 motion-safe:animate-spin" aria-hidden />
@@ -111,7 +113,7 @@ export function AttachmentChip({
       ) : (
         named
       )}
-      {busy && <span className="sr-only">, being made ready</span>}
+      {busy && <span className="sr-only">{words.attachmentPreparing}</span>}
       {detail && (
         <span className={cn('min-w-0 shrink truncate tabular-nums text-muted-foreground', danger && 'text-negative')}>
           {detail}
@@ -121,7 +123,7 @@ export function AttachmentChip({
         <button
           type="button"
           onClick={onRemove}
-          aria-label={`Remove ${label}`}
+          aria-label={words.removeAttachment(label)}
           className={CLOSE_SM}
         >
           <X aria-hidden />

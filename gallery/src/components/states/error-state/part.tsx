@@ -1,4 +1,4 @@
-import { BarList, ErrorBoundary, formatMoney, Panel, Switch } from 'ioiti-ui'
+import { BarList, ErrorBoundary, Panel, Switch, useFormat } from 'ioiti-ui'
 import { useState } from 'react'
 
 interface SalesAnswer {
@@ -16,6 +16,7 @@ const ANSWER: SalesAnswer = {
 
 /** A chart of another service's figures. It trusts the answer, as a part often does: one without its shops throws. */
 function SalesByShop({ answer }: { answer: SalesAnswer }) {
+  const { formatMoney } = useFormat()
   return (
     <BarList
       label="Sales by shop"
@@ -26,6 +27,7 @@ function SalesByShop({ answer }: { answer: SalesAnswer }) {
 }
 
 export default function ErrorStatePart() {
+  const { formatMoney } = useFormat()
   const [broken, setBroken] = useState(false)
   return (
     <div className="flex max-w-lg flex-col gap-4">

@@ -12,6 +12,8 @@ import { fold } from '../../lib/search.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DISABLED, FLOATING, MENU_ROW } from '../../lib/recipes.js';
+// ioiti-ui: its words in the provider's language (`select`).
+import { useMessages } from '../locale-context.js';
 
 export interface SpringSelectOption {
   value: string;
@@ -27,7 +29,7 @@ export interface SpringSelectProps {
   value?: string;
   /** Default selected value (uncontrolled) */
   defaultValue?: string;
-  /** Placeholder when no value is selected */
+  /** Placeholder when no value is selected. ioiti-ui: the provider's language's by default ("Select…"). */
   placeholder?: string;
   /** Change handler */
   onChange?: (value: string) => void;
@@ -101,7 +103,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   options,
   value,
   defaultValue,
-  placeholder = 'Select…',
+  placeholder: givenPlaceholder,
   onChange,
   label,
   disabled = false,
@@ -114,6 +116,9 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   'aria-describedby': ariaDescribedBy,
   'aria-invalid': ariaInvalid,
 }) => {
+  // ioiti-ui: its placeholder the provider's language's, unless one is given.
+  const words = useMessages().select;
+  const placeholder = givenPlaceholder ?? words.placeholder;
   const generatedId = useId();
   const rootId = `spring-select-${generatedId}`;
   // ioiti-ui: what the combobox points to: its label, its list and each option, its error. The trigger's id may be given.

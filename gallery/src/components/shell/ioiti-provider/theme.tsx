@@ -1,4 +1,4 @@
-import { ACCENT_LABEL, DescriptionList, MATERIAL_LABEL, SegmentedControl, ThemeToggle, themeLabel, useTheme } from 'ioiti-ui'
+import { accentName, DescriptionList, materialName, SegmentedControl, ThemeToggle, themeButtonLabel, useMessages, useTheme } from 'ioiti-ui'
 import type { SegmentedControlOption, ThemePreference } from 'ioiti-ui'
 import { Monitor, Moon, Sun } from 'lucide-react'
 
@@ -11,6 +11,8 @@ const PREFERENCES: SegmentedControlOption<ThemePreference>[] = [
 export default function IoitiProviderTheme() {
   // The application's, held by IoitiProvider: every component below it reads it, and sets it.
   const { preference, theme, setPreference, accent, material } = useTheme()
+  // The look's names in the application's language.
+  const { look } = useMessages()
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -23,9 +25,9 @@ export default function IoitiProviderTheme() {
         items={[
           { term: 'Chosen', details: preference },
           { term: 'Shown', details: theme },
-          { term: 'Accent', details: ACCENT_LABEL[accent] },
-          { term: 'Material', details: MATERIAL_LABEL[material] },
-          { term: 'The theme button says', details: themeLabel(preference, theme) },
+          { term: 'Accent', details: accentName(accent, look) },
+          { term: 'Material', details: materialName(material, look) },
+          { term: 'The theme button says', details: themeButtonLabel(preference, theme, look) },
         ]}
       />
     </div>

@@ -2,7 +2,7 @@
 
 The bar of a page's parts: it stays in view as the page scrolls, a line along its top says how far, it marks the part being read, and each part is a link to its place.
 
-**You provide** `sections` (`[{ id, label, href?, index? }]`, each `id` the id of its part's element), `label` (`Table of contents` by default); `mode` (`fixed` by default · `sticky` · `inline`), `containerRef` (the element the page scrolls in: `useMainScroll()` inside the `AppShell`), `position` (`top-center` · `bottom-center` · `top-right`, with `fixed`), `scrollThreshold`, `activeId`, `onSectionClick`.
+**You provide** `sections` (`[{ id, label, href?, index? }]`, each `id` the id of its part's element), `label` (`Table of contents` by default, in IoitiProvider's language); `mode` (`fixed` by default · `sticky` · `inline`), `containerRef` (the element the page scrolls in: `useMainScroll()` inside the `AppShell`), `position` (`top-center` · `bottom-center` · `top-right`, with `fixed`), `scrollThreshold`, `activeId`, `onSectionClick`.
 
 ```tsx
 const main = useMainScroll()

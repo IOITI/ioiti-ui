@@ -1,4 +1,4 @@
-import { formatMoney, SignedValue, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
+import { SignedValue, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, useFormat } from 'ioiti-ui'
 
 const SHOPS = [
   { shop: 'Lyon', revenue: 21480, change: 1240.5, percent: 6.1 },
@@ -8,6 +8,7 @@ const SHOPS = [
 ]
 
 export default function SignedValueInATable() {
+  const { formatMoney } = useFormat()
   return (
     <Table density="dense" aria-label="Revenue by shop, against last month">
       <TableHead>

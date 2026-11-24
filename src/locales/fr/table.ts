@@ -1,0 +1,82 @@
+import type { Messages } from '../en.js'
+
+export const table: Messages['table'] = {
+  searchPlaceholder: 'Rechercher…',
+  // What is selected are items (« éléments »), as the bulk actions say.
+  selectedCount: (count, { plural }) => plural(count, { one: '# sélectionné', other: '# sélectionnés' }),
+  showAsTable: 'Afficher en tableau',
+  showAsCards: 'Afficher en cartes',
+  columnsShown: 'Colonnes affichées',
+  columns: 'Colonnes',
+  bulkSelected: (count, { plural }) => plural(count, { one: '# élément sélectionné :', other: '# éléments sélectionnés :' }),
+  exportAction: 'Exporter',
+  deleteAction: 'Supprimer',
+
+  filters: 'Filtres',
+  filterOption: ({ column, option }) => `${column} : ${option}`,
+  // Agreeing with « options », and with the count of those ticked.
+  filterChosen: ({ chosen, count }, { plural, number }) =>
+    plural(chosen, { one: `# sur ${number(count)} sélectionnée`, other: `# sur ${number(count)} sélectionnées` }),
+  filterOptionCount: (count, { plural }) => plural(count, { one: '# option', other: '# options' }),
+  filterBy: (column) => `Filtrer par ${column}`,
+  // The column's header between guillemets: one may start with a vowel, before which « de » would be elided.
+  searchOptions: (column) => `Rechercher dans les options du filtre « ${column} »`,
+  noOptionMatches: 'Aucune option ne correspond.',
+  optionRows: (count, { plural }) => plural(count, { one: '# ligne', other: '# lignes' }),
+  clear: 'Effacer',
+  clearFilters: 'Effacer les filtres',
+
+  emptyTitle: 'Rien à afficher',
+  noMatchTitle: 'Aucun enregistrement ne correspond',
+  noMatchText: 'Rien ne correspond à la recherche ou aux filtres.',
+  loadFailed: 'Échec du chargement des données',
+  loadingRecords: 'Chargement des enregistrements',
+  selectAll: 'Sélectionner toutes les lignes',
+  selectRow: (name) => `Sélectionner ${name}`,
+  selectRowById: (id) => `Sélectionner la ligne ${id}`,
+  openRow: (name) => `Ouvrir ${name}`,
+  closeRow: (name) => `Fermer ${name}`,
+  expandRow: 'Afficher les détails de la ligne',
+  collapseRow: 'Masquer les détails de la ligne',
+
+  loading: 'Chargement…',
+  // As French software counts what a page shows: « 1–10 sur 57 enregistrements ».
+  showing: ({ range, total, count }, { plural }) =>
+    plural(count, { one: `${range} sur ${total} enregistrement`, other: `${range} sur ${total} enregistrements` }),
+  rowsPerPageLabel: 'Lignes par page :',
+  rowsPerPage: 'Lignes par page',
+  firstPage: 'Première page',
+  previousPage: 'Page précédente',
+  nextPage: 'Page suivante',
+  lastPage: 'Dernière page',
+
+  basketToolbar: 'Barre d’actions groupées',
+  basketSelected: (count, { plural }) => plural(count, { one: 'élément sélectionné', other: 'éléments sélectionnés' }),
+  // « Sélectionné » would agree with the noun given, whose gender the basket does not know: « 3 lignes dans la sélection ».
+  basketSelectedNoun: ({ count, noun }, { plural }) =>
+    plural(count, { one: `${noun[0]} dans la sélection`, other: `${noun[1]} dans la sélection` }),
+  // « Tous » or « Toutes » would agree with the items: « Tout sélectionner » says it whatever they are.
+  basketSelectAll: (count, { number }) => `Tout sélectionner (${number(count)})`,
+  basketSelectNone: 'Tout désélectionner',
+  basketClear: 'Effacer la sélection',
+  moveAction: 'Déplacer vers un dossier',
+  shareAction: 'Partager',
+
+  comparisonName: 'Comparaison des fonctionnalités et des offres',
+  comparisonMatrix: 'Matrice des fonctionnalités',
+  comparisonCount: (count, { plural }) => plural(count, { one: '# spécification', other: '# spécifications' }),
+  comparisonSearch: 'Filtrer les fonctionnalités…',
+  comparisonDifferences: 'Différences uniquement',
+  comparisonEmpty: 'Aucune fonctionnalité ne correspond à la recherche ou au filtre des différences.',
+  comparisonAction: 'Commencer',
+  comparisonInfo: (feature) => `Informations sur ${feature}`,
+  comparisonPlan: (plan) => `${plan} :`,
+
+  // Nouns, not « Nouveau » and « Supprimé »: those would agree with the setting's name, whose gender the list does not know.
+  changeNew: 'Ajout',
+  changeRemoved: 'Suppression',
+  changeFrom: 'de',
+  changeTo: 'à',
+
+  region: 'Tableau',
+}

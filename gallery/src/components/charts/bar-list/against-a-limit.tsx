@@ -1,6 +1,7 @@
-import { BarList } from 'ioiti-ui'
+import { BarList, useFormat } from 'ioiti-ui'
 
 export default function BarListAgainstALimit() {
+  const { formatNumber, formatPercent } = useFormat()
   return (
     <div className="grid max-w-3xl gap-8 sm:grid-cols-2">
       <div className="min-w-0 space-y-3">
@@ -9,7 +10,7 @@ export default function BarListAgainstALimit() {
         <BarList
           label="Space used on each disk, out of 500 GB"
           max={500}
-          format={(value) => `${value} GB`}
+          format={(value) => `${formatNumber(value)} GB`}
           items={[
             { label: 'Database', value: 468, tone: 'negative' },
             { label: 'Backups', value: 402, tone: 'warning' },
@@ -23,7 +24,7 @@ export default function BarListAgainstALimit() {
         <BarList
           label="Share of health checks passed this week"
           max={100}
-          format={(value) => `${value.toFixed(1)}%`}
+          format={(value) => formatPercent(value, false, 1)}
           items={[
             { label: 'Payments', value: 99.9, tone: 'positive' },
             { label: 'Search', value: 98.2, tone: 'positive' },

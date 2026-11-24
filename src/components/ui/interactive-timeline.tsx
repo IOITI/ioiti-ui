@@ -7,6 +7,9 @@ import { cn, copyToClipboard } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { Hint } from '../Hint.js';
+// ioiti-ui: its words in the provider's language (`layout`).
+import { useMessages } from '../locale-context.js';
+import type { BoundMessages } from '../locale-context.js';
 
 // ioiti-ui: `warning`, a step that went on but not as it should (amber).
 export type TimelineStatus = 'completed' | 'in-progress' | 'pending' | 'failed' | 'warning';
@@ -21,7 +24,10 @@ export interface TimelineItem {
   title: string;
   timestamp: string;
   status: TimelineStatus;
-  /** ioiti-ui: the words of the status badge. Without them there is no badge: the title says the step. */
+  /**
+   * ioiti-ui: the words of the status badge. Without them there is no badge: the title says the step, and its node says
+   * the status in the provider's language ("completed", "in-progress"…).
+   */
   statusLabel?: string;
   description?: string;
   tag?: string;
@@ -50,6 +56,22 @@ function hasDetails(item: TimelineItem): boolean {
   return Boolean(item.description || item.metrics?.length || item.author || item.commitHash);
 }
 
+/** ioiti-ui: a status said in the provider's words, where an item gives none of its own (`statusLabel`). */
+function statusWord(words: BoundMessages['layout'], status: TimelineStatus): string {
+  switch (status) {
+    case 'completed':
+      return words.timelineCompleted;
+    case 'in-progress':
+      return words.timelineInProgress;
+    case 'pending':
+      return words.timelinePending;
+    case 'failed':
+      return words.timelineFailed;
+    case 'warning':
+      return words.timelineWarning;
+  }
+}
+
 export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
   items = [],
   defaultSelectedId,
@@ -60,6 +82,7 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
   collapsible = true,
   ...props
 }) => {
+  const words = useMessages().layout;
   const [selectedId, setSelectedId] = useState<string | undefined>(
     defaultSelectedId || items[0]?.id
   );
@@ -187,6 +210,8 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
             const isExpanded = details && expandedIds.has(item.id);
             const isSelected = selectedId === item.id;
             const itemId = `${listId}-item-${item.id}`;
+            // ioiti-ui: its step and its state, in the provider's words where it gives none.
+            const named = words.timelineItem({ title: item.title, status: item.statusLabel ?? statusWord(words, item.status) });
 
             return (
               <div
@@ -196,10 +221,10 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
               >
                 {/* Status Indicator Node. ioiti-ui: named by its step and its state (aria-label), shown in a Hint on
                     hover, keyboard focus and a tap: its title was its only name, and showed on none of them. */}
-                <Hint content={`${item.title}: ${item.statusLabel ?? item.status}`} side="right">
+                <Hint content={named} side="right">
                 <button
                   type="button"
-                  aria-label={`${item.title}: ${item.statusLabel ?? item.status}`}
+                  aria-label={named}
                   onClick={() => handleToggleExpand(item)}
                   aria-expanded={collapsible && details ? isExpanded : undefined}
                   aria-controls={collapsible && details ? itemId : undefined}
@@ -320,11 +345,11 @@ export const InteractiveTimeline: React.FC<InteractiveTimelineProps> = ({
                               )}
 
                               {item.commitHash && (
-                                // ioiti-ui: what it does in a Hint, not a title.
-                                <Hint content={copiedHash === item.commitHash ? 'Copied' : 'Copy the commit hash'}>
+                                // ioiti-ui: what it does in a Hint, not a title; in the provider's words.
+                                <Hint content={copiedHash === item.commitHash ? words.commitCopied : words.copyCommit}>
                                 <button
                                   type="button"
-                                  aria-label={`Copy the commit hash ${item.commitHash.slice(0, 7)}`}
+                                  aria-label={words.copyCommitNamed(item.commitHash.slice(0, 7))}
                                   onClick={(e) => handleCopyHash(e, item.commitHash!)}
                                   // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
                                   className={cn(

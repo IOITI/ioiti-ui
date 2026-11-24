@@ -3,6 +3,7 @@
 // examples and its props, its links under /ioiti-ui/, and nothing axe finds in it (test/a11y.ts).
 import { render, screen } from '@testing-library/react'
 import { IoitiProvider } from 'ioiti-ui'
+import type { MessagesOverride } from 'ioiti-ui'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 
@@ -16,10 +17,11 @@ export const BASE = '/ioiti-ui/'
 /** A page loads its category's examples first: the first of a category waits for them to be transformed. */
 export const A_PAGE = 20_000
 
-export function renderAt(path: string) {
+/** A page of the gallery drawn through its router, in English or in the language given (`locale`, `messages`). */
+export function renderAt(path: string, language: { locale?: string; messages?: MessagesOverride } = {}) {
   const router = createMemoryRouter(routes, { basename: BASE, initialEntries: [`${BASE}${path.slice(1)}`] })
   render(
-    <IoitiProvider appName="ioiti-ui">
+    <IoitiProvider appName="ioiti-ui" locale={language.locale} messages={language.messages}>
       <RouterProvider router={router} />
     </IoitiProvider>,
   )

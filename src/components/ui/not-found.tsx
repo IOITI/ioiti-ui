@@ -13,6 +13,8 @@ import {
 import { motion, useMotionValue, useReducedMotionConfig, useSpring, useTransform } from "framer-motion";
 import { Hint } from "../Hint.js";
 import { useLinkComponent } from "../link-context.js";
+// ioiti-ui: its words in the provider's language (the catalogue's `notFound`); its drawing as it was.
+import { useMessages } from "../locale-context.js";
 
 /* -------------------------------------------------------------------------- */
 /*  NotFound — a premium 404 page. A frosted-glass folder over a big "404".    */
@@ -32,14 +34,19 @@ export interface NotFoundSuggestion {
 
 export interface NotFoundProps {
   errorCode?: string;
+  /** ioiti-ui: above the heading; "Error 404", in the provider's language, by default. */
   badgeLabel?: string;
+  /** ioiti-ui: the heading; the provider's language's by default ("This page took a wrong turn."). */
   title?: string;
+  /** ioiti-ui: under the heading; the provider's language's by default ("The requested page doesn't exist or may have moved."). */
   description?: ReactNode;
+  /** ioiti-ui: the words of the way home ("Go back home", in the provider's language, by default), `homeLabel`'s too. */
   actionLabel?: string;
   onAction?: () => void;
   homeHref?: string;
   homeLabel?: string;
   showBack?: boolean;
+  /** ioiti-ui: the words of the way back ("Go back", in the provider's language, by default), `secondaryActionLabel`'s too. */
   backLabel?: string;
   secondaryActionLabel?: string;
   onBack?: () => void;
@@ -124,6 +131,8 @@ const CSS = `
 /* -------------------------------- Illustration ------------------------------ */
 
 export function Illustration({ parallax = true }: { parallax?: boolean }) {
+  // ioiti-ui: described in the provider's language.
+  const words = useMessages().notFound;
   const reduce = useReducedMotionConfig();
   const uid = useId().replace(/:/g, "");
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -193,7 +202,8 @@ export function Illustration({ parallax = true }: { parallax?: boolean }) {
     <div
       ref={wrapRef}
       role="img"
-      aria-label="A frosted glass folder covering the number 404"
+      // ioiti-ui: its words, the provider's language's.
+      aria-label={words.illustration}
       className="np404-hero relative mx-auto w-full max-w-[460px]"
       style={{ aspectRatio: `${W} / ${H}`, opacity: scale === null ? 0 : 1 }}
     >
@@ -338,8 +348,9 @@ const focus = "outline-none";
 export function NotFound({
   errorCode = "404",
   badgeLabel,
-  title = "This page took a wrong turn.",
-  description = "The requested page doesn't exist or may have moved.",
+  // ioiti-ui: the provider's language's words where none are given (below).
+  title: givenTitle,
+  description: givenDescription,
   actionLabel,
   onAction,
   homeHref = "/",
@@ -361,6 +372,10 @@ export function NotFound({
   const reduce = useReducedMotionConfig();
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const Anchor: ElementType = useLinkComponent(LinkComponent);
+  // ioiti-ui: its words in the provider's language, those given over them.
+  const words = useMessages().notFound;
+  const title = givenTitle ?? words.title;
+  const description = givenDescription === undefined ? words.description : givenDescription;
   const headingRef = useRef<HTMLHeadingElement>(null);
   const headingId = useId();
 
@@ -374,8 +389,8 @@ export function NotFound({
   }, [focusOnMount]);
 
   const shownPath = path === undefined ? detected : path;
-  const effectiveHomeLabel = actionLabel || homeLabel || "Go back home";
-  const effectiveBackLabel = secondaryActionLabel || backLabel || "Go back";
+  const effectiveHomeLabel = actionLabel || homeLabel || words.goHome;
+  const effectiveBackLabel = secondaryActionLabel || backLabel || words.goBack;
   const effectiveGoBack = () => {
     if (onSecondaryAction) return onSecondaryAction();
     if (onBack) return onBack();
@@ -403,9 +418,10 @@ export function NotFound({
       <div className="flex w-full max-w-xl flex-col items-center">
         <Illustration parallax={parallax} />
 
-        <p className="sr-only">{`Error ${errorCode}: ${title}`}</p>
+        {/* ioiti-ui: the error's code and the heading, the badge's words too, in the provider's language. */}
+        <p className="sr-only">{words.errorHeading({ code: errorCode, title })}</p>
         <motion.p {...rise(0.15)} className="mt-2 text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-          {badgeLabel ?? `Error ${errorCode}`}
+          {badgeLabel ?? words.errorBadge(errorCode)}
         </motion.p>
 
         <motion.h1
@@ -479,8 +495,9 @@ export function NotFound({
         )}
 
         {suggestions && suggestions.length > 0 && (
-          <motion.nav {...rise(0.5)} aria-label="Helpful links" className="mt-12 w-full">
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Maybe you were looking for</p>
+          // ioiti-ui: named and headed in the provider's language.
+          <motion.nav {...rise(0.5)} aria-label={words.helpfulLinks} className="mt-12 w-full">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">{words.suggestions}</p>
             <ul className="grid grid-cols-1 gap-2.5 text-left sm:grid-cols-3">
               {suggestions.slice(0, 3).map((s) => (
                 <li key={s.href}>

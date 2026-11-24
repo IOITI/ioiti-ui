@@ -1,6 +1,8 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { AIAgentActivity } from './ui/ai-agent-activity.js'
 import type { AgentActivityItemData } from './ui/ai-agent-activity.js'
 
@@ -123,5 +125,76 @@ describe('AIAgentActivity', () => {
 
     expect(screen.getByRole('heading', { name: 'What it did' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /What it did/ })).toBeNull()
+  })
+})
+
+describe('AIAgentActivity in a language', () => {
+  const SCRIPT: AgentActivityItemData = {
+    id: 'm',
+    type: 'code_execution',
+    title: 'Ran a script',
+    status: 'success',
+    metadata: { model: 'opus' },
+    details: { codeSnippet: 'print(1)' },
+  }
+
+  it('says its words in the language given, its steps counted as it counts them', () => {
+    const { rerender } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AIAgentActivity activities={[...STEPS, SCRIPT]} defaultExpandedIds={['a', 'm']} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('heading', { name: 'Activité' })).toBeInTheDocument()
+    expect(screen.getByText('2 étapes sur 4 terminées')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Tout développer' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Tout réduire' })).toBeInTheDocument()
+    expect(screen.getByText('Demande')).toBeInTheDocument()
+    expect(screen.getByText('Réponse')).toBeInTheDocument()
+    // Its code, which names no language, and a detail's key, its colon as French writes it.
+    expect(screen.getByText('Code')).toBeInTheDocument()
+    expect(screen.getByText('model :').textContent).toBe('model\u00a0:')
+
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AIAgentActivity activities={STEPS.slice(0, 1)} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('1 étape sur 1 terminée')).toBeInTheDocument()
+
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AIAgentActivity activities={TALK} isRunning />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('En cours')).toBeInTheDocument()
+    expect(screen.getAllByRole('group', { name: 'Notes' })).toHaveLength(2)
+
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AIAgentActivity activities={[]} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('Pas encore commencé')).toBeInTheDocument()
+    expect(screen.getByText('Aucune activité enregistrée')).toBeInTheDocument()
+  })
+
+  it("takes an application's own words over English's, and its props over both", () => {
+    const { rerender } = render(
+      <IoitiProvider messages={{ ai: { activityTitle: 'What it did', stepsDone: ({ done, count }: { done: number; count: number }) => `${done}/${count}` } }}>
+        <AIAgentActivity activities={STEPS} defaultExpandedIds={['a']} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('heading', { name: 'What it did' })).toBeInTheDocument()
+    expect(screen.getByText('1/3')).toBeInTheDocument()
+    expect(screen.getByText('Asked')).toBeInTheDocument()
+
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AIAgentActivity activities={STEPS} defaultExpandedIds={['a']} title="Ce qu’il a fait" inputLabel="Paramètres" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('heading', { name: 'Ce qu’il a fait' })).toBeInTheDocument()
+    expect(screen.getByText('Paramètres')).toBeInTheDocument()
+    expect(screen.getByText('Réponse')).toBeInTheDocument()
   })
 })

@@ -3,9 +3,10 @@ import { Monitor, Moon, Sun } from 'lucide-react'
 
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { PRESSABLE } from '../lib/recipes.js'
-import { nextPreference, themeLabel } from '../lib/theme.js'
+import { nextPreference, themeButtonLabel } from '../lib/theme.js'
 import { cn } from '../lib/utils.js'
 
+import { useMessages } from './locale-context.js'
 import { useTheme } from './theme-context.js'
 
 const ICONS = { system: Monitor, light: Sun, dark: Moon }
@@ -13,17 +14,19 @@ const ICONS = { system: Monitor, light: Sun, dark: Moon }
 /**
  * One button for three states: follow the system, light, dark. Its icon is the
  * state it is in, and its label says both that and what a press does, since an
- * icon alone cannot ("Theme: follows the system (dark now). Press for always light.").
+ * icon alone cannot ("Theme: follows the system (dark now). Press for always light."), in the provider's language.
  */
 export function ThemeToggle({ className }: { className?: string }) {
   const { preference, theme, setPreference } = useTheme()
+  const words = useMessages().look
   const Icon = ICONS[preference]
-  const label = themeLabel(preference, theme)
+  const label = themeButtonLabel(preference, theme, words)
   return (
     <button
       type="button"
       onClick={() => setPreference(nextPreference(preference))}
       aria-label={label}
+      // The original design's title, kept: its words the catalogue's, as its name.
       title={label}
       className={cn(
         // The top bar's icon buttons' look (IconButton's).

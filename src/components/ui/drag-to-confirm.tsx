@@ -6,7 +6,8 @@ import { ChevronRight, Check, Trash2, Lock, Unlock, Archive, ArrowRight } from '
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { TONE_LINE, TONE_SOFT, TONE_SOLID, TONE_TEXT, type Tone } from '../../lib/recipes.js';
-import { useFormat } from '../locale-context.js';
+// ioiti-ui: its words in the provider's language, its percentage in its locale.
+import { useFormat, useMessages } from '../locale-context.js';
 
 export type DragConfirmActionType =
   | 'delete'
@@ -26,9 +27,9 @@ export type DragConfirmVariant =
 export type DragConfirmSize = 'sm' | 'md' | 'lg';
 
 export interface DragToConfirmProps {
-  /** Label shown along track */
+  /** Label shown along track. ioiti-ui: "Slide to confirm" in the provider's language by default. */
   label?: string;
-  /** Label shown upon completion */
+  /** Label shown upon completion. ioiti-ui: "Confirmed ✓" in the provider's language by default. */
   confirmedLabel?: string;
   /** Action archetype */
   actionType?: DragConfirmActionType;
@@ -88,8 +89,8 @@ const SIZE_CONFIG = {
 };
 
 export const DragToConfirm: React.FC<DragToConfirmProps> = ({
-  label = 'Slide to confirm',
-  confirmedLabel = 'Confirmed ✓',
+  label: givenLabel,
+  confirmedLabel: givenConfirmedLabel,
   actionType = 'confirm',
   variant,
   size = 'md',
@@ -103,6 +104,10 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   haptic = true,
   className,
 }) => {
+  // ioiti-ui: its words in the provider's language, the ones given over them.
+  const words = useMessages().dialog;
+  const label = givenLabel ?? words.slideToConfirm;
+  const confirmedLabel = givenConfirmedLabel ?? words.confirmed;
   const [internalConfirmed, setInternalConfirmed] = useState(false);
   const isConfirmed = controlledConfirmed !== undefined ? controlledConfirmed : internalConfirmed;
 

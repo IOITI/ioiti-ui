@@ -9,6 +9,8 @@ import { Hint } from '../Hint.js';
 import { PRESSABLE } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+// ioiti-ui: its words in the provider's language (`layout`).
+import { useMessages } from '../locale-context.js';
 
 export interface NavSectionItem {
   id: string;
@@ -35,7 +37,7 @@ export interface ScrollProgressNavProps {
   position?: 'top-center' | 'bottom-center' | 'top-right';
   /** Custom class name */
   className?: string;
-  /** ioiti-ui: what the nav is called (default 'Table of contents'). */
+  /** ioiti-ui: what the nav is called; the provider's language's by default ("Table of contents"). */
   label?: string;
 }
 
@@ -45,12 +47,14 @@ function partIn(container: HTMLElement, id: string): HTMLElement | null {
   return container.querySelector<HTMLElement>(`[id="${id.replace(/["\\]/g, '\\$&')}"]`);
 }
 
+// ioiti-ui: EasyUI's demo, drawn only where an application gives no part of its own (their ids are on none of its pages):
+// the parts are the application's, in its words.
 const defaultSections: NavSectionItem[] = [
-  { id: 'overview', index: '01', label: 'Overview' },
-  { id: 'features', index: '02', label: 'Features' },
-  { id: 'components', index: '03', label: 'Components' },
-  { id: 'documentation', index: '04', label: 'Documentation' },
-  { id: 'pricing', index: '05', label: 'Pricing' },
+  { id: 'overview', index: '01', label: 'Overview' }, // i18n-exempt: EasyUI's demo part
+  { id: 'features', index: '02', label: 'Features' }, // i18n-exempt: EasyUI's demo part
+  { id: 'components', index: '03', label: 'Components' }, // i18n-exempt: EasyUI's demo part
+  { id: 'documentation', index: '04', label: 'Documentation' }, // i18n-exempt: EasyUI's demo part
+  { id: 'pricing', index: '05', label: 'Pricing' }, // i18n-exempt: EasyUI's demo part
 ];
 
 export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
@@ -62,8 +66,11 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
   onSectionClick,
   position = 'top-center',
   className,
-  label = 'Table of contents',
+  label: givenLabel,
 }) => {
+  // ioiti-ui: its words in the provider's language, its name given over them.
+  const words = useMessages().layout;
+  const label = givenLabel ?? words.contents;
   const uniqueId = React.useId();
   const reduceMotion = useReducedMotionConfig();
   const rowRef = useRef<HTMLDivElement>(null);
@@ -262,7 +269,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
             className={cn('p-1 rounded-full text-muted-foreground hover:text-foreground transition', PRESSABLE)}
-            aria-label="Toggle section menu"
+            aria-label={words.sectionMenu}
             aria-expanded={isExpanded}
           >
             <ChevronRight className={cn('size-3.5 motion-safe:transition-transform duration-200 ease-fast', isExpanded && 'rotate-90')} />
@@ -316,7 +323,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
         {/* Scroll To Top Action */}
         {/* ioiti-ui: what it does in a Hint, shown on hover, keyboard focus and a tap, where a title shows on none. */}
         {isFloating && (
-          <Hint content="Back to the top">
+          <Hint content={words.backToTop}>
             <button
               type="button"
               onClick={scrollToTop}
@@ -324,7 +331,7 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
                 'size-6 rounded-full bg-surface-raised hover:bg-surface border border-border hover:border-border-hover flex items-center justify-center text-muted-foreground hover:text-foreground transition focus-ring shrink-0 ml-0.5',
                 PRESSABLE
               )}
-              aria-label="Back to the top"
+              aria-label={words.backToTop}
             >
               <ArrowUp className="size-3" />
             </button>

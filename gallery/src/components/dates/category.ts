@@ -6,7 +6,7 @@ const dates: CategoryInfo = {
   slug: 'dates',
   label: 'Dates and time',
   icon: CalendarDays,
-  summary: 'A day, a range of days or of time, a moment said from now, the time elsewhere: weeks start on Monday, days are written as en-GB writes them.',
+  summary: 'A day, a range of days or of time, a moment said from now, the time elsewhere: weeks start on the locale’s day and days are written as it writes them, IoitiProvider’s (Monday and 14 Oct 2026 in en-GB, the default).',
   families: [
     {
       slug: 'calendar',
@@ -25,7 +25,7 @@ const dates: CategoryInfo = {
       names: ['DatePicker', 'DateRangePicker'],
       keywords: ['date input', 'date field', 'range picker'],
       examples: [
-        { id: 'day', title: 'A day from a field', description: 'In a Field, as any control: the field says the day as en-GB writes it, its calendar opens over the page under it, the focus on the day to choose. Empty, its placeholder says what is asked; a day that cannot be is an error.' },
+        { id: 'day', title: 'A day from a field', description: 'In a Field, as any control: the field says the day as its locale writes it, its calendar opens over the page under it, the focus on the day to choose. Empty, its placeholder says what is asked; a day that cannot be is an error.' },
         { id: 'range', title: 'A range from a field', description: 'DateRangePicker: two presses in its calendar, the range written in the field; rangeParams gives its days for an API.' },
         { id: 'limits', title: 'Bounded, or disabled', description: 'Only the days that can be chosen are offered: weekdays, between a first and a last day. Disabled, its range stays readable.' },
       ],

@@ -10,6 +10,8 @@ import React, { useState, useMemo, useId } from 'react';
 import { motion, useReducedMotionConfig } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+// ioiti-ui: its words in the provider's language (`layout`).
+import { useMessages } from '../locale-context.js';
 
 /** ioiti-ui: a node's health, as a health check reports it. */
 export type TraceStatus = 'ok' | 'warning' | 'down' | 'unknown' | 'disabled';
@@ -48,7 +50,7 @@ export interface DependencyTraceProps {
   /** ioiti-ui: the canvas the nodes' x and y are on (EasyUI's was 400 × 280). */
   width?: number;
   height?: number;
-  /** ioiti-ui: the graph's name, for screen readers. */
+  /** ioiti-ui: the graph's name, for screen readers; the provider's language's by default ("Dependency Relationship Graph"). */
   label?: string;
   /** Custom CSS class names. */
   className?: string;
@@ -79,9 +81,13 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
   nodeSize = 36,
   width = 400,
   height = 280,
-  label = 'Dependency Relationship Graph',
+  label: givenLabel,
   className,
 }) => {
+  // ioiti-ui: its words in the provider's language, its name given over them; its links counted as the language counts
+  // ("1 connection": EasyUI's said "1 connections").
+  const words = useMessages().layout;
+  const label = givenLabel ?? words.dependencyGraph;
   // ioiti-ui: the pulse of the node traced is a loop: it stops where motion is reduced (IoitiProvider or the system).
   const reduceMotion = useReducedMotionConfig() ?? false;
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
@@ -243,7 +249,7 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
           const isCurrentActive = activeId === node.id;
           const isConnected = connectedNodeIds.has(node.id);
           const isDimmed = activeId !== null && !isConnected;
-          const said = node.statusLabel ? `${node.label}: ${node.statusLabel}` : node.label;
+          const said = node.statusLabel ? words.nodeStatus({ name: node.label, status: node.statusLabel }) : node.label;
 
           return (
             <g
@@ -332,16 +338,16 @@ export const DependencyTrace: React.FC<DependencyTraceProps> = ({
           {activeNode ? (
             <>
               <span className="font-medium text-foreground">{activeNode.label}</span>
-              {activeNode.statusLabel && `: ${activeNode.statusLabel}`}
+              {activeNode.statusLabel && words.traceStatus(activeNode.statusLabel)}
               {activeNode.detail && ` (${activeNode.detail})`}
-              {needs.length > 0 && ` · calls ${needs.join(', ')}`}
-              {neededBy.length > 0 && ` · called by ${neededBy.join(', ')}`}
+              {needs.length > 0 && ` · ${words.traceCalls(needs)}`}
+              {neededBy.length > 0 && ` · ${words.traceCalledBy(neededBy)}`}
             </>
           ) : (
-            'Hover or focus a node to trace what it calls and what calls it'
+            words.traceHint
           )}
         </span>
-        <span className="shrink-0 font-mono">{connections.length} connections</span>
+        <span className="shrink-0 font-mono">{words.connections(connections.length)}</span>
       </div>
     </div>
   );

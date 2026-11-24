@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
+import { ErrorBoundary } from '../components/ErrorBoundary.js'
+import { IoitiProvider } from '../components/IoitiProvider.js'
+import { fr } from '../locales/fr.js'
 import { ErrorState } from './ErrorState.js'
 
 afterEach(() => {
@@ -79,3 +82,67 @@ describe('ErrorState', () => {
   })
 })
 
+describe('ErrorState in French', () => {
+  /** French's no-break spaces (before a semicolon, a colon) read as spaces. */
+  const spaced = (text: string | null) => (text ?? '').replace(/\s/g, ' ')
+
+  it('says what went wrong and the way on in the provider\'s words, its details too', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <ErrorState error={new Error('Les chiffres ne sont pas des nombres')} onRetry={() => {}} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('heading', { level: 1, name: 'Une erreur s’est produite' })).toHaveFocus()
+    expect(spaced(screen.getByText(/^Réessayez/).textContent)).toBe('Réessayez ; en cas de nouvel échec, revenez plus tard.')
+    expect(screen.getByRole('button', { name: 'Réessayer' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Retour à l’accueil' })).toHaveAttribute('href', '/')
+    expect(screen.getByText('Détails')).toBeInTheDocument()
+  })
+
+  it('says each kind of error in French: a server out of reach, code that did not load', () => {
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <ErrorState page={false} error={new TypeError('Failed to fetch')} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('heading', { level: 3, name: 'Le serveur est injoignable' })).toBeInTheDocument()
+    expect(screen.getByText('Vérifiez la connexion, puis revenez plus tard.')).toBeInTheDocument()
+    unmount()
+
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <ErrorState error={new TypeError('Failed to fetch dynamically imported module: /assets/ItemsPage-1a2b.js')} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('heading', { level: 1, name: 'Cette page n’a pas pu être chargée' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Recharger' })).toBeInTheDocument()
+  })
+
+  it("says a part that threw in the provider's words, and takes an application's own over them", () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    function Broken(): never {
+      throw new Error('Nothing to draw')
+    }
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <ErrorBoundary>
+          <Broken />
+        </ErrorBoundary>
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('alert')).toHaveTextContent('Cette partie n’a pas pu être affichée')
+    expect(screen.getByRole('button', { name: 'Réessayer' })).toBeInTheDocument()
+    vi.restoreAllMocks()
+  })
+
+  it("takes an application's own words over the language's", () => {
+    render(
+      <IoitiProvider messages={{ error: { otherPage: 'Oops', tryAgain: 'Retry' } }}>
+        <ErrorState error={new Error('No')} onRetry={() => {}} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('heading', { level: 1, name: 'Oops' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Back to home' })).toBeInTheDocument()
+  })
+})

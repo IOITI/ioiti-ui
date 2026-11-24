@@ -10,10 +10,10 @@ export default function DatePickerLimits() {
   return (
     <div className="grid w-full gap-4 sm:grid-cols-2">
       <Field label="Collection day" description="A weekday, from 16 Nov to 15 Jan">
-        <DatePicker minDate={FIRST} maxDate={LAST} isDateDisabled={weekend} defaultMonth={FIRST} placeholder="Choose a day" locale="en-GB" weekStartsOn={1} />
+        <DatePicker minDate={FIRST} maxDate={LAST} isDateDisabled={weekend} defaultMonth={FIRST} placeholder="Choose a day" />
       </Field>
       <Field label="Contract" description="Set when it was signed">
-        <DateRangePicker defaultValue={CONTRACT} disabled locale="en-GB" weekStartsOn={1} />
+        <DateRangePicker defaultValue={CONTRACT} disabled />
       </Field>
     </div>
   )

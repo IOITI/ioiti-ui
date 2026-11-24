@@ -2,11 +2,10 @@ import { Fragment, useLayoutEffect, useRef } from 'react'
 import type { ReactNode, RefObject } from 'react'
 
 import { toneOf } from '../lib/format.js'
-import { HEALTH_STATUS_LABEL } from '../lib/health.js'
 import type { HealthStatus } from '../lib/health.js'
 import type { Tone } from '../lib/format.js'
 import { cn } from '../lib/utils.js'
-import { useFormat } from './locale-context.js'
+import { useFormat, useMessages } from './locale-context.js'
 import { Alert, AlertDescription, AlertTitle } from './ui/alert.js'
 import { AnimatedNumber } from './ui/animated-number.js'
 import { Badge } from './ui/badge.js'
@@ -21,11 +20,24 @@ const HEALTH_TONE: Record<HealthStatus, BadgeTone> = {
   disabled: 'neutral',
 }
 
-/** A state: always a word next to the colour, never the colour alone. */
+// A state's word in the catalogue (`status`).
+const HEALTH_WORD = {
+  ok: 'healthOk',
+  warning: 'healthWarning',
+  down: 'healthDown',
+  unknown: 'healthUnknown',
+  disabled: 'healthDisabled',
+} as const satisfies Record<HealthStatus, string>
+
+/**
+ * A state: always a word next to the colour, never the colour alone; the provider's language's ("Up", "Degraded",
+ * "Down", "Unknown", "Disabled") unless `label` says another.
+ */
 export function StatusBadge({ status, label }: { status: HealthStatus; label?: string }) {
+  const words = useMessages().status
   return (
     <Badge tone={HEALTH_TONE[status]} dot={status !== 'disabled'}>
-      {label ?? HEALTH_STATUS_LABEL[status]}
+      {label ?? words[HEALTH_WORD[status]]}
     </Badge>
   )
 }
@@ -47,7 +59,7 @@ export function SignedValue({
   className,
   animate = false,
   stale = false,
-  staleLabel = 'stale',
+  staleLabel: givenStaleLabel,
 }: {
   value: number | null | undefined
   kind: 'money' | 'percent'
@@ -61,10 +73,12 @@ export function SignedValue({
    * mutes one, its sign telling a gain from a loss still, and a screen reader hears that it is stale.
    */
   stale?: boolean
-  /** The word a screen reader hears for a stale figure. */
+  /** The word a screen reader hears for a stale figure; the provider's language's by default ("stale"). */
   staleLabel?: string
 }) {
   const { formatMoney, formatPercent } = useFormat()
+  const words = useMessages().status
+  const staleLabel = givenStaleLabel ?? words.stale
   const text = kind === 'money' ? formatMoney(value, currency ?? 'EUR', true) : formatPercent(value, true)
   const tone = stale ? 'text-muted-foreground' : TONE_TEXT[toneOf(value)]
   const said = stale && <span className="sr-only"> ({staleLabel})</span>
@@ -158,9 +172,10 @@ function useRevealOfWhatReplaces(marker: RefObject<HTMLTemplateElement | null>, 
  * Loading and failure states shared by the pages. A failed refresh never blanks what is on screen.
  * What arrives where a skeleton was fades in (animate-reveal); what is there from the start is shown
  * as it is. It has no box of its own, at any time: what it shows keeps its place among the page's (a column's
- * gaps and margins, a grid's cells).
+ * gaps and margins, a grid's cells). Its failures are said in the provider's language.
  */
 export function QueryState({ isPending, error, hasData, skeleton, children }: QueryStateProps) {
+  const words = useMessages().status
   const waiting = isPending && !hasData
   const marker = useRef<HTMLTemplateElement>(null)
   useRevealOfWhatReplaces(marker, waiting)
@@ -177,7 +192,7 @@ export function QueryState({ isPending, error, hasData, skeleton, children }: Qu
     <>
       {error && (
         <Alert key="error" tone="danger" role="alert">
-          <AlertTitle>{hasData ? 'Could not refresh: showing the last data received' : 'Could not load'}</AlertTitle>
+          <AlertTitle>{hasData ? words.refreshFailed : words.loadFailed}</AlertTitle>
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}

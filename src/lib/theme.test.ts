@@ -1,15 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
 import { stubSystemTheme } from '../test/systemTheme.js'
 
+import { bindMessages } from './messages.js'
 import {
   ACCENT_ATTRIBUTE,
+  ACCENT_LABEL,
+  accentName,
   ACCENTS,
   applyAccent,
   applyMaterial,
   applyTheme,
   lookLabel,
   MATERIAL_ATTRIBUTE,
+  MATERIAL_LABEL,
+  materialName,
   MATERIALS,
   nextPreference,
   readAccent,
@@ -23,6 +29,7 @@ import {
   shownMaterial,
   systemIsDark,
   THEME_KEY_ATTRIBUTE,
+  themeButtonLabel,
   themeLabel,
   themeStorageKey,
   watchSystem,
@@ -234,5 +241,36 @@ describe('the system setting', () => {
     // jsdom, and browsers older than the setting itself.
     expect(systemIsDark()).toBe(false)
     expect(() => watchSystem(() => {})()).not.toThrow()
+  })
+})
+
+describe('the look in words', () => {
+  /** French's no-break spaces (before a colon) read as spaces. */
+  const spaced = (text: string) => text.replace(/\s/g, ' ')
+  const french = bindMessages(fr, 'fr-FR').look
+
+  it('names the accents, the materials and what the buttons say in the words given', () => {
+    expect(accentName('aurora', french)).toBe('Boréale')
+    expect(accentName('golden')).toBe('Golden hour')
+    expect(materialName('flat', french)).toBe('Opaque')
+    expect(spaced(lookLabel('golden', 'glass', french))).toBe('Couleur et matière : heure dorée, verre')
+    expect(spaced(themeButtonLabel('system', 'dark', french))).toBe('Thème : suit le système (sombre pour l’instant). Appuyer pour un thème toujours clair.')
+    expect(spaced(themeButtonLabel('dark', 'dark', french))).toBe('Thème : toujours sombre. Appuyer pour suivre le système.')
+    expect(themeButtonLabel('light', 'light')).toBe('Theme: always light. Press for always dark.')
+  })
+
+  it('keeps its former names in English', () => {
+    expect(ACCENT_LABEL).toEqual({
+      neutral: 'Neutral',
+      violet: 'Violet',
+      indigo: 'Indigo',
+      blue: 'Blue',
+      bloom: 'Bloom',
+      lagoon: 'Lagoon',
+      aurora: 'Aurora',
+      dusk: 'Dusk',
+      golden: 'Golden hour',
+    })
+    expect(MATERIAL_LABEL).toEqual({ flat: 'Flat', glass: 'Glass' })
   })
 })

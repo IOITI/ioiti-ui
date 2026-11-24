@@ -7,10 +7,11 @@ import { createPortal } from 'react-dom'
 import { useAnchoredLayer } from '../lib/anchor.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { FLOATING, PRESSABLE } from '../lib/recipes.js'
-import { ACCENT_LABEL, ACCENTS, lookLabel, MATERIAL_LABEL, MATERIALS } from '../lib/theme.js'
+import { accentName, ACCENTS, lookLabel, materialName, MATERIALS } from '../lib/theme.js'
 import { cn } from '../lib/utils.js'
 
 import { Hint } from './Hint.js'
+import { useMessages } from './locale-context.js'
 import { ACCENT_SWATCH, MATERIAL_SWATCH } from './look-swatches.js'
 import { useTheme } from './theme-context.js'
 
@@ -20,10 +21,11 @@ import { useTheme } from './theme-context.js'
  * page shows the application's (`ioiti({ accent, material })`). A choice shows at once. The choices are a
  * layer in `document.body`, under the button; the focus goes into them (the accent shown), and Escape, a
  * press elsewhere or a Tab past their ends close them and give the button the focus again. In the menu of
- * the account instead: `UserMenu`'s `appearance` (`useAppearanceItems`).
+ * the account instead: `UserMenu`'s `appearance` (`useAppearanceItems`). Its words are the provider's language's.
  */
 export function LookPicker({ className }: { className?: string }) {
   const { accent, material, setAccent, setMaterial } = useTheme()
+  const words = useMessages().look
   const [open, setOpen] = useState(false)
   const id = useId()
   const button = useRef<HTMLButtonElement>(null)
@@ -44,11 +46,11 @@ export function LookPicker({ className }: { className?: string }) {
   return (
     <div className={cn('relative inline-flex shrink-0', className)}>
       {/* Silent while open: its hint would cover the choices. Kept wrapped, so the button keeps the focus. */}
-      <Hint content={open ? '' : 'Accent and material'} side="bottom">
+      <Hint content={open ? '' : words.accentAndMaterial} side="bottom">
         <button
           ref={button}
           type="button"
-          aria-label={lookLabel(accent, material)}
+          aria-label={lookLabel(accent, material, words)}
           aria-expanded={open}
           aria-controls={open ? `${id}-choices` : undefined}
           onClick={() => setOpen(!open)}
@@ -71,7 +73,7 @@ export function LookPicker({ className }: { className?: string }) {
                 ref={choices}
                 id={`${id}-choices`}
                 role="group"
-                aria-label="Accent and material"
+                aria-label={words.accentAndMaterial}
                 // Taken by a click on the panel itself, so that it does not count as a press elsewhere.
                 tabIndex={-1}
                 onKeyDown={layer.onLayerKeyDown}
@@ -82,19 +84,19 @@ export function LookPicker({ className }: { className?: string }) {
                 style={{ ...layer.style, transformOrigin: layer.side === 'top' ? 'bottom right' : 'top right' }}
                 className={cn(FLOATING, 'z-50 w-72 space-y-3 overflow-auto p-3 outline-none')}
               >
-                <Choices legend="Accent">
+                <Choices legend={words.accent}>
                   {ACCENTS.map((value) => (
                     <Choice key={value} name={`${id}-accent`} checked={accent === value} onSelect={() => setAccent(value)}>
                       <span data-swatch={value} aria-hidden className={cn('size-3 shrink-0 rounded-full', ACCENT_SWATCH[value])} />
-                      {ACCENT_LABEL[value]}
+                      {accentName(value, words)}
                     </Choice>
                   ))}
                 </Choices>
-                <Choices legend="Material">
+                <Choices legend={words.material}>
                   {MATERIALS.map((value) => (
                     <Choice key={value} name={`${id}-material`} checked={material === value} onSelect={() => setMaterial(value)}>
                       <span aria-hidden className={cn('size-3 shrink-0 rounded-[4px]', MATERIAL_SWATCH[value])} />
-                      {MATERIAL_LABEL[value]}
+                      {materialName(value, words)}
                     </Choice>
                   ))}
                 </Choices>

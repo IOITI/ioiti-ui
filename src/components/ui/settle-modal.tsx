@@ -10,6 +10,8 @@ import { CLOSE_MD, DIALOG, SCRIM } from '../../lib/recipes.js';
 // ioiti-ui: the focus kept as every layer over the page keeps it; a dialog without a name said to its developer.
 import { devWarn } from '../../lib/dev.js';
 import { useFocusScope } from '../../lib/focus-scope.js';
+// ioiti-ui: its close button named in the provider's language.
+import { useMessages } from '../locale-context.js';
 
 export interface SettleModalProps {
   open: boolean;
@@ -75,6 +77,7 @@ export const SettleModal: React.FC<SettleModalProps> = ({
   'aria-labelledby': ariaLabelledBy,
 }) => {
   const titleId = useId();
+  const words = useMessages().dialog;
   const dialogRef = useRef<HTMLDivElement>(null);
   // ioiti-ui: the dialog grows from what opened it: the middle of the control the focus is on when it
   // opens (the effect below moves it into the dialog), as the panel's transform origin; from its centre
@@ -170,7 +173,7 @@ export const SettleModal: React.FC<SettleModalProps> = ({
             {!hideCloseButton && (
               <button
                 type="button"
-                aria-label="Close"
+                aria-label={words.close}
                 onClick={onClose}
                 className={cn(CLOSE_MD, 'absolute top-3 right-3 focus-ring')}
               >

@@ -19,7 +19,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
 | `gallery/` | an application made with the package: a page per component, in both themes (`gallery/src/components/<category>/`: its `category.ts`, then a folder per component of one file per example, whose code the page shows; `gallery/src/catalogue/` draws them, with each component's guidelines and props) |
 | `templates/app/` | the starter template an application is copied from |
-| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), the words still written in components (`check-strings.mjs`, its list `strings-baseline.json`), the import codemod, the golden reference, the grains, the props (`props.mjs`) |
+| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), a word written in a component (`check-strings.mjs`), the import codemod, the golden reference, the grains, the props (`props.mjs`) |
 | `design-system/` | the claude.ai Design System artifact's files (`design-system/README.md`); `components/<Name>/README.md` are also the gallery's guidelines |
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
 | `test/size-budget.json` | what an application bundles, gzipped, which `check:package` holds it to |
@@ -34,7 +34,6 @@ Node 24: `source ~/.nvm/nvm.sh && nvm use 24` first (the default Node of this Ma
 npm run lint && npm run typecheck && npm test && npm run build && npm run build:gallery && npm run check:package
 npm run gallery                    # http://localhost:5180, on src/
 npm run props                      # gallery/src/props.json, after a change of a component's props (lint checks it)
-node scripts/check-strings.mjs --update   # the list of words still written in components, once some went to the catalogue
 npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 npm run check:package -- --update-budget   # test/size-budget.json, after a change that weighs more on purpose
 npm run e2e                        # the gallery built, in Chromium: pages, axe with CSS, the keyboard, motion
@@ -116,9 +115,10 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   (`RouterLink` draws it so).
 - **A `Hint`, never a `title`**, for what a control means (the theme button's `title` is the original's).
 - **A word the package says comes from its catalogue** (`src/locales/en/<namespace>.ts`, French in `src/locales/fr/`):
-  a component says it with `useMessages()`, never written in its code; `check-strings` holds the words still written to
-  its list, which only shrinks (`// i18n-exempt: <why>` for what is no word to translate). A word added in English is
-  added in French in the same change (`src/locales/locales.test.ts`). A word that takes values is a function of one value
+  a component says it with `useMessages()`, never written in its code (`check-strings` fails on one; `// i18n-exempt:
+  <why>` for what is no word to translate: a brand, a code, a symbol). A word added in English is added in French in the
+  same change (`src/locales/locales.test.ts`), and the gallery's examples drawn in French hold none of English's
+  (`gallery/src/french.test.tsx`). A word that takes values is a function of one value
   and the locale's kit (its plurals, numbers, lists), never a sentence built around a word. A component's own prop wins.
 - **Formats follow the locale**: a component writes a number, an amount, a percentage or a moment with `useFormat()`
   (or Intl with `useLocale().locale`), never by hand ("12%", `toFixed`) nor in a fixed locale (but where a text is
@@ -173,8 +173,9 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
 - **What jsdom cannot hold, a real browser does** (`e2e/`, Playwright, on the gallery built): every page loads and
   says nothing wrong (`e2e/fixtures.ts` fails a test on a console error, an uncaught error, a failed request, a request
   to another origin; the pages whose examples fail on purpose let React's words for them through), axe with the
-  stylesheets in light and dark (contrast, a region that scrolls, a label in a name), the keyboard's journeys (focus
-  through portals, a real drag), motion and reduced motion. Firefox and WebKit run what is tagged `@smoke` (CI).
+  stylesheets in light and dark (contrast, a region that scrolls, a label in a name), the pages and axe once more with
+  the components in French (`inFrench`), the keyboard's journeys (focus through portals, a real drag), motion and
+  reduced motion. Firefox and WebKit run what is tagged `@smoke` (CI).
   Behaviour that needs layout, CSS or a real focus belongs there, not in a jsdom test.
 - **A control that shows words is named by them** (WCAG 2.5.3): axe's label in name reads every word on screen, an
   `aria-hidden` one too (a key's `Kbd`, a count), against a name written over them (`aria-label`, `aria-labelledby`),

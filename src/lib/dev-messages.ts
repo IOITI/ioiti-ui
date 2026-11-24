@@ -9,6 +9,8 @@ export const DEV_MESSAGES = {
     "IoitiProvider's locale is no language tag Intl knows (BCP 47: en-GB, fr-FR): the interface speaks and writes en-GB.",
   'locale-not-the-page':
     "IoitiProvider's locale is not the language of the page (<html lang>): a screen reader reads its words with the rules of the language lang names. Give lang the locale.",
+  'undo-toast-untitled':
+    'an UndoToast has no title: it says "Done" (toast.undoTitle in the catalogue), which tells nothing of what was done. Give it a title: "2 files removed".',
 } as const
 
 export type DevMessageId = keyof typeof DEV_MESSAGES

@@ -1,4 +1,4 @@
-import { LiveLineChart } from 'ioiti-ui'
+import { LiveLineChart, useFormat } from 'ioiti-ui'
 
 // What the page already had: a reading every two seconds, the last one now.
 const KNOWN = [58, 61, 66, 63, 59, 64, 70, 67, 62, 65]
@@ -14,6 +14,7 @@ function load(push: (value: number) => void) {
 }
 
 export default function LiveLineChartUnitAndDomain() {
+  const { formatNumber } = useFormat()
   return (
     <LiveLineChart
       ariaLabel="Load of the build server"
@@ -24,8 +25,8 @@ export default function LiveLineChartUnitAndDomain() {
       height={180}
       unit="%"
       domain={[0, 100]}
-      formatValue={(value) => value.toFixed(0)}
-      formatChange={(change) => `${change > 0 ? '+' : change < 0 ? '−' : ''}${Math.abs(change).toFixed(0)} points`}
+      formatValue={(value) => formatNumber(value)}
+      formatChange={(change) => `${change > 0 ? '+' : change < 0 ? '−' : ''}${formatNumber(Math.abs(change))} points`}
     />
   )
 }

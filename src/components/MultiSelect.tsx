@@ -11,6 +11,7 @@ import { motionTransitions } from '../lib/motion-tokens.js'
 import { CLOSE_SM, FLOATING, MENU_ROW } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
+import { useFormat, useMessages } from './locale-context.js'
 import { Badge } from './ui/badge.js'
 
 export interface MultiSelectOption {
@@ -31,6 +32,7 @@ interface MultiSelectProps {
   label?: string
   /** Its field's id, for a `Field htmlFor`. */
   id?: string
+  /** What it says while nothing is chosen; the provider's language's by default ("Choose…"). */
   placeholder?: string
   /**
    * What is typed may become a value of its own (a tag): given the text, it gives the option made, or its
@@ -47,7 +49,7 @@ interface MultiSelectProps {
   'aria-describedby'?: string
   /** Marked invalid, as a Field with an error marks it: drawn as `error`. */
   'aria-invalid'?: boolean | 'true' | 'false'
-  /** What the list says when nothing matches. */
+  /** What the list says when nothing matches; the provider's language's by default ("Nothing matches"). */
   emptyText?: string
   className?: string
 }
@@ -61,7 +63,8 @@ interface Row {
 /**
  * Several values from a list, each a chip in the field: customers, tags, countries. Typing filters the
  * list; the arrows move in it and Enter ticks or unticks; Backspace in an empty field removes the last
- * chip. With `onCreateOption`, what is typed becomes a value of its own (a tag). As Elastic UI's combo box.
+ * chip. With `onCreateOption`, what is typed becomes a value of its own (a tag). As Elastic UI's combo box. Its words
+ * are the provider's language's, its own props given over them.
  */
 export function MultiSelect({
   options,
@@ -70,17 +73,19 @@ export function MultiSelect({
   onChange,
   label,
   id,
-  placeholder = 'Choose…',
+  placeholder,
   onCreateOption,
   maxChips,
   max,
   disabled = false,
   error = false,
-  emptyText = 'Nothing matches',
+  emptyText,
   className,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
 }: MultiSelectProps) {
+  const words = useMessages().select
+  const { formatNumber } = useFormat()
   const invalid = invalidOf(error, ariaInvalid)
   const [chosen, setChosen] = useControllableState(value, defaultValue, onChange)
   const [open, setOpen] = useState(false)
@@ -183,15 +188,15 @@ export function MultiSelect({
             key={each}
             variant="outline"
             onRemove={disabled ? undefined : () => setChosen(chosen.filter((value) => value !== each))}
-            removeLabel={`Remove ${labelOf(each)}`}
+            removeLabel={words.removeChoice(labelOf(each))}
             removeFocusable={false}
           >
             {labelOf(each)}
           </Badge>
         ))}
         {hidden.length > 0 && (
-          <Hint content={hidden.map(labelOf).join(', ')} wrap>
-            <Badge variant="soft">{`+${hidden.length}`}</Badge>
+          <Hint content={words.hiddenChoices(hidden.map(labelOf))} wrap>
+            <Badge variant="soft">{`+${formatNumber(hidden.length)}`}</Badge>
           </Hint>
         )}
         <input
@@ -209,7 +214,7 @@ export function MultiSelect({
           autoComplete="off"
           disabled={disabled}
           value={text}
-          placeholder={chosen.length ? '' : placeholder}
+          placeholder={chosen.length ? '' : (placeholder ?? words.choosePlaceholder)}
           onChange={(event) => {
             setText(event.target.value)
             setActive(0)
@@ -224,10 +229,10 @@ export function MultiSelect({
         <ChevronsUpDown aria-hidden className="pointer-events-none absolute right-2.5 top-3 size-4 shrink-0 text-muted-foreground" />
         {chosen.length > 0 && !disabled && (
           <span className="absolute right-7 top-2">
-            <Hint content="Clear">
+            <Hint content={words.clear}>
               <button
                 type="button"
-                aria-label="Clear"
+                aria-label={words.clear}
                 onClick={(event) => {
                   event.stopPropagation()
                   setChosen([])
@@ -254,13 +259,13 @@ export function MultiSelect({
                 transition={motionTransitions.springSnappy}
                 className={cn('z-50 overflow-auto p-1', FLOATING)}
               >
-                {full && (
+                {full && max !== undefined && (
                   <p role="status" className="px-2.5 pb-1 pt-1.5 text-xs text-muted-foreground">
-                    {max} at most: remove one to choose another.
+                    {words.atMost(max)}
                   </p>
                 )}
                 <ul id={listId} role="listbox" aria-multiselectable="true" aria-label={label} className="text-sm">
-                  {rows.length === 0 && <li className="px-2.5 py-2 text-xs text-muted-foreground">{emptyText}</li>}
+                  {rows.length === 0 && <li className="px-2.5 py-2 text-xs text-muted-foreground">{emptyText ?? words.nothingMatches}</li>}
                   {groups.map((group) => (
                     <li key={group || '·'} role="presentation">
                       {group && <div className="px-2.5 pb-1 pt-2 text-xs font-medium text-text-secondary">{group}</div>}
@@ -289,7 +294,7 @@ export function MultiSelect({
                                 {row.create ? <Plus aria-hidden /> : ticked ? <Check aria-hidden /> : null}
                               </span>
                               <span className="flex min-w-0 flex-col">
-                                <span className="truncate">{row.create ? `Add “${row.option.label}”` : row.option.label}</span>
+                                <span className="truncate">{row.create ? words.create(row.option.label) : row.option.label}</span>
                                 {row.option.description && <span className="text-xs text-muted-foreground">{row.option.description}</span>}
                               </span>
                             </li>

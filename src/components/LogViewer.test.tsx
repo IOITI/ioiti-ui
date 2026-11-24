@@ -175,7 +175,7 @@ describe('LogViewer in a language', () => {
     expect(screen.getByText('Rien n’a encore été journalisé.')).toBeInTheDocument()
   })
 
-  it('says its hints in the language given, its keys written as they are', async () => {
+  it('says its hints in the language given, its keys named in it', async () => {
     const user = userEvent.setup()
     render(
       <IoitiProvider locale="fr-FR" messages={fr}>
@@ -184,6 +184,13 @@ describe('LogViewer in a language', () => {
     )
     await user.hover(screen.getByRole('button', { name: 'Télécharger le journal' }))
     expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent('Télécharger sous le nom build.log')
+    await user.unhover(screen.getByRole('button', { name: 'Télécharger le journal' }))
+
+    await user.type(screen.getByRole('textbox', { name: 'Rechercher dans Journal' }), 'long')
+    await user.hover(screen.getByRole('button', { name: 'Résultat précédent' }))
+    expect(await screen.findByText('Résultat précédent (Maj+Entrée)')).toBeInTheDocument()
+    await user.hover(screen.getByRole('button', { name: 'Résultat suivant' }))
+    expect(await screen.findByText('Résultat suivant (Entrée)')).toBeInTheDocument()
   })
 
   it('takes an application\'s own words over English\'s, the others English still', async () => {

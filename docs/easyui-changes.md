@@ -679,6 +679,85 @@ otherwise).
 - `animated-number` (0.28.0): written in the interface's locale through Intl's `formatToParts` (EasyUI put a comma every
   three digits and a point), in Latin digits whatever the locale writes (only they roll), still rounded by `toFixed`;
   compact as the locale writes it ("2.2m", EasyUI's American "2.2M").
+- `ai-response` (0.29.0): its words are the provider's language's (`ai`): its name and its header's title ("Assistant")
+  and states, what it says while it works, when it fails and while it waits, a blocked link's hint, a mail address's
+  "email", a table's name ("Table"), the label of code that names no language ("text"), its sources' button, its tools
+  counted ("Used 1 tool"), a tool's state said to a screen reader, its buttons' hints and names; the sources' count and
+  places in the provider's locale; the `title` of `AIResponseHeader` and `AIResponseSources` the catalogue's by default.
+- `ai-agent-activity` (0.29.0): its words are the provider's language's (`ai`): "Running", its steps counted ("2 of 3
+  done", in the locale's numbers), "Not started", "Expand all" and "Collapse all", "No activity recorded", a step's code
+  that names no language ("Code"), a detail's key with its colon as the language writes it; `title`, `inputLabel`,
+  `outputLabel` and `notesLabel` the catalogue's by default ("Activity", "Asked", "Answer", "Notes").
+- `animated-file-upload` (0.29.0): its words are the provider's language's (`upload`): the drop zone's title, line and
+  limit ("(up to 25.0 MB)"), its input's name, a file's states ("Uploading 42%", "Processing…", "Ready"), the list's
+  heading counted in the locale's numbers ("Files (3)"), "Clear completed", a file too large, a failed upload with no
+  message (said when drawn, no longer kept in the file's state), its Retry and Remove buttons' names; its props still win.
+- `notification-bell` (0.29.0): its words are the provider's language's (`notification`): the bell's name, its unread ones
+  counted ("1 unread notification", where it said "1 unread notifications"), its count in the locale's numbers and past 99
+  ("99+"), the panel's name and heading, "3 new", its buttons' hints and names, what it says while it reads, with none,
+  and when they could not be read (`error={true}`).
+- `spotlight-search` (0.29.0): its words are the provider's language's (`search`): its name ("Spotlight Search") and
+  placeholder ("Search…") by default, the heading ⌘K is listed under among the shortcuts ("Navigation"), its field's and
+  buttons' names, its headings ("Recent", "Recent searches"), what a screen reader hears once typing pauses ("2 results,
+  11 more"), "No results found for “…”", the entries past its limit, a failed search, "Opens its list"; Escape drawn as
+  the key its language names (`Kbd keys="escape"`), where it was "Esc" in every language.
+- `product-tour` (0.29.0): its words are the provider's language's (`tour`): the step among how many ("1 of 3", in the
+  locale's numbers), Skip, Back, Next and Done, its dots' names ("Go to step 2").
+- `undo-toast` (0.29.0): its words are the provider's language's (`toast`): its line, its Undo, what it says once undone,
+  its close button's name; without a `title` it says "Done" (EasyUI's "Project archived" named one application's
+  project) and tells its developer so, in development (`undo-toast-untitled`); its props still win.
+- `velocity-toast`, `settle-modal` (0.29.0): their close button's name is the provider's language's (`toast.close`,
+  `dialog.close`).
+- `dynamic-island` (0.29.0): its name before what its pill shows ("Import:") and its close button's ("Close import") are
+  the provider's language's (`toast`).
+- `request-status` (0.29.0): its close button's name and its reference's copy button's ("Copy payment PY-55102") are the
+  provider's language's (`toast`).
+- `flysheet` (0.29.0): the names of its close button, its edge ("Resize") and a body without a title ("Content") are the
+  provider's language's (`dialog`); its width is written in the provider's locale ("1,100 px"; "1 100 px" in French),
+  where it was "1100 px".
+- `drag-to-confirm` (0.29.0): `label` and `confirmedLabel` take the provider's language's by default ("Slide to confirm",
+  "Confirmed ✓": `dialog`).
+- `sidebar` (0.29.0): its words in the provider's language (the catalogue's `shell`: the drawer's and its buttons' names,
+  "Main", "The pages under …", Collapse and Expand, what badges out of sight say; its shortcut's description and group,
+  `shortcuts`; its tip's keys, `keys`), where EasyUI's were English. The words for badges out of sight follow a hidden comma
+  of their own (`BadgeSeparator`), as a badge's words do; the comma is no longer written in them.
+- `breadcrumb` (0.29.0): its name ("Breadcrumb") and its button's ("Show hidden pages") are the catalogue's
+  (`shell.breadcrumb`, `shell.showHiddenPages`); an `aria-label` given still wins.
+- `not-found` (0.29.0): its words are the catalogue's (`notFound.*`): the heading, the description, the badge ("Error
+  404"), what a screen reader hears first, the ways home and back, the suggestions' name and heading, the drawing's
+  description. `title`, `description`, `badgeLabel`, `actionLabel`/`homeLabel`, `backLabel`/`secondaryActionLabel` still
+  win (`description={null}` stays none); its drawing is as it was.
+- `advanced-data-table` (0.29.0): its words are the provider's language's (`table`): the toolbar's (its search's
+  placeholder, the view and column buttons, the selection and its bulk actions), the filters' (a button's name and count,
+  a list's name, search and rows, Clear), the rows' (none, none found, loading, failure, each box's and arrow's name) and
+  the pages' (the count, Rows per page, the page buttons); `searchPlaceholder` and `emptyTitle` still win. Its counts are
+  written in the provider's locale, each figure of "Showing 1–10 of 57 records" in its own span wherever a language puts
+  it; a total of one record and a list of one option are said in the singular (EasyUI said "1 records", "1 options").
+- `selection-basket` (0.29.0): its words are the provider's language's (`table`): the bar's name, the selection ("item
+  selected" without `noun`; with it, the language's "selected" after the application's noun), "All (24)", "Select none",
+  the clear button and the default actions; its count in the provider's locale.
+- `smart-comparison` (0.29.0): its words are the provider's language's (`table`): its name, the matrix's head and count of
+  rows ("1 specification": EasyUI said "1 specifications"), its search, "Differences only", what it says when nothing is
+  left, a plan's default button, a feature's info button, a plan's name before its value on a phone; `label`,
+  `matrixTitle`, `countLabel`, `searchPlaceholder`, `diffLabel`, `emptyText` and a plan's `ctaText` still win.
+- `combobox`, `spring-select` (0.29.0): their placeholder, Combobox's search and what it says when its search finds
+  nothing are the provider's language's (`select`); `placeholder`, `searchPlaceholder` and `emptyText` still win.
+- `form` (0.29.0): the password toggle's names are the provider's language's (`field.showPassword`, `field.hidePassword`).
+- `otp-input` (0.29.0): its name and its boxes' ("Digit 2 of 6") are the provider's language's (`field`); `aria-label`
+  still wins.
+- `badge`, `alert`, `skeleton`, `loader`, `stepper` (0.29.0): their words are the provider's language's (`status`): Badge's
+  × button ("Remove"; `removeLabel` still wins), Alert's ("Dismiss"), SkeletonReveal's name while loading ("Loading"),
+  Loader's ("Loading…"; `label` still wins), Stepper's list ("Progress") and a step done ("(completed)").
+- `scroll-progress-nav` (0.29.0): its name ("Table of contents"; `label` still wins), the phone's menu button and Back to
+  the top are the provider's language's (`layout`); EasyUI's demo parts, drawn where an application gives none, stay as
+  they were (`i18n-exempt`).
+- `dependency-trace` (0.29.0): its words are the provider's language's (`layout`): its name (`label` still wins), a node's
+  name with its health, the status bar (what the node traced calls and what calls it, as the language lists them; its
+  hint) and its count of links ("1 connection": EasyUI said "1 connections").
+- `interactive-timeline` (0.29.0): an item's node is named in the provider's language (`layout`): its title and its
+  `statusLabel`, or its status in words where it has none (EasyUI said the status's code); the commit's button and its
+  hint too.
+- `peek-card` (0.29.0): its link's words are the provider's language's ("Open"); `hrefLabel` still wins.
 
 ## ioiti-ui's own changes
 

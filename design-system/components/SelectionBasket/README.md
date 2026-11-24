@@ -2,7 +2,7 @@
 
 What a table's selection can do: the count, select all, clear, and the actions, a disabled one saying why; it shows while something is selected.
 
-**You provide** `selectedCount`, `totalCount`, `noun` (`['run', 'runs']`; `['item', 'items']` by default), `actions` (`[{ id, label, icon?, variant?, onClick?, href?, disabled?, title? }]`, `variant` one of `default` · `primary` · `danger`), `onClearSelection`, `onSelectAll`; `allSelected` (when a search hides some), `mode` (`fixed` by default, at the bottom of the window · `sticky` · `contained` · `inline`), `linkComponent`.
+**You provide** `selectedCount`, `totalCount`, `noun` (`['run', 'runs']`; "item(s) selected" in IoitiProvider's language by default, as are the default actions), `actions` (`[{ id, label, icon?, variant?, onClick?, href?, disabled?, title? }]`, `variant` one of `default` · `primary` · `danger`), `onClearSelection`, `onSelectAll`; `allSelected` (when a search hides some), `mode` (`fixed` by default, at the bottom of the window · `sticky` · `contained` · `inline`), `linkComponent`.
 
 ```tsx
 <SelectionBasket mode="inline" selectedCount={selected.length} totalCount={runs.length} noun={['run', 'runs']}

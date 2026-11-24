@@ -3,9 +3,12 @@ import { useEffect } from 'react'
 import type { ComponentProps } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { LinkProvider } from './LinkProvider.js'
 import { useToast } from './toast-context.js'
 import { ToastProvider } from './ToastProvider.js'
+import { VelocityToast } from './ui/velocity-toast.js'
 
 let show: ReturnType<typeof useToast>
 
@@ -194,3 +197,25 @@ describe('ToastProvider', () => {
   })
 })
 
+
+describe('a toast in a language', () => {
+  it("names its close button in the language given, or in an application's own word", () => {
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <ToastProvider>
+          <Capture />
+        </ToastProvider>
+      </IoitiProvider>,
+    )
+    act(() => show({ title: 'Export prêt' }))
+    expect(screen.getByRole('button', { name: 'Fermer la notification' })).toBeInTheDocument()
+    unmount()
+
+    render(
+      <IoitiProvider messages={{ toast: { close: 'Dismiss' } }}>
+        <VelocityToast open title="Export ready" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument()
+  })
+})

@@ -20,7 +20,8 @@ import { cn, copyToClipboard } from "../../lib/utils.js";
 import { CodeBlock } from "../CodeBlock.js";
 import { Hint } from "../Hint.js";
 import { useLinkComponent } from "../link-context.js";
-import { useFormat } from "../locale-context.js";
+// ioiti-ui: its words in the provider's language (useMessages), its numbers in its locale (useFormat).
+import { useFormat, useMessages } from "../locale-context.js";
 import type { CodeLanguage } from "../../lib/highlight.js";
 
 /* -------------------------------------------------------------------------- */
@@ -69,11 +70,12 @@ export function safeHref(raw: string | null | undefined, allowed: string[] = ALL
   return url.href; // normalized, never the raw string
 }
 
-function hostOf(href: string): string {
+// ioiti-ui: a mail address said in the provider's language ("email"), given by the component that draws it.
+function hostOf(href: string, email: string): string {
   try {
     const u = new URL(href, RELATIVE_BASE);
     if (u.origin === RELATIVE_BASE) return "";
-    if (u.protocol === "mailto:") return "email";
+    if (u.protocol === "mailto:") return email;
     return u.hostname.replace(/^www\./, "");
   } catch {
     return "";
@@ -222,7 +224,8 @@ function parseMarkdown(raw: string): Block[] {
       i++;
       while (i < lines.length && !RE.fence.test(lines[i])) code.push(lines[i++]);
       i++; // closing fence (may be missing while streaming)
-      out.push({ type: "code", lang: fence[1].trim() || "text", code: code.join("\n") });
+      // ioiti-ui: no language where the fence names none: its label is the provider's language's ("text").
+      out.push({ type: "code", lang: fence[1].trim(), code: code.join("\n") });
       continue;
     }
 
@@ -281,12 +284,14 @@ const INLINE = /(`[^`\n]+`|\*\*[^*\n]+\*\*|\*[^*\s][^*\n]*\*|\[[^\]\n]+\]\([^)\s
 // ioiti-ui: a same-site address (/runs/42) is drawn by the application's link, so that its router follows it.
 function Link({ href, children }: { href: string | undefined; children: React.ReactNode }) {
   const AppLink = useLinkComponent();
+  // ioiti-ui: its hint in the provider's language, a mail address's too.
+  const words = useMessages().ai;
   const safe = safeHref(href);
   if (!safe) {
     // Unsafe or unparseable → plain text, never a link
     return (
-      // ioiti-ui: a hint in place of the title.
-      <Hint content="Link blocked for your safety" wrap>
+      // ioiti-ui: a hint in place of the title, in the provider's language.
+      <Hint content={words.linkBlocked} wrap>
         <span className="underline decoration-dotted decoration-muted-foreground underline-offset-4">
           {children}
         </span>
@@ -294,7 +299,7 @@ function Link({ href, children }: { href: string | undefined; children: React.Re
     );
   }
   const external = isExternal(safe);
-  const host = hostOf(safe);
+  const host = hostOf(safe, words.emailHost);
   const className = "inline-flex items-baseline gap-0.5 break-words rounded-sm font-medium text-foreground underline decoration-border underline-offset-[3px] transition-[text-decoration-color] duration-150 [@media(hover:hover)]:hover:decoration-current";
   if (!external) {
     return (
@@ -349,7 +354,9 @@ function renderInline(text: string): React.ReactNode[] {
 // than the answer and holding no control, a stop of the keyboard, which scrolls it (src/lib/scroll-region.ts).
 function TableFrame({ children }: { children: React.ReactNode }) {
   const frame = useRef<HTMLDivElement>(null);
-  const region = useScrollRegion(frame, { label: "Table" });
+  // ioiti-ui: named in the provider's language.
+  const label = useMessages().ai.table;
+  const region = useScrollRegion(frame, { label });
   return (
     <div ref={frame} {...region} className="relative overflow-x-auto rounded-xl border border-border/60">
       {children}
@@ -387,6 +394,7 @@ const LANGUAGES: Record<string, CodeLanguage> = {
 /* ========================================================================== */
 
 export interface AIResponseHeaderProps {
+  /** ioiti-ui: "Assistant" in the provider's language by default. */
   title?: string;
   modelBadge?: string;
   timestamp?: string;
@@ -423,13 +431,15 @@ const Shimmer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 export const AIResponseHeader: React.FC<AIResponseHeaderProps> = ({
-  title = "Assistant",
+  title,
   modelBadge,
   timestamp,
   icon,
   className,
 }) => {
   const { status, modelName, thinking } = useAIResponseContext();
+  // ioiti-ui: its words in the provider's language, its title given over them.
+  const words = useMessages().ai;
   const badge = modelBadge || modelName;
   const busy = status === "streaming" || status === "generating";
 
@@ -437,7 +447,7 @@ export const AIResponseHeader: React.FC<AIResponseHeaderProps> = ({
     <header className={cx("flex items-center justify-between gap-3", className)}>
       <div className="flex min-w-0 items-center gap-2.5">
         {icon ?? <Orb active={busy} />}
-        <span className="truncate text-sm font-medium tracking-[-0.01em] text-foreground">{title}</span>
+        <span className="truncate text-sm font-medium tracking-[-0.01em] text-foreground">{title ?? words.assistant}</span>
         {badge && <span className={`truncate text-xs ${muted}`}>{badge}</span>}
       </div>
 
@@ -445,12 +455,12 @@ export const AIResponseHeader: React.FC<AIResponseHeaderProps> = ({
         {status === "streaming" && (
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 animate-pulse rounded-full bg-positive" aria-hidden />
-            Streaming
+            {words.streaming}
           </span>
         )}
         {/* ioiti-ui: said once: under the header, when what it is doing is given. */}
-        {status === "generating" && !thinking && <Shimmer>Thinking</Shimmer>}
-        {status === "cancelled" && <span>Stopped</span>}
+        {status === "generating" && !thinking && <Shimmer>{words.thinking}</Shimmer>}
+        {status === "cancelled" && <span>{words.stopped}</span>}
         {timestamp && <span className="hidden tabular-nums sm:inline">{timestamp}</span>}
       </div>
     </header>
@@ -571,6 +581,8 @@ export interface AIResponseContentProps {
 export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className }) => {
   const { content, status, onRegenerate, thinking } = useAIResponseContext();
   const reduce = useReducedMotionConfig();
+  // ioiti-ui: its words in the provider's language.
+  const words = useMessages().ai;
   const blocks = useMemo(() => parseMarkdown(content), [content]);
   const streaming = status === "streaming";
 
@@ -578,7 +590,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
     // ioiti-ui: what it is doing, when given, in place of a skeleton.
     if (thinking) return <AIResponseThinking {...thinking} />;
     return (
-      <div className="space-y-2.5 py-5" role="status" aria-label="Generating response">
+      <div className="space-y-2.5 py-5" role="status" aria-label={words.generating}>
         {["w-3/4", "w-11/12", "w-1/2"].map((w, i) => (
           <motion.div
             key={i}
@@ -596,11 +608,11 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
       <div role="alert" className="my-5 flex items-start gap-3 rounded-xl bg-negative/5 p-4 ring-1 ring-negative/30 dark:bg-negative/10">
         <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-negative" />
         <div className="min-w-0 flex-1 text-sm leading-relaxed">
-          <p className="font-medium text-foreground">Couldn’t finish this response</p>
-          <p className={`mt-0.5 break-words ${muted}`}>{content || "The connection dropped or the model timed out."}</p>
+          <p className="font-medium text-foreground">{words.unfinished}</p>
+          <p className={`mt-0.5 break-words ${muted}`}>{content || words.unfinishedReason}</p>
           {onRegenerate && (
             <button type="button" onClick={onRegenerate} className="mt-2 cursor-pointer rounded-md text-sm font-medium text-foreground underline decoration-border underline-offset-2">
-              Try again
+              {words.tryAgain}
             </button>
           )}
         </div>
@@ -609,7 +621,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
   }
 
   if (!content) {
-    return <p className={`py-8 text-center text-sm ${muted}`}>Ready when you are.</p>;
+    return <p className={`py-8 text-center text-sm ${muted}`}>{words.idle}</p>;
   }
 
   const lastIdx = blocks.length - 1;
@@ -645,7 +657,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
             return wrap(<p className="break-words">{renderInline(b.text)}{caret}</p>);
           case "code":
             // ioiti-ui: the package's code block, which scrolls a long line in itself.
-            return wrap(<CodeBlock code={b.code} language={LANGUAGES[b.lang.toLowerCase()] ?? "text"} label={b.lang} className="my-4" />);
+            return wrap(<CodeBlock code={b.code} language={LANGUAGES[b.lang.toLowerCase()] ?? "text"} label={b.lang || words.plainText} className="my-4" />);
           case "list": {
             const Tag = b.ordered ? "ol" : "ul";
             return wrap(
@@ -704,6 +716,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
 
 export interface AIResponseSourcesProps {
   sources?: AIResponseSource[];
+  /** ioiti-ui: "Sources" in the provider's language by default. */
   title?: string;
   defaultExpanded?: boolean;
   className?: string;
@@ -711,12 +724,15 @@ export interface AIResponseSourcesProps {
 
 export const AIResponseSources: React.FC<AIResponseSourcesProps> = ({
   sources: propSources,
-  title = "Sources",
+  title,
   defaultExpanded = false,
   className,
 }) => {
   const { sources: ctx } = useAIResponseContext();
   const AppLink = useLinkComponent();
+  // ioiti-ui: its words in the provider's language, its title given over them; its numbers in its locale.
+  const words = useMessages().ai;
+  const { formatNumber } = useFormat();
   const reduce = useReducedMotionConfig();
   const sources = propSources ?? ctx;
   const [open, setOpen] = useState(defaultExpanded);
@@ -731,8 +747,8 @@ export const AIResponseSources: React.FC<AIResponseSourcesProps> = ({
         className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg pr-2 text-sm text-muted-foreground transition-colors duration-150 [@media(hover:hover)]:hover:text-foreground"
       >
         <ChevronDown aria-hidden className={cx("size-3.5 motion-safe:transition-transform duration-200 ease-fast", open && "rotate-180")} />
-        {title}
-        <span className="tabular-nums text-muted-foreground">{sources.length}</span>
+        {title ?? words.sources}
+        <span className="tabular-nums text-muted-foreground">{formatNumber(sources.length)}</span>
       </button>
 
       <AnimatePresence initial={false}>
@@ -747,10 +763,10 @@ export const AIResponseSources: React.FC<AIResponseSourcesProps> = ({
           >
             {sources.map((s, i) => {
               const href = safeHref(s.url);
-              const host = href ? hostOf(href) : "";
+              const host = href ? hostOf(href, words.emailHost) : "";
               const inner = (
                 <>
-                  <span className="mt-px w-4 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">{i + 1}</span>
+                  <span className="mt-px w-4 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">{formatNumber(i + 1)}</span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline gap-2">
                       <span className="truncate text-sm font-medium text-foreground">{s.title}</span>
@@ -778,7 +794,7 @@ export const AIResponseSources: React.FC<AIResponseSourcesProps> = ({
                       {inner}
                     </AppLink>
                   ) : s.url ? (
-                    <Hint content="Link blocked for your safety" wrap className="flex w-full">
+                    <Hint content={words.linkBlocked} wrap className="flex w-full">
                       <div className={cx(row, "w-full")}>{inner}</div>
                     </Hint>
                   ) : (
@@ -816,6 +832,9 @@ export const AIResponseToolsSummary: React.FC<AIResponseToolsSummaryProps> = ({
 }) => {
   const reduce = useReducedMotionConfig();
   const [open, setOpen] = useState(false);
+  // ioiti-ui: its words in the provider's language, the tools counted as it counts them ("Used 1 tool").
+  const words = useMessages().ai;
+  const said = { success: words.toolSuccess, running: words.toolRunning, error: words.toolError };
   if (toolCount <= 0) return null;
 
   return (
@@ -830,7 +849,7 @@ export const AIResponseToolsSummary: React.FC<AIResponseToolsSummaryProps> = ({
         className={`inline-flex h-8 items-center gap-2 rounded-full bg-surface-hover pl-3 pr-2.5 text-sm text-muted-foreground ${hair} transition-[color,background-color,transform] duration-150 ${PRESSABLE} [@media(hover:hover)]:hover:text-foreground`}
       >
         <Wrench aria-hidden className="size-3" />
-        Used {toolCount} {toolCount === 1 ? "tool" : "tools"}
+        {words.toolsUsed(toolCount)}
         <ChevronDown aria-hidden className={cx("size-3 motion-safe:transition-transform duration-200 ease-fast", open && "rotate-180")} />
       </button>
 
@@ -849,7 +868,7 @@ export const AIResponseToolsSummary: React.FC<AIResponseToolsSummaryProps> = ({
                 <span className="flex min-w-0 items-center gap-2.5">
                   <span className={cx("size-1.5 shrink-0 rounded-full", DOT[t.status ?? "success"])} aria-hidden />
                   <span className="truncate font-mono text-foreground">{t.name}</span>
-                  <span className="sr-only">{t.status ?? "success"}</span>
+                  <span className="sr-only">{said[t.status ?? "success"]}</span>
                 </span>
                 {t.duration && <span className="shrink-0 tabular-nums text-muted-foreground">{t.duration}</span>}
               </li>
@@ -871,6 +890,8 @@ export interface AIResponseActionsProps {
 
 export const AIResponseActions: React.FC<AIResponseActionsProps> = ({ className }) => {
   const { copied, copyContent, onRegenerate, onFeedback, feedback, status, content } = useAIResponseContext();
+  // ioiti-ui: its hints and names in the provider's language.
+  const words = useMessages().ai;
   const busy = status === "streaming" || status === "generating";
   const chosen = "bg-surface-hover !text-foreground";
   // ioiti-ui: nothing to copy, regenerate or judge before its first word.
@@ -879,8 +900,8 @@ export const AIResponseActions: React.FC<AIResponseActionsProps> = ({ className 
   // ioiti-ui: each title a hint (a disabled button's on its focusable wrapper); feedback only when it goes somewhere.
   return (
     <div className={cx("-ml-2 flex items-center gap-0.5 pt-3", className)}>
-      <Hint content={copied ? "Copied" : "Copy"}>
-        <button type="button" onClick={copyContent} className={iconBtn} aria-label={copied ? "Response copied" : "Copy response"}>
+      <Hint content={copied ? words.copied : words.copy}>
+        <button type="button" onClick={copyContent} className={iconBtn} aria-label={copied ? words.responseCopied : words.copyResponse}>
           {copied ? (
             <Check aria-hidden className="size-[15px] text-positive" />
           ) : (
@@ -890,8 +911,8 @@ export const AIResponseActions: React.FC<AIResponseActionsProps> = ({ className 
       </Hint>
 
       {onRegenerate && (
-        <Hint content="Regenerate" wrap={busy}>
-          <button type="button" onClick={onRegenerate} disabled={busy} className={iconBtn} aria-label="Regenerate response">
+        <Hint content={words.regenerate} wrap={busy}>
+          <button type="button" onClick={onRegenerate} disabled={busy} className={iconBtn} aria-label={words.regenerateResponse}>
             <RotateCcw aria-hidden className={cx("size-[15px]", busy && "motion-safe:animate-spin")} />
           </button>
         </Hint>
@@ -901,23 +922,23 @@ export const AIResponseActions: React.FC<AIResponseActionsProps> = ({ className 
         <>
           <span className="mx-1 h-4 w-px bg-border" aria-hidden />
 
-          <Hint content="Good response">
+          <Hint content={words.goodResponse}>
             <button
               type="button"
               onClick={() => onFeedback("like")}
               aria-pressed={feedback === "like"}
-              aria-label="Good response"
+              aria-label={words.goodResponse}
               className={cx(iconBtn, feedback === "like" && chosen)}
             >
               <ThumbsUp aria-hidden className="size-[15px]" />
             </button>
           </Hint>
-          <Hint content="Poor response">
+          <Hint content={words.poorResponse}>
             <button
               type="button"
               onClick={() => onFeedback("dislike")}
               aria-pressed={feedback === "dislike"}
-              aria-label="Poor response"
+              aria-label={words.poorResponse}
               className={cx(iconBtn, feedback === "dislike" && chosen)}
             >
               <ThumbsDown aria-hidden className="size-[15px]" />
@@ -964,6 +985,8 @@ export const AIResponse: React.FC<AIResponseProps> = ({
   children,
 }) => {
   const { copied, copy } = useCopy();
+  // ioiti-ui: named in the provider's language.
+  const words = useMessages().ai;
   const [feedback, setFeedback] = useState<"like" | "dislike" | null>(given);
   useEffect(() => setFeedback(given), [given]);
 
@@ -988,7 +1011,7 @@ export const AIResponse: React.FC<AIResponseProps> = ({
   return (
     <AIResponseContext.Provider value={value}>
       <article
-        aria-label="AI response"
+        aria-label={words.response}
         aria-busy={status === "streaming" || status === "generating"}
         // ioiti-ui: a section, as a Panel (its border, its surface, no shadow), glass under the glass material.
         className={cx(

@@ -9,6 +9,8 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { Hint } from '../Hint.js';
 import { useLinkComponent } from '../link-context.js';
+// ioiti-ui: its words in the provider's language (`table`).
+import { useMessages } from '../locale-context.js';
 
 export interface ComparisonPlan {
   id: string;
@@ -18,6 +20,7 @@ export interface ComparisonPlan {
   billingPeriod?: string;
   badge?: string;
   featured?: boolean;
+  /** ioiti-ui: its button's words; the provider's language's by default ("Get started"). */
   ctaText?: string;
   onCtaClick?: () => void;
   /** ioiti-ui: where its name leads (a link, drawn by `linkComponent`). */
@@ -48,13 +51,20 @@ export interface SmartComparisonProps extends React.HTMLAttributes<HTMLDivElemen
   enableSearch?: boolean;
   enableDiffFilter?: boolean;
   className?: string;
-  /** ioiti-ui: what the matrix is called, for screen readers. */
+  /** ioiti-ui: what the matrix is called, for screen readers; the provider's language's by default ("Feature and plan comparison"). */
   label?: string;
-  /** ioiti-ui: the words of the matrix's own column, and of its count of rows. */
+  /** ioiti-ui: the head of the matrix's own column; the provider's language's by default ("Feature matrix"). */
   matrixTitle?: string;
+  /** ioiti-ui: its count of rows, under that head; the provider's language's by default ("12 specifications", "1 specification"). */
   countLabel?: (count: number) => string;
+  /** ioiti-ui: the search's placeholder and name; the provider's language's by default ("Filter capabilities…"). */
   searchPlaceholder?: string;
+  /** ioiti-ui: the button that leaves out the rows alike; the provider's language's by default ("Differences only"). */
   diffLabel?: string;
+  /**
+   * ioiti-ui: what the matrix says when nothing is left; the provider's language's by default ("No features match your
+   * current search or difference filters.").
+   */
   emptyText?: string;
   /** ioiti-ui: what draws a plan's link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
@@ -68,12 +78,12 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
   enableSearch = true,
   enableDiffFilter = true,
   className,
-  label = 'Feature and plan comparison',
-  matrixTitle = 'Feature matrix',
-  countLabel = (count) => `${count} specifications`,
-  searchPlaceholder = 'Filter capabilities…',
-  diffLabel = 'Differences only',
-  emptyText = 'No features match your current search or difference filters.',
+  label: givenLabel,
+  matrixTitle: givenMatrixTitle,
+  countLabel: givenCountLabel,
+  searchPlaceholder: givenSearchPlaceholder,
+  diffLabel: givenDiffLabel,
+  emptyText: givenEmptyText,
   linkComponent,
   // ioiti-ui: what names or describes it goes to the table, not to the frame around it.
   'aria-label': ariaLabel,
@@ -83,6 +93,15 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
+  // ioiti-ui: its words in the provider's language, its own props given over them; its rows counted as the language
+  // counts ("1 specification": EasyUI's said "1 specifications").
+  const words = useMessages().table;
+  const label = givenLabel ?? words.comparisonName;
+  const matrixTitle = givenMatrixTitle ?? words.comparisonMatrix;
+  const countLabel = givenCountLabel ?? words.comparisonCount;
+  const searchPlaceholder = givenSearchPlaceholder ?? words.comparisonSearch;
+  const diffLabel = givenDiffLabel ?? words.comparisonDifferences;
+  const emptyText = givenEmptyText ?? words.comparisonEmpty;
   const [selectedPlanId, setSelectedPlanId] = useState<string>(
     defaultPlanId || (plans.find((p) => p.featured)?.id || plans[0]?.id || '')
   );
@@ -328,7 +347,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                           : 'bg-surface hover:bg-surface-hover text-muted-foreground hover:text-foreground border border-border'
                       )}
                     >
-                      {plan.ctaText || 'Get started'}
+                      {plan.ctaText || words.comparisonAction}
                     </button>
                   )}
                 </div>
@@ -407,7 +426,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                                   <button
                                     type="button"
                                     className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-                                    aria-label={`Info about ${feat.name}`}
+                                    aria-label={words.comparisonInfo(feat.name)}
                                   >
                                     <Info className="size-4" />
                                   </button>
@@ -427,8 +446,9 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
                                     isMobileActive ? 'flex justify-between py-1' : 'hidden sm:flex'
                                   )}
                                 >
+                                  {/* ioiti-ui: its colon as the provider's language writes it ("Pro :" in French). */}
                                   <span className="sm:hidden text-xs font-mono text-muted-foreground">
-                                    {plan.name}:
+                                    {words.comparisonPlan(plan.name)}
                                   </span>
                                   <div>{renderValueCell(feat.values[plan.id])}</div>
                                 </div>

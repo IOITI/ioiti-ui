@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react'
 import type { MouseEvent, ReactNode } from 'react'
 
 import { useLinkComponent } from '../components/link-context.js'
+import { useMessages } from '../components/locale-context.js'
 import { Popover } from '../components/Popover.js'
 import { isPlainClick } from '../lib/links.js'
 import { PRESSABLE, TONE_MARK, TONE_SOFT } from '../lib/recipes.js'
@@ -22,9 +23,12 @@ const PILL: Record<StateTone, string> = {
 interface StateSummaryProps {
   /** The states, each while it applies; the quiet ones too (all is well, a fallback), said once it is opened. */
   items: StateItem[]
-  /** Its name: the button's, before what it says ("State: Payments down"), and the panel's. */
+  /**
+   * Its name: the button's, before what it says ("State: Payments down"), and the panel's; the provider's language's by
+   * default ("State").
+   */
   label?: string
-  /** What it says while nothing stands out and nothing is neutral. */
+  /** What it says while nothing stands out and nothing is neutral; the provider's language's by default ("All good"). */
   okLabel?: string
   /** Under the states, in the panel: a link to the page where they all are. */
   footer?: ReactNode
@@ -37,7 +41,11 @@ interface StateSummaryProps {
  * gravest first and the quiet ones after, each a link to where it is dealt with. Where several StateChips would
  * take the top bar's room: one is still a StateChip.
  */
-export function StateSummary({ items, label = 'State', okLabel = 'All good', footer, className }: StateSummaryProps) {
+export function StateSummary({ items, label: givenLabel, okLabel: givenOkLabel, footer, className }: StateSummaryProps) {
+  // Its words in the provider's language, those given over them.
+  const words = useMessages().shell
+  const label = givenLabel ?? words.state
+  const okLabel = givenOkLabel ?? words.allGood
   const tone = gravestTone(items)
   const ordered = byGravity(items)
   const out = ordered.filter((item) => standsOut(item.tone))
@@ -47,8 +55,8 @@ export function StateSummary({ items, label = 'State', okLabel = 'All good', foo
   // What it is named holds the words it shows (WCAG 2.5.3, label in name): the gravest state's, then how many of each
   // tone where several stand out ("State: Payments down (1 to fix, 1 to watch)"). What it shows is for the eye: its count,
   // and under 1280px no words (a name given over them would hold none of them at one width or the other).
-  const sentence = stateSentence(items, okLabel)
-  const said = lead && out.length > 1 ? `${lead.label} (${sentence})` : sentence
+  const sentence = stateSentence(items, okLabel, words.stateCounts)
+  const said = lead && out.length > 1 ? words.stateLead({ lead: lead.label, counts: sentence }) : sentence
 
   return (
     <Popover
@@ -65,7 +73,7 @@ export function StateSummary({ items, label = 'State', okLabel = 'All good', foo
             className,
           )}
         >
-          <span className="sr-only">{`${label}: ${said}`}</span>
+          <span className="sr-only">{words.stateButton({ label, state: said })}</span>
           {lead ? (
             <>
               {lead.icon ?? <Dot tone={lead.tone} />}

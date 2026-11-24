@@ -1,6 +1,7 @@
-import { ChangeList, formatMoney } from 'ioiti-ui'
+import { ChangeList, useFormat } from 'ioiti-ui'
 
 export default function ChangeListChanges() {
+  const { formatMoney } = useFormat()
   return (
     <ChangeList
       className="max-w-xl"

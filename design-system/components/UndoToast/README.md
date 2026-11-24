@@ -2,7 +2,7 @@
 
 A removal offered with an Undo instead of a question: the toast counts down, and nothing is sent before its time runs out.
 
-**You provide** `open`, `title` ("2 files removed"), `description`; `onUndo`, `onDismiss`; `duration` (ms, `5000` by default); `undoLabel` (`Undo`), `restoredMessage` (shown after Undo, `Restored successfully` by default); `variant` (`default` · `success` · `warning` · `error` · `info`); `position` (`bottom-center` by default); `showProgress`; `icon`; `wrapperClassName`.
+**You provide** `open`, `title` ("2 files removed"; without one it says "Done", and says so to its developer in development), `description`; `onUndo`, `onDismiss`; `duration` (ms, `5000` by default); `undoLabel` (`Undo`), `restoredMessage` (shown after Undo, `Restored successfully` by default), these words in IoitiProvider's language; `variant` (`default` · `success` · `warning` · `error` · `info`); `position` (`bottom-center` by default); `showProgress`; `icon`; `wrapperClassName`.
 
 ```tsx
 <UndoToast open={open} title="2 files removed" description="Removed for good in a few seconds" duration={8000}

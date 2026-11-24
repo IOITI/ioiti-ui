@@ -1,9 +1,10 @@
-import { AnimatedNumber, Button, DescriptionList, formatMoney } from 'ioiti-ui'
+import { AnimatedNumber, Button, DescriptionList, useFormat } from 'ioiti-ui'
 import { useState } from 'react'
 
 const TOTALS = [18240.5, 23950, 9874.25]
 
 export default function AnimatedNumberFormats() {
+  const { formatMoney } = useFormat()
   const [at, setAt] = useState(0)
   const total = TOTALS[at]
   return (

@@ -2,7 +2,7 @@
 
 The last step before an action that matters: a dialog that says what will happen, in the user's words, then asks for a gesture: a slide for what cannot be taken back, a plain button for the protective direction.
 
-**You provide** `open`, `onClose`, `onConfirm`, `title`, `description` (exactly what will happen), `confirmLabel` (the slider's words, or the button's with `gesture="button"`); `warning` (what is at stake, said first), `gesture` (`slide` by default · `button`), `doneLabel` (`Done`), `workingLabel` (`Working…`), `cancelLabel` (`Cancel`), `pending` while the action runs, `blocked` while the description asks for something first (a box ticked), `error`.
+**You provide** `open`, `onClose`, `onConfirm`, `title`, `description` (exactly what will happen), `confirmLabel` (the slider's words, or the button's with `gesture="button"`); `warning` (what is at stake, said first), `gesture` (`slide` by default · `button`), `doneLabel` (`Done`), `workingLabel` (`Working…`), `cancelLabel` (`Cancel`) (by default in IoitiProvider's language), `pending` while the action runs, `blocked` while the description asks for something first (a box ticked), `error`.
 
 ```tsx
 <ConfirmAction open={open} title="Delete this project"

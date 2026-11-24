@@ -3,7 +3,9 @@ import { FileText } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
 import { AttachmentChip } from './AttachmentChip.js'
+import { IoitiProvider } from './IoitiProvider.js'
 
 describe('AttachmentChip', () => {
   it('names what is attached, says its detail, and is taken away by its own button', () => {
@@ -59,5 +61,24 @@ describe('AttachmentChip', () => {
     expect(container.querySelector('img')).toHaveAttribute('alt', '')
     expect(screen.getByText('Too large')).toHaveClass('text-negative')
     expect(container.firstElementChild).not.toHaveAttribute('aria-busy')
+  })
+
+  it("says its words in the language given, and an application's own over English's", () => {
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AttachmentChip label="export.csv" busy onRemove={() => {}} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Retirer export.csv' })).toBeInTheDocument()
+    expect(screen.getByText(', en cours de préparation')).toHaveClass('sr-only')
+    unmount()
+
+    render(
+      <IoitiProvider messages={{ ai: { removeAttachment: (label: string) => `Detach ${label}` } }}>
+        <AttachmentChip label="export.csv" busy onRemove={() => {}} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Detach export.csv' })).toBeInTheDocument()
+    expect(screen.getByText(', being made ready')).toHaveClass('sr-only')
   })
 })

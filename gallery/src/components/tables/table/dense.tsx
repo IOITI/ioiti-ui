@@ -1,4 +1,4 @@
-import { formatMoney, SignedValue, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
+import { SignedValue, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, useFormat } from 'ioiti-ui'
 
 const WEEKS = [
   { week: 'Week 40', orders: 36, amount: 20610, change: -3.1 },
@@ -9,6 +9,7 @@ const WEEKS = [
 ]
 
 export default function TableDense() {
+  const { formatMoney } = useFormat()
   return (
     <Table density="dense" aria-label="Orders by week">
       <TableHead>

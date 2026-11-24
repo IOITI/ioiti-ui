@@ -275,3 +275,51 @@ describe('the slide (DragToConfirm)', () => {
     await waitFor(() => expect(thumb).toHaveAttribute('aria-valuetext', '40\u00a0%'))
   })
 })
+
+describe('the confirmation in a language', () => {
+  it('says its words in the language given: its button, its slider, what it says while it works and once done', async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <ConfirmAction open title="Supprimer ce projet" confirmLabel="Glisser pour supprimer" description="Le projet et ses fichiers sont supprimés." onConfirm={() => {}} onClose={() => {}} />
+      </IoitiProvider>,
+    )
+    expect(await screen.findByRole('button', { name: 'Annuler' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument()
+    const slider = screen.getByRole('slider', { name: 'Glisser pour supprimer' })
+    slider.focus()
+    await user.keyboard('{Enter}')
+    expect(slider).toHaveAttribute('aria-valuetext', 'Terminé')
+
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <ConfirmAction open pending title="Supprimer ce projet" confirmLabel="Glisser pour supprimer" description="Le projet et ses fichiers sont supprimés." onConfirm={() => {}} onClose={() => {}} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('slider', { name: 'Glisser pour supprimer' })).toHaveAttribute('aria-valuetext', 'En cours…')
+  })
+
+  it("slides to confirm in the language given, and in an application's own words over English's", async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <DragToConfirm autoResetDelay={0} />
+      </IoitiProvider>,
+    )
+    const thumb = screen.getByRole('slider', { name: 'Glisser pour confirmer' })
+    thumb.focus()
+    await user.keyboard('{Enter}')
+    expect(thumb).toHaveAttribute('aria-valuetext', 'Confirmé ✓')
+    unmount()
+
+    render(
+      <IoitiProvider messages={{ dialog: { slideToConfirm: 'Slide to go live' } }}>
+        <DragToConfirm autoResetDelay={0} />
+      </IoitiProvider>,
+    )
+    const own = screen.getByRole('slider', { name: 'Slide to go live' })
+    own.focus()
+    await user.keyboard('{Enter}')
+    expect(own).toHaveAttribute('aria-valuetext', 'Confirmed ✓')
+  })
+})

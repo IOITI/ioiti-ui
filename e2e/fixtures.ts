@@ -63,3 +63,8 @@ export async function arrived(page: Page): Promise<void> {
   await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible()
   await settled(page)
 }
+
+/** The gallery's components in French from the first paint, as its language choice keeps it (language-context.ts). */
+export async function inFrench(page: Page): Promise<void> {
+  await page.addInitScript(() => window.localStorage.setItem('ioiti-gallery.language', 'fr'))
+}

@@ -7,6 +7,8 @@ import { motionTransitions } from "../../lib/motion-tokens.js";
 import { PRESSABLE } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 import { useLinkComponent } from "../link-context.js";
+// ioiti-ui: its words in the provider's language (the catalogue's `shell`).
+import { useMessages } from "../locale-context.js";
 
 // ioiti-ui: the design's spring for what follows the pointer and what arrives (springSnappy), not one of its own.
 const spring = motionTransitions.springSnappy;
@@ -42,6 +44,8 @@ export function Breadcrumb({
 }: BreadcrumbProps) {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(as);
+  // ioiti-ui: its words, the provider's language's.
+  const words = useMessages().shell;
   const uid = React.useId();
   const listRef = React.useRef<HTMLOListElement>(null);
   const [expanded, setExpanded] = React.useState(false);
@@ -76,7 +80,8 @@ export function Breadcrumb({
     "relative flex h-8 items-center gap-1.5 rounded-lg px-2 text-sm outline-none";
 
   return (
-    <nav aria-label="Breadcrumb" className={className} {...props}>
+    // ioiti-ui: named in the provider's language ("Breadcrumb"); an `aria-label` given wins.
+    <nav aria-label={words.breadcrumb} className={className} {...props}>
       <ol
         ref={listRef}
         onMouseLeave={() => setHover(null)}
@@ -94,7 +99,8 @@ export function Breadcrumb({
                 {sep}
                 <button
                   type="button"
-                  aria-label="Show hidden pages"
+                  // ioiti-ui: named in the provider's language.
+                  aria-label={words.showHiddenPages}
                   onClick={() => setExpanded(true)}
                   // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
                   className={cn("grid size-8 place-items-center rounded-lg outline-none transition hover:bg-surface-hover hover:text-foreground", PRESSABLE)}

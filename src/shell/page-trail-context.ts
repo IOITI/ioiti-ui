@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 
 import { useAppName } from '../components/app-context.js'
+import { useMessages } from '../components/locale-context.js'
 import { trailFor } from './navigation.js'
 import type { Crumb, Menu, PageName } from './navigation.js'
 
@@ -75,9 +76,10 @@ export function useTrail(): Trail | null {
   return useContext(TrailContext)
 }
 
-/** The trail of the page shown, after Home; nothing outside the shell. */
+/** The trail of the page shown, after Home, in the provider's language; nothing outside the shell. */
 export function usePageTrail(): Crumb[] {
   const trail = useContext(TrailContext)
   const named = useContext(NamedContext)
-  return trail ? trailFor(trail.menu, trail.pathname, named, trail.search) : []
+  const words = useMessages().shell
+  return trail ? trailFor(trail.menu, trail.pathname, named, trail.search, words) : []
 }

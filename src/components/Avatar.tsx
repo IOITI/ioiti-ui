@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
+import { useFormat, useMessages } from './locale-context.js'
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg'
 
@@ -65,21 +66,24 @@ interface AvatarGroupProps {
   /** The avatars shown before "+N" says how many more. */
   max?: number
   size?: AvatarSize
-  /** The group's name for a screen reader: "Who works on it". */
+  /** The group's name for a screen reader: "Who works on it"; the provider's language's "People" by default. */
   label?: string
   className?: string
 }
 
 /**
- * People together, their avatars overlapping: each named in a hint, "+N" naming the rest. An avatar lifts
- * a little under the pointer; not where motion is reduced.
+ * People together, their avatars overlapping: each named in a hint, "+N" naming the rest, in the provider's language.
+ * An avatar lifts a little under the pointer; not where motion is reduced.
  */
-export function AvatarGroup({ people, max = 4, size = 'md', label = 'People', className }: AvatarGroupProps) {
+export function AvatarGroup({ people, max = 4, size = 'md', label, className }: AvatarGroupProps) {
   const reduce = useReducedMotionConfig()
+  const words = useMessages().layout
+  const { formatNumber } = useFormat()
   const shown = people.slice(0, max)
   const rest = people.slice(shown.length)
+  const restNames = rest.map((person) => person.name)
   return (
-    <div role="group" aria-label={label} className={cn('flex items-center -space-x-2', className)}>
+    <div role="group" aria-label={label ?? words.people} className={cn('flex items-center -space-x-2', className)}>
       {shown.map((person, index) => (
         <motion.span
           key={`${person.name}-${index}`}
@@ -92,14 +96,14 @@ export function AvatarGroup({ people, max = 4, size = 'md', label = 'People', cl
       ))}
       {rest.length > 0 && (
         <span className="relative inline-flex rounded-full ring-2 ring-background">
-          <Hint content={rest.map((person) => person.name).join(', ')}>
+          <Hint content={words.peopleList(restNames)}>
             <span
               role="img"
               tabIndex={0}
-              aria-label={`${rest.length} more: ${rest.map((person) => person.name).join(', ')}`}
+              aria-label={words.morePeople(restNames)}
               className={cn('inline-grid place-items-center rounded-full bg-surface-raised font-medium tabular-nums text-text-secondary', SIZE[size])}
             >
-              <span aria-hidden>+{rest.length}</span>
+              <span aria-hidden>+{formatNumber(rest.length)}</span>
             </span>
           </Hint>
         </span>

@@ -1,8 +1,9 @@
-import { Badge, formatMoney, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
+import { Badge, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, useFormat } from 'ioiti-ui'
 
 import { ORDERS, STATUS } from '../../../samples/tables'
 
 export default function TableRecords() {
+  const { formatMoney } = useFormat()
   return (
     <Table aria-label="Latest orders">
       <TableHead>

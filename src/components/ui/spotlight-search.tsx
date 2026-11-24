@@ -16,6 +16,8 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DIALOG, PRESSABLE, SCRIM } from '../../lib/recipes.js';
 import { Hint } from '../Hint.js';
 import { useLinkComponent, useNavigateTo } from '../link-context.js';
+// ioiti-ui: its words in the provider's language.
+import { useMessages } from '../locale-context.js';
 import { useShortcut } from '../shortcuts-context.js';
 import { Kbd } from '../Kbd.js';
 import { Skeleton } from './skeleton.js';
@@ -58,7 +60,7 @@ export interface SpotlightSearchProps {
   onClose?: () => void;
   /** ioiti-ui: the entries, listed in this order while nothing is typed, and where they are worth the same. */
   items?: SpotlightSearchItem[];
-  /** ioiti-ui: the field's words while nothing is typed. */
+  /** ioiti-ui: the field's words while nothing is typed: "Search…" in the provider's language by default. */
   placeholder?: string;
   /**
    * ioiti-ui: searches made before, offered while nothing is typed: one chosen is typed again.
@@ -102,15 +104,15 @@ export interface SpotlightSearchProps {
    */
   loading?: boolean;
   /**
-   * ioiti-ui: they could not be found: what went wrong (`true`: "The search failed."), in place of the list while
-   * there is none, above it otherwise (the last entries found).
+   * ioiti-ui: they could not be found: what went wrong (`true`: "The search failed.", in the provider's language), in
+   * place of the list while there is none, above it otherwise (the last entries found).
    */
   error?: React.ReactNode;
   /** ioiti-ui: searches again: a "Try again" beside the error. */
   onRetry?: () => void;
   /** ioiti-ui: the most entries listed at once, the best first; the others are found by typing. */
   limit?: number;
-  /** ioiti-ui: what the dialog is called. */
+  /** ioiti-ui: what the dialog is called: "Spotlight Search" in the provider's language by default. */
   label?: string;
   /**
    * ioiti-ui: the entries under a heading for each category, in the order the categories first come: while
@@ -139,6 +141,8 @@ const NO_SEARCHES: string[] = [];
 // ioiti-ui: ⌘K (Ctrl K elsewhere) pressed in the palette closes it; ⌘↵ opens the entry chosen elsewhere.
 const CLOSE_KEYS = parseKeys('mod+k')[0];
 const OPEN_KEYS = parseKeys('mod+enter')[0];
+// ioiti-ui: where the query goes in the words that say nothing was found for it, drawn in the text's colour there.
+const QUERY_MARK = '\u0000';
 
 /** ioiti-ui: a row of the list: a search made before (typed again when chosen), an entry, or one chosen before. */
 type Row =
@@ -206,7 +210,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   onOpenChange,
   onClose,
   items,
-  placeholder = 'Search…',
+  placeholder: givenPlaceholder,
   recentSearches = NO_SEARCHES,
   remember,
   onSelect,
@@ -219,13 +223,18 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   error,
   onRetry,
   limit = 50,
-  label = 'Spotlight Search',
+  label: givenLabel,
   grouped = false,
   closeOnSelect = true,
   picked,
   footer,
   className,
 }) => {
+  // ioiti-ui: its words in the provider's language, the ones given over them; ⌘K listed under the shortcuts' own
+  // Navigation, the sidebar's ⌘B's, the same word in every language.
+  const { search: messages, shortcuts } = useMessages();
+  const placeholder = givenPlaceholder ?? messages.placeholder;
+  const label = givenLabel ?? messages.label;
   // ioiti-ui: held by its caller or by itself, as every dialog (useControllableState).
   const [isOpen, setOpen] = useControllableState(open, false, onOpenChange);
   const close = () => {
@@ -235,7 +244,7 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
 
   // ioiti-ui: ⌘K (Ctrl K elsewhere) is one of the application's shortcuts: listed by `?`, waiting while a dialog
   // is open (its own too: pressed in it, the palette closes itself). EasyUI's listened to the window, Ctrl on a Mac too.
-  useShortcut('mod+k', () => setOpen(true), { enabled: enableGlobalShortcut, description: label, group: 'Navigation' });
+  useShortcut('mod+k', () => setOpen(true), { enabled: enableGlobalShortcut, description: label, group: shortcuts.navigation });
 
   // ioiti-ui: what had the focus before, read before the field takes it (a layout effect), given it back as it
   // closes, while the focus is in the palette (not when what an entry did took it elsewhere) and where it is still
@@ -322,6 +331,8 @@ function Palette({
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
   const navigateTo = useNavigateTo();
+  // ioiti-ui: its words in the provider's language, its counts too (`words` are those typed).
+  const messages = useMessages().search;
   const uniqueId = useId();
   const reduceMotion = useReducedMotionConfig();
   // ioiti-ui: leaving, it hears nothing more: Escape pressed again does not close it again.
@@ -392,11 +403,11 @@ function Palette({
     const result: Section[] = [];
     const top = query === '' && depth === 0;
     if (top && rememberedItems.length > 0) {
-      result.push({ key: 'remembered', heading: 'Recent', rows: rememberedItems.map((item): Row => ({ kind: 'remembered', key: `remembered:${item.id}`, item })) });
+      result.push({ key: 'remembered', heading: messages.recent, rows: rememberedItems.map((item): Row => ({ kind: 'remembered', key: `remembered:${item.id}`, item })) });
     }
     if (top && recentSearches.length > 0) {
       const searches = Array.from(new Set(recentSearches));
-      result.push({ key: 'searches', heading: 'Recent searches', rows: searches.map((text): Row => ({ kind: 'search', key: `search:${text}`, text })) });
+      result.push({ key: 'searches', heading: messages.recentSearches, rows: searches.map((text): Row => ({ kind: 'search', key: `search:${text}`, text })) });
     }
     if (grouped) {
       const byCategory = new Map<string, Row[]>();
@@ -410,7 +421,7 @@ function Palette({
       result.push({ key: 'entries', rows: shown.map(entryRow) });
     }
     return result;
-  }, [query, depth, rememberedItems, recentSearches, grouped, shown]);
+  }, [query, depth, rememberedItems, recentSearches, grouped, shown, messages]);
   const rows = useMemo(() => sections.flatMap((section) => section.rows), [sections]);
   const activeIndex = Math.max(0, rows.findIndex((row) => row.key === activeKey));
   const active: Row | undefined = rows[activeIndex];
@@ -460,22 +471,21 @@ function Palette({
 
   // ioiti-ui: the entries could not be found (NotificationBell's words for it, and its Try again).
   const failed = error !== undefined && error !== null && error !== false && error !== '';
-  const failedSaid = error === true ? 'The search failed.' : error;
+  const failedSaid = error === true ? messages.failed : error;
 
   // ioiti-ui: what it says to a screen reader once typing pauses: that the search failed, that it is searching,
   // how many entries are found.
   // In a list, its title first: what is listed changed, though nothing was typed.
   const shownCount = rows.filter((row) => row.kind === 'entry').length;
-  const counted =
-    shownCount === 0 ? 'No results' : `${shownCount === 1 ? '1 result' : `${shownCount} results`}${more > 0 ? `, ${more} more` : ''}`;
+  const counted = messages.results({ count: shownCount, more });
   const message = failed
     ? typeof failedSaid === 'string'
       ? failedSaid
-      : 'The search failed.'
+      : messages.failed
     : loading
-      ? 'Searching…'
+      ? messages.searching
       : scope
-        ? `${scope.title}: ${counted}`
+        ? messages.inList({ list: scope.title, results: counted })
         : query.trim() === ''
           ? ''
           : counted;
@@ -631,7 +641,7 @@ function Palette({
       }}
       className="shrink-0 cursor-pointer rounded-md px-1.5 py-0.5 text-sm font-medium text-foreground underline-offset-2 hover:underline"
     >
-      Try again
+      {messages.tryAgain}
     </button>
   );
 
@@ -808,7 +818,7 @@ function Palette({
               className="min-w-0 max-w-[45%] shrink-0"
               content={
                 <span className="inline-flex items-center gap-1.5">
-                  Back <Kbd keys="backspace" />
+                  {messages.back} <Kbd keys="backspace" />
                 </span>
               }
             >
@@ -818,7 +828,7 @@ function Palette({
                   back();
                   inputRef.current?.focus({ preventScroll: true });
                 }}
-                aria-label={`Back from ${scope.title}`}
+                aria-label={messages.backFrom(scope.title)}
                 className={cn(
                   'inline-flex min-w-0 max-w-full items-center gap-1 rounded-md border border-border bg-surface px-1.5 py-0.5 text-xs font-medium text-text-secondary transition-[color,background-color,scale] hover:bg-surface-hover hover:text-foreground',
                   PRESSABLE
@@ -836,7 +846,7 @@ function Palette({
             onChange={(event) => type(event.target.value)}
             placeholder={scope?.placeholder ?? placeholder}
             className="min-w-0 flex-1 bg-transparent text-base text-foreground placeholder:text-text-subtle focus:outline-none"
-            aria-label={scope ? `Search ${scope.title}` : 'Search'}
+            aria-label={scope ? messages.searchIn(scope.title) : messages.search}
             role="combobox"
             aria-expanded="true"
             aria-controls={listId}
@@ -847,15 +857,16 @@ function Palette({
             autoCorrect="off"
             spellCheck={false}
           />
-          {/* ioiti-ui: Escape, drawn as every key is (Kbd), closes it when clicked too. */}
+          {/* ioiti-ui: Escape, drawn as every key is (Kbd, its name as the provider's language writes it), closes it when
+              clicked too. */}
           <button
             type="button"
             tabIndex={-1}
             onClick={finish}
-            aria-label="Close"
+            aria-label={messages.close}
             className="shrink-0 cursor-pointer rounded-sm transition-opacity hover:opacity-80"
           >
-            <Kbd>Esc</Kbd>
+            <Kbd keys="escape" />
           </button>
         </div>
 
@@ -932,21 +943,27 @@ function Palette({
               </div>
             ) : (
               query !== '' && (
+                // ioiti-ui: the provider's language's words, the query in them in the text's colour.
                 <div className="py-10 text-center text-xs text-muted-foreground">
-                  No results found for <span className="text-foreground">“{query}”</span>
+                  {messages.noResultsFor(QUERY_MARK).split(QUERY_MARK).map((part, index) => (
+                    <React.Fragment key={index}>
+                      {index > 0 && <span className="text-foreground">{query}</span>}
+                      {part}
+                    </React.Fragment>
+                  ))}
                 </div>
               )
             ))}
           {more > 0 && (
             <p className="px-3.5 py-2 text-xs text-muted-foreground">
-              {more} more: type to narrow them down.
+              {messages.more(more)}
             </p>
           )}
         </div>
         {footer && <div className="border-t border-border px-4 py-2.5 text-xs text-muted-foreground">{footer}</div>}
         {/* ioiti-ui: what an entry with a list says of itself (aria-describedby). */}
         <span id={listOpensId} hidden>
-          Opens its list
+          {messages.opensList}
         </span>
         {/* ioiti-ui: said once typing pauses, in the dialog (a screen reader may hear nothing outside it). */}
         <p role="status" className="sr-only">

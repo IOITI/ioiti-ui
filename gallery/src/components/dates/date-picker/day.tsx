@@ -11,10 +11,10 @@ export default function DatePickerDay() {
     <div className="flex w-full flex-col gap-3">
       <div className="grid w-full gap-4 sm:grid-cols-2">
         <Field label="Due on">
-          <DatePicker value={due} onChange={setDue} locale="en-GB" weekStartsOn={1} />
+          <DatePicker value={due} onChange={setDue} />
         </Field>
         <Field label="Paid on" error={paid && due && paid > due ? 'Paid after the day it was due' : undefined}>
-          <DatePicker value={paid} onChange={setPaid} placeholder="Not paid yet" defaultMonth={NOVEMBER} locale="en-GB" weekStartsOn={1} />
+          <DatePicker value={paid} onChange={setPaid} placeholder="Not paid yet" defaultMonth={NOVEMBER} />
         </Field>
       </div>
       <p className="text-sm text-muted-foreground" aria-live="polite">

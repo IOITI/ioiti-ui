@@ -51,4 +51,45 @@ describe('AnimatedFileUpload in a locale', () => {
     expect(screen.getByText(/10,0 Mo/)).toBeInTheDocument()
     expect(screen.getByText(/42,5 %/).textContent).toContain('42,5\u00a0%')
   })
+
+  it('says its words in the language given: its zone, its input, its list, a file\'s states and buttons', () => {
+    const FAILED = { ...EXPORT, id: 'f3', name: 'notes.txt', size: 10, progress: 0, status: 'error' as const }
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AnimatedFileUpload initialFiles={[EXPORT, SENDING, FAILED]} maxSize={10_000_000} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByLabelText('Importer des fichiers')).toHaveAttribute('type', 'file')
+    expect(screen.getByText('Déposez des fichiers ici')).toBeInTheDocument()
+    expect(screen.getByText(/ou parcourez votre appareil/)).toBeInTheDocument()
+    expect(screen.getByText('(jusqu’à 10,0 Mo)')).toBeInTheDocument()
+    expect(screen.getByText('Fichiers (3)')).toBeInTheDocument()
+    expect(screen.getByText('Prêt')).toBeInTheDocument()
+    expect(screen.getByText('Importation 42,5 %').textContent).toBe('Importation 42,5\u00a0%')
+    expect(screen.getByText('Échec de l’importation')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Réessayer d’importer notes.txt' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retirer rules.ndjson' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retirer les fichiers importés' })).toBeInTheDocument()
+  })
+
+  it('says a file too large in its words, the largest taken as the locale writes it; an application\'s own words over English\'s', async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AnimatedFileUpload maxSize={10} />
+      </IoitiProvider>,
+    )
+    await user.upload(screen.getByLabelText('Importer des fichiers'), new File(['x'.repeat(64)], 'big.csv', { type: 'text/csv' }))
+    expect(await screen.findByText('Le fichier dépasse la taille maximale autorisée (10 o)')).toBeInTheDocument()
+    unmount()
+
+    render(
+      <IoitiProvider messages={{ upload: { dropTitle: 'Drop a price list' } }}>
+        <AnimatedFileUpload />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('Drop a price list')).toBeInTheDocument()
+    expect(screen.getByText(/or browse from your device/)).toBeInTheDocument()
+    expect(screen.getByLabelText('Upload files')).toHaveAttribute('type', 'file')
+  })
 })

@@ -3,12 +3,14 @@ import { useContext, useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 
 import { ButtonLink } from '../components/ButtonLink.js'
+import { useMessages } from '../components/locale-context.js'
 import { Button } from '../components/ui/button.js'
 import { errorDetails, errorKind } from '../lib/errors.js'
 import type { ErrorKind } from '../lib/errors.js'
 import { TONE_TEXT } from '../lib/recipes.js'
 import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
+import type { Messages } from '../locales/en.js'
 import type { Crumb } from './navigation.js'
 import { TabTitleContext, usePageName, useTabTitle } from './page-trail-context.js'
 
@@ -16,9 +18,12 @@ import { TabTitleContext, usePageName, useTabTitle } from './page-trail-context.
 declare const process: { env: { NODE_ENV?: string } }
 
 export interface ErrorStateProps {
-  /** The heading, what failed ("The orders could not be loaded"); by default, words for the kind of error. */
+  /**
+   * The heading, what failed ("The orders could not be loaded"); by default, words for the kind of error, in the
+   * provider's language ("Something went wrong").
+   */
   title?: string
-  /** What happened, and what to do about it; by default, words for the kind of error. */
+  /** What happened, and what to do about it; by default, words for the kind of error, in the provider's language. */
   description?: ReactNode
   /**
    * What was thrown or caught. Its kind chooses the words and the way out (a part of the application that failed to
@@ -29,7 +34,10 @@ export interface ErrorStateProps {
   onRetry?: () => void
   /** Trying again, under way: its button busy, and no second press. */
   retrying?: boolean
-  /** The way home, a link; `null` for none (a part of a page has none by default). */
+  /**
+   * The way home, a link; `null` for none. A page's is "Back to home" (`/`), in the provider's language, by default; a
+   * part of a page has none.
+   */
   home?: { href: string; label: string } | null
   /**
    * A page (the default): it names the top bar's trail and the browser's tab, its heading is the page's (level 1),
@@ -53,34 +61,16 @@ export interface ErrorStateProps {
   className?: string
 }
 
-const HOME = { href: '/', label: 'Back to home' }
+/** A word of the catalogue's `error`. */
+type ErrorWord = keyof Messages['error']
 
-// What each kind says: its words with a Try again and without one (nothing to press says nothing of pressing).
-const WORDS: Record<ErrorKind, { page: string; part: string; retry: string; wait: string; icon: ReactNode; tone: string }> = {
-  other: {
-    page: 'Something went wrong',
-    part: 'This part could not be shown',
-    retry: 'Try again; if it fails again, come back to it later.',
-    wait: 'Come back to it later; if it fails again, tell whoever runs the application.',
-    icon: <TriangleAlert />,
-    tone: TONE_TEXT.negative,
-  },
-  offline: {
-    page: 'The server could not be reached',
-    part: 'The server could not be reached',
-    retry: 'Check the connection, then try again.',
-    wait: 'Check the connection, then come back to it.',
-    icon: <WifiOff />,
-    tone: TONE_TEXT.warning,
-  },
-  chunk: {
-    page: 'This page could not be loaded',
-    part: 'This part could not be loaded',
-    retry: 'A new version of the application may have been published since this page was opened: reloading gets it.',
-    wait: 'A new version of the application may have been published since this page was opened: reloading gets it.',
-    icon: <RefreshCw />,
-    tone: TONE_TEXT.info,
-  },
+// What each kind says, by its words in the catalogue (`error`): with a Try again and without one (nothing to press says
+// nothing of pressing); its icon and its tone.
+const KINDS: Record<ErrorKind, { page: ErrorWord; part: ErrorWord; retry: ErrorWord; wait: ErrorWord; icon: ReactNode; tone: string }> = {
+  other: { page: 'otherPage', part: 'otherPart', retry: 'otherRetry', wait: 'otherWait', icon: <TriangleAlert />, tone: TONE_TEXT.negative },
+  offline: { page: 'offlinePage', part: 'offlinePart', retry: 'offlineRetry', wait: 'offlineWait', icon: <WifiOff />, tone: TONE_TEXT.warning },
+  // Reloaded whatever is given: there is always a button to press.
+  chunk: { page: 'chunkPage', part: 'chunkPart', retry: 'chunkReload', wait: 'chunkReload', icon: <RefreshCw />, tone: TONE_TEXT.info },
 }
 
 /**
@@ -94,8 +84,8 @@ export function ErrorState(props: ErrorStateProps) {
 
 /** A page that failed: named in the trail and the tab, as any page. */
 function ErrorPage(props: ErrorStateProps) {
-  const words = WORDS[errorKind(props.error)]
-  const title = props.title ?? words.page
+  const words = useMessages().error
+  const title = props.title ?? words[KINDS[errorKind(props.error)].page]
   usePageName(props.name ?? title, props.parents)
   useTabTitle(props.name ?? title)
   // A shell drawn in a part of a page (a demo) names no tab, and its page takes no focus from the page around it.
@@ -105,8 +95,8 @@ function ErrorPage(props: ErrorStateProps) {
 
 /** A part of a page that failed: naming nothing, said where the focus is. */
 function ErrorPart(props: ErrorStateProps) {
-  const words = WORDS[errorKind(props.error)]
-  return <ErrorView {...props} title={props.title ?? words.part} focusOnMount={props.focusOnMount ?? false} page={false} />
+  const words = useMessages().error
+  return <ErrorView {...props} title={props.title ?? words[KINDS[errorKind(props.error)].part]} focusOnMount={props.focusOnMount ?? false} page={false} />
 }
 
 function ErrorView({
@@ -123,7 +113,8 @@ function ErrorView({
   className,
 }: ErrorStateProps & { title: string; page: boolean; focusOnMount: boolean }) {
   const kind = errorKind(error)
-  const words = WORDS[kind]
+  const said = KINDS[kind]
+  const words = useMessages().error
   const root = useRef<HTMLDivElement>(null)
   const heading = useRef<HTMLHeadingElement>(null)
   useEffect(() => {
@@ -147,7 +138,7 @@ function ErrorView({
   }, [])
 
   const Heading = `h${headingLevel ?? (page ? 1 : 3)}` as const
-  const way = home === undefined ? (page ? HOME : null) : home
+  const way = home === undefined ? (page ? { href: '/', label: words.backToHome } : null) : home
   // A part of the application that failed to load comes back by reloading the page: trying again loads the same.
   const again = kind === 'chunk' ? () => window.location.reload() : onRetry
   const retry =
@@ -159,7 +150,7 @@ function ErrorView({
   const details = process.env.NODE_ENV !== 'production' && error !== undefined ? errorDetails(error) : ''
   // A stack longer than its box: a stop of the keyboard, which scrolls it.
   const detailsText = useRef<HTMLPreElement>(null)
-  const detailsRegion = useScrollRegion(detailsText, { label: 'Details', key: details })
+  const detailsRegion = useScrollRegion(detailsText, { label: words.details, key: details })
 
   return (
     <div
@@ -172,11 +163,11 @@ function ErrorView({
         aria-hidden
         className={cn(
           'grid place-items-center rounded-xl border border-border bg-surface-raised',
-          icon ? 'text-muted-foreground' : words.tone,
+          icon ? 'text-muted-foreground' : said.tone,
           page ? 'mb-3 size-12 [&>svg]:size-6' : 'mb-2 size-8 [&>svg]:size-4',
         )}
       >
-        {icon ?? words.icon}
+        {icon ?? said.icon}
       </div>
       <Heading
         ref={heading}
@@ -185,7 +176,7 @@ function ErrorView({
       >
         {title}
       </Heading>
-      <p className={cn('text-pretty text-muted-foreground', page ? 'max-w-md text-sm' : 'max-w-sm text-xs')}>{description ?? (again ? words.retry : words.wait)}</p>
+      <p className={cn('text-pretty text-muted-foreground', page ? 'max-w-md text-sm' : 'max-w-sm text-xs')}>{description ?? words[again ? said.retry : said.wait]}</p>
       {(again || way) && (
         <div className={cn('flex flex-wrap items-center justify-center gap-2', page ? 'mt-4' : 'mt-3')}>
           {again && (
@@ -196,7 +187,7 @@ function ErrorView({
               leftIcon={kind === 'chunk' ? <RefreshCw className="size-4" /> : <RotateCcw className="size-4" />}
               onClick={retry}
             >
-              {kind === 'chunk' ? 'Reload' : 'Try again'}
+              {kind === 'chunk' ? words.reload : words.tryAgain}
             </Button>
           )}
           {way && (
@@ -209,7 +200,7 @@ function ErrorView({
       {/* What a developer needs to mend it, in development only: a production build keeps none of it. */}
       {details && (
         <details className={cn('w-full max-w-2xl text-left', page ? 'mt-6' : 'mt-3')}>
-          <summary className="cursor-pointer text-xs text-muted-foreground">Details</summary>
+          <summary className="cursor-pointer text-xs text-muted-foreground">{words.details}</summary>
           <pre
             ref={detailsText}
             {...detailsRegion}

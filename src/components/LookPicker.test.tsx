@@ -2,13 +2,17 @@ import { readFileSync } from 'node:fs'
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ACCENT_ATTRIBUTE, ACCENTS, MATERIAL_ATTRIBUTE, THEME_KEY_ATTRIBUTE } from '../lib/theme.js'
+import { fr } from '../locales/fr.js'
 import { stubSystemTheme } from '../test/systemTheme.js'
 
+import { IoitiProvider } from './IoitiProvider.js'
 import { LookPicker } from './LookPicker.js'
 import { ThemeProvider } from './ThemeProvider.js'
+import { ThemeToggle } from './ThemeToggle.js'
 
 const html = document.documentElement
 const trigger = () => screen.getByRole('button', { name: /^Accent and material:/ })
@@ -159,5 +163,56 @@ describe('the accent and material picker', () => {
     await user.tab({ shift: true })
     await waitFor(() => expect(choices()).not.toBeInTheDocument(), { timeout: 3000 })
     expect(trigger()).toHaveFocus()
+  })
+})
+
+describe('the look in French', () => {
+  /** French's no-break spaces (before a colon) read as spaces. */
+  const spaced = (text: string | null) => (text ?? '').replace(/\s/g, ' ')
+  function French({ children }: { children: ReactNode }) {
+    return (
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        {children}
+      </IoitiProvider>
+    )
+  }
+
+  it('names the picker, what is shown and its choices in French', async () => {
+    const user = userEvent.setup()
+    html.setAttribute(ACCENT_ATTRIBUTE, 'aurora')
+    render(<LookPicker />, { wrapper: French })
+
+    const button = screen.getByRole('button', { name: (name) => spaced(name) === 'Couleur et matière : boréale, opaque' })
+    expect(button).toHaveAccessibleDescription('Couleur et matière')
+    await user.click(button)
+    expect(screen.getByRole('group', { name: 'Couleur et matière' })).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: 'Couleur' })).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: 'Matière' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'Boréale' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Opaque' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Heure dorée' })).not.toBeChecked()
+  })
+
+  it('says where the theme button stands and what a press does, its title too', async () => {
+    const user = userEvent.setup()
+    stubSystemTheme(true)
+    render(<ThemeToggle />, { wrapper: French })
+
+    const button = screen.getByRole('button', { name: /^Thème/ })
+    expect(spaced(button.getAttribute('aria-label'))).toBe('Thème : suit le système (sombre pour l’instant). Appuyer pour un thème toujours clair.')
+    expect(button).toHaveAttribute('title', button.getAttribute('aria-label'))
+    await user.click(button)
+    expect(spaced(button.getAttribute('aria-label'))).toBe('Thème : toujours clair. Appuyer pour un thème toujours sombre.')
+    await user.click(button)
+    expect(spaced(button.getAttribute('aria-label'))).toBe('Thème : toujours sombre. Appuyer pour suivre le système.')
+  })
+
+  it("takes an application's own words over the language's", () => {
+    render(
+      <IoitiProvider messages={{ look: { accentNeutral: 'Ink', accentAndMaterial: 'Look' } }}>
+        <LookPicker />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Accent and material: ink, flat' })).toHaveAccessibleDescription('Look')
   })
 })

@@ -10,6 +10,8 @@ import { X } from 'lucide-react';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, FLOATING } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
+// ioiti-ui: what it says to a screen reader in the provider's language.
+import { useMessages } from '../locale-context.js';
 
 export type DynamicIslandState = 'collapsed' | 'expanded';
 
@@ -54,6 +56,7 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
   const pillRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const shouldReduceMotion = useReducedMotionConfig();
+  const words = useMessages().toast;
 
   const handleStateChange = useCallback(
     (nextState: DynamicIslandState) => {
@@ -132,7 +135,7 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
           expanded && 'invisible'
         )}
       >
-        <span className="sr-only">{label}:</span>{' '}
+        <span className="sr-only">{words.islandName(label)}</span>{' '}
         {compact}
       </motion.button>
 
@@ -164,7 +167,7 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
                 ref={closeRef}
                 type="button"
                 onClick={() => handleStateChange('collapsed')}
-                aria-label={`Close ${label.toLowerCase()}`}
+                aria-label={words.closeIsland(label)}
                 className={cn(CLOSE_SM, 'absolute right-3 top-3')}
               >
                 <X />

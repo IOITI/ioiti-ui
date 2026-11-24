@@ -16,12 +16,14 @@ import {
 } from '@codemirror/view'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 
+import { useMessages } from '../components/locale-context.js'
 import { fieldBorder } from '../lib/field-border.js'
 import { cn } from '../lib/utils.js'
 import { placeDiagnostics } from './diagnostics.js'
 import type { CodeDiagnostic } from './diagnostics.js'
 import { loadLanguage } from './languages.js'
 import type { CodeEditorLanguage } from './languages.js'
+import { phrasesExtension } from './phrases.js'
 import { editorHeight, editorTheme } from './theme.js'
 
 /** A change the component makes itself (a new `value` given): not reported back as the user's. */
@@ -64,6 +66,7 @@ interface Parts {
   gutter: Compartment
   placeholder: Compartment
   height: Compartment
+  phrases: Compartment
 }
 
 const readOnlyExtension = (readOnly: boolean): Extension => EditorState.readOnly.of(readOnly)
@@ -78,7 +81,8 @@ const attributesExtension = (label: string, readOnly: boolean): Extension =>
 /**
  * Code to edit: a configuration, a rule, a document (CodeMirror). In the design's code colours and surface,
  * its frame showing the focus as a field's does, ⌘S saving, ⌘F searching, a server's parse errors marked
- * where they are. Tab moves the focus on, as in any field: an editor never keeps it.
+ * where they are. Tab moves the focus on, as in any field: an editor never keeps it. CodeMirror's own words (its
+ * search panel, what it says to a screen reader) are the provider's language's.
  */
 export function CodeEditor({
   value,
@@ -103,8 +107,10 @@ export function CodeEditor({
   useLayoutEffect(() => {
     handlers.current = { onChange, onSave }
   })
+  // CodeMirror's words, in the provider's language.
+  const words = useMessages().code
   // What the first render says, for the editor made once; later changes reconfigure it (effects below).
-  const initial = useRef({ value, readOnly, wrap, label, lineNumbers, placeholder, minHeight, maxHeight, autoFocus })
+  const initial = useRef({ value, readOnly, wrap, label, lineNumbers, placeholder, minHeight, maxHeight, autoFocus, words })
 
   useEffect(() => {
     const first = initial.current
@@ -116,6 +122,7 @@ export function CodeEditor({
       gutter: new Compartment(),
       placeholder: new Compartment(),
       height: new Compartment(),
+      phrases: new Compartment(),
     }
     const editor = new EditorView({
       parent: host.current!,
@@ -151,6 +158,7 @@ export function CodeEditor({
           made.wrap.of(wrapExtension(first.wrap)),
           made.attributes.of(attributesExtension(first.label, first.readOnly)),
           made.placeholder.of(placeholderExtension(first.placeholder)),
+          made.phrases.of(phrasesExtension(first.words)),
           EditorView.updateListener.of((update) => {
             if (!update.docChanged || update.transactions.every((tr) => tr.annotation(fromProps))) return
             handlers.current.onChange?.(update.state.doc.toString())
@@ -197,9 +205,10 @@ export function CodeEditor({
         parts.current.gutter.reconfigure(gutterExtension(lineNumbers)),
         parts.current.placeholder.reconfigure(placeholderExtension(placeholder)),
         parts.current.height.reconfigure(editorHeight(minHeight, maxHeight)),
+        parts.current.phrases.reconfigure(phrasesExtension(words)),
       ],
     })
-  }, [readOnly, wrap, label, lineNumbers, placeholder, minHeight, maxHeight])
+  }, [readOnly, wrap, label, lineNumbers, placeholder, minHeight, maxHeight, words])
 
   useEffect(() => {
     const editor = view.current

@@ -1,4 +1,4 @@
-import { Badge, formatMoney, Panel, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TextLink } from 'ioiti-ui'
+import { Badge, Panel, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TextLink, useFormat } from 'ioiti-ui'
 import type { BadgeTone } from 'ioiti-ui'
 
 const ORDERS: { id: string; customer: string; status: string; tone: BadgeTone; amount: number }[] = [
@@ -9,6 +9,7 @@ const ORDERS: { id: string; customer: string; status: string; tone: BadgeTone; a
 ]
 
 export default function PanelDense() {
+  const { formatMoney } = useFormat()
   return (
     <Panel title="Latest orders" description="The four sent last." action={<TextLink to="/components/tables" variant="quiet">All orders</TextLink>} dense>
       <Table aria-label="Latest orders">

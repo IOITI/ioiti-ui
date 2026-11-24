@@ -11,21 +11,24 @@ export { motionTransitions } from './lib/motion-tokens.js'
 export {
   ACCENT_LABEL,
   ACCENTS,
+  accentName,
   DEFAULT_THEME_STORAGE_KEY,
   MATERIAL_LABEL,
   MATERIALS,
+  materialName,
   THEME_KEY_ATTRIBUTE,
   applyTheme,
   nextPreference,
   readPreference,
   resolveTheme,
   systemIsDark,
+  themeButtonLabel,
   themeLabel,
   themeStorageKey,
   watchSystem,
   writePreference,
 } from './lib/theme.js'
-export type { Accent, Material, Theme, ThemePreference } from './lib/theme.js'
+export type { Accent, LookWords, Material, Theme, ThemePreference } from './lib/theme.js'
 export {
   formatBytes,
   formatClock,
@@ -95,7 +98,7 @@ export { StateSummary } from './shell/StateSummary.js'
 export { gravestTone } from './shell/state-summary.js'
 export type { StateItem, StateTone } from './shell/state-summary.js'
 export { DEFAULT_HOME, PAGE_NOT_FOUND, UNNAMED, menuEntry, menuSections, sidebarSections, trailFor } from './shell/navigation.js'
-export type { Crumb, Menu, MenuEntry, MenuSection, PageName } from './shell/navigation.js'
+export type { Crumb, Menu, MenuEntry, MenuSection, PageName, TrailWords } from './shell/navigation.js'
 export { usePageName, usePageTrail, useTabTitle, useTrail } from './shell/page-trail-context.js'
 export { useMainScroll } from './components/main-scroll-context.js'
 

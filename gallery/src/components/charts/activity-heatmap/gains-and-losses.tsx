@@ -1,4 +1,4 @@
-import { ActivityHeatmap, formatMoney } from 'ioiti-ui'
+import { ActivityHeatmap, useFormat } from 'ioiti-ui'
 
 import { MARGIN_BY_DAY } from '../../../samples/charts'
 
@@ -11,13 +11,13 @@ const GAIN_LOSS = {
 const total = MARGIN_BY_DAY.reduce((sum, day) => sum + day.value, 0)
 
 export default function ActivityHeatmapGainsAndLosses() {
+  const { formatMoney } = useFormat()
   return (
     <ActivityHeatmap
       ariaLabel="Margin of each working day"
       data={MARGIN_BY_DAY}
       startDate={MARGIN_BY_DAY[0]?.date}
       weeks={21}
-      weekStart={1}
       diverging={GAIN_LOSS}
       format={(value) => formatMoney(value, 'EUR', true)}
       summary={`${formatMoney(total, 'EUR', true)} over ${MARGIN_BY_DAY.length} days`}

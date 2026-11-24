@@ -14,8 +14,6 @@ export default function CalendarLimits() {
         minDate={FIRST}
         maxDate={LAST}
         isDateDisabled={weekend}
-        locale="en-GB"
-        weekStartsOn={1}
         className="rounded-xl border border-border"
       />
       <p className="max-w-56 text-sm text-muted-foreground">From 16 Nov to 18 Dec, on weekdays: the months before and after cannot be reached.</p>

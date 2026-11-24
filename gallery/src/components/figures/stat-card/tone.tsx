@@ -1,6 +1,7 @@
-import { formatMoney, StatCard, StatGrid } from 'ioiti-ui'
+import { StatCard, StatGrid, useFormat } from 'ioiti-ui'
 
 export default function StatCardTone() {
+  const { formatMoney } = useFormat()
   return (
     <StatGrid>
       <StatCard

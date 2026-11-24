@@ -1,6 +1,7 @@
-import { formatMoney, KpiGrid, KpiTile, Meter } from 'ioiti-ui'
+import { KpiGrid, KpiTile, Meter, useFormat } from 'ioiti-ui'
 
 export default function KpiTileLimits() {
+  const { formatMoney } = useFormat()
   return (
     <KpiGrid>
       <KpiTile label="Orders today" value="12" hint="8 yesterday" />

@@ -2,7 +2,7 @@
 
 What a chart's colours stand for, each swatch drawn as the chart draws its series (a bar, a line, a dashed line, a point, a moment marked); its items can show and hide their series. For an application's own charts too.
 
-**You provide** `items` (`[{ label, color, shape?, value?, shown? }]`), each `shape` one of `square` (the default: a bar or an area) · `line` · `dashed` · `dot` · `marker`; `label` (its name for a screen reader, `Legend` by default); `onToggle(index)` to make each item a button that shows or hides its series, with `shown` on each item.
+**You provide** `items` (`[{ label, color, shape?, value?, shown? }]`), each `shape` one of `square` (the default: a bar or an area) · `line` · `dashed` · `dot` · `marker`; `label` (its name for a screen reader, `Legend` by default, in IoitiProvider's language); `onToggle(index)` to make each item a button that shows or hides its series, with `shown` on each item.
 
 ```tsx
 <ChartLegend label="Runs" items={[

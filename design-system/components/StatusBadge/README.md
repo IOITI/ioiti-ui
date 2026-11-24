@@ -8,4 +8,4 @@ The state of something running, as a health check reports it: always a word besi
 <StatusBadge status={service.health} />
 ```
 
-- The words are Up, Degraded, Down, Unknown, Disabled (`HEALTH_STATUS_LABEL`). A live state has its dot; disabled has none.
+- The words are Up, Degraded, Down, Unknown, Disabled, in IoitiProvider's language (`useMessages().status`; `HEALTH_STATUS_LABEL`, English's, is deprecated). A live state has its dot; disabled has none.

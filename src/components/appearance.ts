@@ -2,19 +2,16 @@ import { Palette } from 'lucide-react'
 import { createElement } from 'react'
 import type { ReactNode } from 'react'
 
-import { ACCENT_LABEL, ACCENTS, MATERIAL_LABEL, MATERIALS } from '../lib/theme.js'
+import { accentName, ACCENTS, materialName, MATERIALS } from '../lib/theme.js'
 import type { Accent, Material, ThemePreference } from '../lib/theme.js'
 import { cn } from '../lib/utils.js'
 
 import type { DropdownMenuItem } from './DropdownMenu.js'
+import { useMessages } from './locale-context.js'
 import { ACCENT_SWATCH, MATERIAL_SWATCH } from './look-swatches.js'
 import { useTheme } from './theme-context.js'
 
-const THEMES: readonly { value: ThemePreference; label: string }[] = [
-  { value: 'system', label: 'System' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-]
+const THEMES: readonly ThemePreference[] = ['system', 'light', 'dark']
 
 /** A choice's words after its swatch, which says nothing to a screen reader (its words do). */
 function swatched(swatch: string, shape: string, words: string, accent?: Accent): ReactNode {
@@ -30,49 +27,51 @@ function swatched(swatch: string, shape: string, words: string, accent?: Accent)
  * The look of the interface, as the items of a menu (`DropdownMenu`'s): the theme (follow the system,
  * light, dark), then a sub-menu of the accent and the material, each a choice with its swatch. Each
  * person's own, kept in this browser, as `ThemeToggle` and `LookPicker` keep them. `UserMenu`'s
- * `appearance` puts them in the menu of the account; a settings menu of its own takes them too.
+ * `appearance` puts them in the menu of the account; a settings menu of its own takes them too. Their words are the
+ * provider's language's.
  */
 export function useAppearanceItems(): DropdownMenuItem[] {
   const { preference, theme, setPreference, accent, material, setAccent, setMaterial } = useTheme()
+  const words = useMessages().look
   return [
     {
       type: 'radio',
-      label: 'Theme',
+      label: words.theme,
       value: preference,
       onValueChange: (value) => setPreference(value as ThemePreference),
-      options: THEMES.map(({ value, label }) => ({
+      options: THEMES.map((value) => ({
         value,
-        label,
-        description: value === 'system' ? `As this device: ${theme} now` : undefined,
+        label: words[value],
+        description: value === 'system' ? words.systemNow(theme) : undefined,
       })),
     },
     {
       type: 'submenu',
-      label: 'Accent and material',
-      description: `${ACCENT_LABEL[accent]}, ${MATERIAL_LABEL[material].toLowerCase()}`,
+      label: words.accentAndMaterial,
+      description: words.lookDescription({ accent: accentName(accent, words), material: materialName(material, words) }),
       icon: createElement(Palette),
-      textValue: 'Accent and material',
+      textValue: words.accentAndMaterial,
       items: [
         {
           type: 'radio',
-          label: 'Accent',
+          label: words.accent,
           value: accent,
           onValueChange: (value) => setAccent(value as Accent),
           options: ACCENTS.map((value) => ({
             value,
-            label: swatched(ACCENT_SWATCH[value], 'rounded-full', ACCENT_LABEL[value], value),
-            textValue: ACCENT_LABEL[value],
+            label: swatched(ACCENT_SWATCH[value], 'rounded-full', accentName(value, words), value),
+            textValue: accentName(value, words),
           })),
         },
         {
           type: 'radio',
-          label: 'Material',
+          label: words.material,
           value: material,
           onValueChange: (value) => setMaterial(value as Material),
           options: MATERIALS.map((value) => ({
             value,
-            label: swatched(MATERIAL_SWATCH[value], 'rounded-[4px]', MATERIAL_LABEL[value]),
-            textValue: MATERIAL_LABEL[value],
+            label: swatched(MATERIAL_SWATCH[value], 'rounded-[4px]', materialName(value, words)),
+            textValue: materialName(value, words),
           })),
         },
       ],

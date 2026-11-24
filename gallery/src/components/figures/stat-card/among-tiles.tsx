@@ -1,6 +1,7 @@
-import { formatMoney, KpiGrid, KpiTile, Meter, StatCard } from 'ioiti-ui'
+import { KpiGrid, KpiTile, Meter, StatCard, useFormat } from 'ioiti-ui'
 
 export default function StatCardAmongTiles() {
+  const { formatMoney } = useFormat()
   return (
     <KpiGrid period="Compared with last Monday">
       <StatCard

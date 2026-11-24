@@ -2,6 +2,7 @@ import { ArrowDownToLine, ChevronDown, ChevronUp, Download, Search, WrapText } f
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 
+import { keysInWords } from '../lib/keys.js'
 import { blocksInSight, findInLog, LOG_BLOCK, logLevel, matchParts, splitLog } from '../lib/log.js'
 import type { LogLevel } from '../lib/log.js'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
@@ -73,7 +74,7 @@ export function LogViewer({
   emptyText,
   className,
 }: LogViewerProps) {
-  const words = useMessages().log
+  const { log: words, keys } = useMessages()
   const all = useMemo(() => lines ?? splitLog(text ?? ''), [lines, text])
   const cut = Math.max(0, all.length - Math.max(1, maxLines))
   const shown = useMemo(() => (cut ? all.slice(cut) : all), [all, cut])
@@ -233,9 +234,9 @@ export function LogViewer({
         <span role="status" className="min-w-14 text-center text-xs tabular-nums text-muted-foreground">
           {query.trim() ? (found.length ? words.matchPosition({ index: Math.min(current, found.length - 1) + 1, count: found.length }) : words.noMatch) : ''}
         </span>
-        {/* The keys as they are written today, whatever the language: naming them in its words is to come. */}
-        <IconButton label={words.previousMatch} hint={words.previousMatchHint('Shift+Enter')} icon={<ChevronUp />} disabled={!found.length} onClick={() => go(-1)} className={cn('size-8', DISABLED)} />
-        <IconButton label={words.nextMatch} hint={words.nextMatchHint('Enter')} icon={<ChevronDown />} disabled={!found.length} onClick={() => go(1)} className={cn('size-8', DISABLED)} />
+        {/* The keys named in the provider's language: "Shift+Enter", « Maj+Entrée ». */}
+        <IconButton label={words.previousMatch} hint={words.previousMatchHint(keysInWords('shift+enter', undefined, keys))} icon={<ChevronUp />} disabled={!found.length} onClick={() => go(-1)} className={cn('size-8', DISABLED)} />
+        <IconButton label={words.nextMatch} hint={words.nextMatchHint(keysInWords('enter', undefined, keys))} icon={<ChevronDown />} disabled={!found.length} onClick={() => go(1)} className={cn('size-8', DISABLED)} />
         <IconButton
           label={words.wrap}
           hint={wrap ? words.wrapped : words.unwrapped}

@@ -4,6 +4,8 @@ import * as React from "react";
 import { AnimatePresence, motion, useReducedMotionConfig, type Variants } from "framer-motion";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
+// ioiti-ui: its words in the provider's language (`status`).
+import { useMessages } from "../locale-context.js";
 
 // ioiti-ui: the design's motion (motion-tokens), not curves of its own: the ring follows as an indicator, the line fills in.
 const spring = motionTransitions.springSnappy;
@@ -30,6 +32,7 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
   const last = steps.length - 1;
   // ioiti-ui: the check drawn at once where motion is reduced (MotionConfig leaves a path's length as it is).
   const reduce = useReducedMotionConfig();
+  const words = useMessages().status;
 
   // don't replay the check-draw for steps that are already done on first paint
   const ready = React.useRef(false);
@@ -38,7 +41,7 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
   }, []);
 
   return (
-    <ol aria-label="Progress" className={cn(vertical ? "flex flex-col" : "flex w-full items-center", className)}>
+    <ol aria-label={words.progress} className={cn(vertical ? "flex flex-col" : "flex w-full items-center", className)}>
       {steps.map((step, i) => {
         const state = i < current ? "complete" : i === current ? "current" : "upcoming";
         const clickable = !!onStepChange && state === "complete";
@@ -99,7 +102,7 @@ export function Stepper({ steps, current, onStepChange, orientation = "horizonta
               )}
             >
               {step.title}
-              {state === "complete" && <span className="sr-only"> (completed)</span>}
+              {state === "complete" && <span className="sr-only"> {words.stepCompleted}</span>}
             </span>
             {step.description && (
               <span className="truncate text-xs text-muted-foreground">{step.description}</span>

@@ -9,6 +9,8 @@ import { fieldBorder, invalidOf } from "../../lib/field-border.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { DISABLED, FLOATING, MENU_ROW } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
+// ioiti-ui: its words in the provider's language (`select`).
+import { useMessages } from "../locale-context.js";
 
 function useControllableState<T>(
   value: T | undefined,
@@ -52,8 +54,11 @@ export interface ComboboxProps {
   value?: string | null;
   defaultValue?: string | null;
   onValueChange?: (value: string | null) => void;
+  /** ioiti-ui: what it says while nothing is chosen; the provider's language's by default ("Select…"). */
   placeholder?: string;
+  /** ioiti-ui: its search's placeholder; the provider's language's by default ("Search…"). */
   searchPlaceholder?: string;
+  /** ioiti-ui: what its list says when its search finds nothing; the provider's language's by default ("No results."). */
   emptyText?: string;
   align?: "start" | "end";
   disabled?: boolean;
@@ -94,9 +99,9 @@ export function Combobox({
   value,
   defaultValue = null,
   onValueChange,
-  placeholder = "Select…",
-  searchPlaceholder = "Search…",
-  emptyText = "No results.",
+  placeholder: givenPlaceholder,
+  searchPlaceholder: givenSearchPlaceholder,
+  emptyText: givenEmptyText,
   align = "start",
   disabled,
   className,
@@ -107,6 +112,11 @@ export function Combobox({
   "aria-invalid": ariaInvalid,
   error,
 }: ComboboxProps) {
+  // ioiti-ui: its words in the provider's language, its own props given over them.
+  const words = useMessages().select;
+  const placeholder = givenPlaceholder ?? words.placeholder;
+  const searchPlaceholder = givenSearchPlaceholder ?? words.search;
+  const emptyText = givenEmptyText ?? words.noResults;
   const [selected, setSelected] = useControllableState<string | null>(value, defaultValue, onValueChange);
   const [open, setOpen] = React.useState(false);
   const triggerRef = React.useRef<HTMLButtonElement>(null);

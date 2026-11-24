@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { useRef, useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { ProductTour } from './ui/product-tour.js'
 import type { TourCloseReason } from './ui/product-tour.js'
 
@@ -79,5 +81,41 @@ describe('ProductTour', () => {
     await user.click(screen.getByRole('button', { name: 'Go to step 3' }))
     await user.click(await screen.findByRole('button', { name: 'Done' }))
     expect(closed).toHaveBeenCalledWith('done')
+  })
+})
+
+describe('ProductTour in a language', () => {
+  it('says its words in the language given, its steps counted in its locale', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <Tour />
+      </IoitiProvider>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Start the tour' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Welcome' })
+    expect(dialog).toHaveTextContent('1 sur 3')
+    expect(screen.getByRole('button', { name: 'Passer' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Aller à l’étape 2' })).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Suivant' })).toHaveFocus())
+
+    await user.click(screen.getByRole('button', { name: 'Suivant' }))
+    expect(await screen.findByRole('dialog', { name: 'Search anything' })).toHaveTextContent('2 sur 3')
+    expect(screen.getByRole('button', { name: 'Précédent' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Aller à l’étape 3' }))
+    expect(await screen.findByRole('button', { name: 'Terminer' })).toBeInTheDocument()
+  })
+
+  it("takes an application's own words over English's, the others English still", async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider messages={{ tour: { skip: 'Not now' } }}>
+        <Tour />
+      </IoitiProvider>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Start the tour' }))
+    await screen.findByRole('dialog', { name: 'Welcome' })
+    expect(screen.getByRole('button', { name: 'Not now' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument()
   })
 })

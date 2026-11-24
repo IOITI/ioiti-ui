@@ -1,9 +1,10 @@
-import { formatMoney, KpiGrid, KpiTile, Sparkline } from 'ioiti-ui'
+import { KpiGrid, KpiTile, Sparkline, useFormat } from 'ioiti-ui'
 
 // Narrower than 180 px (two tiles across a phone), it shrinks with its tile.
 const FIT = 'h-auto max-w-full'
 
 export default function SparklineInTiles() {
+  const { formatMoney } = useFormat()
   return (
     <KpiGrid>
       <KpiTile label="Orders this week" value="1,284" hint="+12% on last week">

@@ -281,7 +281,7 @@
    {
     "name": "title",
     "type": "string",
-    "default": "'Activity'"
+    "description": "\"Activity\" in the provider's language by default."
    },
    {
     "name": "agentName",
@@ -361,23 +361,22 @@
    {
     "name": "inputLabel",
     "type": "string",
-    "default": "'Asked'",
-    "description": "See the context."
+    "description": "The name of a step's input: \"Asked\" in the provider's language by default."
    },
    {
     "name": "outputLabel",
     "type": "string",
-    "default": "'Answer'"
+    "description": "The name of a step's output: \"Answer\" in the provider's language by default."
    },
    {
     "name": "summary",
-    "type": "string"
+    "type": "string",
+    "description": "In the header, in place of \"2 of 3 done\" (\"Not started\" with no step), said in the provider's language."
    },
    {
     "name": "notesLabel",
     "type": "string",
-    "default": "'Notes'",
-    "description": "The name of a group of notes, said to screen readers (\"Notes\")."
+    "description": "The name of a group of notes, said to screen readers: \"Notes\" in the provider's language by default."
    },
    {
     "name": "collapsible",
@@ -400,7 +399,8 @@
    },
    {
     "name": "title",
-    "type": "string"
+    "type": "string",
+    "description": "\"Activity\" in the provider's language by default."
    },
    {
     "name": "agentName",
@@ -519,7 +519,7 @@
    {
     "name": "title",
     "type": "string",
-    "default": "\"Assistant\""
+    "description": "\"Assistant\" in the provider's language by default."
    },
    {
     "name": "modelBadge",
@@ -550,7 +550,7 @@
    {
     "name": "title",
     "type": "string",
-    "default": "\"Sources\""
+    "description": "\"Sources\" in the provider's language by default."
    },
    {
     "name": "defaultExpanded",
@@ -770,14 +770,12 @@
    {
     "name": "dropTitle",
     "type": "string",
-    "default": "'Drop files here'",
-    "description": "Custom label for primary drop title"
+    "description": "Custom label for primary drop title. ioiti-ui: \"Drop files here\" in the provider's language by default."
    },
    {
     "name": "dropSubtitle",
     "type": "string",
-    "default": "'or browse from your device'",
-    "description": "Custom label for secondary browse action"
+    "description": "Custom label for secondary browse action. ioiti-ui: \"or browse from your device\" in the provider's language by default."
    },
    {
     "name": "variant",
@@ -829,12 +827,12 @@
    {
     "name": "workingLabel",
     "type": "string",
-    "description": "The words of a file's states (EasyUI's \"Uploading N%\" and \"Ready\")."
+    "description": "What a file on its way says: \"Uploading 42%\" in the provider's language by default (EasyUI's \"Uploading N%\")."
    },
    {
     "name": "doneLabel",
     "type": "string",
-    "default": "'Ready'"
+    "description": "What a file uploaded says: \"Ready\" in the provider's language by default."
    },
    {
     "name": "linkComponent",
@@ -844,8 +842,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Upload files'",
-    "description": "The name of its file input, what a test or a script finds it by (\"Upload files\" in EasyUI)."
+    "description": "The name of its file input, what a test or a script finds it by: \"Upload files\" in the provider's language by default."
    },
    {
     "name": "onRemove",
@@ -1089,7 +1086,7 @@
    {
     "name": "home",
     "type": "{ label: string; href: string }",
-    "description": "The first step of the trail."
+    "description": "The first step of the trail: Home (`/`), in the provider's language, by default."
    },
    {
     "name": "linkComponent",
@@ -1171,7 +1168,7 @@
    {
     "name": "onRemove",
     "type": "() => void",
-    "description": "It can be taken away: a button named \"Remove <label>\"."
+    "description": "It can be taken away: a button named \"Remove <label>\" (in the provider's language)."
    },
    {
     "name": "tone",
@@ -1348,8 +1345,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'People'",
-    "description": "The group's name for a screen reader: \"Who works on it\"."
+    "description": "The group's name for a screen reader: \"Who works on it\"; the provider's language's \"People\" by default."
    },
    {
     "name": "className",
@@ -1400,8 +1396,7 @@
    {
     "name": "removeLabel",
     "type": "string",
-    "default": "\"Remove\"",
-    "description": "The × button's name for a screen reader: \"Remove Lyon\", each chip's its own (\"Remove\" otherwise)."
+    "description": "The × button's name for a screen reader: \"Remove Lyon\", each chip's its own (\"Remove\" otherwise, in the provider's language)."
    },
    {
     "name": "removeFocusable",
@@ -1850,8 +1845,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Legend'",
-    "description": "The legend's name for a screen reader."
+    "description": "The legend's name for a screen reader; the provider's language's \"Legend\" by default."
    },
    {
     "name": "className",
@@ -2140,17 +2134,17 @@
    {
     "name": "placeholder",
     "type": "string",
-    "default": "\"Select…\""
+    "description": "What it says while nothing is chosen; the provider's language's by default (\"Select…\")."
    },
    {
     "name": "searchPlaceholder",
     "type": "string",
-    "default": "\"Search…\""
+    "description": "Its search's placeholder; the provider's language's by default (\"Search…\")."
    },
    {
     "name": "emptyText",
     "type": "string",
-    "default": "\"No results.\""
+    "description": "What its list says when its search finds nothing; the provider's language's by default (\"No results.\")."
    },
    {
     "name": "align",
@@ -2244,19 +2238,17 @@
    {
     "name": "doneLabel",
     "type": "string",
-    "default": "'Done'",
-    "description": "Shown on the slider once it is done (\"Saved\", \"Sent\"...)."
+    "description": "Shown on the slider once it is done (\"Saved\", \"Sent\"...): \"Done\" in the provider's language by default."
    },
    {
     "name": "workingLabel",
     "type": "string",
-    "default": "'Working…'",
-    "description": "Shown on the slider while the action is under way."
+    "description": "Shown on the slider while the action is under way: \"Working…\" in the provider's language by default."
    },
    {
     "name": "cancelLabel",
     "type": "string",
-    "default": "'Cancel'"
+    "description": "The button that closes it: \"Cancel\" in the provider's language by default."
    },
    {
     "name": "pending",
@@ -2330,8 +2322,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Copy'",
-    "description": "What it copies, in words: \"Copy the key\"."
+    "description": "What it copies, in words: \"Copy the key\"; the provider's language's \"Copy\" by default."
    },
    {
     "name": "showLabel",
@@ -2372,7 +2363,7 @@
    {
     "name": "label",
     "type": "string",
-    "description": "What it is, for its button: \"the key\" makes \"Copy the key\"."
+    "description": "What it is, for its button, in the provider's language: \"the key\" makes \"Copy the key\"."
    },
    {
     "name": "truncate",
@@ -2532,7 +2523,7 @@
    {
     "name": "emptyTitle",
     "type": "string",
-    "default": "'Nothing to show'"
+    "description": "What a table without a row says; the provider's language's by default (\"Nothing to show\")."
    },
    {
     "name": "emptyDescription",
@@ -2576,7 +2567,7 @@
    {
     "name": "searchPlaceholder",
     "type": "string",
-    "default": "'Search…'"
+    "description": "The search's placeholder; the provider's language's by default (\"Search…\")."
    },
    {
     "name": "onBulkDelete",
@@ -2907,8 +2898,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Dependency Relationship Graph'",
-    "description": "The graph's name, for screen readers."
+    "description": "The graph's name, for screen readers; the provider's language's by default (\"Dependency Relationship Graph\")."
    },
    {
     "name": "className",
@@ -3049,13 +3039,12 @@
    {
     "name": "originalLabel",
     "type": "string",
-    "default": "'Original'",
-    "description": "The names of the two versions, above them: \"Saved\" and \"Yours\"."
+    "description": "The names of the two versions, above them: \"Saved\" and \"Yours\"; the provider's language's by default (\"Original\")."
    },
    {
     "name": "modifiedLabel",
     "type": "string",
-    "default": "'Modified'"
+    "description": "The changed version's name; the provider's language's by default (\"Modified\")."
    },
    {
     "name": "wrap",
@@ -3281,14 +3270,12 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Slide to confirm'",
-    "description": "Label shown along track"
+    "description": "Label shown along track. ioiti-ui: \"Slide to confirm\" in the provider's language by default."
    },
    {
     "name": "confirmedLabel",
     "type": "string",
-    "default": "'Confirmed ✓'",
-    "description": "Label shown upon completion"
+    "description": "Label shown upon completion. ioiti-ui: \"Confirmed ✓\" in the provider's language by default."
    },
    {
     "name": "actionType",
@@ -3576,12 +3563,12 @@
    {
     "name": "title",
     "type": "string",
-    "description": "The heading, what failed (\"The orders could not be loaded\"); by default, words for the kind of error."
+    "description": "The heading, what failed (\"The orders could not be loaded\"); by default, words for the kind of error, in the provider's language (\"Something went wrong\")."
    },
    {
     "name": "description",
     "type": "ReactNode",
-    "description": "What happened, and what to do about it; by default, words for the kind of error."
+    "description": "What happened, and what to do about it; by default, words for the kind of error, in the provider's language."
    },
    {
     "name": "error",
@@ -3601,7 +3588,7 @@
    {
     "name": "home",
     "type": "{ href: string; label: string } | null",
-    "description": "The way home, a link; `null` for none (a part of a page has none by default)."
+    "description": "The way home, a link; `null` for none. A page's is \"Back to home\" (`/`), in the provider's language, by default; a part of a page has none."
    },
    {
     "name": "page",
@@ -4239,7 +4226,7 @@
    {
     "name": "placeholder",
     "type": "string",
-    "default": "'Add a value'"
+    "description": "What an empty value says; the provider's language's by default (\"Add a value\")."
    },
    {
     "name": "variant",
@@ -4450,7 +4437,7 @@
    {
     "name": "children",
     "type": "ReactNode",
-    "description": "A key named as it is, where there are no `keys`: `<Kbd>Esc</Kbd>`."
+    "description": "A key named as it is, where there are no `keys`: `<Kbd>Esc</Kbd>` (`keys=\"escape\"` names it in the provider's language)."
    },
    {
     "name": "className",
@@ -4831,8 +4818,7 @@
    {
     "name": "staleLabel",
     "type": "string",
-    "default": "'stale'",
-    "description": "The word a screen reader hears for a stale figure."
+    "description": "The word a screen reader hears for a stale figure; the provider's language's by default (\"stale\")."
    },
    {
     "name": "className",
@@ -4865,8 +4851,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Loading…'",
-    "description": "Optional accessible text label."
+    "description": "Optional accessible text label. ioiti-ui: the provider's language's by default (\"Loading…\")."
    },
    {
     "name": "reduceMotion",
@@ -5037,7 +5022,7 @@
    {
     "name": "placeholder",
     "type": "string",
-    "default": "'Choose…'"
+    "description": "What it says while nothing is chosen; the provider's language's by default (\"Choose…\")."
    },
    {
     "name": "onCreateOption",
@@ -5077,8 +5062,7 @@
    {
     "name": "emptyText",
     "type": "string",
-    "default": "'Nothing matches'",
-    "description": "What the list says when nothing matches."
+    "description": "What the list says when nothing matches; the provider's language's by default (\"Nothing matches\")."
    },
    {
     "name": "className",
@@ -5097,21 +5081,23 @@
    },
    {
     "name": "badgeLabel",
-    "type": "string"
+    "type": "string",
+    "description": "Above the heading; \"Error 404\", in the provider's language, by default."
    },
    {
     "name": "title",
     "type": "string",
-    "default": "\"This page took a wrong turn.\""
+    "description": "The heading; the provider's language's by default (\"This page took a wrong turn.\")."
    },
    {
     "name": "description",
     "type": "ReactNode",
-    "default": "\"The requested page doesn't exist or may have moved.\""
+    "description": "Under the heading; the provider's language's by default (\"The requested page doesn't exist or may have moved.\")."
    },
    {
     "name": "actionLabel",
-    "type": "string"
+    "type": "string",
+    "description": "The words of the way home (\"Go back home\", in the provider's language, by default), `homeLabel`'s too."
    },
    {
     "name": "onAction",
@@ -5133,7 +5119,8 @@
    },
    {
     "name": "backLabel",
-    "type": "string"
+    "type": "string",
+    "description": "The words of the way back (\"Go back\", in the provider's language, by default), `secondaryActionLabel`'s too."
    },
    {
     "name": "secondaryActionLabel",
@@ -5196,13 +5183,11 @@
    {
     "name": "title",
     "type": "string",
-    "default": "'There is no page here.'",
     "description": "The heading."
    },
    {
     "name": "description",
-    "type": "ReactNode",
-    "default": "'The address does not match any page of this application.'"
+    "type": "ReactNode"
    },
    {
     "name": "name",
@@ -5227,12 +5212,12 @@
    {
     "name": "home",
     "type": "{ href: string; label: string } | null",
-    "description": "The way home, a link; `null` for none."
+    "description": "The way home, a link: \"Back to home\" (`/`), in the provider's language, by default; `null` for none."
    },
    {
     "name": "back",
     "type": "{ label: string } | null",
-    "description": "The way back, a step back in this tab's history; `null` for none."
+    "description": "The way back, a step back in this tab's history: \"Previous page\", in the provider's language, by default; `null` for none."
    },
    {
     "name": "focusOnMount",
@@ -5280,14 +5265,12 @@
    {
     "name": "home",
     "type": "{ href: string; label: string } | null",
-    "default": "HOME",
-    "description": "The way home, a link; `null` for none."
+    "description": "The way home, a link: \"Back to home\" (`/`), in the provider's language, by default; `null` for none."
    },
    {
     "name": "back",
     "type": "{ label: string } | null",
-    "default": "BACK",
-    "description": "The way back, a step back in this tab's history; `null` for none."
+    "description": "The way back, a step back in this tab's history: \"Previous page\", in the provider's language, by default; `null` for none."
    },
    {
     "name": "focusOnMount",
@@ -5353,7 +5336,7 @@
    {
     "name": "error",
     "type": "ReactNode",
-    "description": "They could not be read: what went wrong (`true`: \"The notifications could not be read.\"), in place of the list while there is none, above it otherwise (the list is then the last one read)."
+    "description": "They could not be read: what went wrong (`true`: \"The notifications could not be read.\", in the provider's language), in place of the list while there is none, above it otherwise (the list is then the last one read)."
    },
    {
     "name": "onRetry",
@@ -5522,7 +5505,8 @@
    },
    {
     "name": "aria-label",
-    "type": "string"
+    "type": "string",
+    "description": "The group's name; the provider's language's by default (\"One-time passcode\")."
    },
    {
     "name": "aria-describedby",
@@ -5706,7 +5690,7 @@
    {
     "name": "hrefLabel",
     "type": "string",
-    "default": "'Open'"
+    "description": "That link's words; the provider's language's by default (\"Open\")."
    },
    {
     "name": "linkComponent",
@@ -6393,7 +6377,7 @@
    {
     "name": "label",
     "type": "string",
-    "description": "What it resizes, for a screen reader: \"Resize the editor\"."
+    "description": "What it resizes, for a screen reader: \"Resize the editor\". By default, in the provider's language, \"Resize\" and the panel before it's `label` (\"the editor\"), or \"Resize\" alone."
    }
   ]
  },
@@ -6424,7 +6408,7 @@
    {
     "name": "label",
     "type": "string",
-    "description": "Its name, for the handle that resizes it."
+    "description": "Its name, for the handle that resizes it (\"the editor\": \"Resize the editor\"), and for its frame where it scrolls (\"Panel\" in the provider's language otherwise)."
    },
    {
     "name": "className",
@@ -6477,6 +6461,11 @@
   "file": "src/react-router/RouterAppShell.tsx",
   "props": [
    {
+    "name": "pending",
+    "type": "boolean",
+    "description": "The next page is on its way (a router loading its data or its code: `useNavigation().state === 'loading'`): a thin bar under the top bar, after a moment (a quick change shows nothing), and the page said busy to screen readers."
+   },
+   {
     "name": "menu",
     "type": "Menu<S>",
     "required": true,
@@ -6490,7 +6479,7 @@
    {
     "name": "home",
     "type": "{ label: string; href: string }",
-    "description": "The first step of the trail."
+    "description": "The first step of the trail: Home (`/`), in the provider's language, by default."
    },
    {
     "name": "appName",
@@ -6568,11 +6557,6 @@
     "description": "What a page that throws as it draws shows in its place, the sidebar and the top bar kept: an ErrorState by default (Try again draws it again; another page clears it). A node, or a function given the error and `reset`; `false` for no boundary of the shell's (the application's own, or the router's error page, catch it then)."
    },
    {
-    "name": "pending",
-    "type": "boolean",
-    "description": "The next page is on its way (a router loading its data or its code: `useNavigation().state === 'loading'`): a thin bar under the top bar, after a moment (a quick change shows nothing), and the page said busy to screen readers."
-   },
-   {
     "name": "children",
     "type": "ReactNode",
     "description": "The page; the router's child routes (`<Outlet />`) by default."
@@ -6592,7 +6576,7 @@
    {
     "name": "signIn",
     "type": "{ href: string; label?: string }",
-    "description": "Where a person signs in, for a 401 (a session that ended): a \"Sign in\" link, in place of the way home. Without it, the way home."
+    "description": "Where a person signs in, for a 401 (a session that ended): a link, \"Sign in\" in the provider's language unless its `label` says otherwise, in place of the way home. Without it, the way home."
    },
    {
     "name": "focusOnMount",
@@ -6624,22 +6608,22 @@
    {
     "name": "title",
     "type": "string",
-    "default": "'Leave without saving?'"
+    "description": "The dialog's question; the provider's language's by default (\"Leave without saving?\")."
    },
    {
     "name": "message",
     "type": "ReactNode",
-    "default": "'The changes on this page are not saved: leaving it loses them.'"
+    "description": "What is lost; the provider's language's by default (\"The changes on this page are not saved: leaving it loses them.\")."
    },
    {
     "name": "stayLabel",
     "type": "string",
-    "default": "'Stay'"
+    "description": "The button that stays; the provider's language's by default (\"Stay\")."
    },
    {
     "name": "leaveLabel",
     "type": "string",
-    "default": "'Leave'"
+    "description": "The button that leaves; the provider's language's by default (\"Leave\")."
    }
   ]
  },
@@ -6681,8 +6665,7 @@
    {
     "name": "message",
     "type": "ReactNode",
-    "default": "'Unsaved changes'",
-    "description": "What there is to save: \"3 unsaved changes\"."
+    "description": "What there is to save: \"3 unsaved changes\"; the provider's language's \"Unsaved changes\" by default."
    },
    {
     "name": "onSave",
@@ -6714,12 +6697,12 @@
    {
     "name": "saveLabel",
     "type": "string",
-    "default": "'Save'"
+    "description": "The Save button's words; the provider's language's by default (\"Save\")."
    },
    {
     "name": "discardLabel",
     "type": "string",
-    "default": "'Discard'"
+    "description": "The Discard button's words; the provider's language's by default (\"Discard\")."
    },
    {
     "name": "children",
@@ -6729,8 +6712,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Unsaved changes'",
-    "description": "Its name for a screen reader."
+    "description": "Its name for a screen reader; the provider's language's by default (\"Unsaved changes\")."
    },
    {
     "name": "className",
@@ -6799,8 +6781,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Table of contents'",
-    "description": "What the nav is called (default 'Table of contents')."
+    "description": "What the nav is called; the provider's language's by default (\"Table of contents\")."
    }
   ]
  },
@@ -6914,8 +6895,7 @@
    {
     "name": "actions",
     "type": "SelectionActionItem[]",
-    "default": "defaultActions",
-    "description": "Custom actions list"
+    "description": "Custom actions list. ioiti-ui: by default, Export, Move to Folder, Share and Delete, in the provider's language."
    },
    {
     "name": "onClearSelection",
@@ -6935,8 +6915,7 @@
    {
     "name": "noun",
     "type": "[string, string]",
-    "default": "['item', 'items']",
-    "description": "What an item is, one and several (\"file\", \"files\")."
+    "description": "What an item is, one and several (\"file\", \"files\"), in the application's language; without it, \"item selected\" and \"items selected\" in the provider's."
    },
    {
     "name": "linkComponent",
@@ -7037,7 +7016,7 @@
    {
     "name": "title",
     "type": "string",
-    "default": "'Keyboard shortcuts'"
+    "description": "Its title; the provider's language's by default (\"Keyboard shortcuts\")."
    },
    {
     "name": "keys",
@@ -7191,8 +7170,7 @@
    {
     "name": "staleLabel",
     "type": "string",
-    "default": "'stale'",
-    "description": "The word a screen reader hears for a stale figure."
+    "description": "The word a screen reader hears for a stale figure; the provider's language's by default (\"stale\")."
    }
   ]
  },
@@ -7224,8 +7202,7 @@
    {
     "name": "divider",
     "type": "ReactNode",
-    "default": "'or'",
-    "description": "The words on the line between the providers and the form; `''` for a line without words, `null` for none."
+    "description": "The words on the line between the providers and the form (\"or\", in the provider's language, by default); `''` for a line without words, `null` for none."
    },
    {
     "name": "pending",
@@ -7240,8 +7217,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Single sign-on'",
-    "description": "The providers' name for a screen reader."
+    "description": "The providers' name for a screen reader; the provider's language's by default (\"Single sign-on\")."
    },
    {
     "name": "variant",
@@ -7442,34 +7418,32 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Feature and plan comparison'",
-    "description": "What the matrix is called, for screen readers."
+    "description": "What the matrix is called, for screen readers; the provider's language's by default (\"Feature and plan comparison\")."
    },
    {
     "name": "matrixTitle",
     "type": "string",
-    "default": "'Feature matrix'",
-    "description": "The words of the matrix's own column, and of its count of rows."
+    "description": "The head of the matrix's own column; the provider's language's by default (\"Feature matrix\")."
    },
    {
     "name": "countLabel",
     "type": "(count: number) => string",
-    "default": "(count) => `${count} specifications`"
+    "description": "Its count of rows, under that head; the provider's language's by default (\"12 specifications\", \"1 specification\")."
    },
    {
     "name": "searchPlaceholder",
     "type": "string",
-    "default": "'Filter capabilities…'"
+    "description": "The search's placeholder and name; the provider's language's by default (\"Filter capabilities…\")."
    },
    {
     "name": "diffLabel",
     "type": "string",
-    "default": "'Differences only'"
+    "description": "The button that leaves out the rows alike; the provider's language's by default (\"Differences only\")."
    },
    {
     "name": "emptyText",
     "type": "string",
-    "default": "'No features match your current search or difference filters.'"
+    "description": "What the matrix says when nothing is left; the provider's language's by default (\"No features match your current search or difference filters.\")."
    },
    {
     "name": "linkComponent",
@@ -7685,8 +7659,7 @@
    {
     "name": "placeholder",
     "type": "string",
-    "default": "'Search…'",
-    "description": "The field's words while nothing is typed."
+    "description": "The field's words while nothing is typed: \"Search…\" in the provider's language by default."
    },
    {
     "name": "recentSearches",
@@ -7740,7 +7713,7 @@
    {
     "name": "error",
     "type": "ReactNode",
-    "description": "They could not be found: what went wrong (`true`: \"The search failed.\"), in place of the list while there is none, above it otherwise (the last entries found)."
+    "description": "They could not be found: what went wrong (`true`: \"The search failed.\", in the provider's language), in place of the list while there is none, above it otherwise (the last entries found)."
    },
    {
     "name": "onRetry",
@@ -7756,8 +7729,7 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'Spotlight Search'",
-    "description": "What the dialog is called."
+    "description": "What the dialog is called: \"Spotlight Search\" in the provider's language by default."
    },
    {
     "name": "grouped",
@@ -7811,8 +7783,7 @@
    {
     "name": "placeholder",
     "type": "string",
-    "default": "'Select…'",
-    "description": "Placeholder when no value is selected"
+    "description": "Placeholder when no value is selected. ioiti-ui: the provider's language's by default (\"Select…\")."
    },
    {
     "name": "onChange",
@@ -7964,9 +7935,9 @@
     "name": "tone",
     "type": "keyof typeof CHIP_TONE",
     "values": [
-     "success",
      "warning",
-     "danger"
+     "danger",
+     "success"
     ],
     "required": true,
     "description": "What it is: something to fix (danger), to watch (warning), or good news (success)."
@@ -8002,14 +7973,12 @@
    {
     "name": "label",
     "type": "string",
-    "default": "'State'",
-    "description": "Its name: the button's, before what it says (\"State: Payments down\"), and the panel's."
+    "description": "Its name: the button's, before what it says (\"State: Payments down\"), and the panel's; the provider's language's by default (\"State\")."
    },
    {
     "name": "okLabel",
     "type": "string",
-    "default": "'All good'",
-    "description": "What it says while nothing stands out and nothing is neutral."
+    "description": "What it says while nothing stands out and nothing is neutral; the provider's language's by default (\"All good\")."
    },
    {
     "name": "footer",
@@ -8079,7 +8048,7 @@
    {
     "name": "unit",
     "type": "StatusHistoryUnit",
-    "description": "What one slot is called, and more than one: hour and hours by default."
+    "description": "What one slot is called, and more than one, in the application's language: hour and hours in the provider's by default."
    },
    {
     "name": "summary",
@@ -8575,8 +8544,7 @@
   "props": [
    {
     "name": "home",
-    "type": "{ label: string; href: string }",
-    "default": "DEFAULT_HOME"
+    "type": "{ label: string; href: string }"
    }
   ]
  },
@@ -8593,26 +8561,22 @@
    {
     "name": "title",
     "type": "string",
-    "default": "'Project archived'",
-    "description": "Toast message title (e.g. \"File deleted\")"
+    "description": "Toast message title (e.g. \"File deleted\"). ioiti-ui: what was done, which only the application knows: without one, \"Done\" in the provider's language (EasyUI's \"Project archived\"), and in development the toast says so in the console."
    },
    {
     "name": "description",
     "type": "string",
-    "default": "'Changes will be permanent in a few seconds'",
-    "description": "Secondary description or metadata"
+    "description": "Secondary description or metadata. ioiti-ui: \"Changes will be permanent in a few seconds\" in the provider's language by default."
    },
    {
     "name": "undoLabel",
     "type": "string",
-    "default": "'Undo'",
-    "description": "Undo action button label"
+    "description": "Undo action button label. ioiti-ui: \"Undo\" in the provider's language by default."
    },
    {
     "name": "restoredMessage",
     "type": "string",
-    "default": "'Restored successfully'",
-    "description": "Restored state message when Undo is triggered"
+    "description": "Restored state message when Undo is triggered. ioiti-ui: \"Restored successfully\" in the provider's language by default."
    },
    {
     "name": "duration",
@@ -8725,14 +8689,12 @@
    {
     "name": "signOutLabel",
     "type": "string",
-    "default": "'Sign out'",
-    "description": "The words of the last item."
+    "description": "The words of the last item; the provider's language's by default (\"Sign out\")."
    },
    {
     "name": "label",
     "type": "string",
-    "default": "'Account'",
-    "description": "The menu's name for a screen reader. Its button is named by what it shows: the name and the detail."
+    "description": "The menu's name for a screen reader; the provider's language's by default (\"Account\"). Its button is named by what it shows: the name and the detail."
    },
    {
     "name": "className",

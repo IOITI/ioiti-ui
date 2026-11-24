@@ -157,4 +157,40 @@ describe('PromptComposer in a locale', () => {
     )
     expect(screen.getByText('1 234 / 2 000').textContent).toBe('1\u202f234 / 2\u202f000')
   })
+
+  it('names its buttons and its groups in the language given', () => {
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <PromptComposer
+          label="Demander"
+          value=""
+          onValueChange={() => {}}
+          onSubmit={() => {}}
+          suggestions={[{ label: 'Résumer', prompt: 'Résume la journée' }]}
+          attachments={<span>export.csv</span>}
+        />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
+    expect(screen.getByRole('group', { name: 'Demandes suggérées' })).toHaveTextContent('Résumer')
+    expect(screen.getByRole('group', { name: 'Pièces jointes' })).toHaveTextContent('export.csv')
+    unmount()
+
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <PromptComposer label="Demander" value="Encore" onValueChange={() => {}} onSubmit={() => {}} busy onStop={() => {}} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Arrêter' })).toBeInTheDocument()
+  })
+
+  it("takes an application's own words over English's, the others English still", () => {
+    render(
+      <IoitiProvider messages={{ ai: { send: 'Ask' } }}>
+        <PromptComposer label="Ask" value="Why?" onValueChange={() => {}} onSubmit={() => {}} suggestions={[{ label: 'Sum up', prompt: 'Sum up the day' }]} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Ask' })).toBeEnabled()
+    expect(screen.getByRole('group', { name: 'Requests to start from' })).toBeInTheDocument()
+  })
 })

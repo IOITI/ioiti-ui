@@ -3,6 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
+import { IoitiProvider } from '../components/IoitiProvider.js'
+import { fr } from '../locales/fr.js'
 import { DiffEditor } from './DiffEditor.js'
 
 const ORIGINAL = ['[rule]', 'name = "Admin login"', 'risk_score = 47', 'severity = "medium"', '', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'tags = ["x"]'].join('\n')
@@ -75,5 +77,47 @@ describe('DiffEditor', () => {
     render(<DiffEditor label="Rule file" original={ORIGINAL} modified={MODIFIED} onSave={onSave} />)
     fireEvent.keyDown(screen.getByRole('textbox', { name: 'Rule file: Modified' }), { key: 's', code: 'KeyS', ctrlKey: true })
     expect(onSave).toHaveBeenCalledWith(MODIFIED)
+  })
+})
+
+describe('DiffEditor in French', () => {
+  it('names its sides, counts its changes and names its buttons in the provider\'s language', async () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <DiffEditor label="Fichier de règles" original={ORIGINAL} modified={MODIFIED} />
+      </IoitiProvider>,
+    )
+    // French's no-break space before the colon.
+    expect(viewNamed('Fichier de règles\u00a0: Original').state.doc.toString()).toBe(ORIGINAL)
+    const changed = viewNamed('Fichier de règles\u00a0: Modifié')
+    expect(changed.state.phrase('$ unchanged lines', 8)).toBe('8 lignes inchangées')
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('2 modifications'))
+    expect(screen.getByRole('button', { name: 'Modification suivante' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Modification précédente' })).toBeEnabled()
+  })
+
+  it('says there is no change, then one', async () => {
+    const { rerender } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <DiffEditor label="Fichier de règles" original={ORIGINAL} modified={ORIGINAL} />
+      </IoitiProvider>,
+    )
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Aucune modification'))
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <DiffEditor label="Fichier de règles" original={ORIGINAL} modified={ORIGINAL.replace('47', '48')} />
+      </IoitiProvider>,
+    )
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('1 modification'))
+  })
+
+  it("takes an application's own words over the language's", () => {
+    render(
+      <IoitiProvider messages={{ code: { modified: 'Yours', nextChange: 'Next difference' } }}>
+        <DiffEditor label="Rule file" original={ORIGINAL} modified={MODIFIED} />
+      </IoitiProvider>,
+    )
+    expect(viewNamed('Rule file: Yours').state.doc.toString()).toBe(MODIFIED)
+    expect(screen.getByRole('button', { name: 'Next difference' })).toBeInTheDocument()
   })
 })

@@ -1,6 +1,7 @@
-import { Slider } from 'ioiti-ui'
+import { Slider, useFormat } from 'ioiti-ui'
 
 export default function SliderLevels() {
+  const { formatPercent } = useFormat()
   return (
     <div className="w-full max-w-md">
       <Slider
@@ -9,7 +10,7 @@ export default function SliderLevels() {
         min={0}
         max={5}
         step={0.5}
-        format={(value) => `${value.toFixed(1)}%`}
+        format={(value) => formatPercent(value, false, 1)}
         ticks={[
           { value: 0, label: '0%' },
           { value: 2.5, label: '2.5%' },

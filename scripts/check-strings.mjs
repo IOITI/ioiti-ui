@@ -1,17 +1,13 @@
 // The words the package says come from its catalogue (src/locales/), never written in a component: a word written in the
 // code is English whatever the application's language. This finds them in what an application draws (src/components,
-// src/shell, src/react-router; not the tests): JSX text and the words in a JSX element's expressions (`{found ? … :
-// 'No match'}`), the words of an attribute a person reads or hears (aria-label, placeholder, title, alt, a Hint's
-// content, `label`, `emptyText`…), and the words such a prop takes by default (`title = 'Recovery ledger'`, `rowLabels`). A word that is not one to translate says why where it is written: `// i18n-exempt: <why>`
-// (or `{/* i18n-exempt: <why> */}` in JSX), on its line or the line above.
+// src/shell, src/react-router, src/code; not the tests): JSX text and the words in a JSX element's expressions
+// (`{found ? … : 'No match'}`), the words of an attribute a person reads or hears (aria-label, placeholder, title, alt, a
+// Hint's content, `label`, `emptyText`…), and the words such a prop takes by default (`title = 'Recovery ledger'`,
+// `rowLabels`). A word that is not one to translate (a brand, a code, a symbol) says why where it is written:
+// `// i18n-exempt: <why>` (or `{/* i18n-exempt: <why> */}` in JSX), on its line or the line above.
 //
-// The words still written in the code are listed in scripts/strings-baseline.json, which only shrinks: a word written
-// anew fails, and so does one the list names that the code no longer has (`--update` takes it off).
-//
-//   node scripts/check-strings.mjs            the check (npm run lint)
-//   node scripts/check-strings.mjs --update   the list again, once words have gone to the catalogue: never one added
-//                                             (but the first list, where there is none)
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+//   node scripts/check-strings.mjs            the check (npm run lint): none written
+import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -19,8 +15,7 @@ import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const BASELINE = join(root, 'scripts/strings-baseline.json')
-const FOLDERS = ['src/components', 'src/shell', 'src/react-router']
+const FOLDERS = ['src/components', 'src/shell', 'src/react-router', 'src/code']
 
 /** The attributes whose words a person reads or hears. */
 const SAID = new Set(['aria-label', 'aria-valuetext', 'aria-roledescription', 'aria-description', 'placeholder', 'alt', 'content', 'hint', 'summary'])
@@ -111,58 +106,21 @@ export function wordsIn(file, source = readFileSync(join(root, file), 'utf8')) {
   return found
 }
 
-/** Every file's words, as the baseline lists them: by file, sorted, a word as many times as it is written. */
-function current() {
-  const words = {}
-  for (const folder of FOLDERS) {
-    for (const file of filesUnder(folder)) {
-      const each = wordsIn(file).map((word) => word.text)
-      if (each.length) words[file.split(sep).join('/')] = each.sort()
-    }
-  }
-  return words
-}
 
-function count(list = []) {
-  const counted = new Map()
-  for (const text of list) counted.set(text, (counted.get(text) ?? 0) + 1)
-  return counted
-}
 
 const isMain = process.argv[1] && relative(process.argv[1], fileURLToPath(import.meta.url)) === ''
 if (isMain) {
-  const now = current()
-  const total = Object.values(now).reduce((sum, list) => sum + list.length, 0)
-  let baseline = {}
-  try {
-    baseline = JSON.parse(readFileSync(BASELINE, 'utf8')).words ?? {}
-  } catch {
-    baseline = {}
-  }
-
-  const added = []
-  const gone = []
-  for (const file of new Set([...Object.keys(now), ...Object.keys(baseline)])) {
-    const was = count(baseline[file])
-    const is = count(now[file])
-    for (const [text, times] of is) if (times > (was.get(text) ?? 0)) added.push(`${file}: "${text}"`)
-    for (const [text, times] of was) if (times > (is.get(text) ?? 0)) gone.push(`${file}: "${text}"`)
-  }
-
-  if (process.argv.includes('--update')) {
-    if (added.length && existsSync(BASELINE)) {
-      console.error(`check-strings: ${added.length} word(s) written in the code that the list does not name; never added to it:`)
-      for (const each of added) console.error(`  ${each}: from the catalogue (useMessages), or // i18n-exempt: <why>`)
-      process.exit(1)
+  let files = 0
+  const written = []
+  for (const folder of FOLDERS) {
+    for (const file of filesUnder(folder)) {
+      files += 1
+      for (const word of wordsIn(file)) written.push(`${file.split(sep).join('/')}:${word.line}: "${word.text}"`)
     }
-    const about =
-      'The words still written in the code (scripts/check-strings.mjs), until they come from the catalogue: a list that only shrinks.'
-    writeFileSync(BASELINE, `${JSON.stringify({ about, words: now }, null, 2)}\n`)
-    console.log(`check-strings: the list written again, ${total} words in ${Object.keys(now).length} files (${gone.length} gone)`)
-  } else {
-    for (const each of added) console.error(`${each}: a word written in the code, English whatever the language: from the catalogue (useMessages), or // i18n-exempt: <why>`)
-    for (const each of gone) console.error(`${each}: no longer written; take it off the list (node scripts/check-strings.mjs --update)`)
-    if (added.length || gone.length) process.exit(1)
-    console.log(`check-strings: ${total} words still written in the code, as the list has them; none added`)
   }
+  for (const each of written) {
+    console.error(`${each}: a word written in the code, English whatever the language: from the catalogue (useMessages), or // i18n-exempt: <why>`)
+  }
+  if (written.length) process.exit(1)
+  console.log(`check-strings: no word written in the ${files} files of what an application draws; every one from the catalogue`)
 }

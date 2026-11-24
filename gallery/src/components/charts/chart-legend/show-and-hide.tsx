@@ -1,4 +1,4 @@
-import { ChartLegend, formatMoney, LineChart } from 'ioiti-ui'
+import { ChartLegend, LineChart, useFormat } from 'ioiti-ui'
 import { useState } from 'react'
 
 import { REVENUE_BY_SHOP } from '../../../samples/charts'
@@ -11,6 +11,7 @@ const SERIES = [
 ]
 
 export default function ChartLegendShowAndHide() {
+  const { formatMoney } = useFormat()
   const [shown, setShown] = useState([true, true, true])
   // The chart decides what it allows: one series is always left.
   const toggle = (index: number) =>

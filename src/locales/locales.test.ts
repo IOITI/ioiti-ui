@@ -26,6 +26,22 @@ const SAME_IN_FRENCH = new Set([
   'timeRange.relative',
   // « Total ».
   'chart.total',
+  // « Assistant », « Sources », « Code », « Notes », « Notifications ».
+  'ai.assistant',
+  'ai.sources',
+  'ai.codeSnippet',
+  'ai.notesLabel',
+  'notification.notifications',
+  // « Navigation » (the sidebar's group, and the shortcuts' one ⌘K and ⌘B share), « Violet », « Indigo », keys, « Original ».
+  'shell.navigation',
+  'shortcuts.navigation',
+  'look.accentViolet',
+  'look.accentIndigo',
+  'keys.ctrl',
+  'keys.alt',
+  'keys.option',
+  'keys.tab',
+  'code.original',
 ])
 
 describe('the English catalogue', () => {

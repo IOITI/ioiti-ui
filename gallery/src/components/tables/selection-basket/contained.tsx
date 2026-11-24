@@ -1,4 +1,4 @@
-import { Checkbox, formatMoney, SelectionBasket } from 'ioiti-ui'
+import { Checkbox, SelectionBasket, useFormat } from 'ioiti-ui'
 import { Download, Mail } from 'lucide-react'
 import { useState } from 'react'
 
@@ -12,6 +12,7 @@ const INVOICES = [
 ]
 
 export default function SelectionBasketContained() {
+  const { formatMoney } = useFormat()
   const [selected, setSelected] = useState<string[]>(['INV-2209', 'INV-2207'])
   const toggle = (id: string) => setSelected(selected.includes(id) ? selected.filter((other) => other !== id) : [...selected, id])
   return (

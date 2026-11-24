@@ -6,6 +6,7 @@ import type { CodeLanguage, CodeToken, CodeTokenKind } from '../lib/highlight.js
 import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
 import { CopyButton } from './CopyButton.js'
+import { useMessages } from './locale-context.js'
 
 // The design's code colours (theme.css), each written out whole for Tailwind to find it.
 const COLOUR: Record<CodeTokenKind, string> = {
@@ -73,11 +74,13 @@ export function CodeBlock({
   const numbered = lineNumbers !== false
   const marked = new Set(highlightLines)
   const scroll: CSSProperties | undefined = maxHeight === undefined ? undefined : { maxHeight }
-  // Code that overflows is a region the keyboard can scroll, named by its label; code that fits is no stop for it.
+  // Code that overflows is a region the keyboard can scroll, named by its label; code that fits is no stop for it. Its
+  // words are the provider's language's.
+  const words = useMessages().field
   const pre = useRef<HTMLPreElement>(null)
   const labelId = useId()
-  const region = useScrollRegion(pre, label ? { labelledBy: labelId } : { label: 'Code' })
-  const copy = copyable && <CopyButton value={code} label="Copy the code" size="sm" />
+  const region = useScrollRegion(pre, label ? { labelledBy: labelId } : { label: words.code })
+  const copy = copyable && <CopyButton value={code} label={words.copyCode} size="sm" />
 
   return (
     <figure className={cn('relative min-w-0 overflow-hidden rounded-xl border border-border bg-surface', className)}>

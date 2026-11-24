@@ -6,7 +6,12 @@
  * `src/theme.js` applies the same rules before the application starts.
  */
 
+import { en } from '../locales/en.js'
+import type { Messages } from '../locales/en.js'
 import { keep, readKept } from './kept.js'
+import { DEFAULT_LOCALE } from './locale.js'
+import { bindMessages } from './messages.js'
+import type { BoundCatalogue } from './messages.js'
 
 export type Theme = 'light' | 'dark'
 export type ThemePreference = 'system' | Theme
@@ -53,20 +58,30 @@ export function nextPreference(preference: ThemePreference): ThemePreference {
   return preference === 'light' ? 'dark' : 'system'
 }
 
-const STATES: Record<ThemePreference, string> = { system: 'follows the system', light: 'always light', dark: 'always dark' }
-const PRESSES: Record<ThemePreference, string> = {
-  system: 'Press to follow the system',
-  light: 'Press for always light',
-  dark: 'Press for always dark',
+/** The words of the look, bound to a locale: a provider's (`useMessages().look`), English's by default. */
+export type LookWords = BoundCatalogue<Messages>['look']
+
+const english = (): LookWords => bindMessages(en, DEFAULT_LOCALE).look
+
+/**
+ * What the button says, in the words given (English's by default): where things stand, and what a press does.
+ * "Always" tells a chosen theme from the same one arrived at by following the system.
+ */
+export function themeButtonLabel(preference: ThemePreference, theme: Theme, words: LookWords = english()): string {
+  const state = preference === 'system' ? words.followsSystem(theme) : preference === 'light' ? words.alwaysLight : words.alwaysDark
+  const next = nextPreference(preference)
+  const press = next === 'system' ? words.pressToFollowSystem : next === 'light' ? words.pressForLight : words.pressForDark
+  return words.themeButton({ state, press })
 }
 
 /**
- * What the button says: where things stand, and what a press does. "Always"
- * tells a chosen theme from the same one arrived at by following the system.
+ * What the button says, in English: where things stand, and what a press does ("Theme: always light. Press for always
+ * dark.").
+ * @deprecated English whatever the language: ThemeToggle says it in the provider's (the catalogue's `look`:
+ * `useMessages().look.themeButton`, its states and presses). Removed in 1.0.
  */
 export function themeLabel(preference: ThemePreference, theme: Theme): string {
-  const now = preference === 'system' ? `${STATES.system} (${theme} now)` : STATES[preference]
-  return `Theme: ${now}. ${PRESSES[nextPreference(preference)]}.`
+  return themeButtonLabel(preference, theme)
 }
 
 export function systemIsDark(): boolean {
@@ -168,20 +183,48 @@ export function applyMaterial(material: Material, root: HTMLElement = document.d
   else root.setAttribute(MATERIAL_ATTRIBUTE, material)
 }
 
-export const ACCENT_LABEL: Record<Accent, string> = {
-  neutral: 'Neutral',
-  violet: 'Violet',
-  indigo: 'Indigo',
-  blue: 'Blue',
-  bloom: 'Bloom',
-  lagoon: 'Lagoon',
-  aurora: 'Aurora',
-  dusk: 'Dusk',
-  golden: 'Golden hour',
-}
-export const MATERIAL_LABEL: Record<Material, string> = { flat: 'Flat', glass: 'Glass' }
+// The words that name each accent and each material, in the catalogue's `look`.
+const ACCENT_WORD = {
+  neutral: 'accentNeutral',
+  violet: 'accentViolet',
+  indigo: 'accentIndigo',
+  blue: 'accentBlue',
+  bloom: 'accentBloom',
+  lagoon: 'accentLagoon',
+  aurora: 'accentAurora',
+  dusk: 'accentDusk',
+  golden: 'accentGolden',
+} as const satisfies Record<Accent, keyof LookWords>
+const MATERIAL_WORD = { flat: 'materialFlat', glass: 'materialGlass' } as const satisfies Record<Material, keyof LookWords>
 
-/** What the picker's button says: what it is for, and what is shown ("Accent and material: violet, glass"). */
-export function lookLabel(accent: Accent, material: Material): string {
-  return `Accent and material: ${ACCENT_LABEL[accent].toLowerCase()}, ${MATERIAL_LABEL[material].toLowerCase()}`
+/** An accent's name in the words given (English's by default): "Violet", "Golden hour". */
+export function accentName(accent: Accent, words: LookWords = english()): string {
+  return words[ACCENT_WORD[accent]]
+}
+
+/** A material's name in the words given (English's by default): "Flat", "Glass". */
+export function materialName(material: Material, words: LookWords = english()): string {
+  return words[MATERIAL_WORD[material]]
+}
+
+/**
+ * The accents' names, in English.
+ * @deprecated English whatever the language: the catalogue's `look` names them (`useMessages().look.accentViolet`…, or
+ * `en.look` from 'ioiti-ui/locales/en'). Removed in 1.0.
+ */
+export const ACCENT_LABEL: Record<Accent, string> = Object.fromEntries(ACCENTS.map((accent) => [accent, accentName(accent)])) as Record<Accent, string>
+
+/**
+ * The materials' names, in English.
+ * @deprecated English whatever the language: the catalogue's `look` names them (`useMessages().look.materialGlass`…, or
+ * `en.look` from 'ioiti-ui/locales/en'). Removed in 1.0.
+ */
+export const MATERIAL_LABEL: Record<Material, string> = Object.fromEntries(MATERIALS.map((material) => [material, materialName(material)])) as Record<
+  Material,
+  string
+>
+
+/** What the picker's button says, in the words given (English's by default): what it is for, and what is shown ("Accent and material: violet, glass"). */
+export function lookLabel(accent: Accent, material: Material, words: LookWords = english()): string {
+  return words.lookName({ accent: accentName(accent, words), material: materialName(material, words) })
 }

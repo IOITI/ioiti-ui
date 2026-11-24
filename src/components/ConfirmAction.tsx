@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 
+import { useMessages } from './locale-context.js'
 import { Alert, AlertDescription } from './ui/alert.js'
 import { Button } from './ui/button.js'
 import { DragToConfirm } from './ui/drag-to-confirm.js'
@@ -20,10 +21,11 @@ interface ConfirmActionProps {
    * has to be quick: `confirmLabel` is then the text of that button.
    */
   gesture?: 'slide' | 'button'
-  /** Shown on the slider once it is done ("Saved", "Sent"...). */
+  /** Shown on the slider once it is done ("Saved", "Sent"...): "Done" in the provider's language by default. */
   doneLabel?: string
-  /** Shown on the slider while the action is under way. */
+  /** Shown on the slider while the action is under way: "Working…" in the provider's language by default. */
   workingLabel?: string
+  /** The button that closes it: "Cancel" in the provider's language by default. */
   cancelLabel?: string
   pending?: boolean
   /** The gesture waits for something the description asks first (a box ticked). */
@@ -45,15 +47,16 @@ export function ConfirmAction({
   confirmLabel,
   warning,
   gesture = 'slide',
-  doneLabel = 'Done',
-  workingLabel = 'Working…',
-  cancelLabel = 'Cancel',
+  doneLabel,
+  workingLabel,
+  cancelLabel,
   pending = false,
   blocked = false,
   error,
   onConfirm,
   onClose,
 }: ConfirmActionProps) {
+  const words = useMessages().dialog
   return (
     <SettleModal
       open={open}
@@ -65,7 +68,7 @@ export function ConfirmAction({
       footer={
         <>
           <Button variant="ghost" size="sm" onClick={onClose} disabled={pending}>
-            {cancelLabel}
+            {cancelLabel ?? words.cancel}
           </Button>
           {gesture === 'button' && (
             <Button size="sm" isLoading={pending} disabled={blocked} onClick={onConfirm}>
@@ -92,7 +95,7 @@ export function ConfirmAction({
             // A fresh slider every time the dialog opens or an attempt failed.
             key={`${open}-${error ?? ''}`}
             label={confirmLabel}
-            confirmedLabel={pending ? workingLabel : doneLabel}
+            confirmedLabel={pending ? (workingLabel ?? words.working) : (doneLabel ?? words.done)}
             variant="warning"
             autoResetDelay={0}
             haptic={false}

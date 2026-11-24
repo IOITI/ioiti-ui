@@ -7,6 +7,7 @@ import { isPlainClick } from '../lib/links.js'
 import { cn } from '../lib/utils.js'
 import { ButtonLink } from './ButtonLink.js'
 import { Hint } from './Hint.js'
+import { useMessages } from './locale-context.js'
 import type { ButtonVariant } from './ui/button.js'
 
 /** A way to sign in through another service, an identity provider (single sign-on). */
@@ -35,7 +36,10 @@ interface SignInProvidersProps {
   children?: ReactNode
   /** Where the providers stand: before the form, or after it. */
   placement?: 'before' | 'after'
-  /** The words on the line between the providers and the form; `''` for a line without words, `null` for none. */
+  /**
+   * The words on the line between the providers and the form ("or", in the provider's language, by default); `''` for a
+   * line without words, `null` for none.
+   */
   divider?: ReactNode
   /**
    * The provider the browser is on its way to, by its id: its button busy, the others disabled. Any other id (the
@@ -48,7 +52,7 @@ interface SignInProvidersProps {
    * from the browser's history (Back, from the provider's page) with nothing on its way any more.
    */
   onPendingChange?: (id: string | null) => void
-  /** The providers' name for a screen reader. */
+  /** The providers' name for a screen reader; the provider's language's by default ("Single sign-on"). */
   label?: string
   /** The look of their buttons. */
   variant?: ButtonVariant
@@ -65,13 +69,17 @@ export function SignInProviders({
   providers,
   children,
   placement = 'before',
-  divider = 'or',
+  divider: givenDivider,
   pending,
   onPendingChange,
-  label = 'Single sign-on',
+  label: givenLabel,
   variant = 'outline',
   className,
 }: SignInProvidersProps) {
+  // Its words in the provider's language, those given over them (`null` and `''` as they are).
+  const words = useMessages().shell
+  const divider = givenDivider === undefined ? words.signInDivider : givenDivider
+  const label = givenLabel ?? words.singleSignOn
   const [current, setCurrent] = useControllableState<string | null>(pending, null, onPendingChange)
 
   // The page left for a provider may come back whole from the browser's history (its back-forward cache), as it

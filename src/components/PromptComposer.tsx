@@ -5,7 +5,7 @@ import { ArrowUp, Square } from 'lucide-react'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
-import { useFormat } from './locale-context.js'
+import { useFormat, useMessages } from './locale-context.js'
 
 interface PromptSuggestion {
   /** What the chip says. */
@@ -96,6 +96,7 @@ export function PromptComposer({
 }: PromptComposerProps) {
   const id = useId()
   const { formatNumber } = useFormat()
+  const words = useMessages().ai
   const field = useRef<HTMLTextAreaElement>(null)
   // A drag of files over the frame: entered and left once for each element under it, so counted.
   const [dragged, setDragged] = useState(0)
@@ -175,7 +176,7 @@ export function PromptComposer({
       type="button"
       onClick={send}
       disabled={!canSend}
-      aria-label="Send"
+      aria-label={words.send}
       className={cn(
         'grid size-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-[opacity,transform] duration-150',
         PRESSABLE,
@@ -192,7 +193,7 @@ export function PromptComposer({
         {label}
       </label>
       {suggestions.length > 0 && (
-        <div className="mb-2 flex flex-wrap gap-1.5" role="group" aria-label="Requests to start from">
+        <div className="mb-2 flex flex-wrap gap-1.5" role="group" aria-label={words.suggestions}>
           {suggestions.map((suggestion) => (
             <button
               key={suggestion.label}
@@ -221,7 +222,7 @@ export function PromptComposer({
         )}
       >
         {attachments && (
-          <div className="flex flex-wrap gap-1.5 px-3 pt-2.5" role="group" aria-label="Attached">
+          <div className="flex flex-wrap gap-1.5 px-3 pt-2.5" role="group" aria-label={words.attachments}>
             {attachments}
           </div>
         )}
@@ -257,7 +258,7 @@ export function PromptComposer({
             <button
               type="button"
               onClick={onStop}
-              aria-label="Stop"
+              aria-label={words.stop}
               className={cn(
                 'grid size-8 shrink-0 place-items-center rounded-full border border-border bg-surface-hover text-foreground transition-transform duration-150',
                 PRESSABLE,

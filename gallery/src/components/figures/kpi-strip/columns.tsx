@@ -1,6 +1,7 @@
-import { formatMoney, KpiStrip } from 'ioiti-ui'
+import { KpiStrip, useFormat } from 'ioiti-ui'
 
 export default function KpiStripColumns() {
+  const { formatMoney } = useFormat()
   return (
     <KpiStrip
       title="October"

@@ -4,6 +4,7 @@ import type { ComponentProps, ElementType, MouseEvent, ReactNode, RefObject } fr
 import { useAppName } from '../components/app-context.js'
 import { ErrorBoundary } from '../components/ErrorBoundary.js'
 import type { ErrorBoundaryProps } from '../components/ErrorBoundary.js'
+import { useMessages } from '../components/locale-context.js'
 import { MainScrollContext } from '../components/main-scroll-context.js'
 import { ShortcutsDialog } from '../components/ShortcutsDialog.js'
 import { ThemeToggle } from '../components/ThemeToggle.js'
@@ -59,7 +60,7 @@ export interface AppShellProps<S extends string = string> {
    * list (`/rules/:id` is `/rules`), a redirect to its first tab. Each address is a page of its own by default.
    */
   pageOf?: (pathname: string) => string
-  /** The first step of the trail. */
+  /** The first step of the trail: Home (`/`), in the provider's language, by default. */
   home?: { label: string; href: string }
   /** What draws the menu's links; the application's (LinkProvider) by default. */
   linkComponent?: ElementType
@@ -132,6 +133,7 @@ function Shell<S extends string>({
   pending = false,
 }: AppShellProps<S>) {
   const providedName = useAppName()
+  const words = useMessages().shell
   const name = appName ?? providedName ?? ''
   const wide = isWide?.(pathname) ?? false
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -184,7 +186,7 @@ function Shell<S extends string>({
         onClick={skip}
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[70] focus:rounded-lg focus:border focus:border-border focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-elevated"
       >
-        Skip to the page
+        {words.skipToPage}
       </a>
       <Sidebar
         sections={sections}

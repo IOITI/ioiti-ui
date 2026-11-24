@@ -3,6 +3,7 @@ import type { ComponentProps, ReactNode } from 'react'
 
 import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
+import { useMessages } from './locale-context.js'
 
 /**
  * How tight a table is. `regular`: body-size text under a small head, rows apart by a line, for lists of
@@ -26,13 +27,14 @@ interface TableProps extends ComponentProps<'table'> {
  * scrolls, the text of its cells for screen readers too (`sr-only`, placed absolutely): out of a frame
  * that is not positioned, that text stood beyond the page, which then scrolled sideways onto nothing.
  * While it scrolls and its cells hold no control, the frame is a stop of the keyboard, a region named
- * as the table is.
+ * as the table is ("Table" in the provider's language, where it has no name).
  */
 const TABLE = { regular: 'w-full text-left text-sm', compact: 'w-full text-left text-xs', dense: 'w-full whitespace-nowrap text-sm' }
 
 export function Table({ density = 'regular', wrapperClassName, className, children, ...props }: TableProps) {
   const frame = useRef<HTMLDivElement>(null)
-  const region = useScrollRegion(frame, { label: props['aria-label'] ?? 'Table', labelledBy: props['aria-labelledby'] })
+  const unnamed = useMessages().table.region
+  const region = useScrollRegion(frame, { label: props['aria-label'] ?? unnamed, labelledBy: props['aria-labelledby'] })
   return (
     <div ref={frame} {...region} className={cn('relative min-w-0 overflow-x-auto', wrapperClassName)}>
       <table

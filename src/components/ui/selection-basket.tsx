@@ -13,6 +13,9 @@ import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, PRESSABLE, TONE_LINE, TONE_SOFT, TOAST } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
+// ioiti-ui: its words in the provider's language (`table`), its count in its locale.
+import { useFormat, useMessages } from '../locale-context.js';
+import type { BoundMessages } from '../locale-context.js';
 import { DirectionalTooltip } from './directional-tooltip.js';
 import { Hint } from '../Hint.js';
 
@@ -39,7 +42,10 @@ export interface SelectionBasketProps {
    * ioiti-ui: 'sticky' stays at the bottom of the screen while its list is on it, and rests under the list past it.
    */
   mode?: 'fixed' | 'contained' | 'inline' | 'sticky';
-  /** Custom actions list */
+  /**
+   * Custom actions list.
+   * ioiti-ui: by default, Export, Move to Folder, Share and Delete, in the provider's language.
+   */
   actions?: SelectionActionItem[];
   /** Callback to clear all selections */
   onClearSelection?: () => void;
@@ -47,7 +53,10 @@ export interface SelectionBasketProps {
   onSelectAll?: () => void;
   /** ioiti-ui: whether every item that can be is selected (EasyUI compares the counts, wrong once a search hides some). */
   allSelected?: boolean;
-  /** ioiti-ui: what an item is, one and several ("file", "files"). */
+  /**
+   * ioiti-ui: what an item is, one and several ("file", "files"), in the application's language; without it, "item
+   * selected" and "items selected" in the provider's.
+   */
   noun?: [string, string];
   /** ioiti-ui: what draws an action that has an `href`; the application's link (LinkProvider) by default. */
   linkComponent?: React.ElementType;
@@ -55,27 +64,32 @@ export interface SelectionBasketProps {
   className?: string;
 }
 
-const defaultActions: SelectionActionItem[] = [
-  { id: 'export', label: 'Export', icon: <Download className="size-3.5" /> },
-  { id: 'move', label: 'Move to Folder', icon: <FolderInput className="size-3.5" /> },
-  { id: 'share', label: 'Share', icon: <Share2 className="size-3.5" /> },
-  { id: 'delete', label: 'Delete', icon: <Trash2 className="size-3.5" />, variant: 'danger' },
+// ioiti-ui: their words the provider's language's.
+const defaultActions = (words: BoundMessages['table']): SelectionActionItem[] => [
+  { id: 'export', label: words.exportAction, icon: <Download className="size-3.5" /> },
+  { id: 'move', label: words.moveAction, icon: <FolderInput className="size-3.5" /> },
+  { id: 'share', label: words.shareAction, icon: <Share2 className="size-3.5" /> },
+  { id: 'delete', label: words.deleteAction, icon: <Trash2 className="size-3.5" />, variant: 'danger' },
 ];
 
 export const SelectionBasket: React.FC<SelectionBasketProps> = ({
   selectedCount,
   totalCount,
   mode = 'fixed',
-  actions = defaultActions,
+  actions: givenActions,
   onClearSelection,
   onSelectAll,
   allSelected,
-  noun = ['item', 'items'],
+  noun,
   linkComponent,
   className,
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
+  // ioiti-ui: its words in the provider's language, its own props given over them; its count in its locale.
+  const words = useMessages().table;
+  const { formatNumber } = useFormat();
+  const actions = givenActions ?? defaultActions(words);
   const isVisible = selectedCount > 0;
   const isAllSelected = allSelected ?? (totalCount !== undefined && selectedCount === totalCount && totalCount > 0);
 
@@ -108,16 +122,17 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
               className
             )}
             role="toolbar"
-            aria-label="Bulk actions toolbar"
+            aria-label={words.basketToolbar}
           >
             {/* Selected Count Indicator */}
             <div className="flex items-center gap-2 pl-3 pr-2 py-1 border-r border-border shrink-0">
               {/* ioiti-ui: the count, and the primary action below, in the accent (accent:). */}
               <span className="min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground accent:bg-brand accent:text-brand-foreground text-[11px] font-semibold font-mono tabular-nums flex items-center justify-center">
-                {selectedCount}
+                {formatNumber(selectedCount)}
               </span>
+              {/* ioiti-ui: the noun given, or the provider's, agreeing with the count as its language does. */}
               <span className="text-sm font-medium text-foreground whitespace-nowrap">
-                {selectedCount === 1 ? `${noun[0]} selected` : `${noun[1]} selected`}
+                {noun ? words.basketSelectedNoun({ count: selectedCount, noun }) : words.basketSelected(selectedCount)}
               </span>
 
               {/* Select all toggle */}
@@ -127,7 +142,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
                   onClick={onSelectAll}
                   className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors ml-1 underline underline-offset-2 cursor-pointer"
                 >
-                  {isAllSelected ? 'Select none' : `All (${totalCount})`}
+                  {isAllSelected ? words.basketSelectNone : words.basketSelectAll(totalCount)}
                 </button>
               )}
             </div>
@@ -183,14 +198,15 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
             </div>
 
             {/* Clear selection close button */}
-            {/* ioiti-ui: what it does in a Hint, shown on hover, keyboard focus and a tap, not a title. */}
+            {/* ioiti-ui: what it does in a Hint, shown on hover, keyboard focus and a tap, not a title; in the provider's
+                language. */}
             {onClearSelection && (
-              <Hint content="Clear the selection">
+              <Hint content={words.basketClear}>
               <button
                 type="button"
                 onClick={onClearSelection}
                 className={cn(CLOSE_SM, 'ml-1 focus-ring')}
-                aria-label="Clear the selection"
+                aria-label={words.basketClear}
               >
                 <X />
               </button>

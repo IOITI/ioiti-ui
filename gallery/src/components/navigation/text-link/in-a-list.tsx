@@ -1,4 +1,4 @@
-import { formatMoney, TextLink } from 'ioiti-ui'
+import { TextLink, useFormat } from 'ioiti-ui'
 
 const ORDERS = [
   { id: '2026-0042', customer: 'Atelier Brun', amount: 1840 },
@@ -7,6 +7,7 @@ const ORDERS = [
 ]
 
 export default function TextLinkInAList() {
+  const { formatMoney } = useFormat()
   return (
     <ul className="max-w-md divide-y divide-border/40 text-sm">
       {ORDERS.map((order) => (

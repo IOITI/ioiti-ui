@@ -2,7 +2,7 @@
 
 The slide on its own: an action confirmed by dragging the thumb to the end of its track, or by Enter once it has the focus.
 
-**You provide** `label` (`Slide to confirm` by default), `confirmedLabel`, `onConfirm`; `variant` (`default` · `danger` · `warning` · `info` · `success`), or `actionType` (`delete` · `archive` · `confirm` · `submit` · `unlock` · `continue`), which picks the thumb's icon and, without a `variant`, the tone; `size` (`sm` 40px · `md` 48px · `lg` 56px); `autoResetDelay` (2500 ms; `0` keeps it confirmed) with `onReset`, `isConfirmed`, `icon` / `confirmedIcon`, `disabled`, `haptic`.
+**You provide** `label` (`Slide to confirm` by default, in IoitiProvider's language), `confirmedLabel`, `onConfirm`; `variant` (`default` · `danger` · `warning` · `info` · `success`), or `actionType` (`delete` · `archive` · `confirm` · `submit` · `unlock` · `continue`), which picks the thumb's icon and, without a `variant`, the tone; `size` (`sm` 40px · `md` 48px · `lg` 56px); `autoResetDelay` (2500 ms; `0` keeps it confirmed) with `onReset`, `isConfirmed`, `icon` / `confirmedIcon`, `disabled`, `haptic`.
 
 ```tsx
 <DragToConfirm label="Slide to send" confirmedLabel="Sent" variant="info" autoResetDelay={2500} />

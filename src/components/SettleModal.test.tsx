@@ -5,6 +5,8 @@ import type { ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { SettleModal } from './ui/settle-modal.js'
 
 type ModalProps = Omit<ComponentProps<typeof SettleModal>, 'open' | 'onClose'>
@@ -55,5 +57,27 @@ describe('SettleModal', () => {
     expect(warn).toHaveBeenCalledTimes(1)
     expect(String(warn.mock.calls[0][0])).toMatch(/^ioiti-ui: a dialog has neither a title nor an aria-label/)
     warn.mockRestore()
+  })
+})
+
+describe('SettleModal in a language', () => {
+  it("names its close button in the language given, an application's own word over English's", async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <Opener title="Archiver le projet" />
+      </IoitiProvider>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument()
+    unmount()
+
+    render(
+      <IoitiProvider messages={{ dialog: { close: 'Dismiss' } }}>
+        <Opener title="Archive the project" />
+      </IoitiProvider>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument()
   })
 })

@@ -6,6 +6,8 @@ import { X } from "lucide-react";
 import { cn } from "../../lib/utils.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { TONE_LINE, TONE_MARK, TONE_SOFT, TONE_SOLID, TONE_TEXT, type Tone } from "../../lib/recipes.js";
+// ioiti-ui: its × button's name in the provider's language (`status`).
+import { useMessages } from "../locale-context.js";
 
 // ioiti-ui: what floats in takes the design's spring (EasyUI's was 520/36/0.6).
 const spring = motionTransitions.springSnappy;
@@ -55,7 +57,10 @@ export type BadgeProps = Omit<HTMLMotionProps<"span">, "children"> & {
   pulse?: boolean;
   /** Shows an × button (chip). */
   onRemove?: () => void;
-  /** ioiti-ui: the × button's name for a screen reader: "Remove Lyon", each chip's its own ("Remove" otherwise). */
+  /**
+   * ioiti-ui: the × button's name for a screen reader: "Remove Lyon", each chip's its own ("Remove" otherwise, in the
+   * provider's language).
+   */
   removeLabel?: string;
   /** ioiti-ui: whether the × button is a stop of the keyboard (a field of chips removes them with Backspace). */
   removeFocusable?: boolean;
@@ -68,12 +73,15 @@ export function Badge({
   dot,
   pulse,
   onRemove,
-  removeLabel = "Remove",
+  removeLabel: givenRemoveLabel,
   removeFocusable = true,
   className,
   children,
   ...props
 }: BadgeProps) {
+  // ioiti-ui: the provider's word unless one is given.
+  const words = useMessages().status;
+  const removeLabel = givenRemoveLabel ?? words.remove;
   // strings & numbers roll when they change (counts, status labels)
   const roll = typeof children === "string" || typeof children === "number";
 

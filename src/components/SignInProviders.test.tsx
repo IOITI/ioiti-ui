@@ -4,6 +4,8 @@ import { useState } from 'react'
 import type { ComponentProps, ReactElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { LinkProvider } from './LinkProvider.js'
 import { SignInProviders } from './SignInProviders.js'
 import type { SignInProvider } from './SignInProviders.js'
@@ -191,5 +193,40 @@ describe('SignInProviders', () => {
     await user.tab()
     expect(screen.getByRole('link', { name: 'Sign in with Gitea' })).toHaveFocus()
     expect(screen.getByRole('link', { name: 'Sign in with Gitea' })).toHaveAccessibleDescription('Your account on git.example.com')
+  })
+})
+
+describe('SignInProviders in French', () => {
+  it('names its list and says the line between the providers and the form in the provider\'s words', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <SignInProviders providers={[GITEA]}>
+          <PasswordForm />
+        </SignInProviders>
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('list', { name: 'Authentification unique' })).toBeInTheDocument()
+    expect(screen.getByText('ou')).toBeInTheDocument()
+  })
+
+  it("takes an application's own words, and a line given as it is", () => {
+    const { rerender } = render(
+      <IoitiProvider messages={{ shell: { signInDivider: 'or else', singleSignOn: 'Company accounts' } }}>
+        <SignInProviders providers={[GITEA]}>
+          <PasswordForm />
+        </SignInProviders>
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('list', { name: 'Company accounts' })).toBeInTheDocument()
+    expect(screen.getByText('or else')).toBeInTheDocument()
+
+    rerender(
+      <IoitiProvider messages={{ shell: { signInDivider: 'or else' } }}>
+        <SignInProviders providers={[GITEA]} divider={null}>
+          <PasswordForm />
+        </SignInProviders>
+      </IoitiProvider>,
+    )
+    expect(screen.queryByText('or else')).toBeNull()
   })
 })

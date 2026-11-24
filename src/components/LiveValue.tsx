@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { cn } from '../lib/utils.js'
-import { useFormat } from './locale-context.js'
+import { useFormat, useMessages } from './locale-context.js'
 
 interface LiveValueProps {
   /** The figure now; `null` (or `NaN`) while there is none. */
@@ -14,7 +14,7 @@ interface LiveValueProps {
   flash?: boolean
   /** Where down is good (a delay, a cost): the tones swap. */
   invert?: boolean
-  /** The word a screen reader hears for a stale figure. */
+  /** The word a screen reader hears for a stale figure; the provider's language's by default ("stale"). */
   staleLabel?: string
   className?: string
 }
@@ -34,10 +34,12 @@ export function LiveValue({
   stale = false,
   flash = true,
   invert = false,
-  staleLabel = 'stale',
+  staleLabel: givenStaleLabel,
   className,
 }: LiveValueProps) {
   const { formatNumber } = useFormat()
+  const words = useMessages().status
+  const staleLabel = givenStaleLabel ?? words.stale
   const write = format ?? ((number: number) => formatNumber(number, Number.isInteger(number) ? 0 : 2))
   // NaN is no figure, as null: never equal to itself, it would be a new figure at every render, each asking
   // for another.

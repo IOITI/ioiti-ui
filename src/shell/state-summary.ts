@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
 
+import { DEFAULT_LOCALE } from '../lib/locale.js'
+import { bindMessages } from '../lib/messages.js'
 import type { Tone } from '../lib/recipes.js'
+import { en } from '../locales/en.js'
 
 /**
  * What a state is, from the gravest: something to fix (`danger`), to watch (`warning`), good news not to miss
@@ -52,25 +55,24 @@ export function byGravity<T extends { tone: StateTone }>(items: readonly T[]): T
     .map(({ item }) => item)
 }
 
-const COUNTED: { tone: StateTone; words: string }[] = [
-  { tone: 'danger', words: 'to fix' },
-  { tone: 'warning', words: 'to watch' },
-  { tone: 'success', words: 'good news' },
-]
+/** How many states of each tone that stands out there are, in words: "1 to fix, 2 to watch". */
+export type StateCountWords = (counts: { danger: number; warning: number; success: number }) => string
 
 /**
  * What the top bar's summary says, for a screen reader and in its tip: the one state that stands out by its
- * words, several by how many of each tone ("1 to fix, 2 to watch"), none by the gravest quiet one's words, or
- * that all is well.
+ * words, several by how many of each tone ("1 to fix, 2 to watch", in the words given: a provider's
+ * `useMessages().shell.stateCounts`, English's by default), none by the gravest quiet one's words, or that all is well.
  */
-export function stateSentence(items: readonly StateItem[], okLabel: string): string {
+export function stateSentence(
+  items: readonly StateItem[],
+  okLabel: string,
+  counted: StateCountWords = bindMessages(en, DEFAULT_LOCALE).shell.stateCounts,
+): string {
   const out = items.filter((item) => standsOut(item.tone))
   if (out.length === 1) return out[0].label
   if (out.length > 1) {
-    return COUNTED.map(({ tone, words }) => ({ count: out.filter((item) => item.tone === tone).length, words }))
-      .filter(({ count }) => count > 0)
-      .map(({ count, words }) => `${count} ${words}`)
-      .join(', ')
+    const count = (tone: StateTone) => out.filter((item) => item.tone === tone).length
+    return counted({ danger: count('danger'), warning: count('warning'), success: count('success') })
   }
   return items.find((item) => item.tone === 'neutral')?.label ?? okLabel
 }

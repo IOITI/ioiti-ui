@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import {
   Flysheet,
   FlysheetBody,
@@ -309,5 +311,64 @@ describe('a flysheet’s body, scrolled', () => {
     expect(body).not.toHaveAttribute('data-scrolled')
     expect(body.style.getPropertyValue('--flysheet-fade')).toBe('')
     expect(scrolls).toHaveBeenCalledTimes(3) // the caller's onScroll still told
+  })
+})
+
+describe('a flysheet in a language', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('names its controls in the language given, its width written in its locale', async () => {
+    const user = userEvent.setup()
+    setWindowWidth(1600)
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <Order resizable size={1100} />
+      </IoitiProvider>,
+    )
+    await user.click(opener())
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument()
+    const edge = screen.getByRole('separator', { name: 'Redimensionner' })
+    expect(edge).toHaveAttribute('aria-valuetext', '1\u202f100 px')
+  })
+
+  it('writes its width as English writes a number, its thousands grouped', async () => {
+    const user = userEvent.setup()
+    setWindowWidth(1600)
+    render(<Order resizable size={1100} />)
+    await user.click(opener())
+    expect(screen.getByRole('separator', { name: 'Resize' })).toHaveAttribute('aria-valuetext', '1,100 px')
+  })
+
+  it("names a body without a title in the language given, or in an application's own word", async () => {
+    const user = userEvent.setup()
+    // jsdom lays nothing out: the body made taller than its box, so that it scrolls and is named.
+    vi.spyOn(Element.prototype, 'scrollHeight', 'get').mockImplementation(function (this: Element) {
+      return this.getAttribute('data-testid') === 'body' ? 900 : 0
+    })
+    const sheet = (
+      <Flysheet>
+        <FlysheetTrigger>Open the order</FlysheetTrigger>
+        <FlysheetContent aria-label="Commande 2026-0042">
+          <FlysheetBody data-testid="body">
+            <p>Les lignes de la commande</p>
+          </FlysheetBody>
+        </FlysheetContent>
+      </Flysheet>
+    )
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        {sheet}
+      </IoitiProvider>,
+    )
+    await user.click(opener())
+    expect(await screen.findByRole('region', { name: 'Contenu' })).toHaveTextContent('Les lignes de la commande')
+    unmount()
+
+    render(<IoitiProvider messages={{ dialog: { content: 'The order' } }}>{sheet}</IoitiProvider>)
+    await user.click(opener())
+    expect(await screen.findByRole('region', { name: 'The order' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
   })
 })

@@ -2,25 +2,32 @@ import { useSyncExternalStore } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
 import { Kbd } from './Kbd.js'
+import { useMessages } from './locale-context.js'
 import { useShortcut, useShortcutRegistry } from './shortcuts-context.js'
 import { SettleModal } from './ui/settle-modal.js'
 
 interface ShortcutsDialogProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  /** Its title; the provider's language's by default ("Keyboard shortcuts"). */
   title?: string
   /** The key that opens it; `null` for none (a button of the application's opens it). */
   keys?: string | null
 }
 
-const GENERAL = 'General'
+// Where the words of its last line put the keys that open it, drawn as key caps: the sentence is written around this
+// mark, and split at it.
+const KEYS_MARK = '\u0000'
 
 /**
  * The application's keyboard shortcuts, listed by group with their keys: those registered with a
  * description (`useShortcut`), while the parts that register them are on the page. `?` opens it, once
  * there is a shortcut to list; AppShell draws it.
  */
-export function ShortcutsDialog({ open, onOpenChange, title = 'Keyboard shortcuts', keys = '?' }: ShortcutsDialogProps) {
+export function ShortcutsDialog({ open, onOpenChange, title: givenTitle, keys = '?' }: ShortcutsDialogProps) {
+  // Its words in the provider's language, the title given over its own.
+  const words = useMessages().shortcuts
+  const title = givenTitle ?? words.title
   const [shown, setShown] = useControllableState(open, false, onOpenChange)
   const registry = useShortcutRegistry()
   const all = useSyncExternalStore(registry.subscribe, registry.list, registry.list)
@@ -35,16 +42,18 @@ export function ShortcutsDialog({ open, onOpenChange, title = 'Keyboard shortcut
   })
 
   useShortcut(keys ?? '', () => listed.length > 0 && setShown(!shown), {
-    description: listed.length > 0 ? 'Show the keyboard shortcuts' : undefined,
-    group: GENERAL,
+    description: listed.length > 0 ? words.showShortcuts : undefined,
+    group: words.general,
     enabled: keys !== null,
   })
 
   const groups = new Map<string, typeof listed>()
   for (const shortcut of listed) {
-    const group = shortcut.group ?? GENERAL
+    const group = shortcut.group ?? words.general
     groups.set(group, [...(groups.get(group) ?? []), shortcut])
   }
+  // The last line, its keys where its words put them (none drawn where an application's words name none).
+  const again = words.showAgain(KEYS_MARK).split(KEYS_MARK)
 
   return (
     <SettleModal open={shown} onClose={() => setShown(false)} title={title} size="md">
@@ -66,7 +75,13 @@ export function ShortcutsDialog({ open, onOpenChange, title = 'Keyboard shortcut
         ))}
         {keys && (
           <p className="text-xs text-muted-foreground">
-            <Kbd keys={keys} /> shows this list again.
+            {again[0]}
+            {again.length > 1 && (
+              <>
+                <Kbd keys={keys} />
+                {again.slice(1).join('')}
+              </>
+            )}
           </p>
         )}
       </div>

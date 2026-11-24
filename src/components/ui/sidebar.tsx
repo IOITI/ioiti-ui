@@ -14,6 +14,8 @@ import { cn } from "../../lib/utils.js";
 import { DropdownMenu, type DropdownMenuItem } from "../DropdownMenu.js";
 import { Kbd } from "../Kbd.js";
 import { LinkContext, useLinkComponent } from "../link-context.js";
+// ioiti-ui: its words in the provider's language (the catalogue's `shell`, its shortcut's `shortcuts`, its keys' `keys`).
+import { useMessages } from "../locale-context.js";
 import { useShortcut } from "../shortcuts-context.js";
 
 function useControllableState<T>(
@@ -137,12 +139,14 @@ function gravestBadge(entries: { badge?: string | number; badgeTone?: SidebarBad
 
 const childrenBadge = (item: SidebarItem) => gravestBadge(item.children ?? []);
 
-/** ioiti-ui: what a screen reader hears of badges out of sight, after the name of what holds them. */
-const UNSEEN_WORDS: Record<SidebarBadgeTone, string> = {
-  neutral: ", with counts",
-  warning: ", with a warning",
-  negative: ", with something wrong",
-};
+/**
+ * ioiti-ui: what a screen reader hears of badges out of sight, after the name of what holds them ("Orders, with a
+ * warning"), and the rail's tip says after it: in the provider's language.
+ */
+function useUnseenWords(): Record<SidebarBadgeTone, string> {
+  const words = useMessages().shell;
+  return { neutral: words.unseenCounts, warning: words.unseenWarning, negative: words.unseenWrong };
+}
 
 /**
  * ioiti-ui: between an entry's name and its badge, for a screen reader alone: "Orders, 38", not "Orders38" (the two
@@ -246,6 +250,8 @@ export function Sidebar({
     setShown(next);
   };
   const [mobileOpen, setMobileOpen] = useControllableState(mobileProp, false, onMobileOpenChange);
+  // ioiti-ui: its words, and its shortcut's, in the provider's language.
+  const { shell: words, shortcuts } = useMessages();
 
   // ioiti-ui: ⌘B on an Apple computer, Ctrl B elsewhere (useShortcut), listed by ShortcutsDialog.
   useShortcut(
@@ -254,7 +260,7 @@ export function Sidebar({
       if (isWide()) setCollapsed(!collapsed);
       else setMobileOpen(!mobileOpen);
     },
-    { description: "Collapse or expand the sidebar", group: "Navigation" }
+    { description: shortcuts.toggleSidebar, group: shortcuts.navigation }
   );
 
   // drawer: scroll lock
@@ -316,7 +322,8 @@ export function Sidebar({
               id={drawerId}
               role="dialog"
               aria-modal="true"
-              aria-label="Navigation"
+              // ioiti-ui: named in the provider's language.
+              aria-label={words.navigation}
               className="absolute inset-y-0 left-0 w-[17rem] max-w-[85vw] overflow-hidden border-r border-border bg-surface shadow-elevated dark:bg-background glass-float"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
@@ -333,7 +340,8 @@ export function Sidebar({
               {/* ioiti-ui: a way to close it on a phone, where there is no Escape, read first by a screen reader. */}
               <button
                 type="button"
-                aria-label="Close navigation"
+                // ioiti-ui: named in the provider's language.
+                aria-label={words.closeNavigation}
                 onClick={() => setMobileOpen(false)}
                 className={cn(CLOSE_MD, "focus-ring absolute right-3 top-3 z-10")}
               >
@@ -350,12 +358,13 @@ export function Sidebar({
   );
 }
 
-/** Put anywhere (e.g. your top bar). Only visible below md. */
+/** Put anywhere (e.g. your top bar). Only visible below md. ioiti-ui: named in the provider's language ("Open navigation"). */
 export function SidebarTrigger({ className, ...props }: React.ComponentProps<"button">) {
+  const words = useMessages().shell;
   return (
     <button
       type="button"
-      aria-label="Open navigation"
+      aria-label={words.openNavigation}
       className={cn(
         // ioiti-ui: pressed, it gives, as the top bar's other buttons do (motion-safe:).
         "grid size-9 place-items-center rounded-lg text-muted-foreground transition hover:bg-surface-hover hover:text-foreground md:hidden",
@@ -392,6 +401,9 @@ function Panel({
   onNavigate,
 }: PanelProps) {
   const LinkComponent = useLinkComponent(linkComponent);
+  // ioiti-ui: its words and its keys' in the provider's language.
+  const { shell: words, keys: keyWords } = useMessages();
+  const unseenWords = useUnseenWords();
   const uid = React.useId();
   const [hoverBox, setHoverBox] = React.useState<{ y: number; h: number } | null>(null);
   const [hovering, setHovering] = React.useState(false);
@@ -519,8 +531,8 @@ function Panel({
     // tip and its name.
     const railTone = !collapsed ? null : item.badge !== undefined ? (item.badgeTone ?? "neutral") : childrenBadge(item);
     const railNote: TipNote | undefined =
-      railTone === null ? undefined : { text: item.badge !== undefined ? String(item.badge) : UNSEEN_WORDS[railTone].slice(2), tone: railTone };
-    const railName = !collapsed ? undefined : railNote === undefined ? item.label : item.badge !== undefined ? `${item.label}, ${item.badge}` : `${item.label}${UNSEEN_WORDS[railNote.tone]}`;
+      railTone === null ? undefined : { text: item.badge !== undefined ? String(item.badge) : unseenWords[railTone], tone: railTone };
+    const railName = !collapsed ? undefined : railNote === undefined ? item.label : words.entryWithBadge({ entry: item.label, badge: railNote.text });
     // ioiti-ui: the hover box is measured in the list; at the foot, an entry is lit by its own hover.
     const point = (e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>) =>
       place === "footer" ? tipAt(e, item.label, railNote) : enter(e, item.label, railNote);
@@ -594,7 +606,9 @@ function Panel({
             {unseen && (
               <>
                 <UnseenDot tone={unseen} className="relative" />
-                <span className="sr-only">{UNSEEN_WORDS[unseen]}</span>
+                {/* ioiti-ui: a comma, then the words, as a badge is said ("Orders, with a warning"). */}
+                <BadgeSeparator />
+                <span className="sr-only">{unseenWords[unseen]}</span>
               </>
             )}
             {!collapsed && hasChildren && !linked && (
@@ -635,7 +649,8 @@ function Panel({
               onClick={() => toggleOpen(item.id)}
               onMouseEnter={(e) => enter(e, item.label)}
               onFocus={(e) => enter(e, item.label)}
-              aria-label={`The pages under ${item.label}`}
+              // ioiti-ui: named in the provider's language ("The pages under Orders").
+              aria-label={words.pagesUnder(item.label)}
               aria-expanded={isOpen}
               aria-controls={isOpen ? childrenId : undefined}
               className="relative -ml-8 grid h-9 w-8 shrink-0 cursor-pointer place-items-center rounded-lg text-muted-foreground outline-none transition-colors hover:text-foreground"
@@ -727,7 +742,8 @@ function Panel({
         )}
 
         <nav
-          aria-label="Main"
+          // ioiti-ui: named in the provider's language.
+          aria-label={words.mainNavigation}
           onMouseLeave={() => {
             setHovering(false);
             setTip(null);
@@ -777,7 +793,8 @@ function Panel({
                       {folded && counted && (
                         <>
                           <UnseenDot tone={counted} />
-                          <span className="sr-only">{UNSEEN_WORDS[counted]}</span>
+                          <BadgeSeparator />
+                          <span className="sr-only">{unseenWords[counted]}</span>
                         </>
                       )}
                     </button>
@@ -824,13 +841,14 @@ function Panel({
                 onMouseEnter={(e) => {
                   if (!collapsed) return;
                   const r = e.currentTarget.getBoundingClientRect();
-                  setTip({ label: "Expand", keys: keysText(TOGGLE_KEYS), x: r.right + 10, y: r.top + r.height / 2 });
+                  // ioiti-ui: its words and its keys in the provider's language.
+                  setTip({ label: words.expand, keys: keysText(TOGGLE_KEYS, undefined, keyWords), x: r.right + 10, y: r.top + r.height / 2 });
                 }}
                 onMouseLeave={() => setTip(null)}
                 // ioiti-ui: open, named by the word it shows and what it folds ("Collapse sidebar"), its keys drawn for the eye
                 // and heard as its shortcut (WCAG 2.5.3, label in name: a name given over the words shown left out its keys);
                 // folded, by what it does, its words hidden.
-                aria-label={collapsed ? "Expand sidebar" : undefined}
+                aria-label={collapsed ? words.expandSidebar : undefined}
                 aria-keyshortcuts={ariaKeyShortcuts(TOGGLE_KEYS)}
                 // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
                 className="flex h-9 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-sm text-muted-foreground outline-none transition-colors hover:bg-surface-hover hover:text-foreground"
@@ -844,7 +862,8 @@ function Panel({
                   transition={motionTransitions.easeFast}
                   className="flex-1 whitespace-nowrap text-left"
                 >
-                  Collapse <span className="sr-only">sidebar</span>
+                  {/* ioiti-ui: in the provider's language. */}
+                  {words.collapse} <span className="sr-only">{words.collapseTarget}</span>
                 </motion.span>
                 {/* ioiti-ui: the keys as this computer writes them (⌘B, Ctrl B), drawn for the eye: a screen reader hears
                     them as its shortcut (aria-keyshortcuts), not in its name. */}

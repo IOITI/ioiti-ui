@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
 import { IoitiProvider } from '../components/IoitiProvider.js'
+import type { MessagesOverride } from '../components/locale-context.js'
+import { fr } from '../locales/fr.js'
 import { MENU } from '../test/menu.js'
 import { RouterAppShell } from './RouterAppShell.js'
 import { RouterErrorPage } from './RouterErrorPage.js'
@@ -16,8 +18,11 @@ function Broken(): never {
   throw new Error('The page drew nothing')
 }
 
-/** An application as the starter template routes one: the shell, and every page under one route of the router's errors. */
-function app(path: string) {
+/**
+ * An application as the starter template routes one: the shell, and every page under one route of the router's errors;
+ * in the locale and words given.
+ */
+function app(path: string, language: { locale?: string; messages?: MessagesOverride } = {}) {
   const onError = vi.fn()
   const router = createMemoryRouter(
     [
@@ -74,7 +79,7 @@ function app(path: string) {
     { initialEntries: [path] },
   )
   render(
-    <IoitiProvider appName="Test App" onError={onError}>
+    <IoitiProvider appName="Test App" onError={onError} locale={language.locale} messages={language.messages}>
       <RouterProvider router={router} />
     </IoitiProvider>,
   )
@@ -136,5 +141,30 @@ describe('RouterErrorPage', () => {
     app('/outside')
     expect(await screen.findByRole('heading', { level: 1, name: 'Something went wrong' })).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: 'Main' })).toBeNull()
+  })
+})
+
+describe('RouterErrorPage in French', () => {
+  /** French's no-break spaces (before a colon) read as spaces. */
+  const spaced = (text: string | null) => (text ?? '').replace(/\s/g, ' ')
+
+  it('asks a person whose session ended to sign in again', async () => {
+    app('/signed-out', { locale: 'fr-FR', messages: fr })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Connectez-vous pour voir cette page' })).toBeInTheDocument()
+    expect(spaced(screen.getByText(/^Votre session/).textContent)).toBe('Votre session a peut-être expiré : reconnectez-vous pour y revenir.')
+    expect(screen.getByRole('link', { name: 'Se connecter' })).toHaveAttribute('href', '/login')
+  })
+
+  it('says a page the person may not see, the way home after it', async () => {
+    app('/forbidden', { locale: 'fr-FR', messages: fr })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Vous n’avez pas accès à cette page' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Retour à l’accueil' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('navigation', { name: 'Menu principal' })).toBeInTheDocument()
+  })
+
+  it("takes an application's own words over the language's", async () => {
+    app('/signed-out', { messages: { router: { signIn: 'Log in', signInTitle: 'Your session ended' } } })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Your session ended' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/login')
   })
 })

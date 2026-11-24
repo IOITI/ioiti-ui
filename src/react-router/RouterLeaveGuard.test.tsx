@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { createMemoryRouter, Link, RouterProvider, useLocation } from 'react-router'
 import { describe, expect, it } from 'vitest'
 
+import { IoitiProvider } from '../components/IoitiProvider.js'
+import type { MessagesOverride } from '../components/locale-context.js'
+import { fr } from '../locales/fr.js'
 import { RouterLeaveGuard } from './RouterLeaveGuard.js'
 
 function Address() {
@@ -31,7 +34,11 @@ function Settings({ within, allowed }: { within?: string; allowed?: (pathname: s
   )
 }
 
-function renderRouter(guard: { within?: string; allowed?: (pathname: string) => boolean } = {}, history = ['/settings']) {
+function renderRouter(
+  guard: { within?: string; allowed?: (pathname: string) => boolean } = {},
+  history = ['/settings'],
+  language: { locale?: string; messages?: MessagesOverride } = {},
+) {
   const router = createMemoryRouter(
     [
       // One route for the page and its views: the page and its draft stay mounted from one view to another.
@@ -41,7 +48,17 @@ function renderRouter(guard: { within?: string; allowed?: (pathname: string) => 
     ],
     { initialEntries: history, initialIndex: history.length - 1 },
   )
-  render(<RouterProvider router={router} />)
+  const page = <RouterProvider router={router} />
+  // A language given, in a provider of it.
+  render(
+    language.locale || language.messages ? (
+      <IoitiProvider locale={language.locale} messages={language.messages}>
+        {page}
+      </IoitiProvider>
+    ) : (
+      page
+    ),
+  )
   return router
 }
 
@@ -138,5 +155,34 @@ describe('RouterLeaveGuard', () => {
 
     await user.click(screen.getByRole('button', { name: 'Save' }))
     expect(closing()).toBe(false)
+  })
+})
+
+describe('RouterLeaveGuard in French', () => {
+  /** French's no-break spaces (before a colon, a question mark) read as spaces. */
+  const spaced = (text: string) => text.replace(/\s/g, ' ')
+
+  it('asks in the provider\'s words, and stays', async () => {
+    const user = userEvent.setup()
+    renderRouter({}, ['/settings'], { locale: 'fr-FR', messages: fr })
+    await user.click(screen.getByRole('button', { name: 'Change' }))
+    await user.click(screen.getByRole('link', { name: 'Orders' }))
+
+    const dialog = await screen.findByRole('dialog', { name: (name) => spaced(name) === 'Quitter sans enregistrer ?' })
+    expect(spaced(dialog.textContent ?? '')).toContain('Les modifications de cette page ne sont pas enregistrées : elles seront perdues si vous la quittez.')
+    expect(screen.getByRole('button', { name: 'Quitter' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Rester' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(screen.getByLabelText('address')).toHaveTextContent('/settings')
+  })
+
+  it("takes an application's own words over the language's", async () => {
+    const user = userEvent.setup()
+    renderRouter({}, ['/settings'], { messages: { router: { leaveTitle: 'Discard your changes?', leave: 'Discard' } } })
+    await user.click(screen.getByRole('button', { name: 'Change' }))
+    await user.click(screen.getByRole('link', { name: 'Orders' }))
+    expect(await screen.findByRole('dialog', { name: 'Discard your changes?' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Discard' }))
+    expect(await screen.findByRole('heading', { name: 'Orders' })).toBeInTheDocument()
   })
 })

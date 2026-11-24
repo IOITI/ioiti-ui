@@ -9,7 +9,6 @@ import {
   EmptyText,
   ErrorState,
   ErrorText,
-  formatMoney,
   KpiGrid,
   PageHeader,
   Panel,
@@ -22,6 +21,7 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
+  useFormat,
 } from 'ioiti-ui'
 import { FileCode, Plus, SearchX } from 'lucide-react'
 import { useState } from 'react'
@@ -86,6 +86,7 @@ const FAILURES: Record<Exclude<Failure, 'drawn'>, Error> = {
 }
 
 function Failed() {
+  const { formatMoney } = useFormat()
   const [failure, setFailure] = useState<Failure>('threw')
   return (
     <div className="w-full space-y-4">

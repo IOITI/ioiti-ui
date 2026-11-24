@@ -1,4 +1,4 @@
-import { DateRangeFilter, formatDay, lastDays, toIsoDay } from 'ioiti-ui'
+import { DateRangeFilter, lastDays, toIsoDay, useFormat } from 'ioiti-ui'
 import type { DateRange } from 'ioiti-ui'
 import { useState } from 'react'
 
@@ -6,6 +6,7 @@ import { useState } from 'react'
 const TODAY = new Date(2026, 10, 14)
 
 export default function DateRangeFilterPresets() {
+  const { formatDay } = useFormat()
   const [range, setRange] = useState<DateRange>(() => lastDays(30, TODAY))
   return (
     <div className="flex flex-col items-start gap-3">

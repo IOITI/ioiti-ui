@@ -7,6 +7,7 @@ import { useAppearanceItems } from './appearance.js'
 import { Avatar } from './Avatar.js'
 import { DropdownMenu } from './DropdownMenu.js'
 import type { DropdownMenuItem } from './DropdownMenu.js'
+import { useMessages } from './locale-context.js'
 
 interface UserMenuProps {
   /** Who is signed in: beside the avatar from 640 px up, and its initials where there is no picture. */
@@ -33,9 +34,12 @@ interface UserMenuProps {
    * loaded from the server, so that nothing of the session stays in the page. In place of `onSignOut`.
    */
   signOutHref?: string
-  /** The words of the last item. */
+  /** The words of the last item; the provider's language's by default ("Sign out"). */
   signOutLabel?: string
-  /** The menu's name for a screen reader. Its button is named by what it shows: the name and the detail. */
+  /**
+   * The menu's name for a screen reader; the provider's language's by default ("Account"). Its button is named by what
+   * it shows: the name and the detail.
+   */
   label?: string
   className?: string
 }
@@ -54,10 +58,14 @@ export function UserMenu({
   appearance = false,
   onSignOut,
   signOutHref,
-  signOutLabel = 'Sign out',
-  label = 'Account',
+  signOutLabel: givenSignOutLabel,
+  label: givenLabel,
   className,
 }: UserMenuProps) {
+  // Its words in the provider's language, those given over them.
+  const words = useMessages().shell
+  const signOutLabel = givenSignOutLabel ?? words.signOut
+  const label = givenLabel ?? words.account
   const signOut: DropdownMenuItem | null = signOutHref
     ? { type: 'link', label: signOutLabel, icon: <LogOut />, href: signOutHref, reloadDocument: true }
     : onSignOut

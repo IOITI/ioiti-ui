@@ -6,6 +6,8 @@ import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DISABLED } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
+// ioiti-ui: its names in the provider's language (`field`).
+import { useMessages } from '../locale-context.js';
 
 export interface OTPInputProps {
   length?: number;
@@ -18,6 +20,7 @@ export interface OTPInputProps {
   error?: boolean;
   className?: string;
   boxClassName?: string;
+  /** ioiti-ui: the group's name; the provider's language's by default ("One-time passcode"). */
   'aria-label'?: string;
   /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
   'aria-describedby'?: string;
@@ -39,11 +42,14 @@ export const OTPInput: React.FC<OTPInputProps> = ({
   error = false,
   className,
   boxClassName,
-  'aria-label': ariaLabel = 'One-time passcode',
+  'aria-label': givenAriaLabel,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
   id,
 }) => {
+  // ioiti-ui: its name and its boxes' in the provider's language, the name given over it.
+  const words = useMessages().field;
+  const ariaLabel = givenAriaLabel ?? words.otpName;
   // ioiti-ui: in error by its own prop, or marked invalid (a Field around it).
   const invalid = invalidOf(error, ariaInvalid);
   const isControlled = value !== undefined;
@@ -176,7 +182,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
           autoComplete={i === 0 ? 'one-time-code' : 'off'}
           value={digits[i] ?? ''}
           disabled={disabled}
-          aria-label={`Digit ${i + 1} of ${length}`}
+          aria-label={words.otpDigit({ index: i + 1, count: length })}
           aria-invalid={invalid || undefined}
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}

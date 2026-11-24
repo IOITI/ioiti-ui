@@ -7,7 +7,7 @@ export default function DatePickerRange() {
   const { from, to } = rangeParams(range)
   return (
     <div className="flex flex-col items-start gap-3">
-      <DateRangePicker value={range} onChange={setRange} locale="en-GB" weekStartsOn={1} />
+      <DateRangePicker value={range} onChange={setRange} />
       <p className="text-sm text-muted-foreground" aria-live="polite">
         <code className="font-mono text-xs">
           ?from={from ?? ''}&amp;to={to ?? ''}

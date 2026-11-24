@@ -10,6 +10,8 @@ import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, FLOATING, PRESSABLE, TONE_LINE, TONE_MARK, TONE_SOFT, TONE_SOLID } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
+// ioiti-ui: its words in the provider's language, its counts in its locale.
+import { useFormat, useMessages } from '../locale-context.js';
 // ioiti-ui: a moment is said from now, its full date in a hint.
 import { RelativeTime } from '../RelativeTime.js';
 import { Hint } from '../Hint.js';
@@ -54,8 +56,8 @@ export interface NotificationBellProps {
    */
   loading?: boolean;
   /**
-   * ioiti-ui: they could not be read: what went wrong (`true`: "The notifications could not be read."), in place of
-   * the list while there is none, above it otherwise (the list is then the last one read).
+   * ioiti-ui: they could not be read: what went wrong (`true`: "The notifications could not be read.", in the provider's
+   * language), in place of the list while there is none, above it otherwise (the list is then the last one read).
    */
   error?: React.ReactNode;
   /** ioiti-ui: reads them again: a "Try again" beside the error. */
@@ -92,6 +94,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
+  // ioiti-ui: its words in the provider's language, its counts in its locale ("1 unread notification", counted).
+  const words = useMessages().notification;
+  const { formatNumber } = useFormat();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -135,14 +140,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
   // ioiti-ui: the notifications could not be read, and what to do about it.
   const failed = error !== undefined && error !== null && error !== false && error !== '';
-  const failedSaid = error === true ? 'The notifications could not be read.' : error;
+  const failedSaid = error === true ? words.readFailed : error;
   const retry = failed && onRetry && (
     <button
       type="button"
       onClick={onRetry}
       className="shrink-0 rounded-md px-1.5 py-0.5 text-sm font-medium text-foreground underline-offset-2 hover:underline focus-ring cursor-pointer"
     >
-      Try again
+      {words.tryAgain}
     </button>
   );
 
@@ -165,8 +170,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
         aria-expanded={isPanelOpen}
         aria-label={
           unreadCount > 0
-            ? `${unreadCount} unread notifications`
-            : 'Notifications'
+            ? words.unread(unreadCount)
+            : words.notifications
         }
         className={cn(
           'relative cursor-pointer transition-colors',
@@ -198,7 +203,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                   : 'size-2.5'
               )}
             >
-              {showCount && (unreadCount > 99 ? '99+' : unreadCount)}
+              {showCount && (unreadCount > 99 ? words.overflow(99) : formatNumber(unreadCount))}
             </motion.span>
           )}
         </AnimatePresence>
@@ -220,7 +225,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             exit={{ opacity: 0, y: 8, scale: 0.95, transition: motionTransitions.easeExit }}
             transition={motionTransitions.springSnappy}
             role="dialog"
-            aria-label="Notifications"
+            aria-label={words.notifications}
             // ioiti-ui: on a phone the panel spans the screen but its edges (centred on the bell, it went past the edge).
             // Glass under the glass material (glass-float), its header clear on it.
             className={cn(FLOATING, 'flex w-[calc(100vw-2rem)] flex-col outline-none sm:w-96 z-50 overflow-hidden')}
@@ -228,10 +233,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-raised glass:bg-transparent">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-foreground">Notifications</span>
+                <span className="text-sm font-semibold text-foreground">{words.notifications}</span>
                 {unreadCount > 0 && (
                   <span className={cn('px-1.5 py-0.5 rounded-full border text-[11px] font-mono tabular-nums', TONE_SOFT.negative, TONE_LINE.negative)}>
-                    {unreadCount} new
+                    {words.newCount(unreadCount)}
                   </span>
                 )}
               </div>
@@ -239,14 +244,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               <div className="flex items-center gap-1">
                 {/* ioiti-ui: what it does in a Hint, not a title. */}
                 {unreadCount > 0 && onMarkAllAsRead && (
-                  <Hint content="Mark them all as read">
+                  <Hint content={words.markAllRead}>
                     <button
                       type="button"
                       onClick={onMarkAllAsRead}
                       className={cn('p-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-[color,background-color,scale] flex items-center gap-1', PRESSABLE)}
                     >
                       <CheckCheck className="size-3.5" />
-                      <span>Read all</span>
+                      <span>{words.readAll}</span>
                     </button>
                   </Hint>
                 )}
@@ -254,7 +259,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                   type="button"
                   onClick={() => setPanelOpen(false)}
                   className={CLOSE_SM}
-                  aria-label="Close notifications"
+                  aria-label={words.close}
                 >
                   <X />
                 </button>
@@ -280,7 +285,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 </div>
               ) : notifications.length === 0 && loading ? (
                 // ioiti-ui: entries to come, as high as they will be; named for screen readers.
-                <div role="status" aria-label="Loading the notifications" className="divide-y divide-border/40">
+                <div role="status" aria-label={words.loading} className="divide-y divide-border/40">
                   {[0, 1, 2].map((row) => (
                     <div key={row} className="p-3 flex items-start gap-3">
                       <Skeleton className="size-2 rounded-full mt-1.5 shrink-0" />
@@ -294,7 +299,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               ) : notifications.length === 0 ? (
                 <div className="py-8 px-4 text-center">
                   <Bell className="size-6 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">No notifications right now</p>
+                  <p className="text-xs text-muted-foreground">{words.empty}</p>
                 </div>
               ) : (
                 notifications.map((item) => {
@@ -348,12 +353,12 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
                       {/* ioiti-ui: what it does in a Hint, not a title. */}
                       {!item.read && (
-                        <Hint content="Mark as read">
+                        <Hint content={words.markRead}>
                           <button
                             type="button"
                             onClick={() => onMarkAsRead(item.id)}
                             className={cn('p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-raised transition-[color,background-color,scale] shrink-0', PRESSABLE)}
-                            aria-label="Mark notification as read"
+                            aria-label={words.markNotificationRead}
                           >
                             <CheckCheck className="size-3.5" />
                           </button>

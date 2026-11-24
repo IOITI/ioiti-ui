@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { cn } from '../lib/utils.js'
+import { useMessages } from './locale-context.js'
 
 export interface Change {
   /** What changes: a setting, a field. */
@@ -31,6 +32,7 @@ interface ChangeListProps {
 }
 
 function Row({ change, numeric }: { change: Change; numeric: boolean }) {
+  const words = useMessages().table
   const added = change.before === undefined || change.before === null
   const removed = change.after === undefined || change.after === null
   return (
@@ -38,19 +40,19 @@ function Row({ change, numeric }: { change: Change; numeric: boolean }) {
       <span className="min-w-0 text-text-secondary">{change.label}</span>
       <span className={cn('ml-auto inline-flex flex-wrap items-baseline justify-end gap-x-2', numeric && 'tabular-nums')}>
         {added ? (
-          <span className="text-xs text-muted-foreground">New</span>
+          <span className="text-xs text-muted-foreground">{words.changeNew}</span>
         ) : (
           <del className="text-muted-foreground decoration-muted-foreground">
-            <span className="sr-only">from </span>
+            <span className="sr-only">{words.changeFrom} </span>
             {change.before}
           </del>
         )}
         <ArrowRight aria-hidden className="size-3.5 shrink-0 self-center text-muted-foreground" />
         {removed ? (
-          <span className="text-muted-foreground">Removed</span>
+          <span className="text-muted-foreground">{words.changeRemoved}</span>
         ) : (
           <ins className="font-medium text-foreground no-underline">
-            <span className="sr-only">to </span>
+            <span className="sr-only">{words.changeTo} </span>
             {change.after}
           </ins>
         )}
@@ -62,7 +64,7 @@ function Row({ change, numeric }: { change: Change; numeric: boolean }) {
 
 /**
  * What changes, each from its value before to its value after: a configuration about to be applied, a
- * record edited, a run compared with the last. Screen readers hear "from … to …".
+ * record edited, a run compared with the last. Screen readers hear "from … to …", in the provider's language.
  */
 export function ChangeList({ changes = [], groups, label, numeric = false, className }: ChangeListProps) {
   if (groups) {

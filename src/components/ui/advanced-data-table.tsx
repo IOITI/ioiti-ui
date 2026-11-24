@@ -32,6 +32,8 @@ import type { SelectionActionItem } from './selection-basket.js';
 import { DrawCheckbox } from './draw-checkbox.js';
 import { Skeleton } from './skeleton.js';
 import { Hint } from '../Hint.js';
+// ioiti-ui: its words in the provider's language (`table`), its counts in its locale.
+import { useFormat, useMessages } from '../locale-context.js';
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -137,6 +139,7 @@ export function useDataTable<T = any>() {
 
 export interface DataTableToolbarProps {
   title?: string;
+  /** ioiti-ui: the search's placeholder; the provider's language's by default ("Search…"). */
   searchPlaceholder?: string;
   onBulkDelete?: (selectedIds: string[]) => void;
   onBulkExport?: (selectedIds: string[]) => void;
@@ -145,11 +148,13 @@ export interface DataTableToolbarProps {
 
 export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
   title,
-  searchPlaceholder = 'Search…',
+  searchPlaceholder,
   onBulkDelete,
   onBulkExport,
   className,
 }) => {
+  // ioiti-ui: its words in the provider's language, its own props given over them.
+  const words = useMessages().table;
   const {
     searchTerm,
     setSearchTerm,
@@ -195,7 +200,8 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-muted/40 border border-border text-xs text-foreground font-normal tabular-nums">
               {/* ioiti-ui: the dot, the filters on, the boxes, the sorted column and the rows selected in the accent, where the theme has one (accent:). */}
               <span className="size-1.5 rounded-full bg-foreground accent:bg-brand" />
-              {selectedCount} selected
+              {/* ioiti-ui: counted in the provider's words. */}
+              {words.selectedCount(selectedCount)}
             </span>
           )}
         </div>
@@ -210,7 +216,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={searchPlaceholder}
+              placeholder={searchPlaceholder ?? words.searchPlaceholder}
               className={cn(
                 'w-full h-8 pl-8 sm:pl-9 pr-7 sm:pr-8 rounded-lg border bg-surface text-base sm:text-sm text-foreground placeholder:text-text-subtle focus:outline-none transition-colors font-sans',
                 fieldBorder(false)
@@ -228,14 +234,14 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
           </div>
 
           {/* View Mode Switcher. ioiti-ui: what it does in a Hint, shown on hover, keyboard focus and a tap (a title
-              showed on none), and its name the same words. */}
-          <Hint content={viewMode === 'cards' ? 'Show as a table' : 'Show as cards'}>
+              showed on none), and its name the same words, the provider's language's. */}
+          <Hint content={viewMode === 'cards' ? words.showAsTable : words.showAsCards}>
             <motion.button
               type="button"
               whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
               onClick={() => setViewMode(viewMode === 'cards' ? 'table' : 'cards')}
               className="grid size-8 place-items-center rounded-lg border border-border bg-surface text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors cursor-pointer shrink-0"
-              aria-label={viewMode === 'cards' ? 'Show as a table' : 'Show as cards'}
+              aria-label={viewMode === 'cards' ? words.showAsTable : words.showAsCards}
             >
               {viewMode === 'cards' ? <List className="size-4" /> : <LayoutGrid className="size-4" />}
             </motion.button>
@@ -243,7 +249,8 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
 
           {/* Column Visibility Menu */}
           <div className="relative shrink-0">
-            <Hint content="Columns shown">
+            {/* ioiti-ui: its words, its list's name and its heading the provider's language's. */}
+            <Hint content={words.columnsShown}>
               <motion.button
                 ref={columnTriggerRef}
                 type="button"
@@ -253,7 +260,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                 aria-haspopup="dialog"
                 aria-controls={isColumnPickerOpen ? columnPickerId : undefined}
                 className="grid size-8 place-items-center rounded-lg border border-border bg-surface text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors cursor-pointer"
-                aria-label="Columns shown"
+                aria-label={words.columnsShown}
                 aria-expanded={isColumnPickerOpen}
               >
                 <SlidersHorizontal className="size-4" />
@@ -265,14 +272,14 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                 ref={columnLayerRef}
                 id={columnPickerId}
                 role="dialog"
-                aria-label="Columns shown"
+                aria-label={words.columnsShown}
                 tabIndex={-1}
                 onKeyDown={columnLayer.onLayerKeyDown}
                 style={columnLayer.style}
                 className={cn(FLOATING, 'z-50 w-48 overflow-y-auto p-2 font-sans outline-none')}
               >
                 <div className="text-xs font-medium text-muted-foreground px-2 py-1">
-                  Columns
+                  {words.columns}
                 </div>
                 <div className="divide-y divide-border/40">
                   {columns.map((col) => {
@@ -309,8 +316,9 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
             className="overflow-hidden"
           >
             <div className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 rounded-lg bg-surface-raised/30 border border-border/60 text-xs">
+              {/* ioiti-ui: the selection and the bulk actions in the provider's words. */}
               <span className="text-xs text-muted-foreground font-normal tabular-nums">
-                {selectedCount} item{selectedCount === 1 ? '' : 's'} selected:
+                {words.bulkSelected(selectedCount)}
               </span>
               <div className="flex items-center gap-2">
                 {onBulkExport && (
@@ -321,7 +329,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                     className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-surface hover:bg-surface-hover text-foreground transition-colors text-sm font-normal cursor-pointer"
                   >
                     <Download className="size-4" />
-                    <span>Export</span>
+                    <span>{words.exportAction}</span>
                   </motion.button>
                 )}
                 {onBulkDelete && (
@@ -332,7 +340,7 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
                     className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-negative/30 bg-negative/5 hover:bg-negative/10 text-negative transition-colors text-sm font-normal cursor-pointer dark:bg-negative/10 dark:hover:bg-negative/20"
                   >
                     <Trash2 className="size-4" />
-                    <span>Delete</span>
+                    <span>{words.deleteAction}</span>
                   </motion.button>
                 )}
               </div>
@@ -394,6 +402,7 @@ const FILTER_LIST_MARGIN = 8;
 /** ioiti-ui: a column's options as buttons of their own, pressed one at a time: an on/off pair (EUI's withNext). */
 function FilterToggles<T>({ column }: { column: ColumnDef<T> }) {
   const { activeFilters, setFilter } = useDataTable<T>();
+  const words = useMessages().table;
   const chosen = activeFilters[column.id] ?? [];
   return (
     <>
@@ -404,8 +413,8 @@ function FilterToggles<T>({ column }: { column: ColumnDef<T> }) {
             key={option.value}
             type="button"
             aria-pressed={pressed}
-            // Which column it filters, said to screen readers: the label alone shows it.
-            aria-label={`${column.header}: ${option.label}`}
+            // Which column it filters, said to screen readers: the label alone shows it. In the provider's words.
+            aria-label={words.filterOption({ column: column.header, option: option.label })}
             onClick={() => setFilter(column.id, pressed ? [] : [option.value])}
             className={cn(FILTER_BUTTON, pressed ? cn(FILTER_BUTTON_ON, 'bg-foreground/[0.06] accent:bg-brand-soft') : FILTER_BUTTON_IDLE)}
           >
@@ -453,6 +462,9 @@ function placeFilterList(button: DOMRect, opened?: FilterListPlace, keepHeight =
  */
 function FilterList<T>({ column }: { column: ColumnDef<T> }) {
   const { activeFilters, toggleFilter, setFilter, countOptions } = useDataTable<T>();
+  // ioiti-ui: its words in the provider's language (`table`: `words` are those typed in its search), its counts in its locale.
+  const table = useMessages().table;
+  const { formatNumber } = useFormat();
   const options = column.filterOptions ?? [];
   const chosen = activeFilters[column.id] ?? [];
   const [open, setOpen] = useState(false);
@@ -565,10 +577,10 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
       >
         {column.header}
         <span aria-hidden className={cn(FILTER_COUNT, chosen.length > 0 ? FILTER_COUNT_TICKED : FILTER_COUNT_ALL)}>
-          {chosen.length > 0 ? chosen.length : options.length}
+          {formatNumber(chosen.length > 0 ? chosen.length : options.length)}
         </span>
         <span className="sr-only">
-          {chosen.length > 0 ? `, ${chosen.length} of ${options.length} chosen` : `, ${options.length} options`}
+          , {chosen.length > 0 ? table.filterChosen({ chosen: chosen.length, count: options.length }) : table.filterOptionCount(options.length)}
         </span>
         <ChevronDown aria-hidden className={cn('size-4 shrink-0 motion-safe:transition-transform duration-200 ease-fast', open && 'rotate-180')} />
       </button>
@@ -579,7 +591,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
               ref={panelRef}
               id={`${id}-list`}
               role="group"
-              aria-label={`Filter by ${column.header}`}
+              aria-label={table.filterBy(column.header)}
               onKeyDown={onPanelKeyDown}
               initial={{ opacity: 0, scale: 0.98, y: place.below ? -4 : 4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -603,8 +615,8 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                       type="search"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      aria-label={`Search the options of ${column.header}`}
-                      placeholder="Search…"
+                      aria-label={table.searchOptions(column.header)}
+                      placeholder={table.searchPlaceholder}
                       className={cn(
                         'w-full h-8 rounded-lg border bg-surface pl-8 pr-3.5 text-base sm:text-sm text-foreground placeholder:text-text-subtle transition-colors',
                         fieldBorder(false)
@@ -615,7 +627,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
               )}
               <div className="min-h-0 flex-1 overflow-y-auto p-1.5">
                 {listed.length === 0 ? (
-                  <p className="px-2 py-3 text-xs text-muted-foreground">No option matches.</p>
+                  <p className="px-2 py-3 text-xs text-muted-foreground">{table.noOptionMatches}</p>
                 ) : (
                   listed.map((option) => {
                     const ticked = chosen.includes(option.value);
@@ -633,9 +645,9 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                         <DrawCheckbox checked={ticked} onChange={() => toggleFilter(column.id, option.value)} />
                         <span className="min-w-0 flex-1 truncate">{option.label}</span>
                         <span aria-hidden className="tabular-nums text-muted-foreground">
-                          {count}
+                          {formatNumber(count)}
                         </span>
-                        <span className="sr-only">, {count === 1 ? '1 row' : `${count} rows`}</span>
+                        <span className="sr-only">, {table.optionRows(count)}</span>
                       </label>
                     );
                   })
@@ -648,7 +660,7 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
                     onClick={clearColumn}
                     className={cn(MENU_ROW, 'w-full text-left text-muted-foreground hover:bg-surface-hover hover:text-foreground')}
                   >
-                    Clear
+                    {table.clear}
                   </button>
                 </div>
               )}
@@ -668,6 +680,8 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
  */
 export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className }) => {
   const { columns, activeFilters, clearFilters } = useDataTable();
+  // ioiti-ui: its words in the provider's language.
+  const words = useMessages().table;
 
   const filterableColumns = columns.filter((c) => c.filterable && c.filterOptions && c.filterOptions.length > 0);
   const activeCount = Object.values(activeFilters).reduce((sum, vals) => sum + vals.length, 0);
@@ -678,7 +692,7 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className })
     // ioiti-ui: positioned, so that the filters' words for screen readers (sr-only) stay in the bar that scrolls
     // them: out of it, a filter's beyond the screen stood beyond the page, which then scrolled sideways onto nothing.
     <div className={cn('relative px-4 py-2 sm:px-7 sm:py-2.5 border-b border-border/40 bg-surface-raised/15 flex items-center gap-2 sm:gap-3 text-xs overflow-x-auto scrollbar-none font-sans select-none', className)}>
-      <div role="group" aria-label="Filters" className="flex shrink-0 items-stretch divide-x divide-border/60 rounded-lg border border-border/60 bg-surface-raised/20">
+      <div role="group" aria-label={words.filters} className="flex shrink-0 items-stretch divide-x divide-border/60 rounded-lg border border-border/60 bg-surface-raised/20">
         {filterableColumns.map((col) =>
           drawnAsToggles(col) ? <FilterToggles key={col.id} column={col} /> : <FilterList key={col.id} column={col} />
         )}
@@ -690,7 +704,7 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className })
           onClick={clearFilters}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors ml-auto shrink-0 cursor-pointer"
         >
-          Clear filters
+          {words.clearFilters}
         </button>
       )}
     </div>
@@ -699,15 +713,18 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({ className })
 
 export interface DataTableContentProps {
   className?: string;
+  /** ioiti-ui: what a table without a row says; the provider's language's by default ("Nothing to show"). */
   emptyTitle?: string;
   emptyDescription?: string;
 }
 
 export const DataTableContent: React.FC<DataTableContentProps> = ({
   className,
-  emptyTitle = 'Nothing to show',
+  emptyTitle,
   emptyDescription,
 }) => {
+  // ioiti-ui: its words in the provider's language, its own props given over them.
+  const words = useMessages().table;
   const {
     columns,
     data,
@@ -751,13 +768,13 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
       : undefined;
   const expandLabel = (row: any, isExpanded: boolean) => {
     const name = rowLabel ? rowLabel(row) : null;
-    if (name) return isExpanded ? `Close ${name}` : `Open ${name}`;
-    return isExpanded ? 'Collapse row details' : 'Expand row details';
+    if (name) return isExpanded ? words.closeRow(name) : words.openRow(name);
+    return isExpanded ? words.collapseRow : words.expandRow;
   };
   // ioiti-ui: a row's box named after the row, as its arrow is.
   const selectLabel = (row: any, rowId: string) => {
     const name = rowLabel ? rowLabel(row) : null;
-    return name ? `Select ${name}` : `Select row ${rowId}`;
+    return name ? words.selectRow(name) : words.selectRowById(rowId);
   };
 
   const visibleColumns = useMemo(
@@ -780,11 +797,12 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     return () => observer.disconnect();
   }, [frame, renderSubComponent]);
 
+  // ioiti-ui: what it says while it shows no row (its failure, its loading, none, none found) in the provider's words.
   if (error) {
     return (
       <div className="py-12 px-6 text-center flex flex-col items-center justify-center gap-2 font-sans">
         <AlertCircle className="size-5 text-negative" />
-        <p className="text-sm font-semibold text-foreground">Failed to load data</p>
+        <p className="text-sm font-semibold text-foreground">{words.loadFailed}</p>
         <p className="text-xs text-muted-foreground max-w-sm">{error}</p>
       </div>
     );
@@ -794,7 +812,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     // ioiti-ui: the design's skeleton (seen in both themes: `surface-raised` is darker than the frame in dark, its
     // rows were not seen), and said, as the bell's list says it.
     return (
-      <div role="status" aria-label="Loading the records" className="p-6 space-y-3 font-sans">
+      <div role="status" aria-label={words.loadingRecords} className="p-6 space-y-3 font-sans">
         {[1, 2, 3, 4, 5].map((i) => (
           <Skeleton key={i} className="h-9 rounded-lg" />
         ))}
@@ -810,7 +828,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     if (!filtering) {
       return (
         <div className="py-10 sm:py-12 px-6 text-center flex flex-col items-center justify-center gap-1.5 font-sans">
-          <h4 className="text-sm font-semibold text-foreground text-balance">{emptyTitle}</h4>
+          <h4 className="text-sm font-semibold text-foreground text-balance">{emptyTitle ?? words.emptyTitle}</h4>
           {emptyDescription && <p className="text-xs text-muted-foreground max-w-sm text-pretty">{emptyDescription}</p>}
         </div>
       );
@@ -820,16 +838,16 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
         <div className="size-9 rounded-full bg-surface-raised/40 border border-border/60 flex items-center justify-center text-muted-foreground mb-1">
           <Search className="size-4" />
         </div>
-        <h4 className="text-sm font-semibold text-foreground">No matching records found</h4>
+        <h4 className="text-sm font-semibold text-foreground">{words.noMatchTitle}</h4>
         <p className="text-xs text-muted-foreground max-w-xs">
-          Nothing matches the search or the filters.
+          {words.noMatchText}
         </p>
         <button
           type="button"
           onClick={clearFilters}
           className={cn('mt-2 px-3 py-1 rounded-md border border-border bg-surface hover:bg-surface-hover text-sm text-foreground transition-colors', PRESSABLE)}
         >
-          Clear filters
+          {words.clearFilters}
         </button>
       </div>
     );
@@ -941,7 +959,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
       <table className="w-full border-collapse text-left font-sans text-sm min-w-[500px] sm:min-w-full">
         <thead>
           <tr className="border-b border-border/40 bg-surface-raised/20 text-xs text-muted-foreground select-none">
-            {/* Checkbox Column */}
+            {/* Checkbox Column. ioiti-ui: its box named in the provider's words, as each row's and each arrow. */}
             {selectable && (
               <th className="w-10 sm:w-12 px-3.5 sm:px-6 py-3 sm:py-3.5">
                 <DrawCheckbox
@@ -949,7 +967,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                   indeterminate={isIndeterminate}
                   onChange={toggleSelectAll}
                   disabled={!canSelectPage}
-                  aria-label="Select all rows"
+                  aria-label={words.selectAll}
                 />
               </th>
             )}
@@ -1110,6 +1128,21 @@ const PAGE_BUTTON = cn(
   DISABLED
 );
 
+// ioiti-ui: a word said with marks where its values go, each mark then drawn as its value: the figures of the count keep
+// their own spans wherever the provider's language puts them.
+const RANGE_MARK = '\uE000';
+const TOTAL_MARK = '\uE001';
+
+function Marked({ said, values }: { said: string; values: Record<string, React.ReactNode> }) {
+  return (
+    <>
+      {said.split(/([\uE000\uE001])/).map((part, at) => (
+        <React.Fragment key={at}>{values[part] ?? part}</React.Fragment>
+      ))}
+    </>
+  );
+}
+
 export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
   pageSizeOptions = [5, 10, 20, 50],
   className,
@@ -1124,6 +1157,9 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
     isLoading,
   } = useDataTable();
   const shouldReduceMotion = useReducedMotionConfig();
+  // ioiti-ui: its words in the provider's language, its count in its locale.
+  const words = useMessages().table;
+  const { formatNumber } = useFormat();
 
   const startRecord = totalFilteredCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endRecord = Math.min(currentPage * pageSize, totalFilteredCount);
@@ -1138,12 +1174,19 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
       {/* Count Indicator. ioiti-ui: while the records load, no count of what was there before (or of none). */}
       <div className="text-muted-foreground tabular-nums">
         {isLoading ? (
-          'Loading…'
+          words.loading
         ) : (
-          <>
-            Showing <span className="text-foreground font-medium">{startRecord}–{endRecord}</span> of{' '}
-            <span className="text-foreground font-medium">{totalFilteredCount}</span> records
-          </>
+          <Marked
+            said={words.showing({ range: RANGE_MARK, total: TOTAL_MARK, count: totalFilteredCount })}
+            values={{
+              [RANGE_MARK]: (
+                <span className="text-foreground font-medium">
+                  {formatNumber(startRecord)}–{formatNumber(endRecord)}
+                </span>
+              ),
+              [TOTAL_MARK]: <span className="text-foreground font-medium">{formatNumber(totalFilteredCount)}</span>,
+            }}
+          />
         )}
       </div>
 
@@ -1151,14 +1194,14 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
       <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4">
         {/* Page Size Selector */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <span className="text-muted-foreground hidden sm:inline">Rows per page:</span>
+          <span className="text-muted-foreground hidden sm:inline">{words.rowsPerPageLabel}</span>
           <select
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));
               setCurrentPage(1);
             }}
-            aria-label="Rows per page"
+            aria-label={words.rowsPerPage}
             className={cn(
               'h-8 px-2.5 rounded-lg border bg-surface text-foreground text-base sm:text-sm focus:outline-none transition-colors cursor-pointer font-sans',
               fieldBorder(false)
@@ -1173,14 +1216,14 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
           </select>
         </div>
 
-        {/* Page Nav Buttons */}
+        {/* Page Nav Buttons. ioiti-ui: named in the provider's words, as the list of page sizes is. */}
         <div className="flex items-center gap-1 shrink-0">
           <motion.button
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(1)}
             disabled={isLoading || currentPage <= 1}
-            aria-label="First page"
+            aria-label={words.firstPage}
             className={PAGE_BUTTON}
           >
             <ChevronsLeft className="size-3.5" />
@@ -1190,7 +1233,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={isLoading || currentPage <= 1}
-            aria-label="Previous page"
+            aria-label={words.previousPage}
             className={PAGE_BUTTON}
           >
             <ChevronLeft className="size-3.5" />
@@ -1205,7 +1248,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={isLoading || currentPage >= totalPages}
-            aria-label="Next page"
+            aria-label={words.nextPage}
             className={PAGE_BUTTON}
           >
             <ChevronRight className="size-3.5" />
@@ -1215,7 +1258,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(totalPages)}
             disabled={isLoading || currentPage >= totalPages}
-            aria-label="Last page"
+            aria-label={words.lastPage}
             className={PAGE_BUTTON}
           >
             <ChevronsRight className="size-3.5" />

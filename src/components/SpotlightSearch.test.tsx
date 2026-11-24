@@ -2,9 +2,10 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event'
 import { Receipt } from 'lucide-react'
 import { useRef, useState, useSyncExternalStore } from 'react'
-import type { ComponentProps } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
 import { IoitiProvider } from './IoitiProvider.js'
 import { LinkProvider } from './LinkProvider.js'
 import { useShortcutRegistry } from './shortcuts-context.js'
@@ -702,4 +703,93 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks()
+})
+
+describe('SpotlightSearch in a language', () => {
+  const french = (node: ReactNode) => (
+    <IoitiProvider locale="fr-FR" messages={fr}>
+      {node}
+    </IoitiProvider>
+  )
+
+  it('says its words in the language given: its name, its field, its headings, what it found', async () => {
+    const user = userEvent.setup()
+    window.localStorage.setItem('ioiti.theme.spotlight.go-to', JSON.stringify([{ id: 'charts', title: 'Charts', category: 'Pages', href: '/charts' }]))
+    render(french(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} remember="go-to" recentSearches={['brun']} limit={2} />))
+
+    const dialog = screen.getByRole('dialog', { name: 'Recherche rapide' })
+    const field = within(dialog).getByRole('combobox', { name: 'Rechercher' })
+    expect(field).toHaveAttribute('placeholder', 'Rechercher…')
+    expect(within(dialog).getByRole('button', { name: 'Fermer' })).toBeInTheDocument()
+    expect(within(dialog).getByRole('group', { name: 'Récents' })).toBeInTheDocument()
+    expect(within(dialog).getByRole('group', { name: 'Recherches récentes' })).toBeInTheDocument()
+    expect(screen.getByText('1 autre résultat : précisez votre recherche.').textContent).toBe('1 autre résultat\u00a0: précisez votre recherche.')
+
+    await waitFor(() => expect(field).toHaveFocus())
+    await user.keyboard('or')
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('2 résultats'))
+    await user.keyboard('zz')
+    // The query in the words that say nothing was found for it, in the text's colour.
+    const none = screen.getByText(/Aucun résultat pour/)
+    expect(none.textContent).toBe('Aucun résultat pour «\u00a0orzz\u00a0»')
+    expect(within(none).getByText('orzz')).toHaveClass('text-foreground')
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(/^Aucun résultat$/))
+  })
+
+  it("says an entry's list in the language given: what it opens, its field, the way back, what it found", async () => {
+    const user = userEvent.setup()
+    render(french(<SpotlightSearch open onOpenChange={() => {}} items={LISTS} onNavigate={() => {}} label="Aller à" />))
+    expect(screen.getByRole('option', { name: /Orders/ })).toHaveAccessibleDescription('Ouvre sa liste')
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Rechercher' })).toHaveFocus())
+    await user.keyboard('ord{Enter}')
+    expect(screen.getByRole('combobox', { name: 'Rechercher dans Orders' })).toHaveValue('')
+    expect(screen.getByRole('button', { name: /^Sortir de/ })).toHaveAccessibleName('Sortir de «\u00a0Orders\u00a0»')
+    await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Orders\u00a0: 2 résultats'))
+  })
+
+  it('says it searches, and that the search failed, in the language given', async () => {
+    const user = userEvent.setup()
+    const retry = vi.fn()
+    const { rerender } = render(french(<SpotlightSearch open onOpenChange={() => {}} filter={false} loading label="Aller à" />))
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Rechercher' })).toHaveFocus())
+    await user.keyboard('acme')
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Recherche en cours…'))
+
+    rerender(french(<SpotlightSearch open onOpenChange={() => {}} filter={false} error onRetry={retry} label="Aller à" />))
+    expect(screen.getByText('La recherche a échoué.')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Réessayer' }))
+    expect(retry).toHaveBeenCalledOnce()
+  })
+
+  it('is listed among the shortcuts in the language given', () => {
+    function Listed() {
+      const registry = useShortcutRegistry()
+      const shortcuts = useSyncExternalStore(registry.subscribe, registry.list)
+      return <p data-testid="listed">{shortcuts.map((shortcut) => `${shortcut.keys} ${shortcut.description} ${shortcut.group}`).join(', ')}</p>
+    }
+    render(
+      french(
+        <>
+          <SpotlightSearch enableGlobalShortcut items={ITEMS} />
+          <Listed />
+        </>,
+      ),
+    )
+    expect(screen.getByTestId('listed')).toHaveTextContent('mod+k Recherche rapide Navigation')
+  })
+
+  it("takes an application's own words over English's, and its props over both", () => {
+    const { unmount } = render(
+      <IoitiProvider messages={{ search: { placeholder: 'Find a page…', results: ({ count }: { count: number; more: number }) => `${count} found` } }}>
+        <SpotlightSearch open onOpenChange={() => {}} items={ITEMS} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('combobox', { name: 'Search' })).toHaveAttribute('placeholder', 'Find a page…')
+    expect(screen.getByRole('dialog', { name: 'Spotlight Search' })).toBeInTheDocument()
+    unmount()
+
+    render(french(<SpotlightSearch open onOpenChange={() => {}} items={ITEMS} placeholder="Une page…" label="Aller à" />))
+    expect(screen.getByRole('dialog', { name: 'Aller à' })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Rechercher' })).toHaveAttribute('placeholder', 'Une page…')
+  })
 })

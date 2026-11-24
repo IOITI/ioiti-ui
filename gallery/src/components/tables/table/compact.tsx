@@ -1,8 +1,9 @@
-import { Badge, formatMoney, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
+import { Badge, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, useFormat } from 'ioiti-ui'
 
 import { ORDERS, STATUS } from '../../../samples/tables'
 
 export default function TableCompact() {
+  const { formatMoney } = useFormat()
   return (
     <Table density="compact" aria-label="All orders">
       <TableHead>

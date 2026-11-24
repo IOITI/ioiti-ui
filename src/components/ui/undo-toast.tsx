@@ -14,6 +14,9 @@ import {
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
+// ioiti-ui: its words in the provider's language; a toast without a title said to its developer.
+import { devWarn } from '../../lib/dev.js';
+import { useMessages } from '../locale-context.js';
 
 export type UndoToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 export type UndoToastPosition =
@@ -27,13 +30,19 @@ export type UndoToastPosition =
 export interface UndoToastProps {
   /** Visibility state */
   open?: boolean;
-  /** Toast message title (e.g. "File deleted") */
+  /**
+   * Toast message title (e.g. "File deleted"). ioiti-ui: what was done, which only the application knows: without one,
+   * "Done" in the provider's language (EasyUI's "Project archived"), and in development the toast says so in the console.
+   */
   title?: string;
-  /** Secondary description or metadata */
+  /**
+   * Secondary description or metadata. ioiti-ui: "Changes will be permanent in a few seconds" in the provider's language
+   * by default.
+   */
   description?: string;
-  /** Undo action button label */
+  /** Undo action button label. ioiti-ui: "Undo" in the provider's language by default. */
   undoLabel?: string;
-  /** Restored state message when Undo is triggered */
+  /** Restored state message when Undo is triggered. ioiti-ui: "Restored successfully" in the provider's language by default. */
   restoredMessage?: string;
   /** Duration in milliseconds before automatic dismissal */
   duration?: number;
@@ -61,10 +70,10 @@ const TOAST_ACTION_CLASS =
 
 export const UndoToast: React.FC<UndoToastProps> = ({
   open = true,
-  title = 'Project archived',
-  description = 'Changes will be permanent in a few seconds',
-  undoLabel = 'Undo',
-  restoredMessage = 'Restored successfully',
+  title: givenTitle,
+  description: givenDescription,
+  undoLabel: givenUndoLabel,
+  restoredMessage: givenRestoredMessage,
   duration = 5000,
   variant = 'default',
   position = 'bottom-center',
@@ -75,6 +84,17 @@ export const UndoToast: React.FC<UndoToastProps> = ({
   className,
   wrapperClassName,
 }) => {
+  // ioiti-ui: its words in the provider's language, the ones given over them. A title the application gives: "Done"
+  // names nothing that was done (EasyUI's "Project archived" was one application's word).
+  const words = useMessages().toast;
+  const title = givenTitle ?? words.undoTitle;
+  const description = givenDescription ?? words.undoDescription;
+  const undoLabel = givenUndoLabel ?? words.undo;
+  const restoredMessage = givenRestoredMessage ?? words.restored;
+  const untitled = givenTitle === undefined;
+  useEffect(() => {
+    if (open && untitled) devWarn('undo-toast-untitled');
+  }, [open, untitled]);
   // ioiti-ui: shown a render after its frame, the live region its words are said in (below).
   const [isVisible, setIsVisible] = useState(false);
   const [isRestored, setIsRestored] = useState(false);
@@ -250,7 +270,7 @@ export const UndoToast: React.FC<UndoToastProps> = ({
                   type="button"
                   onClick={handleDismiss}
                   className={cn(CLOSE_SM, 'focus-ring')}
-                  aria-label="Close notification"
+                  aria-label={words.close}
                 >
                   <X />
                 </button>

@@ -1,16 +1,16 @@
-import { Button, ChangeList, formatMoney, SettleModal, useToast } from 'ioiti-ui'
+import { Button, ChangeList, SettleModal, useFormat, useToast } from 'ioiti-ui'
 import { useState } from 'react'
-
-const CHANGES = [
-  { label: 'Daily limit', before: formatMoney(500), after: formatMoney(750) },
-  { label: 'Free delivery over', before: formatMoney(60), after: formatMoney(45) },
-  { label: 'Weekly summary', after: 'Every Monday, 08:00' },
-]
 
 export default function ChangeListBeforeConfirming() {
   const toast = useToast()
+  const { formatMoney } = useFormat()
   const [open, setOpen] = useState(false)
   const [applying, setApplying] = useState(false)
+  const changes = [
+    { label: 'Daily limit', before: formatMoney(500), after: formatMoney(750) },
+    { label: 'Free delivery over', before: formatMoney(60), after: formatMoney(45) },
+    { label: 'Weekly summary', after: 'Every Monday, 08:00' },
+  ]
   const apply = () => {
     setApplying(true)
     window.setTimeout(() => {
@@ -40,7 +40,7 @@ export default function ChangeListBeforeConfirming() {
           </>
         }
       >
-        <ChangeList label="Changes to apply" numeric changes={CHANGES} />
+        <ChangeList label="Changes to apply" numeric changes={changes} />
       </SettleModal>
     </>
   )

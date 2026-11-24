@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 
 import type { SidebarBadgeTone, SidebarSection } from '../components/ui/sidebar.js'
+import { en } from '../locales/en.js'
+import type { Messages } from '../locales/en.js'
 
 /**
  * The menu of an application, and where each page stands in it: the sidebar
@@ -89,10 +91,19 @@ export interface PageName {
   parents?: Crumb[]
 }
 
-/** The first step of every trail. */
-export const DEFAULT_HOME = { label: 'Home', href: '/' }
+/**
+ * The first step of every trail, in English.
+ * @deprecated English whatever the language: AppShell's trail starts at the catalogue's `shell.home` ("Home"), at `/`
+ * (`useMessages().shell.home`, or `en.shell.home` from 'ioiti-ui/locales/en'). Removed in 1.0.
+ */
+export const DEFAULT_HOME = { label: en.shell.home, href: '/' }
 
-export const PAGE_NOT_FOUND = 'Page not found'
+/**
+ * The trail's step for an address that is no page, in English.
+ * @deprecated English whatever the language: the catalogue's `shell.pageNotFound` (`useMessages().shell.pageNotFound`,
+ * or `en.shell.pageNotFound` from 'ioiti-ui/locales/en'), which `trailFor` takes in its `words`. Removed in 1.0.
+ */
+export const PAGE_NOT_FOUND = en.shell.pageNotFound
 /** The end of a deeper page's trail until the page has said its name. */
 export const UNNAMED = '…'
 
@@ -141,6 +152,9 @@ export function menuEntry<S extends string>(menu: Menu<S>, pathname: string, sea
   return found
 }
 
+/** The words of a trail: a catalogue's (`useMessages().shell`), English's by default. */
+export type TrailWords = Pick<Messages['shell'], 'pageNotFound'>
+
 /**
  * Where a page is, after Home: the section of its entry of the menu (not a
  * link: a section has no page of its own), then the entry; for a page deeper
@@ -149,11 +163,12 @@ export function menuEntry<S extends string>(menu: Menu<S>, pathname: string, sea
  * step for a section without a heading, nor in a menu whose trail says none
  * (`trailSections: false`), nor for a section at the foot of the sidebar. An entry under another goes through it: a link to
  * its page, unless that page is one of its entries' (it is said, not linked).
- * A deeper page named as the step before it is that step, said once.
+ * A deeper page named as the step before it is that step, said once. An address that is no page is "Page not found", in
+ * the words given (English's by default), until the page names itself.
  */
-export function trailFor(menu: Menu, pathname: string, page?: PageName | null, search = ''): Crumb[] {
+export function trailFor(menu: Menu, pathname: string, page?: PageName | null, search = '', words: TrailWords = en.shell): Crumb[] {
   const entry = menuEntry(menu, pathname, search)
-  if (!entry) return [{ label: page?.title ?? PAGE_NOT_FOUND }]
+  if (!entry) return [{ label: page?.title ?? words.pageNotFound }]
   if (entry.path === '/') return []
   const sectionOf = menuSections(menu).find((section) => section.id === entry.section)
   // A section at the foot of the sidebar has no heading there: none in the trail either.

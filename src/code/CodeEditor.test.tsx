@@ -1,8 +1,11 @@
 import { language as languageFacet } from '@codemirror/language'
+import { openSearchPanel } from '@codemirror/search'
 import { EditorView } from '@codemirror/view'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
+import { IoitiProvider } from '../components/IoitiProvider.js'
+import { fr } from '../locales/fr.js'
 import { CodeEditor } from './CodeEditor.js'
 
 /** The CodeMirror view of the editor named `label`. */
@@ -69,5 +72,42 @@ describe('CodeEditor', () => {
     )
     await waitFor(() => expect(container.querySelector('.cm-lintRange-error')).not.toBeNull())
     expect(container.querySelector('.cm-lintRange-error')?.textContent).toBe('= ')
+  })
+})
+
+describe('CodeEditor in French', () => {
+  it("says CodeMirror's own words in the provider's language: its search panel, what it announces", () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <CodeEditor label="Fichier de règles" value="a = 1" />
+      </IoitiProvider>,
+    )
+    const view = editorOf('Fichier de règles')
+    expect(view.state.phrase('Selection deleted')).toBe('Sélection supprimée')
+    expect(view.state.phrase('replaced $ matches', 3)).toBe('occurrences remplacées\u00a0: 3')
+
+    openSearchPanel(view)
+    expect(screen.getByRole('textbox', { name: 'Rechercher' })).toHaveAttribute('placeholder', 'Rechercher')
+    expect(screen.getByRole('textbox', { name: 'Remplacer' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'respecter la casse' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'tout remplacer' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'fermer' })).toBeInTheDocument()
+  })
+
+  it("follows the provider's words as they change, an application's own over them", () => {
+    const { rerender } = render(
+      <IoitiProvider messages={{ code: { find: 'Search' } }}>
+        <CodeEditor label="Rule file" value="a = 1" />
+      </IoitiProvider>,
+    )
+    expect(editorOf('Rule file').state.phrase('Find')).toBe('Search')
+    expect(editorOf('Rule file').state.phrase('Replace')).toBe('Replace')
+
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <CodeEditor label="Rule file" value="a = 1" />
+      </IoitiProvider>,
+    )
+    expect(editorOf('Rule file').state.phrase('Find')).toBe('Rechercher')
   })
 })

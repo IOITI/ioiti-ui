@@ -1,8 +1,9 @@
-import { formatMoney, LineChart } from 'ioiti-ui'
+import { LineChart, useFormat } from 'ioiti-ui'
 
 import { REVENUE_BY_SHOP } from '../../../samples/charts'
 
 export default function LineChartCompared() {
+  const { formatMoney } = useFormat()
   return (
     <LineChart
       ariaLabel="Revenue of three shops each week since May, and last year's"

@@ -1,6 +1,7 @@
-import { formatMoney, KpiGrid, KpiStrip, KpiTile } from 'ioiti-ui'
+import { KpiGrid, KpiStrip, KpiTile, useFormat } from 'ioiti-ui'
 
 export default function KpiStripUnderTiles() {
+  const { formatMoney } = useFormat()
   return (
     <div className="space-y-4">
       <KpiGrid period="Compared with last Monday">

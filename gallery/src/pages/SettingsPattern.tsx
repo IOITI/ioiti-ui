@@ -3,7 +3,6 @@ import {
   DescriptionList,
   Disclosure,
   Field,
-  formatMoney,
   InlineEdit,
   MultiSelect,
   NumberInput,
@@ -13,9 +12,10 @@ import {
   SegmentedControl,
   Slider,
   Switch,
+  useFormat,
   useToast,
 } from 'ioiti-ui'
-import type { Change } from 'ioiti-ui'
+import type { Change, Formatters } from 'ioiti-ui'
 import { RouterLeaveGuard } from 'ioiti-ui/react-router'
 import { useState } from 'react'
 
@@ -51,8 +51,8 @@ const COUNTRIES = [
 const DAYS = { weekdays: 'Weekdays', 'every-day': 'Every day' }
 const countryNames = (values: string[]) => values.map((value) => COUNTRIES.find((country) => country.value === value)?.label ?? value).join(', ')
 
-/** What differs between what is saved and what is shown, as a list of changes. */
-function changesOf(saved: Settings, draft: Settings): Change[] {
+/** What differs between what is saved and what is shown, as a list of changes, its amounts in the formats given. */
+function changesOf(saved: Settings, draft: Settings, { formatMoney }: Formatters): Change[] {
   const changes: Change[] = []
   if (saved.name !== draft.name) changes.push({ label: 'Name', before: saved.name, after: draft.name })
   if (saved.dailyLimit !== draft.dailyLimit)
@@ -77,10 +77,11 @@ function changesOf(saved: Settings, draft: Settings): Change[] {
  */
 export function SettingsPattern() {
   const toast = useToast()
+  const formats = useFormat()
   const [saved, setSaved] = useState(SAVED)
   const [draft, setDraft] = useState(SAVED)
   const [saving, setSaving] = useState(false)
-  const changes = changesOf(saved, draft)
+  const changes = changesOf(saved, draft, formats)
   const dirty = changes.length > 0
   const set = <K extends keyof Settings>(key: K, value: Settings[K]) => setDraft((now) => ({ ...now, [key]: value }))
 
@@ -130,7 +131,7 @@ export function SettingsPattern() {
             min={0}
             max={150}
             step={5}
-            format={(value) => formatMoney(value)}
+            format={(value) => formats.formatMoney(value)}
             ticks={[
               { value: 0, label: '0 €' },
               { value: 75, label: '75 €' },

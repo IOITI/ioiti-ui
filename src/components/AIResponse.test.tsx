@@ -1,11 +1,20 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
-import type { AnchorHTMLAttributes } from 'react'
+import type { AnchorHTMLAttributes, ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { fr } from '../locales/fr.js'
 import { IoitiProvider } from './IoitiProvider.js'
 import { LinkProvider } from './LinkProvider.js'
-import { AIResponse, AIResponseContent, AIResponseThinking, safeHref } from './ui/ai-response.js'
+import {
+  AIResponse,
+  AIResponseActions,
+  AIResponseContent,
+  AIResponseHeader,
+  AIResponseSources,
+  AIResponseThinking,
+  AIResponseToolsSummary,
+  safeHref,
+} from './ui/ai-response.js'
 
 /** The application's link, as a router's would be: it says it drew the link. */
 function AppLink(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
@@ -244,3 +253,93 @@ describe('AIResponseThinking', () => {
   })
 })
 
+
+describe('AIResponse in a language', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  const french = (node: ReactNode) => (
+    <IoitiProvider locale="fr-FR" messages={fr}>
+      {node}
+    </IoitiProvider>
+  )
+
+  it('says its words in the language given: its name, its header, its table, its code, its sources, its tools, its buttons', () => {
+    // jsdom lays nothing out: the table made wider than its frame, so that it scrolls and is named.
+    vi.spyOn(Element.prototype, 'scrollWidth', 'get').mockImplementation(function (this: Element) {
+      return this.querySelector(':scope > table') ? 900 : 0
+    })
+    render(
+      french(
+        <AIResponse
+          status="cancelled"
+          content={'| Chiffre | Valeur |\n| --- | --- |\n| Ordres | 42 |\n\n```\nbrut\n```'}
+          sources={[{ id: 1, title: 'L’équipe', url: 'mailto:equipe@example.com' }]}
+          onRegenerate={() => {}}
+          onFeedback={() => {}}
+        >
+          <AIResponseHeader />
+          <AIResponseContent />
+          <AIResponseSources />
+          <AIResponseToolsSummary toolCount={1} tools={[{ name: 'search_runs', status: 'error' }]} />
+          <AIResponseActions />
+        </AIResponse>,
+      ),
+    )
+
+    expect(screen.getByRole('article', { name: 'Réponse de l’IA' })).toBeInTheDocument()
+    expect(screen.getByText('Assistant')).toBeInTheDocument()
+    expect(screen.getByText('Interrompue')).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Tableau' })).toContainElement(screen.getByRole('table'))
+    // A fence that names no language is said to be text, in the language.
+    expect(screen.getByText('texte')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Copier la réponse' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Régénérer la réponse' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Bonne réponse' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Mauvaise réponse' })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Sources/ }))
+    expect(screen.getByRole('link', { name: /L’équipe/ })).toHaveTextContent('e-mail')
+    fireEvent.click(screen.getByRole('button', { name: '1 outil utilisé' }))
+    expect(screen.getByText('search_runs').nextElementSibling).toHaveTextContent('erreur')
+  })
+
+  it('says what it does, that it failed and that it waits, in the language given', () => {
+    const { rerender } = render(french(<AIResponse status="generating" />))
+    expect(screen.getByRole('status', { name: 'Génération de la réponse' })).toBeInTheDocument()
+    expect(screen.getByText('Réflexion en cours')).toBeInTheDocument()
+
+    rerender(french(<AIResponse status="streaming" content="Je lis" />))
+    expect(screen.getByText('Rédaction en cours')).toBeInTheDocument()
+
+    rerender(french(<AIResponse status="error" onRegenerate={() => {}} />))
+    expect(screen.getByText('Impossible de terminer cette réponse')).toBeInTheDocument()
+    expect(screen.getByText('La connexion a été interrompue ou le modèle a mis trop de temps à répondre.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Réessayer' })).toBeInTheDocument()
+
+    rerender(french(<AIResponse content="" />))
+    expect(screen.getByText('Prêt quand vous l’êtes.')).toBeInTheDocument()
+  })
+
+  it("counts its tools as English counts them, and takes an application's own words over English's", () => {
+    const { unmount } = render(
+      <AIResponse content="Done.">
+        <AIResponseToolsSummary toolCount={1} />
+        <AIResponseToolsSummary toolCount={1234} />
+      </AIResponse>,
+    )
+    expect(screen.getByRole('button', { name: 'Used 1 tool' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Used 1,234 tools' })).toBeInTheDocument()
+    unmount()
+
+    render(
+      <IoitiProvider messages={{ ai: { assistant: 'Copilot', copyResponse: 'Copy the answer' } }}>
+        <AIResponse content="Done." />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('Copilot')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Copy the answer' })).toBeInTheDocument()
+    expect(screen.getByRole('article', { name: 'AI response' })).toBeInTheDocument()
+  })
+})

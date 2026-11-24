@@ -1,6 +1,7 @@
-import { formatMoney, KpiStrip } from 'ioiti-ui'
+import { KpiStrip, useFormat } from 'ioiti-ui'
 
 export default function KpiStripStrip() {
+  const { formatMoney } = useFormat()
   return (
     <KpiStrip
       title="The shop"

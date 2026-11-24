@@ -1,11 +1,15 @@
-import { SegmentedControl } from 'ioiti-ui'
+import { SegmentedControl, useFormat } from 'ioiti-ui'
 import { CodeEditor } from 'ioiti-ui/code'
 import type { CodeDiagnostic } from 'ioiti-ui/code'
 import { useState } from 'react'
 
 import { RULE } from '../../../samples/code'
 
+// The person's own clock: this browser's time zone.
+const ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
+
 export default function CodeEditorDiagnostics() {
+  const { formatTime } = useFormat()
   const [code, setCode] = useState(RULE.replace('risk_score = 47', 'risk_score = '))
   const [saved, setSaved] = useState<string | null>(null)
   const [readOnly, setReadOnly] = useState(false)
@@ -27,7 +31,7 @@ export default function CodeEditorDiagnostics() {
           ]}
         />
         <span className="text-xs text-muted-foreground">
-          {saved ? `Saved with ⌘S at ${saved}` : 'Fix the risk score, then save with ⌘S / Ctrl+S.'}
+          {saved ? `Saved with ⌘S at ${formatTime(saved, ZONE)}` : 'Fix the risk score, then save with ⌘S / Ctrl+S.'}
         </span>
       </div>
       <CodeEditor
@@ -37,7 +41,7 @@ export default function CodeEditorDiagnostics() {
         onChange={setCode}
         readOnly={readOnly}
         diagnostics={problems}
-        onSave={() => setSaved(new Date().toLocaleTimeString('en-GB'))}
+        onSave={() => setSaved(new Date().toISOString())}
         maxHeight={320}
       />
     </div>

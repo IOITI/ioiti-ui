@@ -7,6 +7,8 @@ import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
+// ioiti-ui: its close button named in the provider's language.
+import { useMessages } from '../locale-context.js';
 import { ToastRegionContext } from '../toast-context.js';
 
 export type VelocityToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
@@ -106,6 +108,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
+  const words = useMessages().toast;
   // ioiti-ui: shown a render after its frame, the live region its words are said in (below).
   const [isVisible, setIsVisible] = useState(false);
   const inRegion = React.useContext(ToastRegionContext);
@@ -259,7 +262,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
                 type="button"
                 onClick={handleDismiss}
                 className={cn(CLOSE_SM, 'focus-ring')}
-                aria-label="Close notification"
+                aria-label={words.close}
               >
                 <X />
               </button>

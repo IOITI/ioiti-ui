@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { useBlocker } from 'react-router'
 
+import { useMessages } from '../components/locale-context.js'
 import { Button } from '../components/ui/button.js'
 import { SettleModal } from '../components/ui/settle-modal.js'
 
@@ -18,9 +19,13 @@ interface RouterLeaveGuardProps {
    * sent to, where staying would save nothing.
    */
   allowed?: (pathname: string) => boolean
+  /** The dialog's question; the provider's language's by default ("Leave without saving?"). */
   title?: string
+  /** What is lost; the provider's language's by default ("The changes on this page are not saved: leaving it loses them."). */
   message?: ReactNode
+  /** The button that stays; the provider's language's by default ("Stay"). */
   stayLabel?: string
+  /** The button that leaves; the provider's language's by default ("Leave"). */
   leaveLabel?: string
 }
 
@@ -89,15 +94,9 @@ function Guard({ within, allowed, title, message, stayLabel, leaveLabel }: Guard
  * Leave), or the browser's tab closed or reloaded (the browser's own question). Beside a `SaveBar`, with the
  * same `when`. Needs a data router (`createBrowserRouter`), whose navigations can wait.
  */
-export function RouterLeaveGuard({
-  when,
-  within,
-  allowed,
-  title = 'Leave without saving?',
-  message = 'The changes on this page are not saved: leaving it loses them.',
-  stayLabel = 'Stay',
-  leaveLabel = 'Leave',
-}: RouterLeaveGuardProps) {
+export function RouterLeaveGuard({ when, within, allowed, title, message, stayLabel, leaveLabel }: RouterLeaveGuardProps) {
+  // Its words in the provider's language, those given over them.
+  const words = useMessages().router
   useEffect(() => {
     if (!when) return
     const ask = (event: BeforeUnloadEvent) => {
@@ -110,6 +109,13 @@ export function RouterLeaveGuard({
   }, [when])
 
   return when ? (
-    <Guard within={within} allowed={allowed} title={title} message={message} stayLabel={stayLabel} leaveLabel={leaveLabel} />
+    <Guard
+      within={within}
+      allowed={allowed}
+      title={title ?? words.leaveTitle}
+      message={message === undefined ? words.leaveMessage : message}
+      stayLabel={stayLabel ?? words.stay}
+      leaveLabel={leaveLabel ?? words.leave}
+    />
   ) : null
 }

@@ -5,13 +5,14 @@ import { announce } from '../lib/announce.js'
 import { PRESSABLE } from '../lib/recipes.js'
 import { cn, copyToClipboard } from '../lib/utils.js'
 import { Hint } from './Hint.js'
+import { useMessages } from './locale-context.js'
 
 type Outcome = 'idle' | 'copied' | 'failed'
 
 interface CopyButtonProps {
   /** What is copied, or a function giving it when the button is pressed. */
   value: string | (() => string)
-  /** What it copies, in words: "Copy the key". */
+  /** What it copies, in words: "Copy the key"; the provider's language's "Copy" by default. */
   label?: string
   /** The label written beside the icon, not only in its hint. */
   showLabel?: boolean
@@ -21,10 +22,14 @@ interface CopyButtonProps {
   className?: string
 }
 
-const SAID: Record<Outcome, string> = { idle: '', copied: 'Copied', failed: 'Couldn’t copy' }
-
-/** Copies a value to the clipboard, and says it did: a check for two seconds, and the words for a screen reader. */
-export function CopyButton({ value, label = 'Copy', showLabel = false, size = 'md', onCopy, className }: CopyButtonProps) {
+/**
+ * Copies a value to the clipboard, and says it did: a check for two seconds, and the words for a screen reader, in the
+ * provider's language.
+ */
+export function CopyButton({ value, label: givenLabel, showLabel = false, size = 'md', onCopy, className }: CopyButtonProps) {
+  const words = useMessages().field
+  const label = givenLabel ?? words.copy
+  const said: Record<Outcome, string> = { idle: '', copied: words.copied, failed: words.copyFailed }
   const [outcome, setOutcome] = useState<Outcome>('idle')
   const button = useRef<HTMLButtonElement>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -36,7 +41,7 @@ export function CopyButton({ value, label = 'Copy', showLabel = false, size = 'm
     // Where the clipboard is not given to the page, copying borrows the focus: it comes back here.
     button.current?.focus()
     setOutcome(copied ? 'copied' : 'failed')
-    announce(copied ? SAID.copied : SAID.failed)
+    announce(copied ? said.copied : said.failed)
     onCopy?.(copied)
     clearTimeout(timer.current)
     timer.current = setTimeout(() => setOutcome('idle'), 2000)
@@ -67,10 +72,10 @@ export function CopyButton({ value, label = 'Copy', showLabel = false, size = 'm
       )}
     >
       {icon}
-      {showLabel && <span>{outcome === 'idle' ? label : SAID[outcome]}</span>}
+      {showLabel && <span>{outcome === 'idle' ? label : said[outcome]}</span>}
     </button>
   )
 
   // An icon alone has its hint: what it does, then what came of it. A label written beside it says both.
-  return <Hint content={showLabel ? '' : outcome === 'idle' ? label : SAID[outcome]}>{drawn}</Hint>
+  return <Hint content={showLabel ? '' : outcome === 'idle' ? label : said[outcome]}>{drawn}</Hint>
 }

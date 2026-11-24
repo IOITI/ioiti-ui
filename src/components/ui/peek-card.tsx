@@ -14,6 +14,8 @@ import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { FLOATING } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
+// ioiti-ui: its link's words in the provider's language (`layout`).
+import { useMessages } from '../locale-context.js';
 
 export interface PeekCardProps {
   /** Trigger element (e.g. text link, badge, invoice pill). ioiti-ui: one element, which keeps its own focus and click. */
@@ -31,6 +33,7 @@ export interface PeekCardProps {
   openOnTap?: boolean;
   /** ioiti-ui: the card's own link to what it shows ("Open"), drawn by `linkComponent`. */
   href?: string;
+  /** ioiti-ui: that link's words; the provider's language's by default ("Open"). */
   hrefLabel?: string;
   linkComponent?: React.ElementType;
   /** Custom class name for trigger */
@@ -53,12 +56,15 @@ export const PeekCard: React.FC<PeekCardProps> = ({
   placement = 'auto',
   openOnTap = true,
   href,
-  hrefLabel = 'Open',
+  hrefLabel: givenHrefLabel,
   linkComponent,
   className,
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
+  // ioiti-ui: the provider's word unless one is given.
+  const words = useMessages().layout;
+  const hrefLabel = givenHrefLabel ?? words.open;
   const [isOpen, setIsOpen] = useState(false);
   const [place, setPlace] = useState<Place | null>(null);
   const triggerRef = useRef<HTMLSpanElement>(null);

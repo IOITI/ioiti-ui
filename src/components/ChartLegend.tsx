@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 
 import { cn } from '../lib/utils.js'
+import { useMessages } from './locale-context.js'
 
 export interface ChartLegendItem {
   label: ReactNode
@@ -21,7 +22,7 @@ interface ChartLegendProps {
   items: ChartLegendItem[]
   /** Makes each item a button that shows or hides its series. The chart decides what it allows (one series left). */
   onToggle?: (index: number) => void
-  /** The legend's name for a screen reader. */
+  /** The legend's name for a screen reader; the provider's language's "Legend" by default. */
   label?: string
   className?: string
 }
@@ -48,9 +49,10 @@ function Swatch({ color, shape = 'square' }: { color: string; shape?: ChartLegen
  * What the colours of a chart stand for, each with its swatch drawn as the chart draws it, and a figure
  * where there is one. With `onToggle`, each shows or hides its series. Also for an application's own charts.
  */
-export function ChartLegend({ items, onToggle, label = 'Legend', className }: ChartLegendProps) {
+export function ChartLegend({ items, onToggle, label, className }: ChartLegendProps) {
+  const words = useMessages().chart
   return (
-    <ul aria-label={label} className={cn('flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs', className)}>
+    <ul aria-label={label ?? words.legend} className={cn('flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs', className)}>
       {items.map((item, index) => {
         const shown = item.shown !== false
         const content = (

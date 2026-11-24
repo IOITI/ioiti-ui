@@ -3,10 +3,11 @@ import type { ReactNode } from 'react'
 
 import { ButtonLink } from '../components/ButtonLink.js'
 import { useNavigateTo } from '../components/link-context.js'
+import { useMessages } from '../components/locale-context.js'
 import { Button } from '../components/ui/button.js'
 import { NotFound } from '../components/ui/not-found.js'
 import type { NotFoundSuggestion } from '../components/ui/not-found.js'
-import { menuEntry, PAGE_NOT_FOUND } from './navigation.js'
+import { menuEntry } from './navigation.js'
 import type { Crumb } from './navigation.js'
 import { usePageName, useTabTitle, useTrail } from './page-trail-context.js'
 
@@ -22,9 +23,9 @@ export interface NotFoundStateProps {
   suggestions?: NotFoundSuggestion[]
   /** The address shown: the shell's by default, else the window's. */
   pathname?: string
-  /** The way home, a link; `null` for none. */
+  /** The way home, a link: "Back to home" (`/`), in the provider's language, by default; `null` for none. */
   home?: { href: string; label: string } | null
-  /** The way back, a step back in this tab's history; `null` for none. */
+  /** The way back, a step back in this tab's history: "Previous page", in the provider's language, by default; `null` for none. */
   back?: { label: string } | null
   /**
    * Its heading takes the focus as it appears, which a screen reader says: for a page that is none. `false` where it
@@ -32,9 +33,6 @@ export interface NotFoundStateProps {
    */
   focusOnMount?: boolean
 }
-
-const HOME = { href: '/', label: 'Back to home' }
-const BACK = { label: 'Previous page' }
 
 /**
  * What a page shows when its address names nothing: the router's catch-all, or
@@ -48,10 +46,14 @@ export function NotFoundState({
   parents,
   suggestions,
   pathname,
-  home = HOME,
-  back = BACK,
+  home: givenHome,
+  back: givenBack,
   focusOnMount = true,
 }: NotFoundStateProps) {
+  // The ways on in the provider's language, those given over them (`null`, none).
+  const words = useMessages().notFound
+  const home = givenHome === undefined ? { href: '/', label: words.backToHome } : givenHome
+  const back = givenBack === undefined ? { label: words.previousPage } : givenBack
   const navigate = useNavigateTo()
   const trail = useTrail()
   usePageName(name, parents)
@@ -76,22 +78,20 @@ export function NotFoundState({
 
 /**
  * The page of an address that is no page (the router's catch-all, `path: '*'`). An address under
- * an entry of the menu that leads nowhere (an old link, a typo) suggests that entry.
+ * an entry of the menu that leads nowhere (an old link, a typo) suggests that entry. Its heading ("There is no page
+ * here."), its words and its name in the trail ("Page not found") are the provider's language's, where none are given.
  */
-export function NotFoundPage({
-  title = 'There is no page here.',
-  description = 'The address does not match any page of this application.',
-  ...props
-}: Partial<NotFoundStateProps>) {
+export function NotFoundPage({ title, description, ...props }: Partial<NotFoundStateProps>) {
+  const { notFound: words, shell } = useMessages()
   const trail = useTrail()
   const path = props.pathname ?? trail?.pathname ?? window.location.pathname
   // The shell's query goes with the shell's address, not with another one given.
   const entry = trail ? menuEntry(trail.menu, path, props.pathname === undefined ? trail.search : '') : undefined
   return (
     <NotFoundState
-      title={title}
-      description={description}
-      name={PAGE_NOT_FOUND}
+      title={title ?? words.pageTitle}
+      description={description ?? words.pageDescription}
+      name={shell.pageNotFound}
       suggestions={entry && entry.path !== '/' ? [{ label: entry.label, href: entry.path, description: entry.section }] : undefined}
       {...props}
     />

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import {
-  ACCENT_LABEL,
+  accentName,
   ACCENTS,
   Button,
   cn,
@@ -19,6 +19,7 @@ import {
   TableRow,
   TextLink,
   ThemeToggle,
+  useMessages,
   useTheme,
   useToast,
 } from 'ioiti-ui'
@@ -95,6 +96,7 @@ function CssMover({ name, use }: (typeof CURVES)[number]) {
 /** The theme and the accent, chosen here: the whole page changes in one cross-fade. */
 function LookTrial() {
   const { accent, setAccent } = useTheme()
+  const { look } = useMessages()
   return (
     <div className="flex flex-wrap items-center gap-2">
       <ThemeToggle />
@@ -103,7 +105,7 @@ function LookTrial() {
         size="sm"
         value={accent}
         onChange={setAccent}
-        options={ACCENTS.map((value) => ({ value, label: ACCENT_LABEL[value] }))}
+        options={ACCENTS.map((value) => ({ value, label: accentName(value, look) }))}
       />
     </div>
   )

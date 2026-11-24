@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { UndoToast } from './ui/undo-toast.js'
 
 /** What is left of its time, as its bar shows it: a width, in %. */
@@ -88,5 +90,52 @@ describe('UndoToast', () => {
     expect(screen.getByRole('status')).toHaveTextContent('2 files removed')
     rerender(toast(true, 'error'))
     expect(screen.getByRole('alert')).toHaveTextContent('2 files removed')
+  })
+})
+
+describe('UndoToast without a title, and in a language', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('says "Done" without a title, which names nothing done, and says so to its developer once', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { rerender } = render(<UndoToast />)
+    expect(screen.getByRole('status')).toHaveTextContent('Done')
+    expect(screen.getByRole('status')).toHaveTextContent('Changes will be permanent in a few seconds')
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(String(warn.mock.calls[0][0])).toMatch(/^ioiti-ui: an UndoToast has no title/)
+
+    rerender(<UndoToast open={false} />)
+    rerender(<UndoToast />)
+    rerender(<UndoToast title="2 files removed" />)
+    expect(warn).toHaveBeenCalledTimes(1)
+  })
+
+  it('says its words in the language given', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <UndoToast onUndo={() => {}} />
+      </IoitiProvider>,
+    )
+    const toast = screen.getByRole('status')
+    expect(toast).toHaveTextContent('Action effectuée')
+    expect(toast).toHaveTextContent('Les modifications seront définitives dans quelques secondes')
+    expect(screen.getByRole('button', { name: 'Fermer la notification' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+    expect(toast).toHaveTextContent('Restauration réussie')
+  })
+
+  it("takes an application's own words over English's, and its props over both", () => {
+    render(
+      <IoitiProvider messages={{ toast: { undo: 'Bring them back' } }}>
+        <UndoToast title="2 files removed" restoredMessage="Both are back" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('status')).toHaveTextContent('2 files removed')
+    fireEvent.click(screen.getByRole('button', { name: 'Bring them back' }))
+    expect(screen.getByRole('status')).toHaveTextContent('Both are back')
+    expect(screen.getByRole('button', { name: 'Close notification' })).toBeInTheDocument()
   })
 })

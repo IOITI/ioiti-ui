@@ -1,4 +1,4 @@
-import { AdvancedDataTable, Badge, formatMoney } from 'ioiti-ui'
+import { AdvancedDataTable, Badge, useFormat } from 'ioiti-ui'
 import type { ColumnDef } from 'ioiti-ui'
 import { GitCompare } from 'lucide-react'
 
@@ -7,6 +7,13 @@ import type { Order } from '../../../samples/tables'
 
 // The customers as a filter: nine, a list with a search of its own.
 const CUSTOMERS = [...new Set(ORDERS.map((order) => order.customer))].sort().map((customer) => ({ label: customer, value: customer }))
+
+// The columns are made once, outside the page: the amount's cell is a component, which writes it in the
+// application's locale.
+function Amount({ value }: { value: number }) {
+  const { formatMoney } = useFormat()
+  return <span className="tabular-nums">{formatMoney(value, 'EUR')}</span>
+}
 
 const COLUMNS: ColumnDef<Order>[] = [
   { id: 'id', header: 'Order', accessorKey: 'id', sortable: true, cell: ({ value }) => <span className="font-mono">{value}</span> },
@@ -23,7 +30,7 @@ const COLUMNS: ColumnDef<Order>[] = [
       </Badge>
     ),
   },
-  { id: 'amount', header: 'Amount', accessorKey: 'amount', sortable: true, align: 'right', cell: ({ value }) => <span className="tabular-nums">{formatMoney(value, 'EUR')}</span> },
+  { id: 'amount', header: 'Amount', accessorKey: 'amount', sortable: true, align: 'right', cell: ({ value }) => <Amount value={value} /> },
   { id: 'placed', header: 'Placed', accessorKey: 'placed', priority: 'low' },
   // Two options: an on/off pair, labels that say themselves.
   {

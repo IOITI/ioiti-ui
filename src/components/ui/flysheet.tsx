@@ -8,6 +8,8 @@ import { motionTransitions } from "../../lib/motion-tokens.js";
 import { CLOSE_MD, SCRIM } from "../../lib/recipes.js";
 import { useScrollRegion } from "../../lib/scroll-region.js";
 import { cn } from "../../lib/utils.js";
+// ioiti-ui: its controls named in the provider's language, its width written in its locale.
+import { useMessages } from "../locale-context.js";
 
 /*
  * ioiti-ui: EasyUI's sheet, renamed flysheet, with what Elastic UI's flyout (EuiFlyout) does, written
@@ -374,6 +376,7 @@ export function FlysheetContent({
     setPanel(node);
   }, []);
   const controls = useDragControls();
+  const words = useMessages().dialog;
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -618,12 +621,12 @@ export function FlysheetContent({
       <div
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize"
+        aria-label={words.resize}
         aria-controls={contentId}
         aria-valuenow={width}
         aria-valuemin={floor}
         aria-valuemax={limit}
-        aria-valuetext={`${width} px`}
+        aria-valuetext={words.width(width)}
         tabIndex={0}
         onPointerDown={startResize}
         onKeyDown={resizeByKey}
@@ -647,7 +650,7 @@ export function FlysheetContent({
   const closeButton = showClose ? (
     <button
       type="button"
-      aria-label="Close"
+      aria-label={words.close}
       onClick={() => setOpen(false, { reason: "close-button" })}
       className={cn(
         CLOSE_MD,
@@ -822,7 +825,9 @@ export function FlysheetBody({ className, onScroll, ref, ...props }: React.Compo
   // ioiti-ui: taller than the sheet and holding no control (a record's details), a stop of the keyboard, which scrolls
   // it, named as the sheet is (src/lib/scroll-region.ts).
   const sheet = React.useContext(SheetContext);
-  const region = useScrollRegion(body, sheet?.hasTitle ? { labelledBy: sheet.titleId } : { label: "Content" });
+  // ioiti-ui: without a title, named in the provider's language.
+  const content = useMessages().dialog.content;
+  const region = useScrollRegion(body, sheet?.hasTitle ? { labelledBy: sheet.titleId } : { label: content });
   return (
     <div
       ref={body}

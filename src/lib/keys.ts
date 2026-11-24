@@ -1,6 +1,11 @@
 // The keys of a shortcut, written as a person reads them: `mod+k`, `shift+/`, `g o` (one key, then another).
 // `mod` is the key a shortcut uses on this computer: ⌘ on Apple's, Ctrl elsewhere. Nothing here reads the
-// browser when it loads: the platform is read when a key is drawn or pressed.
+// browser when it loads: the platform is read when a key is drawn or pressed. The keys are named in the words given (a
+// catalogue's `keys`, `useMessages().keys`), English's by default; Apple's symbols stay symbols, and
+// `aria-keyshortcuts` names keys in ARIA's English whatever the language.
+
+import { en } from '../locales/en.js'
+import type { Messages } from '../locales/en.js'
 
 export interface KeyStroke {
   /** The key itself, lower case: `k`, `/`, `enter`, `arrowup`. */
@@ -95,68 +100,95 @@ export interface KeyLabel {
   spoken?: string
 }
 
-const APPLE_MODIFIERS: Record<string, KeyLabel> = {
-  mod: { shown: '⌘', spoken: 'Command' },
-  meta: { shown: '⌘', spoken: 'Command' },
-  ctrl: { shown: '⌃', spoken: 'Control' },
-  alt: { shown: '⌥', spoken: 'Option' },
-  shift: { shown: '⇧', spoken: 'Shift' },
-}
+/** The names keys are shown and said with: a catalogue's `keys` (`useMessages().keys`), English's by default. */
+export type KeyWords = Messages['keys']
 
-const OTHER_MODIFIERS: Record<string, KeyLabel> = {
-  mod: { shown: 'Ctrl' },
-  meta: { shown: 'Meta' },
-  ctrl: { shown: 'Ctrl' },
-  alt: { shown: 'Alt' },
-  shift: { shown: 'Shift' },
-}
+/** A key drawn one way and said another: said apart only where a language says it otherwise (« Échap » is both). */
+const label = (shown: string, spoken?: string): KeyLabel => (spoken === undefined || spoken === shown ? { shown } : { shown, spoken })
 
-const NAMED: Record<string, KeyLabel> = {
-  enter: { shown: '↵', spoken: 'Enter' },
-  escape: { shown: 'Esc', spoken: 'Escape' },
-  tab: { shown: 'Tab' },
-  space: { shown: 'Space' },
-  backspace: { shown: '⌫', spoken: 'Backspace' },
-  delete: { shown: 'Del', spoken: 'Delete' },
-  arrowup: { shown: '↑', spoken: 'Up arrow' },
-  arrowdown: { shown: '↓', spoken: 'Down arrow' },
-  arrowleft: { shown: '←', spoken: 'Left arrow' },
-  arrowright: { shown: '→', spoken: 'Right arrow' },
-  pageup: { shown: 'PgUp', spoken: 'Page up' },
-  pagedown: { shown: 'PgDn', spoken: 'Page down' },
-  home: { shown: 'Home' },
-  end: { shown: 'End' },
-}
+/** The modifiers of an Apple computer: its symbols, said in words. */
+const appleModifiers = (words: KeyWords): Record<string, KeyLabel> => ({
+  mod: label('⌘', words.command),
+  meta: label('⌘', words.command),
+  ctrl: label('⌃', words.control),
+  alt: label('⌥', words.option),
+  shift: label('⇧', words.shift),
+})
 
-/** The keys of each stroke, as drawn here: modifiers first, in the order this computer writes them. */
-export function keyLabels(keys: string, apple = isApplePlatform()): KeyLabel[][] {
-  const modifiers = apple ? APPLE_MODIFIERS : OTHER_MODIFIERS
+/** The modifiers of another computer, named on their key caps. */
+const otherModifiers = (words: KeyWords): Record<string, KeyLabel> => ({
+  mod: label(words.ctrl),
+  meta: label(words.meta),
+  ctrl: label(words.ctrl),
+  alt: label(words.alt),
+  shift: label(words.shift),
+})
+
+/** The keys with a name (not a character): drawn as a symbol or a short name, said in full where that differs. */
+const named = (words: KeyWords): Record<string, KeyLabel> => ({
+  enter: label('↵', words.enter),
+  escape: label(words.escape, words.escapeSpoken),
+  tab: label(words.tab),
+  space: label(words.space),
+  backspace: label('⌫', words.backspace),
+  delete: label(words.delete, words.deleteSpoken),
+  arrowup: label('↑', words.arrowUp),
+  arrowdown: label('↓', words.arrowDown),
+  arrowleft: label('←', words.arrowLeft),
+  arrowright: label('→', words.arrowRight),
+  pageup: label(words.pageUp, words.pageUpSpoken),
+  pagedown: label(words.pageDown, words.pageDownSpoken),
+  home: label(words.home),
+  end: label(words.end),
+})
+
+/**
+ * The keys of each stroke, as drawn here: modifiers first, in the order this computer writes them, named in the words
+ * given (English's by default).
+ */
+export function keyLabels(keys: string, apple = isApplePlatform(), words: KeyWords = en.keys): KeyLabel[][] {
+  const modifiers = apple ? appleModifiers(words) : otherModifiers(words)
+  const names = named(words)
   // Apple's order is ⌃⌥⇧⌘; elsewhere Ctrl, Alt, Shift.
   const order: (keyof KeyStroke)[] = apple ? ['ctrl', 'alt', 'shift', 'meta', 'mod'] : ['mod', 'ctrl', 'meta', 'alt', 'shift']
   return parseKeys(keys).map((stroke) => {
     const held = order.filter((name) => stroke[name] === true).map((name) => modifiers[name as string])
-    const key = NAMED[stroke.key] ?? { shown: stroke.key.length === 1 ? stroke.key.toUpperCase() : stroke.key }
+    const key = names[stroke.key] ?? { shown: stroke.key.length === 1 ? stroke.key.toUpperCase() : stroke.key }
     return [...held, key]
   })
 }
 
-/** The keys in words, for a screen reader or a sentence: "Command K", "G then O". */
-export function describeKeys(keys: string, apple = isApplePlatform()): string {
-  return keyLabels(keys, apple)
+/** The keys in words, for a screen reader or a sentence: "Command K", "G then O" (« Commande K », « G puis O »). */
+export function describeKeys(keys: string, apple = isApplePlatform(), words: KeyWords = en.keys): string {
+  return keyLabels(keys, apple, words)
     .map((stroke) => stroke.map((label) => label.spoken ?? label.shown).join(' '))
-    .join(' then ')
+    .join(` ${words.then} `)
 }
 
 /**
  * The keys as words drawn where no key cap fits (a tooltip): "⌘B" on an Apple computer, "Ctrl B" elsewhere, "G then O"
  * for a sequence.
  */
-export function keysText(keys: string, apple = isApplePlatform()): string {
-  return keyLabels(keys, apple)
+export function keysText(keys: string, apple = isApplePlatform(), words: KeyWords = en.keys): string {
+  return keyLabels(keys, apple, words)
     .map((stroke) => stroke.map((label) => label.shown).join(apple ? '' : ' '))
-    .join(' then ')
+    .join(` ${words.then} `)
 }
 
+/** A key in words: the name on its key cap ("Esc", "Del"), or what is said of it where the cap shows a symbol (↵, ⇧). */
+const inWords = (label: KeyLabel) => (label.spoken !== undefined && !/\p{L}/u.test(label.shown) ? label.spoken : label.shown)
+
+/**
+ * The keys named in a hint's words, each stroke's joined by "+": "Shift+Enter" (« Maj+Entrée » in French), "Ctrl+Del"
+ * (« Ctrl+Suppr »), "Command+K" on an Apple computer, "G then O". Named, never drawn: Enter, not ↵.
+ */
+export function keysInWords(keys: string, apple = isApplePlatform(), words: KeyWords = en.keys): string {
+  return keyLabels(keys, apple, words)
+    .map((stroke) => stroke.map(inWords).join('+'))
+    .join(` ${words.then} `)
+}
+
+// i18n-exempt: the names `aria-keyshortcuts` takes, KeyboardEvent's, the same in every language.
 const ARIA_NAMES: Record<string, string> = {
   arrowup: 'ArrowUp',
   arrowdown: 'ArrowDown',
@@ -175,6 +207,7 @@ export function ariaKeyShortcuts(keys: string, apple = isApplePlatform()): strin
   const strokes = parseKeys(keys)
   if (strokes.length !== 1) return undefined
   const [stroke] = strokes
+  // i18n-exempt: the modifiers as `aria-keyshortcuts` names them, the same in every language.
   const held = [
     (stroke.ctrl || (stroke.mod && !apple)) && 'Control',
     stroke.alt && 'Alt',

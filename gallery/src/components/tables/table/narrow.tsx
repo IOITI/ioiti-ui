@@ -1,8 +1,9 @@
-import { Badge, formatMoney, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
+import { Badge, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, useFormat } from 'ioiti-ui'
 
 import { CHANNEL, ORDERS, STATUS } from '../../../samples/tables'
 
 export default function TableNarrow() {
+  const { formatMoney } = useFormat()
   return (
     <div className="max-w-sm rounded-xl border border-dashed border-border p-3">
       {/* Wider than its room (min-w): it scrolls in its own frame. */}

@@ -1,4 +1,4 @@
-import { BarChart, formatMoney } from 'ioiti-ui'
+import { BarChart, useFormat } from 'ioiti-ui'
 
 const MARGIN = [
   { label: 'Mon', margin: 420, orders: 38 },
@@ -21,6 +21,7 @@ const WEEKDAY: Record<string, string> = {
 }
 
 export default function BarChartGainsAndLosses() {
+  const { formatMoney } = useFormat()
   return (
     <BarChart
       ariaLabel="Margin by day"

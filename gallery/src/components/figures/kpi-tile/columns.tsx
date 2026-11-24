@@ -1,6 +1,7 @@
-import { formatMoney, KpiGrid, KpiTile } from 'ioiti-ui'
+import { KpiGrid, KpiTile, useFormat } from 'ioiti-ui'
 
 export default function KpiTileColumns() {
+  const { formatMoney } = useFormat()
   return (
     <KpiGrid columns={3} period="This week">
       <KpiTile label="Returns" value="38" hint="2.1% of the orders" />

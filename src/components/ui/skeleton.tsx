@@ -4,6 +4,8 @@ import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { cn } from "../../lib/utils.js";
+// ioiti-ui: what loads is named in the provider's language (`status`).
+import { useMessages } from "../locale-context.js";
 
 export interface SkeletonProps extends React.ComponentProps<"div"> {}
 
@@ -77,6 +79,7 @@ export function SkeletonReveal({
   children,
   className,
 }: SkeletonRevealProps) {
+  const words = useMessages().status;
   return (
     <div className={className}>
       <AnimatePresence mode="wait" initial={false}>
@@ -85,7 +88,7 @@ export function SkeletonReveal({
             key="skeleton"
             role="status"
             aria-busy="true"
-            aria-label="Loading"
+            aria-label={words.loadingName}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
