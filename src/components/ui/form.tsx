@@ -9,6 +9,18 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DISABLED } from '../../lib/recipes.js';
 // ioiti-ui: the units inside a field, measured as they change.
 import { useUnitPadding } from '../../lib/unit-padding.js';
+// ioiti-ui: what a FormItem (or a Field) tells the control in it: its id, what describes it, whether it is wrong.
+import {
+  besideId,
+  FieldContext,
+  joinIds,
+  markControl,
+  useFieldContext,
+  useFieldControl,
+  useFieldPart,
+  useFieldPartId,
+  useFormItemField,
+} from '../field-context.js';
 
 /* ==========================================================================
    1. Form Root & Layout Items
@@ -32,13 +44,22 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(
 Form.displayName = 'Form';
 
 export interface FormItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** ioiti-ui: what is wrong with its value: its control is marked invalid (`aria-invalid`), as a FormMessage under it marks it. */
   error?: string;
 }
 
+// ioiti-ui: the item links its parts, which EasyUI's left apart: its label names its control (one id for it, the id
+// of a Field around it if any), its description and its message describe it, and a message under it (or its `error`)
+// marks it invalid. Its `error` is no longer an attribute of the `div`.
 export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('space-y-1.5 w-full', className)} {...props} />
-  )
+  ({ className, error, ...props }, ref) => {
+    const field = useFormItemField(error);
+    return (
+      <FieldContext.Provider value={field}>
+        <div ref={ref} className={cn('space-y-1.5 w-full', className)} {...props} />
+      </FieldContext.Provider>
+    );
+  }
 );
 FormItem.displayName = 'FormItem';
 
@@ -47,37 +68,58 @@ export interface FormLabelProps extends React.LabelHTMLAttributes<HTMLLabelEleme
 }
 
 export const FormLabel = forwardRef<HTMLLabelElement, FormLabelProps>(
-  ({ className, required, children, ...props }, ref) => (
-    <label
-      ref={ref}
-      className={cn(
-        'block text-xs font-semibold text-foreground select-none',
-        className
-      )}
-      {...props}
-    >
-      {children}
-      {required && <span className="text-negative ml-1" aria-hidden="true">*</span>}
-    </label>
-  )
+  ({ className, required, children, htmlFor, ...props }, ref) => {
+    // ioiti-ui: it names its FormItem's control by the id the control is drawn with, its own or the item's, unless
+    // given `htmlFor` (EasyUI's named nothing without it); no `for` while no control says it is there, so that a label
+    // around a control of its own still names that one.
+    const field = useFieldContext();
+    return (
+      <label
+        ref={ref}
+        htmlFor={htmlFor ?? field?.controlId}
+        className={cn(
+          'block text-xs font-semibold text-foreground select-none',
+          className
+        )}
+        {...props}
+      >
+        {children}
+        {required && <span className="text-negative ml-1" aria-hidden="true">*</span>}
+      </label>
+    );
+  }
 );
 FormLabel.displayName = 'FormLabel';
 
 export const FormControl = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('relative', className)} {...props} />
-  )
+  ({ className, children, ...props }, ref) => {
+    // ioiti-ui: its control, one from elsewhere too (which cannot read its FormItem), is given the item's id where it
+    // has none, what describes it (`aria-describedby`) and `aria-invalid`; the package's read them from the item as
+    // well, each id once. A `div` that only holds the control is given nothing: what it holds reads the item.
+    const field = useFieldContext();
+    useFieldPart('held', besideId(children, field));
+    return (
+      <div ref={ref} className={cn('relative', className)} {...props}>
+        {markControl(children, field, { beside: true })}
+      </div>
+    );
+  }
 );
 FormControl.displayName = 'FormControl';
 
 export const FormDescription = forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
-  ({ className, ...props }, ref) => (
-    <p
-      ref={ref}
-      className={cn('text-xs text-muted-foreground leading-relaxed', className)}
-      {...props}
-    />
-  )
+  ({ className, id, ...props }, ref) => {
+    // ioiti-ui: its id (its own in a FormItem, unless given one) describes its FormItem's control.
+    const ownId = useFieldPartId('description', id);
+    return (
+      <p
+        ref={ref}
+        id={ownId}
+        className={cn('text-xs text-muted-foreground leading-relaxed', className)}
+        {...props}
+      />
+    );
+  }
 );
 FormDescription.displayName = 'FormDescription';
 
@@ -86,8 +128,11 @@ export interface FormMessageProps extends React.HTMLAttributes<HTMLParagraphElem
 }
 
 export const FormMessage = forwardRef<HTMLParagraphElement, FormMessageProps>(
-  ({ className, error, children, ...props }, ref) => {
+  ({ className, error, children, id, ...props }, ref) => {
     const message = error || children;
+    // ioiti-ui: while it says something, its id (its own in a FormItem, unless given one) describes its FormItem's
+    // control, which it marks invalid; once it is gone, neither.
+    const ownId = useFieldPartId('message', id, Boolean(message));
     return (
       <AnimatePresence>
         {message ? (
@@ -100,6 +145,7 @@ export const FormMessage = forwardRef<HTMLParagraphElement, FormMessageProps>(
           >
             <p
               ref={ref}
+              id={ownId}
               role="alert"
               className={cn(
                 'text-xs text-negative flex items-center gap-1.5 pt-0.5 font-medium',
@@ -157,8 +203,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const isPassword = type === 'password';
-    // ioiti-ui: in error by its own prop, or marked invalid (a Field around it).
-    const invalid = invalidOf(error, props['aria-invalid']);
+    // ioiti-ui: in error by its own prop, or marked invalid (a Field around it); its id, its description and its
+    // error from a FormItem or a Field around it too.
+    const control = useFieldControl({
+      id: props.id,
+      describedBy: props['aria-describedby'],
+      invalid: invalidOf(error, props['aria-invalid']),
+    });
+    const invalid = control.invalid;
     const computedType = isPassword && showPassword ? 'text' : type;
 
     // ioiti-ui: the units inside the field, measured (again whenever their size changes: 16px on a phone, 14px from
@@ -167,8 +219,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const before = React.useRef<HTMLSpanElement>(null);
     const after = React.useRef<HTMLSpanElement>(null);
     const pad = useUnitPadding(before, after, [prefix, suffix]);
-    const describedBy =
-      [props['aria-describedby'], prefix ? `${unitId}-prefix` : null, suffix ? `${unitId}-suffix` : null].filter(Boolean).join(' ') || undefined;
+    const describedBy = joinIds(control.describedBy, prefix ? `${unitId}-prefix` : null, suffix ? `${unitId}-suffix` : null);
 
     return (
       <div className="relative w-full flex items-center">
@@ -206,6 +257,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
           // ioiti-ui: an error is said, not only shown.
           {...props}
+          id={control.id}
           aria-invalid={invalid || undefined}
           aria-describedby={describedBy}
           style={{ ...(prefix && pad.left ? { paddingLeft: pad.left } : {}), ...(suffix && pad.right ? { paddingRight: pad.right } : {}), ...style }}
@@ -259,7 +311,13 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, error, disabled, ...props }, ref) => {
-    const invalid = invalidOf(error, props['aria-invalid']);
+    // ioiti-ui: its id, its description and its error from a FormItem or a Field around it too, as the Input's.
+    const control = useFieldControl({
+      id: props.id,
+      describedBy: props['aria-describedby'],
+      invalid: invalidOf(error, props['aria-invalid']),
+    });
+    const invalid = control.invalid;
     return (
       <textarea
         ref={ref}
@@ -273,7 +331,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           className
         )}
         {...props}
+        id={control.id}
         aria-invalid={invalid || undefined}
+        aria-describedby={control.describedBy}
       />
     );
   }
@@ -297,7 +357,13 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, options = [], children, error, disabled, ...props }, ref) => {
-    const invalid = invalidOf(error, props['aria-invalid']);
+    // ioiti-ui: its id, its description and its error from a FormItem or a Field around it too, as the Input's.
+    const control = useFieldControl({
+      id: props.id,
+      describedBy: props['aria-describedby'],
+      invalid: invalidOf(error, props['aria-invalid']),
+    });
+    const invalid = control.invalid;
     return (
       <div className="relative w-full flex items-center">
         <select
@@ -312,7 +378,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             className
           )}
           {...props}
+          id={control.id}
           aria-invalid={invalid || undefined}
+          aria-describedby={control.describedBy}
         >
           {options.length > 0
             ? options.map((opt) => (
@@ -518,6 +586,24 @@ export interface SwitchProps {
   label?: React.ReactNode;
   description?: string;
   className?: string;
+  /** ioiti-ui: the switch's id, for a `<label htmlFor>` elsewhere; in a FormItem, the item's, which its FormLabel names. */
+  id?: string;
+  /** ioiti-ui: the name it is sent under with its form while on, as a checkbox is; nothing is sent while off. */
+  name?: string;
+  /** ioiti-ui: what it sends under its `name` while on. */
+  value?: string;
+  /** ioiti-ui: it must be on (`aria-required`): the page checks it, and says so. */
+  required?: boolean;
+  /** ioiti-ui: its name, where no label names it (its own, a Field's, a FormLabel). */
+  'aria-label'?: string;
+  /** ioiti-ui: the id of what names it: a heading, a label elsewhere. */
+  'aria-labelledby'?: string;
+  /** ioiti-ui: the ids of what is read out with it, after its description; a Field or a FormItem around it adds its own. */
+  'aria-describedby'?: string;
+  /** ioiti-ui: marked invalid, as a Field or a FormItem in error marks it. */
+  'aria-invalid'?: boolean | 'true' | 'false';
+  /** ioiti-ui: the switch itself (its button), to focus it. */
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 export const Switch: React.FC<SwitchProps> = ({
@@ -528,6 +614,15 @@ export const Switch: React.FC<SwitchProps> = ({
   label,
   description,
   className,
+  id: givenId,
+  name,
+  value = 'on',
+  required,
+  'aria-label': ariaLabel,
+  'aria-labelledby': labelledBy,
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
+  ref,
 }) => {
   const [isOn, setIsOn] = React.useState(defaultChecked);
   // ioiti-ui: named by its label and described by its description, as StretchSwitch: a screen reader said only
@@ -535,6 +630,13 @@ export const Switch: React.FC<SwitchProps> = ({
   const id = useId();
   const isControlled = checked !== undefined;
   const current = isControlled ? checked : isOn;
+  // ioiti-ui: named and described from outside too (`aria-*`, a Field or a FormItem around it), its id from a
+  // FormItem, whose FormLabel then names it; it could take none of them.
+  const control = useFieldControl({
+    id: givenId,
+    describedBy: joinIds(description ? `${id}-description` : null, describedBy),
+    invalid: invalidOf(undefined, ariaInvalid),
+  });
 
   const handleToggle = () => {
     if (disabled) return;
@@ -550,7 +652,14 @@ export const Switch: React.FC<SwitchProps> = ({
   return (
     <div className={cn('flex items-center justify-between gap-4 select-none', disabled && 'opacity-50 cursor-not-allowed', className)}>
       {(label || description) && (
-        <div className="text-left cursor-pointer" onClick={handleToggle}>
+        <div
+          className="text-left cursor-pointer"
+          onClick={(event) => {
+            // ioiti-ui: a label around the switch (a Field's) would pass this click on to it, turning it back.
+            event.preventDefault();
+            handleToggle();
+          }}
+        >
           {label && (
             <div id={`${id}-label`} className="text-sm font-medium text-foreground leading-tight">
               {label}
@@ -565,11 +674,16 @@ export const Switch: React.FC<SwitchProps> = ({
       )}
 
       <button
+        ref={ref}
+        id={control.id}
         type="button"
         role="switch"
         aria-checked={current}
-        aria-labelledby={label ? `${id}-label` : undefined}
-        aria-describedby={description ? `${id}-description` : undefined}
+        aria-label={ariaLabel}
+        aria-labelledby={labelledBy ?? (label && !ariaLabel ? `${id}-label` : undefined)}
+        aria-describedby={control.describedBy}
+        aria-invalid={control.invalid || undefined}
+        aria-required={required || undefined}
         disabled={disabled}
         onClick={handleToggle}
         className={cn(
@@ -590,6 +704,9 @@ export const Switch: React.FC<SwitchProps> = ({
           )}
         />
       </button>
+      {/* ioiti-ui: sent with its form while on, as a checkbox is: a hidden input, which a label around the switch (a
+          Field's) cannot take for its control, as it would a checkbox. */}
+      {name && current ? <input type="hidden" name={name} value={value} disabled={disabled} /> : null}
     </div>
   );
 };

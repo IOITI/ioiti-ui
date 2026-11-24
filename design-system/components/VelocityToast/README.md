@@ -11,4 +11,4 @@ The toast under `useToast()`: a short message at the bottom centre, its time run
 
 - Pages call `useToast()` inside `ToastProvider`, which shows one toast at a time and sets each one's time (an error 8s, one with an action 6s). Use `VelocityToast` alone only for a toast the page drives itself.
 - It draws with `surface`, `border`, `text-primary`, `text-secondary` and `shadow-elevated`; the bar is `text-primary` (the accent's `brand` under an accent). Under glass it is `glass-float`.
-- It sits above dialogs and sheets and is read out politely (`role="status"`). Its close button is named "Close notification".
+- It sits above dialogs and sheets and is said by a screen reader as it comes: its frame is a live region there before its words (`status`, `alert` for an error, said at once); in `ToastProvider`, the provider's regions, there from the start, say it. Its close button is named "Close notification".

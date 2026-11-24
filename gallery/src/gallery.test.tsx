@@ -1,57 +1,11 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { IoitiProvider } from 'ioiti-ui'
-import { createMemoryRouter, RouterProvider } from 'react-router'
+import { cleanup, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { FORMER_PARTS } from './catalogue/legacy'
-import { routes } from './router'
-import { PAGES } from './routes'
+import { A_PAGE, BASE, describePages, heading, renderAt } from './gallery-pages'
 
-/** The gallery as GitHub Pages publishes it: under /ioiti-ui/. */
-const BASE = '/ioiti-ui/'
-
-function renderAt(path: string) {
-  const router = createMemoryRouter(routes, { basename: BASE, initialEntries: [`${BASE}${path.slice(1)}`] })
-  render(
-    <IoitiProvider appName="ioiti-ui">
-      <RouterProvider router={router} />
-    </IoitiProvider>,
-  )
-  return router
-}
-
-/** A page's heading, once its category's examples are loaded (a chunk of their own). */
-const heading = () => screen.findAllByRole('heading', { level: 1 }, { timeout: 10_000 })
-
-/** The links of the page shown that leave the published gallery. */
-function linksOutside(path: string): string[] {
-  return [...document.querySelectorAll('a[href]')]
-    .map((link) => link.getAttribute('href') ?? '')
-    .filter((href) => !/^(\/ioiti-ui\/|#|https?:|mailto:)/.test(href))
-    .map((href) => `${path}: ${href}`)
-}
-
-// A page loads its category's examples first: the first of a category waits for them to be transformed.
-const A_PAGE = 20_000
-
-describe('every page of the gallery', () => {
-  for (const page of PAGES) {
-    it(`draws ${page.label} (${page.path}), its links under /ioiti-ui/`, async () => {
-      renderAt(page.path)
-      expect(await heading()).not.toHaveLength(0)
-      if (page.family) {
-        for (const example of page.family.examples) {
-          expect(document.querySelector(`[data-example="${example.id}"]`), `${page.path}#${example.id}`).not.toBeNull()
-        }
-        expect(document.getElementById('props')).not.toBeNull()
-      }
-      if (page.category && !page.family) {
-        for (const family of page.category.families) expect(document.getElementById(family.slug), family.name).not.toBeNull()
-      }
-      expect(linksOutside(page.path), 'links that leave the published gallery').toEqual([])
-    }, A_PAGE)
-  }
-})
+// The first of the four shares of the gallery's pages (gallery-pages.tsx); the others in gallery.2-4.test.tsx.
+describePages(0, 4)
 
 describe('a link to a part of a former page', () => {
   it('leads to the page of the component it showed', async () => {

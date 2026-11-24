@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, useMotionValue, useTransform, animate, useReducedMotionConfig } from 'framer-motion';
+import { motion, useMotionValue, useMotionValueEvent, useTransform, animate, useReducedMotionConfig } from 'framer-motion';
 import { ChevronRight, Check, Trash2, Lock, Unlock, Archive, ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -106,6 +106,7 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   const isConfirmed = controlledConfirmed !== undefined ? controlledConfirmed : internalConfirmed;
 
   const trackRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
   const [dragMax, setDragMax] = useState(200);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -162,6 +163,20 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
     x,
     (val) => `${Math.min(dragMax + currentSize.thumbSize + 4, val + currentSize.thumbSize + 4)}px`
   );
+
+  // ioiti-ui: how far the thumb is, in tenths of its track (all of it once confirmed), and in words: the confirmed
+  // state's once confirmed. Said as the thumb moves, written on the slider without a render at every frame: it was
+  // read once per render, and stood still through a drag.
+  const valueAt = (at: number) =>
+    isConfirmed ? 100 : Math.min(100, Math.max(0, Math.round((at / (dragMax || 1)) * 10) * 10));
+  const valueText = (value: number) => (isConfirmed ? confirmedLabel : `${value}%`);
+  useMotionValueEvent(x, 'change', (at) => {
+    const thumb = thumbRef.current;
+    const value = valueAt(at);
+    if (!thumb || thumb.getAttribute('aria-valuenow') === String(value)) return;
+    thumb.setAttribute('aria-valuenow', String(value));
+    thumb.setAttribute('aria-valuetext', valueText(value));
+  });
 
   const triggerHaptic = useCallback(() => {
     if (haptic && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
@@ -332,12 +347,16 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
             // ioiti-ui: half its strength with the track (50%), not a second time.
             disabled && 'cursor-not-allowed'
           )}
+          ref={thumbRef}
           tabIndex={disabled ? -1 : 0}
           role="slider"
           aria-label={label}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-valuenow={isConfirmed ? 100 : Math.round((x.get() / (dragMax || 1)) * 100)}
+          // ioiti-ui: where it stands as it is drawn; kept up to date as it moves (above). Disabled, said so.
+          aria-valuenow={valueAt(x.get())}
+          aria-valuetext={valueText(valueAt(x.get()))}
+          aria-disabled={disabled || undefined}
           onKeyDown={(e) => {
             // ioiti-ui: not ArrowRight, which on a slider means "a little further", not "all the way".
             if (e.key === 'Enter' || e.key === ' ') {

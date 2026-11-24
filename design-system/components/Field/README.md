@@ -13,3 +13,4 @@ A control under its label: the way every page lays out `Input`, `Select`, `Texta
 - The label is set in `field-label` (`text-secondary`); fields are `surface` with an `input` border, `control-height` tall, `radius-lg`.
 - A unit goes in the field (`prefix`, `suffix`), not in the label. An error says how to put it right ("A whole number, from 1 to 99").
 - A field that takes text shows its focus by its caret and border, never a ring.
+- The package's controls take the description and the error wherever they are in the Field (in a `Hint`), a `Switch` or a `StretchSwitch` too; a control from elsewhere takes them as the Field's child.

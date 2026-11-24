@@ -75,7 +75,8 @@ export const UndoToast: React.FC<UndoToastProps> = ({
   className,
   wrapperClassName,
 }) => {
-  const [isVisible, setIsVisible] = useState(open);
+  // ioiti-ui: shown a render after its frame, the live region its words are said in (below).
+  const [isVisible, setIsVisible] = useState(false);
   const [isRestored, setIsRestored] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(100);
@@ -98,6 +99,7 @@ export const UndoToast: React.FC<UndoToastProps> = ({
       remainingTimeRef.current = duration;
     }
   }, [open, duration]);
+
 
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
@@ -175,6 +177,10 @@ export const UndoToast: React.FC<UndoToastProps> = ({
         positionClasses[position],
         wrapperClassName
       )}
+      // ioiti-ui: its frame is the live region, there before its words: they are put in it a render after it, and are
+      // said then (a region drawn with its words, as the toast was, is missed by some screen readers). Politely, or at
+      // once for what went wrong (alert).
+      role={variant === 'error' ? 'alert' : 'status'}
     >
       <AnimatePresence>
         {isVisible && (
@@ -198,8 +204,6 @@ export const UndoToast: React.FC<UndoToastProps> = ({
               'pointer-events-auto relative overflow-hidden p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none',
               className
             )}
-            role="status"
-            aria-live="polite"
           >
             <div className="flex items-center justify-between gap-3 relative z-10">
               {/* Icon / Status indicator */}

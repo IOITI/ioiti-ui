@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process'
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { gzipSync } from 'node:zlib'
 
 import { build } from 'vite'
@@ -114,8 +114,11 @@ const WEIGHED = {
 const PEERS = /^(?:react|react-dom|framer-motion|react-router)(?:\/|$)|^@(?:codemirror|lezer)\//
 const BUDGET = join(root, 'test/size-budget.json')
 
-/** What a module of the application bundles from the installed package, minified and gzipped (bytes, its chunks summed). */
-async function bundled(app, work, source) {
+/**
+ * What a module of the application bundles from the installed package, as its production build does (minified,
+ * `process.env.NODE_ENV` written as 'production'): the code, and its weight gzipped (bytes, its chunks summed).
+ */
+async function bundled(app, work, source, nodeEnv = 'production') {
   const entry = join(app, `weighed-${Object.values(WEIGHED).indexOf(source)}.js`)
   writeFileSync(entry, `${source}\n`)
   const results = await build({
@@ -123,6 +126,7 @@ async function bundled(app, work, source) {
     configFile: false,
     logLevel: 'silent',
     publicDir: false,
+    define: { 'process.env.NODE_ENV': JSON.stringify(nodeEnv) },
     build: {
       write: false,
       minify: true,
@@ -132,11 +136,11 @@ async function bundled(app, work, source) {
       rolldownOptions: { external: (id) => PEERS.test(id) },
     },
   })
-  return [results]
+  const chunks = [results]
     .flat()
     .flatMap((result) => result.output)
     .filter((file) => file.type === 'chunk')
-    .reduce((sum, chunk) => sum + gzipSync(chunk.code).length, 0)
+  return { code: chunks.map((chunk) => chunk.code).join('\n'), size: chunks.reduce((sum, chunk) => sum + gzipSync(chunk.code).length, 0) }
 }
 
 /** Each weight against its budget (and its tolerance), the one component against the whole; or the budget written. */
@@ -246,7 +250,19 @@ try {
 
   // What an application bundles, gzipped, held to its budget: one component alone, each entry whole, the template.
   const measured = {}
-  for (const [name, source] of Object.entries(WEIGHED)) measured[name] = await bundled(app, work, source)
+  const codes = {}
+  for (const [name, source] of Object.entries(WEIGHED)) ({ size: measured[name], code: codes[name] } = await bundled(app, work, source))
+
+  // What a component says to its developer (src/lib/dev.ts) is said in development only: a production build keeps
+  // none of its words.
+  const { DEV_MESSAGES } = await import(pathToFileURL(join(app, 'node_modules/ioiti-ui/dist/lib/dev-messages.js')).href)
+  const kept = Object.values(DEV_MESSAGES).filter((message) => codes['ioiti-ui, whole'].includes(message.slice(0, 40)))
+  check(kept.length === 0, `a production build keeps none of what a component says to its developer${kept.length ? `: ${kept.join(' | ')}` : ''}`)
+  const { code: developed } = await bundled(app, work, "export { SettleModal } from 'ioiti-ui'", 'development')
+  check(
+    Object.values(DEV_MESSAGES).some((message) => developed.includes(message.slice(0, 40))),
+    'a development build keeps them (SettleModal says a dialog without a name): the check above reads the right words',
+  )
   const gzippedAssets = (suffix) => assets.filter((name) => name.endsWith(suffix)).reduce((sum, name) => sum + gzipSync(readFileSync(join(dist, 'assets', name))).length, 0)
   measured['the template: its JavaScript'] = gzippedAssets('.js')
   measured['the template: its CSS'] = gzippedAssets('.css')

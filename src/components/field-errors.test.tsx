@@ -2,12 +2,13 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
+import { expectAccessible } from '../../test/a11y.js'
 import { Field } from './Field.js'
 import { Hint } from './Hint.js'
 import { MultiSelect } from './MultiSelect.js'
 import { NumberInput } from './NumberInput.js'
 import { DrawCheckbox as Checkbox } from './ui/draw-checkbox.js'
-import { Input, RadioGroup, Select, Textarea } from './ui/form.js'
+import { FormControl, FormItem, FormLabel, FormMessage, Input, RadioGroup, Select, Textarea } from './ui/form.js'
 import { OTPInput } from './ui/otp-input.js'
 
 /** Its border is the error's alone: none of the classes of its own border is left to win in dark or an accent. */
@@ -73,6 +74,55 @@ describe('a field in error', () => {
       expect(box).toHaveAttribute('aria-invalid', 'true')
       hasErrorBorderOnly(box)
     }
+  })
+
+  it('is in error when its FormItem says so, by a message under it or its own error: an Input, a Textarea, a Select', async () => {
+    const { container } = render(
+      <>
+        <FormItem>
+          <FormLabel>Name</FormLabel>
+          <FormControl>
+            <Input />
+          </FormControl>
+          <FormMessage error="Say who is writing" />
+        </FormItem>
+        <FormItem error="Twenty characters at least">
+          <FormLabel>Note</FormLabel>
+          <FormControl>
+            <Textarea />
+          </FormControl>
+        </FormItem>
+        <FormItem>
+          <FormLabel>Size</FormLabel>
+          <FormControl>
+            <Select options={[{ value: 's', label: 'Small' }]} />
+          </FormControl>
+          <FormMessage>Choose a size</FormMessage>
+        </FormItem>
+      </>,
+    )
+    for (const field of [screen.getByRole('textbox', { name: 'Name' }), screen.getByRole('textbox', { name: 'Note' }), screen.getByRole('combobox', { name: 'Size' })]) {
+      expect(field).toHaveAttribute('aria-invalid', 'true')
+      hasErrorBorderOnly(field)
+    }
+    expect(screen.getByRole('textbox', { name: 'Name' })).toHaveAccessibleDescription('Say who is writing')
+    expect(screen.getByRole('combobox', { name: 'Size' })).toHaveAccessibleDescription('Choose a size')
+    await expectAccessible(container)
+  })
+
+  it('is in error, and described, through a Hint between it and its Field', async () => {
+    const { container } = render(
+      <Field label="Amount" description="In euros" error="Cents after a point: 120.00">
+        <Hint content="Set by the contract" className="flex w-full">
+          <Input defaultValue="120,00" />
+        </Hint>
+      </Field>,
+    )
+    const amount = screen.getByRole('textbox', { name: 'Amount' })
+    expect(amount).toHaveAttribute('aria-invalid', 'true')
+    hasErrorBorderOnly(amount)
+    expect(amount).toHaveAccessibleDescription('Set by the contract In euros Cents after a point: 120.00')
+    await expectAccessible(container)
   })
 
   it('is a checkbox to tick: its empty box in the error’s colour, said to be wrong', () => {

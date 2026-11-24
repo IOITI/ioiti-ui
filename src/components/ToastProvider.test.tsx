@@ -181,4 +181,16 @@ describe('ToastProvider', () => {
     // Ten arrived, six are kept: the fifth is the oldest left.
     expect(screen.getByText('Event 5')).toBeInTheDocument()
   })
+
+  it('says a toast in a live region there from the start, an error at once, never in a region of its own', async () => {
+    renderProvider()
+    expect(screen.getByRole('status')).toBeEmptyDOMElement()
+    expect(screen.getByRole('alert')).toBeEmptyDOMElement()
+    act(() => show({ title: 'Export requested', description: 'It arrives by mail.' }))
+    await advance(0)
+    expect(screen.getAllByRole('status')).toHaveLength(1)
+    expect(screen.getByRole('status')).toHaveTextContent('Export requested')
+    expect(screen.getByRole('alert')).toBeEmptyDOMElement()
+  })
 })
+

@@ -38,3 +38,9 @@ export function useToast(): ShowToast {
  * under its key, 0 once it is gone; the toasts clear the highest.
  */
 export const ToastInsetContext = createContext<((key: string, inset: number) => void) | null>(null)
+
+/**
+ * Whether a toast is drawn in ToastProvider's live regions, there from the start, which say it: it is no live region of
+ * its own then (a region in a region is said twice).
+ */
+export const ToastRegionContext = createContext(false)

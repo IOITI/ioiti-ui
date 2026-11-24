@@ -18,4 +18,5 @@ The application's menu, beside the page from 768px up and a drawer below: its se
 - An entry with children and an `href` is a page and a link, its chevron apart opening it; the one that is, or holds, the page shown opens at every page. Closed, it shows a dot when a child has a badge, in the gravest tone among them.
 - Folded to the rail, an entry with children shows its pages in a menu beside it (its own page first, unless a child is at its address), the page shown marked; it keeps the pill while it holds the page shown.
 - A section placed at the foot (`place: 'footer'`) is drawn above Collapse, without a heading: a page the reader goes to now and then, the documentation.
-- Beside the page it is `glass-bar` under glass; the drawer is `glass-float`, closed by a choice, Escape, its scrim or a swipe.
+- Beside the page it is `glass-bar` under glass; the drawer is `glass-float`, closed by a choice, Escape, its close button, its scrim or a swipe.
+- The drawer is a dialog: opened, the focus goes to the page shown in it, Tab stays in it, and closed it goes back to the button that opened it, which says whether it is open (`aria-expanded`, `aria-controls` its `drawerId`: `AppShell` gives both).

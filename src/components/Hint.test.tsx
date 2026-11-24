@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
+import { expectAccessible } from '../../test/a11y.js'
 import { Hint } from './Hint.js'
+
+/** A while longer than the hint waits before closing once the pointer has left its trigger (120 ms). */
+const pastTheGrace = () => new Promise((resolve) => setTimeout(resolve, 300))
 
 describe('a hint', () => {
   it('describes its control for screen readers, and shows on keyboard focus', async () => {
@@ -17,11 +21,84 @@ describe('a hint', () => {
     const button = screen.getByRole('button', { name: 'Delete' })
     expect(button).toHaveAccessibleDescription('Switch it off before deleting it')
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+    await expectAccessible(document.body)
 
     await user.tab()
     // Drawn over the page, out of any parent that would cut it.
     expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent('Switch it off before deleting it')
     expect(screen.getByRole('tooltip', { hidden: true }).parentElement).toBe(document.body)
+    await expectAccessible(document.body)
+  })
+
+  it('stays while the pointer goes onto it and rests there, and goes on Escape (WCAG 1.4.13)', async () => {
+    const user = userEvent.setup()
+    render(
+      <Hint content="Switch it off before deleting it">
+        <button type="button">Delete</button>
+      </Hint>,
+    )
+    const button = screen.getByRole('button', { name: 'Delete' })
+
+    await user.hover(button)
+    const tip = await screen.findByRole('tooltip', { hidden: true })
+    // Off its trigger and onto the tooltip: it waits for the pointer, which keeps it.
+    await user.hover(tip)
+    await pastTheGrace()
+    expect(screen.getByRole('tooltip', { hidden: true })).toBe(tip)
+    // Back onto its trigger, and onto it again.
+    await user.hover(button)
+    await user.hover(tip)
+    await pastTheGrace()
+    expect(screen.getByRole('tooltip', { hidden: true })).toBe(tip)
+    await expectAccessible(document.body)
+
+    // Dismissed without moving the pointer or the focus.
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument(), { timeout: 3000 })
+  })
+
+  it('goes once the pointer leaves it, or leaves its trigger for somewhere else', async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <Hint content="Switch it off before deleting it">
+          <button type="button">Delete</button>
+        </Hint>
+        <p>Elsewhere</p>
+      </>,
+    )
+    const button = screen.getByRole('button', { name: 'Delete' })
+
+    await user.hover(button)
+    await user.hover(await screen.findByRole('tooltip', { hidden: true }))
+    await user.hover(screen.getByText('Elsewhere'))
+    await waitFor(() => expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument(), { timeout: 3000 })
+
+    await user.hover(button)
+    await screen.findByRole('tooltip', { hidden: true })
+    await user.unhover(button)
+    await waitFor(() => expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument(), { timeout: 3000 })
+  })
+
+  it('stays when it is pressed, as a press elsewhere than on it or its trigger hides it', async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <Hint content="Switch it off before deleting it">
+          <button type="button">Delete</button>
+        </Hint>
+        <p>Elsewhere</p>
+      </>,
+    )
+
+    await user.hover(screen.getByRole('button', { name: 'Delete' }))
+    const tip = await screen.findByRole('tooltip', { hidden: true })
+    await user.click(tip)
+    await pastTheGrace()
+    expect(screen.getByRole('tooltip', { hidden: true })).toBe(tip)
+
+    await user.click(screen.getByText('Elsewhere'))
+    await waitFor(() => expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument(), { timeout: 3000 })
   })
 
   it('leaves its control\'s own ref to it, read where React 19 keeps it', () => {

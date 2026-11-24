@@ -7,6 +7,7 @@ import type { LogLevel } from '../lib/log.js'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { CopyButton } from './CopyButton.js'
+import { FieldContext } from './field-context.js'
 import { IconButton } from './IconButton.js'
 import { Input } from './ui/form.js'
 
@@ -209,20 +210,23 @@ export function LogViewer({
     <section aria-label={label} className={cn('relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-surface', className)}>
       <div className="flex flex-wrap items-center gap-1.5 border-b border-border py-1.5 pl-3 pr-1.5">
         <span className="mr-auto min-w-0 truncate text-xs font-medium text-foreground">{label}</span>
+        {/* Its own search, never the field of a Field or a FormItem the log is in: no id of theirs, nothing of theirs said. */}
         <div className="w-48 max-w-full">
-          <Input
-            aria-label={`Search ${label}`}
-            placeholder="Search"
-            leftIcon={<Search className="size-3.5" />}
-            value={query}
-            className="h-8"
-            onChange={(event) => search(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key !== 'Enter') return
-              event.preventDefault()
-              go(event.shiftKey ? -1 : 1)
-            }}
-          />
+          <FieldContext.Provider value={null}>
+            <Input
+              aria-label={`Search ${label}`}
+              placeholder="Search"
+              leftIcon={<Search className="size-3.5" />}
+              value={query}
+              className="h-8"
+              onChange={(event) => search(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key !== 'Enter') return
+                event.preventDefault()
+                go(event.shiftKey ? -1 : 1)
+              }}
+            />
+          </FieldContext.Provider>
         </div>
         <span role="status" className="min-w-14 text-center text-xs tabular-nums text-muted-foreground">
           {query.trim() ? (found.length ? `${Math.min(current, found.length - 1) + 1} of ${found.length}` : 'No match') : ''}

@@ -83,7 +83,6 @@ function Arc({
   animated,
   reduce,
   delay,
-  label,
   onEnter,
   onLeave,
   onClick,
@@ -98,7 +97,6 @@ function Arc({
   animated: boolean;
   reduce: boolean;
   delay: number;
-  label: string;
   onEnter: () => void;
   onLeave: () => void;
   onClick: () => void;
@@ -128,7 +126,9 @@ function Arc({
   }, [width, w, reduce]);
 
   return (
-    <g className="transition-opacity" style={{ opacity: dim ? 0.35 : 1 }}>
+    // ioiti-ui: drawn for the eye and the pointer: a screen reader has the figures in the table under the chart, a
+    // keyboard in the legend (an aria-label on a path, no role that takes one, named nothing).
+    <g aria-hidden="true" className="transition-opacity" style={{ opacity: dim ? 0.35 : 1 }}>
       <motion.path d={d} fill="none" stroke={color} strokeWidth={w} strokeLinecap="round" />
       <motion.path
         d={d}
@@ -141,7 +141,6 @@ function Arc({
         onPointerEnter={onEnter}
         onPointerLeave={onLeave}
         onClick={onClick}
-        aria-label={label}
       />
     </g>
   );
@@ -240,7 +239,6 @@ export function DonutChart({
               animated={anim}
               reduce={reduce}
               delay={Math.min(0.06 + i * 0.06, 0.3)}
-              label={`${sg.label}: ${formatValue(sg.value)}`}
               onEnter={() => setActive(i)}
               onLeave={() => setActive(null)}
               onClick={() => setActive((a) => (a === i ? null : i))}

@@ -33,7 +33,7 @@ describe('a field', () => {
   it('marks a control beside its label invalid too, its error read out with it', () => {
     render(
       <Field label="Asset" htmlFor="asset3" error="Choose one">
-        <button type="button" id="asset3" role="combobox" aria-expanded="false" />
+        <button type="button" id="asset3" role="combobox" aria-expanded="false" aria-controls="none" />
       </Field>,
     )
 
@@ -45,7 +45,7 @@ describe('a field', () => {
   it('puts its label beside a control that must not be inside one, naming it by its id', () => {
     render(
       <Field label="Asset" htmlFor="asset">
-        <button type="button" id="asset" role="combobox" aria-expanded="false" />
+        <button type="button" id="asset" role="combobox" aria-expanded="false" aria-controls="none" />
       </Field>,
     )
 
@@ -71,7 +71,7 @@ describe('a field', () => {
   it('describes a control beside its label the same way', () => {
     render(
       <Field label="Asset" htmlFor="asset2" description="Picked from the list">
-        <button type="button" id="asset2" role="combobox" aria-expanded="false" />
+        <button type="button" id="asset2" role="combobox" aria-expanded="false" aria-controls="none" />
       </Field>,
     )
 

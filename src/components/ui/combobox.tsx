@@ -78,6 +78,17 @@ const filterOptions = (options: ComboboxOption[], q: string) =>
 
 const firstEnabled = (items: ComboboxOption[]) => items.findIndex((o) => !o.disabled);
 
+/** ioiti-ui: the words of the labels that name a control (a Field's htmlFor), its own left out of a label around it. */
+function labelWordsOf(control: HTMLButtonElement | null): string | undefined {
+  const words = Array.from(control?.labels ?? [], (label) =>
+    Array.from(label.childNodes, (node) => (node.contains(control) ? "" : (node.textContent ?? ""))).join(" ")
+  )
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return words || undefined;
+}
+
 export function Combobox({
   options,
   value,
@@ -116,9 +127,16 @@ export function Combobox({
   });
   // The list as wide as the trigger at least, read as it opens.
   const [width, setWidth] = React.useState<number>();
+  // ioiti-ui: and the words of its label (a Field's htmlFor), which name its search and its list too: read once drawn
+  // (named as the search takes the focus), and again as it opens.
+  const [labelWords, setLabelWords] = React.useState<string>();
   React.useLayoutEffect(() => {
+    setLabelWords(labelWordsOf(triggerRef.current));
     if (open) setWidth(triggerRef.current?.offsetWidth);
   }, [open]);
+  // ioiti-ui: its search and its list named as the trigger is (by what it points to, its aria-label or its label's
+  // words): they had a placeholder, and no name.
+  const name = labelledBy ? { "aria-labelledby": labelledBy } : { "aria-label": ariaLabel ?? labelWords };
 
   const current = options.find((o) => o.value === selected);
 
@@ -200,6 +218,7 @@ export function Combobox({
               >
                 <Panel
                   id={listId}
+                  name={name}
                   options={options}
                   selected={selected}
                   searchPlaceholder={searchPlaceholder}
@@ -222,6 +241,7 @@ export function Combobox({
 /* mounted only while open, so its state resets every time */
 function Panel({
   id,
+  name,
   options,
   selected,
   searchPlaceholder,
@@ -229,6 +249,8 @@ function Panel({
   onSelect,
 }: {
   id: string;
+  // ioiti-ui: what names its search and its list (the trigger's name).
+  name: { "aria-label"?: string; "aria-labelledby"?: string };
   options: ComboboxOption[];
   selected: string | null;
   searchPlaceholder: string;
@@ -320,6 +342,8 @@ function Panel({
           onKeyDown={onKeyDown}
           placeholder={searchPlaceholder}
           role="combobox"
+          // ioiti-ui: named as the trigger is, not by its placeholder alone.
+          {...name}
           aria-expanded
           aria-controls={id}
           aria-autocomplete="list"
@@ -329,7 +353,8 @@ function Panel({
       </div>
 
       <div ref={scrollRef} className="max-h-64 overflow-y-auto overscroll-contain">
-        <div id={id} role="listbox" className="relative p-1">
+        {/* ioiti-ui: named as the trigger is; options alone in it, its padding theirs. */}
+        <div id={id} role="listbox" {...name} className={cn("relative", items.length > 0 && "p-1")}>
           {box && items.length > 0 && (
             <motion.div
               aria-hidden
@@ -379,17 +404,18 @@ function Panel({
               )}
             </div>
           ))}
-
-          {items.length === 0 && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="px-3 py-6 text-center text-sm text-muted-foreground"
-            >
-              {emptyText}
-            </motion.p>
-          )}
         </div>
+
+        {/* ioiti-ui: beside the list, not in it (a list holds options alone): where the list's padding was, its margin. */}
+        {items.length === 0 && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="m-1 px-3 py-6 text-center text-sm text-muted-foreground"
+          >
+            {emptyText}
+          </motion.p>
+        )}
       </div>
     </>
   );

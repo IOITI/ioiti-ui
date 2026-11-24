@@ -10,4 +10,4 @@ The slide on its own: an action confirmed by dragging the thumb to the end of it
 
 - In a dialog, use `ConfirmAction`, which puts it under what will happen. A plain, quick action is a `Button`.
 - Enter or Space confirms once the thumb has the focus; the arrow keys do not. Let go before the end (85% of the track), the thumb goes back.
-- Its tones are Tailwind's rose, amber, blue and emerald over a neutral track, not the design's tokens. It is at most `max-w-sm` wide.
+- Its tones are the design's (the recipes' `negative`, `warning`, `info` and `positive`) over a neutral track. It is at most `max-w-sm` wide.

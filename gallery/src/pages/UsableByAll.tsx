@@ -69,6 +69,15 @@ export function UsableByAll() {
             A palette of pages may be opened with ⌘K (Ctrl+K): it only leads somewhere, it never acts. ⌘B folds the
             sidebar.
           </Rule>
+          <Rule title="What happened is said">
+            A toast, a copy, a change left unsaved is said to screen readers as it happens, politely, and what went
+            wrong at once: through live regions there before their words (announce, for an application's own).
+          </Rule>
+          <Rule title="Checked, not hoped">
+            Every page of this gallery and every layer its examples open are held to WCAG 2.2 A and AA by axe in the tests;
+            the code by the linter's accessibility rules; the colours of every look by their contrast. A real browser
+            and a screen reader do the rest.
+          </Rule>
         </ul>
       </Panel>
     </>

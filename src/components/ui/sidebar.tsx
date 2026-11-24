@@ -3,11 +3,13 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { ChevronRight, PanelLeft } from "lucide-react";
+import { ChevronRight, PanelLeft, X } from "lucide-react";
 import { ariaKeyShortcuts, keysText } from "../../lib/keys.js";
 import { isPlainClick } from "../../lib/links.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
-import { PRESSABLE, SCRIM, TOOLTIP } from "../../lib/recipes.js";
+// ioiti-ui: the drawer keeps the focus as every layer over the page does (focus-scope.ts), and has a close button.
+import { useFocusScope } from "../../lib/focus-scope.js";
+import { CLOSE_MD, PRESSABLE, SCRIM, TOOLTIP } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 import { DropdownMenu, type DropdownMenuItem } from "../DropdownMenu.js";
 import { Kbd } from "../Kbd.js";
@@ -217,6 +219,11 @@ export interface SidebarProps {
   collapsedStorageKey?: string;
   mobileOpen?: boolean;
   onMobileOpenChange?: (open: boolean) => void;
+  /**
+   * ioiti-ui: the id of the drawer a phone shows, for the control that opens it to name (`aria-controls`, as AppShell's
+   * does).
+   */
+  drawerId?: string;
   className?: string;
 }
 
@@ -227,6 +234,7 @@ export function Sidebar({
   collapsedStorageKey,
   mobileOpen: mobileProp,
   onMobileOpenChange,
+  drawerId,
   className,
   ...content
 }: SidebarProps) {
@@ -249,18 +257,25 @@ export function Sidebar({
     { description: "Collapse or expand the sidebar", group: "Navigation" }
   );
 
-  // drawer: Esc to close + scroll lock
+  // drawer: scroll lock
   React.useEffect(() => {
     if (!mobileOpen || isWide()) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
     };
-  }, [mobileOpen, setMobileOpen]);
+  }, [mobileOpen]);
+
+  // ioiti-ui: the drawer is a dialog (aria-modal), and keeps the focus as one does (useFocusScope): moved in, on the
+  // page shown (where the reader is), kept in by Tab, given back to what opened it; Escape closes it. It had none of
+  // it: the focus stayed behind it, on the page its scrim covers.
+  const drawerRef = React.useRef<HTMLElement>(null);
+  useFocusScope(drawerRef, {
+    active: mobileOpen && !isWide(),
+    initialFocus: () => drawerRef.current?.querySelector<HTMLElement>('[aria-current="page"]'),
+    onEscape: () => setMobileOpen(false),
+  });
 
   return (
     <>
@@ -279,6 +294,8 @@ export function Sidebar({
         <Panel {...content} collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
       </motion.aside>
 
+      {/* ioiti-ui: in document.body, as every dialog (one at a time, over the whole page). */}
+      {createPortal(
       <AnimatePresence>
         {mobileOpen && (
           // ioiti-ui: kept above the page while a page changes, as every layer over it (over-page,
@@ -295,6 +312,8 @@ export function Sidebar({
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
+              ref={drawerRef}
+              id={drawerId}
               role="dialog"
               aria-modal="true"
               aria-label="Navigation"
@@ -311,11 +330,22 @@ export function Sidebar({
                 if (info.offset.x < -80 || info.velocity.x < -400) setMobileOpen(false);
               }}
             >
+              {/* ioiti-ui: a way to close it on a phone, where there is no Escape, read first by a screen reader. */}
+              <button
+                type="button"
+                aria-label="Close navigation"
+                onClick={() => setMobileOpen(false)}
+                className={cn(CLOSE_MD, "focus-ring absolute right-3 top-3 z-10")}
+              >
+                <X />
+              </button>
               <Panel {...content} collapsed={false} onNavigate={() => setMobileOpen(false)} />
             </motion.aside>
           </div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
     </>
   );
 }

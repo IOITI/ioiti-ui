@@ -2,7 +2,7 @@
 
 A switch whose thumb stretches as it is pressed, then snaps to its side: a setting that takes effect when it is turned.
 
-**You provide** `label`, `description`, `checked` / `defaultChecked`, `onChange`, `disabled`.
+**You provide** `label`, `description`, `checked` / `defaultChecked`, `onChange`, `disabled`. In a form: `name`, sent while on as a checkbox is (its `value`, `on` by default), `required`. Without a label of its own: `aria-label`, or a `Field` or a `FormItem` around it. `id`, `ref` (its button).
 
 ```tsx
 <StretchSwitch checked={notify} onChange={setNotify} label="Notify the customer" description="An email when the order leaves" />

@@ -22,6 +22,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `design-system/` | the claude.ai Design System artifact's files (`design-system/README.md`); `components/<Name>/README.md` are also the gallery's guidelines |
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
 | `test/size-budget.json` | what an application bundles, gzipped, which `check:package` holds it to |
+| `test/a11y.ts` | axe in the tests (`expectAccessible`), shared by the package's tests and the gallery's |
 
 ## Commands
 
@@ -106,10 +107,19 @@ npm run check:package -- --update-budget   # test/size-budget.json, after a chan
   page shown (`#part`) is a plain `<a>`, never a route: the browser scrolls what holds it and keeps the query
   (`RouterLink` draws it so).
 - **A `Hint`, never a `title`**, for what a control means (the theme button's `title` is the original's).
-- **One dialog at a time**, in `document.body`, keeping the focus.
+- **One dialog at a time**, in `document.body`, keeping the focus. A layer that holds the page (a dialog, the
+  sidebar's drawer: `aria-modal`) keeps it with `useFocusScope` (`src/lib/focus-scope.ts`): moved in, kept in by Tab,
+  given back, the latest opened keeping it; no trap written by hand.
+- **What is said to a screen reader once something happened** goes through a live region there before its words:
+  `announce` (`src/lib/announce.ts`, polite or assertive, in the dialog that keeps the focus), or a frame of its own
+  that stays (the toasts', `ToastProvider`'s two regions). Never a region drawn with its words.
+- **What a component says to its developer** (a dialog without a name, a prop deprecated) is `devWarn(id)`
+  (`src/lib/dev.ts`), its words in `src/lib/dev-messages.ts`: once, in development only; a production build keeps none
+  of them (`check:package`). Never `console.warn` of its own.
 - **Nothing from another origin**, no inline script, no font as a `data:` URI.
 - **Copied files** are marked (`// ioiti-ui:` on each change) and their changes listed in
-  `docs/easyui-changes.md`; they are linted for the rules of hooks only (`.oxlintrc.copies.json`).
+  `docs/easyui-changes.md`; they are linted for the rules of hooks and the accessibility rules only
+  (`.oxlintrc.copies.json`).
 - **Relative imports end in `.js`** (`node scripts/fix-imports.mjs <file>`): a consumer's tests may load the
   package in Node's ESM loader. `check-source` holds it.
 - **No name of the original application** (WATA, its broker) in `src/`, `gallery/` or `templates/`: the docs
@@ -128,6 +138,11 @@ npm run check:package -- --update-budget   # test/size-budget.json, after a chan
 ## Testing quirks
 
 - Vitest runs in jsdom, with `src/test/setup.ts`; framer-motion is not mocked: wait for exits (`waitFor`).
+- **axe holds what a test draws** (`expectAccessible` of `test/a11y.ts`, WCAG 2.2 A and AA): every page of the gallery
+  (its test, split in four files that run side by side) and every layer its examples open
+  (`gallery/src/open-states.test.tsx`). Off in jsdom, which reads no CSS and lays nothing out: contrast (held by
+  `gallery/src/tokens.test.ts`), a link told by its colour, a target's size, a scrolling region's reach. A component's
+  test holds its open states to it too. Shared helpers live in the root `test/`, which the gallery may import.
   Under fake timers, framer-motion draws on the window's real frames, taken when it loads, and reads the faked
   clock: an animation starts on one of its frames and moves as the clock is advanced (`ToastProvider.test.tsx`).
 - jsdom has no view transitions: pages and looks change at once there. `src/test/viewTransition.ts` stands in

@@ -154,6 +154,18 @@ for (const file of filesUnder('src')) {
     })
 }
 
+// What a component says to its developer goes through devWarn (src/lib/dev.ts): once, in development only, its words
+// left out of a production build. Nothing else of the package writes to the console.
+const CONSOLE = /\bconsole\.(?:log|info|warn|error|debug)\(/
+for (const file of filesUnder('src')) {
+  if (!/\.(ts|tsx)$/.test(file) || /\.test\.(ts|tsx)$/.test(file) || file.startsWith(join('src', 'test')) || file === join('src', 'lib', 'dev.ts')) continue
+  readFileSync(join(root, file), 'utf8')
+    .split('\n')
+    .forEach((line, index) => {
+      if (!/^\s*(\/\/|\*|\/\*)/.test(line) && CONSOLE.test(line)) problems.push(`${file}:${index + 1}: the console written to: devWarn (src/lib/dev.ts)`)
+    })
+}
+
 // The gallery is an application made with the package: it imports `ioiti-ui`, never the package's source.
 for (const file of filesUnder(join('gallery', 'src'))) {
   const text = readFileSync(join(root, file), 'utf8')
@@ -197,4 +209,4 @@ if (problems.length) {
   console.error(`\ncheck-source: ${problems.length} problem${problems.length === 1 ? '' : 's'}`)
   process.exit(1)
 }
-console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, text sizes on the scale, one recipe per role (colours, shadows, radii, curves, disabled), no HTML written raw, examples import what an application would, no name of the original application')
+console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, text sizes on the scale, one recipe per role (colours, shadows, radii, curves, disabled), no HTML written raw, the console through devWarn only, examples import what an application would, no name of the original application')

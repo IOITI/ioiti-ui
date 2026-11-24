@@ -118,6 +118,8 @@ function Shell<S extends string>({
   const name = appName ?? providedName ?? ''
   const wide = isWide?.(pathname) ?? false
   const [mobileOpen, setMobileOpen] = useState(false)
+  // The phone's drawer, which the button that opens it names, and says open or closed.
+  const drawerId = useId()
   const main = useRef<HTMLElement>(null)
   // Another page opens at its top: where the one left was scrolled to means nothing there. A change
   // of the query alone leaves the page where it is. Before the browser paints: no frame of the new
@@ -171,11 +173,12 @@ function Shell<S extends string>({
         collapsedStorageKey={collapsedStorageKey}
         mobileOpen={mobileOpen}
         onMobileOpenChange={setMobileOpen}
+        drawerId={drawerId}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6 glass-bar">
-          <SidebarTrigger onClick={() => setMobileOpen(true)} />
+          <SidebarTrigger onClick={() => setMobileOpen(true)} aria-expanded={mobileOpen} aria-controls={mobileOpen ? drawerId : undefined} />
           {/* Where the page is, on every page: it takes the room left, and gives it up first. */}
           <div className="flex min-w-0 flex-1 items-center">
             <TopBarTrail home={home} />

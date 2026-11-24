@@ -1,10 +1,11 @@
-import { act, render, screen, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LogOut, TriangleAlert } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { expectAccessible } from '../../test/a11y.js'
 import { IoitiProvider } from '../components/IoitiProvider.js'
 import { PageHeader } from '../components/Panel.js'
 import { RouterAppShell } from '../react-router/RouterAppShell.js'
@@ -655,5 +656,41 @@ describe("a page's tab kept in the query", () => {
     expect(screen.getByRole('status', { name: 'address' }).textContent).toBe('/orders')
     expect(menu.getByRole('link', { name: 'Orders' })).toHaveAttribute('aria-current', 'page')
     expect(menu.getByRole('link', { name: 'Late orders' })).not.toHaveAttribute('aria-current')
+  })
+})
+
+describe("a phone's drawer", () => {
+  it('takes the focus on the page shown, keeps it, closes on Escape and gives it back to its button', async () => {
+    const user = userEvent.setup()
+    renderShell({ path: '/orders' })
+    const trigger = screen.getByRole('button', { name: 'Open navigation' })
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await user.click(trigger)
+    const drawer = screen.getByRole('dialog', { name: 'Navigation' })
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(trigger).toHaveAttribute('aria-controls', drawer.id)
+    expect(drawer.closest('main, header')).toBeNull()
+    expect(within(drawer).getByRole('link', { current: 'page' })).toHaveFocus()
+    await expectAccessible(drawer)
+    for (let step = 0; step < 24; step += 1) {
+      await user.tab()
+      expect(drawer).toContainElement(document.activeElement as HTMLElement)
+    }
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Navigation' })).toBeNull())
+    expect(trigger).toHaveFocus()
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('closes from its close button, the first control a screen reader meets in it', async () => {
+    const user = userEvent.setup()
+    renderShell({ path: '/orders' })
+    await user.click(screen.getByRole('button', { name: 'Open navigation' }))
+    const drawer = screen.getByRole('dialog', { name: 'Navigation' })
+    const close = within(drawer).getByRole('button', { name: 'Close navigation' })
+    expect(within(drawer).getAllByRole('button')[0]).toBe(close)
+    await user.click(close)
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Navigation' })).toBeNull())
+    expect(screen.getByRole('button', { name: 'Open navigation' })).toHaveFocus()
   })
 })

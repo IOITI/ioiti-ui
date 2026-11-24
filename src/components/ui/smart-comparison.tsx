@@ -75,6 +75,10 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
   diffLabel = 'Differences only',
   emptyText = 'No features match your current search or difference filters.',
   linkComponent,
+  // ioiti-ui: what names or describes it goes to the table, not to the frame around it.
+  'aria-label': ariaLabel,
+  'aria-labelledby': labelledBy,
+  'aria-describedby': describedBy,
   ...props
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
@@ -158,10 +162,7 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
   const grid = 'grid grid-cols-1 sm:grid-cols-[minmax(9rem,1.1fr)_repeat(var(--plans),minmax(0,1fr))]';
 
   return (
-    // ioiti-ui: a table for screen readers (rows, column and row headers), drawn as EasyUI's grid.
     <div
-      role="table"
-      aria-label={label}
       className={cn(
         // ioiti-ui: a section, as a Panel: its border, its surface, glass under the glass material (glass-card).
         SECTION, 'w-full p-4 sm:p-5 text-foreground overflow-hidden',
@@ -241,196 +242,208 @@ export const SmartComparison: React.FC<SmartComparisonProps> = ({
         </div>
       </div>
 
-      {/* Plans Header Row */}
-      <div role="row" className={cn(grid, 'gap-4 pb-6 border-b border-border/40')}>
-        {/* Left Column Label spacer */}
-        <div role="columnheader" className="hidden sm:flex flex-col justify-end">
-          <span className="text-xs font-medium text-muted-foreground">
-            {matrixTitle}
-          </span>
-          <span className="text-xs text-muted-foreground tabular-nums mt-0.5">
-            {countLabel(categories.reduce((acc, c) => acc + c.features.length, 0))}
-          </span>
-        </div>
-
-        {/* Plan Cards */}
-        {plans.map((plan) => {
-          const isMobileActive = selectedPlanId === plan.id;
-          return (
-            <div
-              key={plan.id}
-              role="columnheader"
-              onClick={() => setSelectedPlanId(plan.id)}
-              className={cn(
-                'relative p-4 rounded-xl border transition-colors cursor-pointer flex flex-col justify-between min-w-0',
-                isMobileActive ? 'block' : 'hidden sm:flex',
-                // ioiti-ui: the featured plan says it with its border, not a shadow: it does not float.
-                plan.featured
-                  ? 'bg-gradient-to-b from-surface-hover to-surface border-foreground/30 accent:border-brand'
-                  : 'bg-surface border-border/60 hover:border-border-hover'
-              )}
-            >
-              {plan.badge && (
-                <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary text-primary-foreground accent:bg-brand accent:text-brand-foreground">
-                  {plan.badge}
-                </span>
-              )}
-
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <h3 className="min-w-0 text-sm font-semibold text-foreground flex items-center gap-1.5">
-                    {plan.accent && (
-                      <span aria-hidden className="h-0.5 w-4 shrink-0 rounded-full" style={{ backgroundColor: plan.accent }} />
-                    )}
-                    {plan.href !== undefined ? (
-                      <LinkComponent href={plan.href} onClick={(e: React.MouseEvent) => e.stopPropagation()} className="truncate underline-offset-4 hover:underline">
-                        {plan.name}
-                      </LinkComponent>
-                    ) : (
-                      <span className="truncate">{plan.name}</span>
-                    )}
-                    {plan.featured && <Sparkles className="size-4 shrink-0 text-foreground" />}
-                  </h3>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 leading-snug text-pretty">{plan.tagline}</p>
-              </div>
-
-              <div>
-                <div className="flex items-baseline gap-1 mb-3">
-                  <span className="text-xl font-semibold font-mono text-foreground tracking-tight">
-                    {plan.price}
-                  </span>
-                  {plan.billingPeriod && (
-                    <span className="text-xs font-mono text-muted-foreground">
-                      /{plan.billingPeriod}
-                    </span>
-                  )}
-                </div>
-
-                {/* ioiti-ui: a button only when it does something. */}
-                {(plan.ctaText || plan.onCtaClick) && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      plan.onCtaClick?.();
-                    }}
-                    className={cn(
-                      // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                      'w-full py-2 px-3 rounded-lg text-sm font-medium transition-colors',
-                      PRESSABLE,
-                      plan.featured
-                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 font-semibold accent:bg-brand accent:hover:bg-brand/90 accent:text-brand-foreground accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground'
-                        : 'bg-surface hover:bg-surface-hover text-muted-foreground hover:text-foreground border border-border'
-                    )}
-                  >
-                    {plan.ctaText || 'Get started'}
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Comparison Rows Grouped by Category */}
-      <div className="divide-y divide-border/40">
-        {filteredCategories.length === 0 ? (
-          <div className="py-12 text-center text-xs text-muted-foreground">
-            {emptyText}
+      {/* ioiti-ui: a table for screen readers (rows, column and row headers), drawn as EasyUI's grid; after the controls
+          that filter it, which are no part of it (a table holds rows, and they were in it). */}
+      <div role="table" aria-label={ariaLabel ?? label} aria-labelledby={labelledBy} aria-describedby={describedBy}>
+        {/* Plans Header Row */}
+        <div role="row" className={cn(grid, 'gap-4 pb-6 border-b border-border/40')}>
+          {/* Left Column Label spacer */}
+          <div role="columnheader" className="hidden sm:flex flex-col justify-end">
+            <span className="text-xs font-medium text-muted-foreground">
+              {matrixTitle}
+            </span>
+            <span className="text-xs text-muted-foreground tabular-nums mt-0.5">
+              {countLabel(categories.reduce((acc, c) => acc + c.features.length, 0))}
+            </span>
           </div>
-        ) : (
-          filteredCategories.map((category) => {
-            const isCollapsed = collapsedCategories.has(category.id);
 
+          {/* Plan Cards */}
+          {plans.map((plan) => {
+            const isMobileActive = selectedPlanId === plan.id;
             return (
-              <div key={category.id} role="rowgroup" aria-label={category.title} className="py-3">
-                {/* Category Header Accordion */}
-                <button
-                  type="button"
-                  onClick={() => toggleCategory(category.id)}
-                  aria-expanded={!isCollapsed}
-                  // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
-                  className="w-full flex items-center justify-between py-2 text-left group cursor-pointer"
-                >
-                  <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-muted-foreground" />
-                    {category.title}
+              <div
+                key={plan.id}
+                role="columnheader"
+                onClick={() => setSelectedPlanId(plan.id)}
+                className={cn(
+                  'relative p-4 rounded-xl border transition-colors cursor-pointer flex flex-col justify-between min-w-0',
+                  isMobileActive ? 'block' : 'hidden sm:flex',
+                  // ioiti-ui: the featured plan says it with its border, not a shadow: it does not float.
+                  plan.featured
+                    ? 'bg-gradient-to-b from-surface-hover to-surface border-foreground/30 accent:border-brand'
+                    : 'bg-surface border-border/60 hover:border-border-hover'
+                )}
+              >
+                {plan.badge && (
+                  <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary text-primary-foreground accent:bg-brand accent:text-brand-foreground">
+                    {plan.badge}
                   </span>
-                  <motion.div
-                    animate={{ rotate: isCollapsed ? -90 : 0 }}
-                    transition={motionTransitions.easeFast}
-                    className="text-muted-foreground group-hover:text-foreground"
-                  >
-                    <ChevronDown className="size-4" />
-                  </motion.div>
-                </button>
+                )}
 
-                {/* Features in Category */}
-                <AnimatePresence initial={false}>
-                  {!isCollapsed && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={motionTransitions.springGentle}
-                      className="overflow-hidden space-y-1 pt-1"
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h3 className="min-w-0 text-sm font-semibold text-foreground flex items-center gap-1.5">
+                      {plan.accent && (
+                        <span aria-hidden className="h-0.5 w-4 shrink-0 rounded-full" style={{ backgroundColor: plan.accent }} />
+                      )}
+                      {plan.href !== undefined ? (
+                        <LinkComponent href={plan.href} onClick={(e: React.MouseEvent) => e.stopPropagation()} className="truncate underline-offset-4 hover:underline">
+                          {plan.name}
+                        </LinkComponent>
+                      ) : (
+                        <span className="truncate">{plan.name}</span>
+                      )}
+                      {plan.featured && <Sparkles className="size-4 shrink-0 text-foreground" />}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3 leading-snug text-pretty">{plan.tagline}</p>
+                </div>
+
+                <div>
+                  <div className="flex items-baseline gap-1 mb-3">
+                    <span className="text-xl font-semibold font-mono text-foreground tracking-tight">
+                      {plan.price}
+                    </span>
+                    {plan.billingPeriod && (
+                      <span className="text-xs font-mono text-muted-foreground">
+                        /{plan.billingPeriod}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* ioiti-ui: a button only when it does something. */}
+                  {(plan.ctaText || plan.onCtaClick) && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        plan.onCtaClick?.();
+                      }}
+                      className={cn(
+                        // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                        'w-full py-2 px-3 rounded-lg text-sm font-medium transition-colors',
+                        PRESSABLE,
+                        plan.featured
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90 font-semibold accent:bg-brand accent:hover:bg-brand/90 accent:text-brand-foreground accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground'
+                          : 'bg-surface hover:bg-surface-hover text-muted-foreground hover:text-foreground border border-border'
+                      )}
                     >
-                      {category.features.map((feat) => (
-                        <div
-                          key={feat.id}
-                          role="row"
-                          className={cn(grid, 'gap-4 py-2.5 px-2 rounded-lg hover:bg-surface-hover transition-colors items-center text-sm')}
-                        >
-                          {/* Feature Name & Info */}
-                          <div role="rowheader" className="flex items-center gap-1.5 min-w-0 pr-2">
-                            <span className="text-sm text-foreground font-normal truncate">
-                              {feat.name}
-                            </span>
-                            {feat.description && (
-                              // ioiti-ui: what a feature is, in a Hint: shown on hover, on the keyboard's focus and on a
-                              // tap, drawn in document.body (it was in the card, cut by the table's frame), read with the
-                              // button by a screen reader.
-                              <Hint content={feat.description}>
-                                <button
-                                  type="button"
-                                  className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-                                  aria-label={`Info about ${feat.name}`}
-                                >
-                                  <Info className="size-4" />
-                                </button>
-                              </Hint>
-                            )}
-                          </div>
-
-                          {/* Plan Values */}
-                          {plans.map((plan) => {
-                            const isMobileActive = selectedPlanId === plan.id;
-                            return (
-                              <div
-                                key={plan.id}
-                                role="cell"
-                                className={cn(
-                                  'sm:flex sm:justify-center items-center',
-                                  isMobileActive ? 'flex justify-between py-1' : 'hidden sm:flex'
-                                )}
-                              >
-                                <span className="sm:hidden text-xs font-mono text-muted-foreground">
-                                  {plan.name}:
-                                </span>
-                                <div>{renderValueCell(feat.values[plan.id])}</div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ))}
-                    </motion.div>
+                      {plan.ctaText || 'Get started'}
+                    </button>
                   )}
-                </AnimatePresence>
+                </div>
               </div>
             );
-          })
-        )}
+          })}
+        </div>
+
+        {/* Comparison Rows Grouped by Category */}
+        <div className="divide-y divide-border/40">
+          {filteredCategories.length === 0 ? (
+            // ioiti-ui: a row of the table, its words in a cell (they were loose in it).
+            <div role="row">
+              <div role="cell" className="py-12 text-center text-xs text-muted-foreground">
+                {emptyText}
+              </div>
+            </div>
+          ) : (
+            filteredCategories.map((category) => {
+              const isCollapsed = collapsedCategories.has(category.id);
+
+              return (
+                <div key={category.id} role="rowgroup" aria-label={category.title} className="py-3">
+                  {/* Category Header Accordion. ioiti-ui: a row of its group, the button in its header cell (a group
+                      holds rows, and the button was loose in it). */}
+                  <div role="row">
+                    <div role="rowheader">
+                      <button
+                        type="button"
+                        onClick={() => toggleCategory(category.id)}
+                        aria-expanded={!isCollapsed}
+                        // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
+                        className="w-full flex items-center justify-between py-2 text-left group cursor-pointer"
+                      >
+                        <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-2">
+                          <span className="size-1.5 rounded-full bg-muted-foreground" />
+                          {category.title}
+                        </span>
+                        <motion.div
+                          animate={{ rotate: isCollapsed ? -90 : 0 }}
+                          transition={motionTransitions.easeFast}
+                          className="text-muted-foreground group-hover:text-foreground"
+                        >
+                          <ChevronDown className="size-4" />
+                        </motion.div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Features in Category */}
+                  <AnimatePresence initial={false}>
+                    {!isCollapsed && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={motionTransitions.springGentle}
+                        className="overflow-hidden space-y-1 pt-1"
+                      >
+                        {category.features.map((feat) => (
+                          <div
+                            key={feat.id}
+                            role="row"
+                            className={cn(grid, 'gap-4 py-2.5 px-2 rounded-lg hover:bg-surface-hover transition-colors items-center text-sm')}
+                          >
+                            {/* Feature Name & Info */}
+                            <div role="rowheader" className="flex items-center gap-1.5 min-w-0 pr-2">
+                              <span className="text-sm text-foreground font-normal truncate">
+                                {feat.name}
+                              </span>
+                              {feat.description && (
+                                // ioiti-ui: what a feature is, in a Hint: shown on hover, on the keyboard's focus and on a
+                                // tap, drawn in document.body (it was in the card, cut by the table's frame), read with the
+                                // button by a screen reader.
+                                <Hint content={feat.description}>
+                                  <button
+                                    type="button"
+                                    className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+                                    aria-label={`Info about ${feat.name}`}
+                                  >
+                                    <Info className="size-4" />
+                                  </button>
+                                </Hint>
+                              )}
+                            </div>
+
+                            {/* Plan Values */}
+                            {plans.map((plan) => {
+                              const isMobileActive = selectedPlanId === plan.id;
+                              return (
+                                <div
+                                  key={plan.id}
+                                  role="cell"
+                                  className={cn(
+                                    'sm:flex sm:justify-center items-center',
+                                    isMobileActive ? 'flex justify-between py-1' : 'hidden sm:flex'
+                                  )}
+                                >
+                                  <span className="sm:hidden text-xs font-mono text-muted-foreground">
+                                    {plan.name}:
+                                  </span>
+                                  <div>{renderValueCell(feat.values[plan.id])}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );

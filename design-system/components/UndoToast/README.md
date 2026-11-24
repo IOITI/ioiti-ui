@@ -13,3 +13,4 @@ A removal offered with an Undo instead of a question: the toast counts down, and
 - Its time runs on under the pointer and stops while the keyboard is in it, the time to reach Undo.
 - For what cannot be taken back, ask first with `ConfirmAction`. For a plain result, a toast from `useToast()`.
 - Its countdown bar is the text's colour, the accent's `brand` under an accent; under glass it is `glass-float`.
+- A screen reader says it as it comes, Undo with it: its frame is a live region there before its words (`status`, `alert` for an error, said at once).

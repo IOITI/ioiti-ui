@@ -1,6 +1,6 @@
 # Hint
 
-What a control means, or why it is disabled: shown on hover, on keyboard focus and on a tap, and read by screen readers as the control's description.
+What a control means, or why it is disabled: shown on hover, on keyboard focus and on a tap (the pointer can rest on it, Escape hides it), and read by screen readers as the control's description.
 
 **You provide** `content` (the words) and the control as `children`; `wrap` around a disabled control, or one that is not a button, so the hint still has something to hang on.
 

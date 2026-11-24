@@ -121,6 +121,8 @@ function PickerShell({
         aria-label={field["aria-label"]}
         aria-labelledby={field["aria-labelledby"]}
         aria-describedby={field["aria-describedby"]}
+        // ioiti-ui: invalid as its Field says, which a screen reader says of it (global in ARIA 1.1, as axe holds it).
+        // oxlint-disable-next-line jsx-a11y/role-supports-aria-props -- ARIA 1.2 lists it for fewer roles than readers honour
         aria-invalid={invalid || undefined}
         onClick={() => setOpen((o) => !o)}
         onKeyDown={layer.onTriggerKeyDown}

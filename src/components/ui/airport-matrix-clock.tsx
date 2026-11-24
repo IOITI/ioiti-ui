@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useEffect, useMemo, useState, type PointerEvent, type ReactNode } from 'react';
+import { memo, useEffect, useId, useMemo, useState, type PointerEvent, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { SECTION } from '../../lib/recipes.js';
@@ -117,13 +117,14 @@ const MatrixCharacter = memo(function MatrixCharacter({ char, index, reduceMotio
   );
 });
 
-const MatrixText = memo(function MatrixText({ text, reduceMotion, rebuildId, label, size, className = '' }: { text: string; reduceMotion: boolean; rebuildId: number; label: string; size: 'md' | 'sm'; className?: string }) {
+// ioiti-ui: drawn for the eye alone, its characters pictures: its row says it as text (an aria-label on a span, no role
+// that takes one, was no name a screen reader reads, and the words beside it were hidden from it).
+const MatrixText = memo(function MatrixText({ text, reduceMotion, rebuildId, size, className = '' }: { text: string; reduceMotion: boolean; rebuildId: number; size: 'md' | 'sm'; className?: string }) {
   return (
     <span
-      aria-label={label}
+      aria-hidden="true"
       className={`inline-flex min-w-0 items-center gap-[clamp(0.5px,0.2vw,2px)] text-current ${className}`}
     >
-      <span aria-hidden="true" className="sr-only">{label}</span>
       {Array.from(text.toUpperCase()).map((char, index) => (
         <MatrixCharacter key={index} char={GLYPHS[char] ? char : ' '} index={index} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
       ))}
@@ -153,11 +154,13 @@ const AirportMatrixClockRow = memo(function AirportMatrixClockRow({
       onPointerEnter={handlePointerEnter}
       className={`grid items-center gap-2 ${size === 'sm' ? 'grid-cols-[auto_minmax(0,1fr)] gap-3 px-3 py-1.5' : 'grid-cols-[minmax(84px,0.8fr)_minmax(0,1.2fr)] px-3 py-2 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.2fr)] sm:px-5 sm:py-2.5'} ${rowIndex < rowCount - 1 ? 'border-b border-border/40' : ''}`}
     >
+      {/* ioiti-ui: what a screen reader reads of the row, a text: its time and its city. */}
+      <span className="sr-only">{`${row.time.accessible}, ${row.name}`}</span>
       <div className="min-w-0 text-foreground">
-        <MatrixText text={row.time.matrix} label={`${row.time.accessible}, ${row.name}`} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
+        <MatrixText text={row.time.matrix} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
       </div>
       <div className="min-w-0 text-foreground">
-        <MatrixText text={row.name} label={row.name} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
+        <MatrixText text={row.name} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
       </div>
     </li>
   );
@@ -187,9 +190,13 @@ export function AirportMatrixClock({
     { ...city, time: formatCityTime(new Date(now), city.timeZone, format, showSeconds) }
   )), [selectedCities, now, format, showSeconds]);
 
+  // ioiti-ui: the region named by its title (or "World times" without one): each row says its time and its city
+  // itself, which the region's name said again.
+  const titleId = useId();
   return (
     <section
-      aria-label={`World times: ${rows.map((row) => `${row.time.accessible} ${row.name}`).join(', ')}`}
+      aria-labelledby={title ? titleId : undefined}
+      aria-label={title ? undefined : 'World times'}
       className={`relative ${size === 'sm' ? 'w-fit' : 'w-full max-w-3xl'} overflow-hidden ${SECTION} text-foreground [--amc-grid:color-mix(in_srgb,var(--foreground)_1%,transparent)] glass-card ${className}`}
       style={{ backgroundImage: 'linear-gradient(var(--amc-grid) 1px, transparent 1px), linear-gradient(90deg, var(--amc-grid) 1px, transparent 1px)', backgroundSize: '22px 22px' }}
     >
@@ -197,7 +204,7 @@ export function AirportMatrixClock({
         {/* ioiti-ui: its heading and its last line in sentence case, as every label (EasyUI's were capitals, spaced). */}
         {title && (
           <header className={`flex items-center justify-between border-b border-border/70 ${size === 'sm' ? 'px-3 py-1.5' : 'px-4 py-3 sm:px-6'}`}>
-            <p className="text-xs font-medium text-muted-foreground">{title}</p>
+            <p id={titleId} className="text-xs font-medium text-muted-foreground">{title}</p>
           </header>
         )}
         <ul className="m-0 list-none p-0">

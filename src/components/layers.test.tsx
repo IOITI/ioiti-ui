@@ -35,8 +35,11 @@ function layerOf(element: Element | null | undefined): number {
   return Number(match[1] ?? match[2])
 }
 
-/** The frame of the toast shown ("Saved"), which holds its layer. */
-const toastFrame = () => screen.getByText('Saved').closest('[role="status"]')?.parentElement
+/**
+ * The frame of the toast shown ("Saved"), fixed over the page, which holds its layer: in ToastProvider's live region
+ * (role="status"), which is no layer of its own.
+ */
+const toastFrame = () => screen.getByText('Saved').closest('.fixed')
 
 describe('the layers over the page', () => {
   it('are named only while a transition plays, the dialog\'s, the palette\'s and the drawer\'s', () => {
@@ -67,7 +70,7 @@ describe('the layers over the page', () => {
     await act(async () => {})
 
     expectOverPage(await screen.findByRole('dialog', { name: 'Order 2026-0042' }))
-    expectOverPage(screen.getByRole('status').parentElement)
+    expectOverPage(toastFrame())
   })
 
   it('are named only while a transition plays, the tour\'s', async () => {

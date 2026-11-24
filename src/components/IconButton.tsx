@@ -32,7 +32,9 @@ export function IconButton({ label, icon, hint, className, type = 'button', ...p
       {icon}
     </button>
   )
-  return hint ? (
+  // Its Hint kept while it says nothing (`hint=""`: a Popover silences its trigger's while open): drawn without it, the
+  // button would be another one, and the focus given back to it as the popover closes lost with it.
+  return hint !== undefined ? (
     // A disabled button takes neither the focus nor the pointer: its hint would never show.
     <Hint content={hint} side="bottom" wrap={Boolean(props.disabled)}>
       {button}

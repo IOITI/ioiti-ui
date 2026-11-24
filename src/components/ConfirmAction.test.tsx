@@ -1,9 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { expectAccessible } from '../../test/a11y.js'
 import { ConfirmAction } from './ConfirmAction.js'
+import { DragToConfirm } from './ui/drag-to-confirm.js'
 
 /** The dialog opened from a table's row: a right-aligned cell that does not wrap. */
 function DeleteFromATableCell() {
@@ -172,5 +174,88 @@ describe('how an action is confirmed', () => {
 
     await user.keyboard('{Enter}')
     expect(onConfirm).toHaveBeenCalledOnce()
+    await expectAccessible(document.body)
+  })
+})
+
+describe('the slide (DragToConfirm)', () => {
+  // jsdom lays nothing out: a track 248 px wide, which leaves the medium thumb (48 px with its padding) 200 px to go.
+  const track = () => vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(248)
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  /** Where the pointer is, `x` px from the track's start: framer-motion reads the page's coordinates, jsdom gives none. */
+  const at = (x: number) => ({ clientX: x, clientY: 10, pageX: x, pageY: 10 })
+
+  /** The pointer pressed on the thumb, moved by `by` px, and let go if `release`. */
+  async function drag(user: ReturnType<typeof userEvent.setup>, thumb: HTMLElement, by: number, release = true) {
+    await user.pointer([{ keys: '[MouseLeft>]', target: thumb, coords: at(10) }])
+    await user.pointer([{ target: thumb, coords: at(20) }])
+    await user.pointer([{ target: thumb, coords: at(10 + by) }])
+    if (release) await user.pointer([{ keys: '[/MouseLeft]', target: thumb, coords: at(10 + by) }])
+  }
+
+  it('says how far its thumb is while it is dragged, in tenths, and again as it goes back', async () => {
+    track()
+    const user = userEvent.setup()
+    const onConfirm = vi.fn()
+    const { container } = render(<DragToConfirm label="Slide to send" confirmedLabel="Sent" onConfirm={onConfirm} />)
+    const thumb = screen.getByRole('slider', { name: 'Slide to send' })
+    expect(thumb).toHaveAttribute('aria-valuenow', '0')
+    expect(thumb).toHaveAttribute('aria-valuetext', '0%')
+    await expectAccessible(container)
+
+    // 80 px of 200: 40 %, said as the thumb stands there, before it is let go.
+    await drag(user, thumb, 80, false)
+    await waitFor(() => expect(thumb).toHaveAttribute('aria-valuenow', '40'))
+    expect(thumb).toHaveAttribute('aria-valuetext', '40%')
+    await expectAccessible(container)
+
+    // Let go before the end: the thumb goes back, and says so.
+    await user.pointer([{ keys: '[/MouseLeft]', target: thumb, coords: at(90) }])
+    await waitFor(() => expect(thumb).toHaveAttribute('aria-valuenow', '0'))
+    expect(thumb).toHaveAttribute('aria-valuetext', '0%')
+    expect(onConfirm).not.toHaveBeenCalled()
+  })
+
+  it('says it is confirmed in its words once dragged to the end, and starts again from nothing', async () => {
+    track()
+    const user = userEvent.setup()
+    const onConfirm = vi.fn()
+    const { container } = render(<DragToConfirm label="Slide to send" confirmedLabel="Sent" autoResetDelay={300} onConfirm={onConfirm} />)
+    const thumb = screen.getByRole('slider', { name: 'Slide to send' })
+
+    // 180 px of 200, past the 85 % that confirms once let go.
+    await drag(user, thumb, 180, false)
+    await waitFor(() => expect(thumb).toHaveAttribute('aria-valuenow', '90'))
+    expect(thumb).toHaveAttribute('aria-valuetext', '90%')
+    await user.pointer([{ keys: '[/MouseLeft]', target: thumb, coords: at(190) }])
+    await waitFor(() => expect(onConfirm).toHaveBeenCalledOnce())
+    await waitFor(() => expect(thumb).toHaveAttribute('aria-valuetext', 'Sent'))
+    expect(thumb).toHaveAttribute('aria-valuenow', '100')
+    await expectAccessible(container)
+
+    await waitFor(() => expect(thumb).toHaveAttribute('aria-valuenow', '0'), { timeout: 3000 })
+    expect(thumb).toHaveAttribute('aria-valuetext', '0%')
+  })
+
+  it('says it is confirmed from the keyboard too, and says it is disabled', async () => {
+    const user = userEvent.setup()
+    const { container, rerender } = render(<DragToConfirm label="Slide to send" confirmedLabel="Sent" autoResetDelay={0} />)
+    const thumb = screen.getByRole('slider', { name: 'Slide to send' })
+    expect(thumb).not.toHaveAttribute('aria-disabled')
+
+    thumb.focus()
+    await user.keyboard('{Enter}')
+    expect(thumb).toHaveAttribute('aria-valuenow', '100')
+    expect(thumb).toHaveAttribute('aria-valuetext', 'Sent')
+    await expectAccessible(container)
+
+    rerender(<DragToConfirm label="Slide to pay" disabled />)
+    const disabled = screen.getByRole('slider', { name: 'Slide to pay' })
+    expect(disabled).toHaveAttribute('aria-disabled', 'true')
+    expect(disabled).toHaveAttribute('tabindex', '-1')
+    await expectAccessible(container)
   })
 })

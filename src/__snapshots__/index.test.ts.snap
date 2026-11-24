@@ -192,6 +192,7 @@ exports[`the package's interface > is the list of names it was 1`] = `
   "UndoToast",
   "UserMenu",
   "VelocityToast",
+  "announce",
   "applyTheme",
   "buttonClassName",
   "cn",

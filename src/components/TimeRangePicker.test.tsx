@@ -2,6 +2,7 @@ import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { expectAccessible } from '../../test/a11y.js'
 import { AutoRefresh, TimeRangePicker } from './TimeRangePicker.js'
 
 describe('TimeRangePicker', () => {
@@ -65,6 +66,28 @@ describe('TimeRangePicker', () => {
 
     await user.click(screen.getByRole('button', { name: 'Update' }))
     expect(changed).toHaveBeenLastCalledWith({ from: 'now-3d', to: 'now' })
+  })
+
+  it('names the panel of an end by its tab, which says which panel it shows', async () => {
+    const user = userEvent.setup()
+    render(<TimeRangePicker defaultValue={{ from: 'now-15m', to: 'now' }} />)
+    await expectAccessible(document.body)
+
+    await user.click(screen.getByRole('button', { name: /show its start and its end/ }))
+    await user.click(screen.getByRole('button', { name: '15 minutes ago' }))
+    const start = screen.getByRole('dialog', { name: 'The start of the range' })
+    const relative = within(start).getByRole('tab', { name: 'Relative' })
+    const panel = within(start).getByRole('tabpanel', { name: 'Relative' })
+    expect(relative).toHaveAttribute('aria-controls', panel.id)
+    await expectAccessible(document.body)
+
+    for (const mode of ['Absolute', 'Now']) {
+      const tab = within(start).getByRole('tab', { name: mode })
+      await user.click(tab)
+      expect(tab).toHaveAttribute('aria-selected', 'true')
+      expect(within(start).getByRole('tabpanel', { name: mode }).id).toBe(tab.getAttribute('aria-controls'))
+      await expectAccessible(document.body)
+    }
   })
 })
 

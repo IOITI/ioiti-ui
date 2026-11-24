@@ -1,9 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useId } from 'react';
+// ioiti-ui: the list a layer in document.body (createPortal), placed by useAnchoredLayer; a Field's aria-invalid read
+// as an error (invalidOf); what is typed found whatever its case and accents (fold).
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Check } from 'lucide-react';
-import { fieldBorder } from '../../lib/field-border.js';
+import { useAnchoredLayer } from '../../lib/anchor.js';
+import { fieldBorder, invalidOf } from '../../lib/field-border.js';
+import { fold } from '../../lib/search.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DISABLED, FLOATING, MENU_ROW } from '../../lib/recipes.js';
@@ -34,6 +39,50 @@ export interface SpringSelectProps {
   error?: string;
   /** Custom class name for the root */
   className?: string;
+  /** ioiti-ui: the trigger's id, for a `<label htmlFor>` (a `Field htmlFor`). */
+  id?: string;
+  /** ioiti-ui: the value is sent with the form around it under this name (a hidden input). */
+  name?: string;
+  /** ioiti-ui: its name, where no `label` is shown. */
+  'aria-label'?: string;
+  /** ioiti-ui: the id of what names it, in place of its `label`. */
+  'aria-labelledby'?: string;
+  /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
+  'aria-describedby'?: string;
+  /** ioiti-ui: marked invalid, as a Field with an error marks it: drawn as `error`. */
+  'aria-invalid'?: boolean | 'true' | 'false';
+}
+
+// ioiti-ui: APG's select-only combobox: PageUp and PageDown move ten options, the letters typed within half a second
+// are one search.
+const PAGE = 10;
+const TYPED_FOR = 500;
+
+/** ioiti-ui: the enabled option at `from` or past it going `way`, else the nearest the other way; -1 when none is. */
+function enabledFrom(options: SpringSelectOption[], from: number, way: 1 | -1): number {
+  const start = Math.min(Math.max(from, 0), options.length - 1);
+  for (const step of [way, -way]) {
+    for (let i = start; i >= 0 && i < options.length; i += step) {
+      if (!options[i].disabled) return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * ioiti-ui: the enabled option whose label starts with what was typed, whatever its case and accents. A letter (once,
+ * or the same again and again) goes on from the active option to the next it starts, round the list; more letters
+ * stay on the active option while it starts so. -1 when none does.
+ */
+function typedOption(options: SpringSelectOption[], typed: string, active: number): number {
+  const search = fold(typed).text;
+  const letter = [...search].every((character) => character === search[0]) ? search[0] : undefined;
+  const first = letter ? active + 1 : Math.max(active, 0);
+  for (let n = 0; n < options.length; n++) {
+    const i = (first + n) % options.length;
+    if (!options[i].disabled && fold(options[i].label).text.startsWith(letter ?? search)) return i;
+  }
+  return -1;
 }
 
 /**
@@ -43,6 +92,10 @@ export interface SpringSelectProps {
  *
  * ioiti-ui: the menu settles without overshoot (springSnappy) and the chevron turns to 180° exactly, as every
  * chevron of the design does.
+ *
+ * ioiti-ui: a select-only combobox (WAI-ARIA APG): the focus stays on the trigger, whose keys open the list, move in it
+ * (the arrows, Home, End, PageUp, PageDown, letters typed) and choose (Enter, Space, Alt+ArrowUp, Tab), the option
+ * they are on its `aria-activedescendant`.
  */
 export const SpringSelect: React.FC<SpringSelectProps> = ({
   options,
@@ -54,76 +107,202 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   disabled = false,
   error,
   className,
+  id,
+  name,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
+  'aria-describedby': ariaDescribedBy,
+  'aria-invalid': ariaInvalid,
 }) => {
   const generatedId = useId();
   const rootId = `spring-select-${generatedId}`;
+  // ioiti-ui: what the combobox points to: its label, its list and each option, its error. The trigger's id may be given.
+  const triggerId = id ?? `${rootId}-trigger`;
+  const labelId = `${rootId}-label`;
+  const listId = `${rootId}-listbox`;
+  const errorId = `${rootId}-error`;
+  const optionId = (idx: number) => `${rootId}-option-${idx}`;
   const [open, setOpen] = useState(false);
   const [internalValue, setInternalValue] = useState<string | undefined>(defaultValue);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
-  const rootRef = useRef<HTMLDivElement>(null);
+  // ioiti-ui: the list as wide as the trigger, read as it opens (inside the root, it took the root's width).
+  const [width, setWidth] = useState<number>();
   const triggerRef = useRef<HTMLButtonElement>(null);
+  // ioiti-ui: the layer in document.body, and the list in it, which scrolls.
+  const layerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  // ioiti-ui: what was typed, until it is forgotten.
+  const typed = useRef({ text: '', timer: 0 });
 
   const isControlled = value !== undefined;
   const current = isControlled ? value : internalValue;
   const currentOption = options.find((o) => o.value === current);
+  // ioiti-ui: wrong by its `error`, or by `aria-invalid` (a Field's).
+  const invalid = invalidOf(error, ariaInvalid);
+  // ioiti-ui: the option the keys are on: never one gone from the list, nor one that cannot be chosen.
+  const active = options[activeIndex] && !options[activeIndex].disabled ? activeIndex : -1;
+  // ioiti-ui: named by what it is given, else by its label; described by a Field's words, then its error.
+  const labelledBy = ariaLabelledBy ?? (label ? labelId : undefined);
+  const describedBy = [ariaDescribedBy, error ? errorId : undefined].filter(Boolean).join(' ') || undefined;
 
+  // ioiti-ui: disabled while it is open, it closes.
+  if (disabled && open) setOpen(false);
+
+  // ioiti-ui: a layer in document.body, placed beside the trigger and following it (useAnchoredLayer), a press elsewhere
+  // closing it, the focus staying on the trigger: EasyUI's was placed inside the root, cut by a parent that hides what
+  // overflows it. Its listeners on the document (a click outside, Escape) and the root's ref are gone with it.
+  const layer = useAnchoredLayer({ open, onClose: () => setOpen(false), triggerRef, layerRef, focus: 'keep' });
+
+  // ioiti-ui: the option the keys are on stays in sight, the list's padding (py-1) around it: the list scrolls, never
+  // the page.
   useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setOpen(false);
-        triggerRef.current?.focus();
-      }
-    };
-    document.addEventListener('mousedown', onDocClick);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDocClick);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
+    const list = listRef.current;
+    const option = active >= 0 ? list?.children[active] : undefined;
+    if (!open || !layer.placed || !list || !(option instanceof HTMLElement)) return;
+    if (option.offsetTop - 4 < list.scrollTop) list.scrollTop = Math.max(option.offsetTop - 4, 0);
+    else if (option.offsetTop + option.offsetHeight + 4 > list.scrollTop + list.clientHeight) {
+      list.scrollTop = option.offsetTop + option.offsetHeight + 4 - list.clientHeight;
+    }
+  }, [open, active, layer.placed]);
+
+  // ioiti-ui: what was typed is not forgotten after the component.
+  useEffect(() => {
+    const buffer = typed.current;
+    return () => window.clearTimeout(buffer.timer);
+  }, []);
+
+  // ioiti-ui: where the list opens: on the option chosen, else on the first that can be.
+  const startIndex = () => {
+    const chosen = options.findIndex((o) => o.value === current && !o.disabled);
+    return chosen >= 0 ? chosen : enabledFrom(options, 0, 1);
+  };
+
+  // ioiti-ui: the list opened on an option, as wide as the trigger.
+  const openList = (at = startIndex()) => {
+    setActiveIndex(at);
+    setWidth(triggerRef.current?.offsetWidth);
+    setOpen(true);
+  };
+
+  // ioiti-ui: told of a change only, as a select's `change`: the option chosen again (or left by Tab) says nothing.
+  const choose = (opt: SpringSelectOption) => {
+    if (opt.value === current) return;
+    if (!isControlled) setInternalValue(opt.value);
+    onChange?.(opt.value);
+  };
 
   const handleSelect = (opt: SpringSelectOption, idx: number) => {
     if (opt.disabled) return;
-    if (!isControlled) setInternalValue(opt.value);
-    onChange?.(opt.value);
+    choose(opt);
     setOpen(false);
     setActiveIndex(idx);
     triggerRef.current?.focus();
   };
 
-  const handleTriggerKey = (e: React.KeyboardEvent) => {
-    if (disabled) return;
-    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      setOpen(true);
-      setActiveIndex((i) => (i < 0 ? options.findIndex((o) => o.value === current) : i));
-    }
+  // ioiti-ui: Enter, Space and Alt+ArrowUp choose the option the keys are on, and close the list.
+  const chooseActive = () => {
+    if (active >= 0) handleSelect(options[active], active);
+    else setOpen(false);
   };
 
-  const handleListKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setActiveIndex((i) => Math.min(options.length - 1, i + 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActiveIndex((i) => Math.max(0, i - 1));
-    } else if (e.key === 'Enter' && activeIndex >= 0) {
-      e.preventDefault();
-      handleSelect(options[activeIndex], activeIndex);
+  // ioiti-ui: the option what was typed leads to (typedOption), the letters kept TYPED_FOR ms; none found, the next
+  // letter starts a new search.
+  const typeAhead = (character: string, from: number) => {
+    const buffer = typed.current;
+    window.clearTimeout(buffer.timer);
+    const found = typedOption(options, buffer.text + character, from);
+    buffer.text = found >= 0 ? buffer.text + character : '';
+    if (buffer.text) {
+      buffer.timer = window.setTimeout(() => {
+        buffer.text = '';
+      }, TYPED_FOR);
+    }
+    return found;
+  };
+
+  // ioiti-ui: the focus stays on the trigger and its keys do everything (APG's select-only combobox). EasyUI's trigger
+  // only opened the list, whose own keys (the arrows, Enter) were out of reach: the list never had the focus.
+  const handleTriggerKey = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (disabled) return;
+    const { key, altKey, ctrlKey, metaKey } = e;
+
+    // A letter typed: the option it starts, the list opened on it. A space goes on with the word typed where an option
+    // does ("New Y"), and chooses or opens otherwise.
+    if (key.length === 1 && !altKey && !ctrlKey && !metaKey && (key !== ' ' || typed.current.text)) {
+      const from = open ? active : startIndex();
+      const found = typeAhead(key, from);
+      if (key !== ' ' || found >= 0) {
+        e.preventDefault();
+        if (!open) openList(found >= 0 ? found : from);
+        else if (found >= 0) setActiveIndex(found);
+        return;
+      }
+    }
+
+    if (!open) {
+      // Closed: the arrows (Alt+ArrowDown too), Enter and Space open it on the option chosen; Home and End on the
+      // first and the last.
+      if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'Enter' || key === ' ') {
+        e.preventDefault();
+        openList();
+      } else if (key === 'Home' || key === 'End') {
+        e.preventDefault();
+        openList(key === 'Home' ? enabledFrom(options, 0, 1) : enabledFrom(options, options.length - 1, -1));
+      }
+      return;
+    }
+
+    // Open: the keys move past what cannot be chosen, and stop at the ends.
+    switch (key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        if (!altKey) setActiveIndex(enabledFrom(options, active + 1, 1));
+        return;
+      case 'ArrowUp':
+        e.preventDefault();
+        if (altKey) chooseActive();
+        else setActiveIndex(enabledFrom(options, active - 1, -1));
+        return;
+      case 'Home':
+      case 'End':
+        e.preventDefault();
+        setActiveIndex(key === 'Home' ? enabledFrom(options, 0, 1) : enabledFrom(options, options.length - 1, -1));
+        return;
+      case 'PageDown':
+      case 'PageUp':
+        e.preventDefault();
+        setActiveIndex(key === 'PageDown' ? enabledFrom(options, active + PAGE, 1) : enabledFrom(options, active - PAGE, -1));
+        return;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        chooseActive();
+        return;
+      case 'Tab':
+        // Chosen, and the focus goes on, not held.
+        if (active >= 0) choose(options[active]);
+        setOpen(false);
+        return;
+      case 'Escape':
+        // Closed without a choice, the focus staying here; a dialog around it stays open.
+        layer.onTriggerKeyDown(e);
+        return;
     }
   };
 
   return (
-    <div ref={rootRef} className={cn('relative w-full', className)} id={rootId}>
+    <div className={cn('relative w-full', className)} id={rootId}>
       {label && (
         <label
-          htmlFor={`${rootId}-trigger`}
+          // ioiti-ui: what names the combobox (aria-labelledby). A click on it gives the trigger the focus, as a select's
+          // label does, and no click: passed on to the trigger, it opened the list, and opened it again once the press on
+          // the label, outside the list, had closed it.
+          id={labelId}
+          htmlFor={triggerId}
+          onClick={(e) => {
+            e.preventDefault();
+            triggerRef.current?.focus();
+          }}
           className="block text-xs font-semibold text-foreground mb-1.5 select-none"
         >
           {label}
@@ -132,20 +311,47 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
 
       <button
         ref={triggerRef}
-        id={`${rootId}-trigger`}
+        id={triggerId}
         type="button"
+        // ioiti-ui: a combobox (APG's select-only): its list, and the option the keys are on while it is open, pointed
+        // to; named by its label; described by its error, and marked by it.
+        role="combobox"
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
-        onClick={() => !disabled && setOpen((o) => !o)}
+        aria-controls={open ? listId : undefined}
+        aria-activedescendant={open && active >= 0 ? optionId(active) : undefined}
+        aria-label={ariaLabel}
+        aria-labelledby={labelledBy}
+        aria-describedby={describedBy}
+        aria-invalid={invalid || undefined}
+        // ioiti-ui: opened on the option chosen; the trigger takes the focus (Safari gives none to a button pressed),
+        // its keys with it.
+        onClick={() => {
+          if (disabled) return;
+          if (open) setOpen(false);
+          else {
+            openList();
+            triggerRef.current?.focus();
+          }
+        }}
         onKeyDown={handleTriggerKey}
+        // ioiti-ui: Space did its work on its keydown: Firefox would click the button again on its keyup.
+        onKeyUp={(e) => {
+          if (e.key === ' ') e.preventDefault();
+        }}
+        // ioiti-ui: the focus gone elsewhere (Tab chose before), the list closes; a press in the list leaves it here.
+        onBlur={(e) => {
+          if (!layerRef.current?.contains(e.relatedTarget)) setOpen(false);
+        }}
         className={cn(
           'relative w-full h-10 px-3.5 pr-9 text-base sm:text-sm rounded-lg border outline-none text-left flex items-center justify-between transition-colors duration-150 focus-ring cursor-pointer',
           'bg-surface',
-          fieldBorder(error),
+          // ioiti-ui: its border, or the error's, a Field's `aria-invalid` included.
+          fieldBorder(invalid),
           // ioiti-ui: open, the option under the pointer and the one chosen in the accent, where the theme has one (accent:).
           open &&
-            (error
+            (invalid
               ? 'border-negative hover:border-negative'
               : 'border-muted-foreground hover:border-muted-foreground accent:border-brand accent:hover:border-brand'),
           DISABLED,
@@ -160,59 +366,90 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
         </span>
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.ul
-            role="listbox"
-            tabIndex={-1}
-            onKeyDown={handleListKey}
-            initial={{ opacity: 0, y: -6, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
-            exit={{ opacity: 0, y: -4, scale: 0.98, transition: motionTransitions.easeExit }}
-            transition={motionTransitions.springSnappy}
-            // The container itself rides the spring: a tiny upward slide that
-            // "settles" with the snappy spring, plus a slight overshoot via the
-            // scale: 0.98 -> 1 motion.
-            // ioiti-ui: glass under the glass material (glass-float).
-            className={cn('absolute z-50 left-0 right-0 mt-1.5 max-h-60 overflow-auto py-1 focus:outline-none', FLOATING)}
-          >
-            {options.map((opt, idx) => {
-              const selected = opt.value === current;
-              return (
-                <li
-                  key={opt.value}
-                  role="option"
-                  aria-selected={selected}
-                  aria-disabled={opt.disabled}
-                  onMouseEnter={() => setActiveIndex(idx)}
-                  onClick={() => handleSelect(opt, idx)}
-                  className={cn(
-                    MENU_ROW,
-                    'relative mx-1 justify-between',
-                    selected && 'accent:text-brand-text',
-                    opt.disabled && 'opacity-50 cursor-not-allowed',
-                    activeIndex === idx && !opt.disabled && 'bg-surface-hover accent:bg-brand-soft'
-                  )}
+      {/* ioiti-ui: the value, sent with the form around it under `name`. */}
+      {name && <input type="hidden" name={name} value={current ?? ''} disabled={disabled} />}
+
+      {/* ioiti-ui: drawn in document.body, out of every parent that would cut it; its look and its motion EasyUI's. */}
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                ref={layerRef}
+                // ioiti-ui: a press in it leaves the focus on the trigger, which holds the keys; a click still chooses.
+                onMouseDown={(e) => e.preventDefault()}
+                initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
+                exit={{ opacity: 0, y: -4, scale: 0.98, transition: motionTransitions.easeExit }}
+                transition={motionTransitions.springSnappy}
+                // The container itself rides the spring: a tiny upward slide that
+                // "settles" with the snappy spring, plus a slight overshoot via the
+                // scale: 0.98 -> 1 motion.
+                // ioiti-ui: at its place beside the trigger, as wide as it, grown from its side of it.
+                style={{ ...layer.style, width, transformOrigin: layer.side === 'top' ? 'bottom' : 'top' }}
+                // ioiti-ui: glass under the glass material (glass-float). The list scrolls inside it, 15rem high at most
+                // and never past the room on its side (the layer's maxHeight), so that it is placed at the height it has.
+                className={cn('z-50 flex flex-col overflow-hidden', FLOATING)}
+              >
+                <ul
+                  ref={listRef}
+                  // ioiti-ui: the list the combobox controls, named as it is (else by the trigger, which shows its value).
+                  // It never takes the focus (no tabIndex): the trigger keeps it. Positioned: its options' offsetTop is
+                  // measured from it, to keep the active one in sight.
+                  id={listId}
+                  role="listbox"
+                  aria-labelledby={labelledBy ?? (ariaLabel ? undefined : triggerId)}
+                  aria-label={labelledBy ? undefined : ariaLabel}
+                  className="relative min-h-0 max-h-60 overflow-auto py-1"
                 >
-                  <span className="flex flex-col">
-                    <span className="leading-tight">{opt.label}</span>
-                    {opt.description && (
-                      <span className="text-xs text-muted-foreground mt-0.5">
-                        {opt.description}
-                      </span>
-                    )}
-                  </span>
-                  {selected && <Check className="size-4 text-foreground accent:text-brand-text shrink-0" />}
-                </li>
-              );
-            })}
-          </motion.ul>
+                  {options.map((opt, idx) => {
+                    const selected = opt.value === current;
+                    return (
+                      <li
+                        key={opt.value}
+                        // ioiti-ui: its id, for the trigger's aria-activedescendant.
+                        id={optionId(idx)}
+                        role="option"
+                        aria-selected={selected}
+                        aria-disabled={opt.disabled}
+                        // ioiti-ui: the pointer moves the option the keys are on, at a move of its own (pointermove):
+                        // mouseenter fired as the keys scrolled the list under a pointer at rest, taking it back.
+                        onPointerMove={() => {
+                          if (!opt.disabled && idx !== activeIndex) setActiveIndex(idx);
+                        }}
+                        onClick={() => handleSelect(opt, idx)}
+                        className={cn(
+                          MENU_ROW,
+                          'relative mx-1 justify-between',
+                          selected && 'accent:text-brand-text',
+                          opt.disabled && 'opacity-50 cursor-not-allowed',
+                          activeIndex === idx && !opt.disabled && 'bg-surface-hover accent:bg-brand-soft'
+                        )}
+                      >
+                        <span className="flex flex-col">
+                          <span className="leading-tight">{opt.label}</span>
+                          {opt.description && (
+                            <span className="text-xs text-muted-foreground mt-0.5">
+                              {opt.description}
+                            </span>
+                          )}
+                        </span>
+                        {selected && <Check className="size-4 text-foreground accent:text-brand-text shrink-0" />}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
 
       {error && (
         <motion.p
+          // ioiti-ui: what describes the trigger (aria-describedby).
+          id={errorId}
           initial={{ opacity: 0, y: -2 }}
           animate={{ opacity: 1, y: 0 }}
           transition={motionTransitions.springSnappy}

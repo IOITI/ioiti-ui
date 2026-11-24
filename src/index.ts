@@ -5,6 +5,8 @@
 // Helpers.
 export { cn, copyToClipboard, scrollToTop } from './lib/utils.js'
 export { isPlainClick } from './lib/links.js'
+export { announce } from './lib/announce.js'
+export type { Politeness } from './lib/announce.js'
 export { motionTransitions } from './lib/motion-tokens.js'
 export {
   ACCENT_LABEL,

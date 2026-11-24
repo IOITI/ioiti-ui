@@ -6,7 +6,8 @@ the commits that `THIRD-PARTY-NOTICES.md` lists. `src/styles/tokens.css` is Easy
 
 They were changed first for the admin interface of WATA, then for this package. Every change is marked
 in the code by a comment that starts with `ioiti-ui:`; this file says what each is for. The copies are
-kept close to their source otherwise: the linter checks only the rules of hooks in them.
+kept close to their source otherwise: the linter checks only the rules of hooks in them, and what a screen reader
+and a keyboard need (the `jsx-a11y` rules of `.oxlintrc.copies.json`, as the package's own code).
 
 ## Adding another EasyUI component
 
@@ -554,6 +555,62 @@ otherwise).
   offers them first, Shift+Delete forgetting one; ⌘↵ opens an entry that leads somewhere in another tab.
   An entry's `items` are a list of its own, opened in the palette (its title before the field; Backspace, Escape or
   the title going back), `onQueryChange` told which (`src/lib/spotlight.ts` finds it again at each render).
+- `settle-modal` (0.25.0): the focus kept by `useFocusScope` (`src/lib/focus-scope.ts`), as every layer over the page
+  keeps it: the latest opened keeps it, what floats beside a control in it keeps its own keys, Escape a field took
+  no longer closes it. `aria-label` and `aria-labelledby`, for a dialog without a `title`; one with neither says so
+  to its developer, in development only (`devWarn`).
+- `sidebar` (0.25.0): the drawer of a phone, a dialog (`aria-modal`), keeps the focus as one does (`useFocusScope`):
+  moved in on the page shown, kept in by Tab, given back to the button that opened it, Escape closing it; the focus
+  stayed behind it, on the page its scrim covers. It is drawn in `document.body`, with a close button (no Escape on a
+  phone), and `drawerId` names it for the button that opens it (`aria-controls`, `aria-expanded`: `AppShell`'s).
+- `velocity-toast`, `undo-toast` (0.25.0): their frame is the live region (`status`, `alert` for an error), there a
+  render before their words, which are said then; a region drawn with its words, as the toast was, is missed by some
+  screen readers, and an error was said politely. In `ToastProvider`'s regions, there from the start, a toast is
+  none of its own (`ToastRegionContext`).
+- `spring-select` (0.25.0): a select-only combobox (WAI-ARIA APG). The focus stays on the trigger (`role="combobox"`),
+  whose keys do everything: the arrows, Enter, Space and Alt+ArrowDown open the list on the value, Home and End on the
+  first and the last; the arrows, Home, End, PageUp and PageDown move past the options that cannot be chosen, and
+  letters typed within 500 ms go to the option they start, whatever their case and accents; Enter, Space and
+  Alt+ArrowUp choose, Tab chooses and goes on, Escape closes without a change. The option the keys are on is its
+  `aria-activedescendant`, marked as the pointer's and kept in sight. EasyUI's trigger only opened the list, whose own
+  keys were out of reach: the focus never went into it. The list is a layer in `document.body`, placed by
+  `useAnchoredLayer` (a panel's overflow cut it), as wide as the trigger; a press in it leaves the focus on the
+  trigger. The listbox is named as the trigger is; the error describes the trigger and marks it; a click on the label
+  gives the trigger the focus, as a select's does; `onChange` is told of a change only; `id`, `name` (a hidden
+  input), `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-invalid`.
+- `form` (0.25.0): `FormItem` links its parts (`src/components/field-context.ts`): `FormLabel` names its control by the
+  id the control is drawn with, `FormDescription` and `FormMessage` describe it (each its own id, or the one given),
+  and a message under it, or the item's `error`, marks it invalid. EasyUI's linked nothing, and its `error` was an
+  attribute of the `div`. `FormControl` gives its child, a control from elsewhere too, the item's id, what describes it
+  and `aria-invalid`. `Input`, `Select` and `Textarea` read the item or a `Field` wherever they are in it, each id
+  once. `Switch` takes `id`, `name`, `value`, `required`, `aria-label`, `aria-labelledby`, `aria-describedby`,
+  `aria-invalid` and `ref`, reads a `Field` or `FormItem` around it, is sent with its form while on (a hidden input),
+  and its words inside a label around it turn it once (the label passed their click on, turning it back).
+- `stretch-switch` (0.25.0): as `form`'s `Switch`: `id`, `name`, `value`, `required`, `aria-label`, `aria-labelledby`,
+  `aria-describedby`, `aria-invalid` and `ref`; a `Field` or a `FormItem` around it read; sent with its form while on;
+  its words turning it once inside a label.
+- `combobox` (0.25.0): its search and its list named as its trigger is, by its `aria-labelledby`, its `aria-label` or
+  the words of its `<label>` (read once drawn and as it opens): they had a placeholder, and no name. Nothing found is
+  said beside the list, which holds options alone (EasyUI's words were in it), where it was.
+- `drag-to-confirm` (0.25.0): its slider's `aria-valuenow` follows the thumb in tenths, written on it as it moves
+  (`useMotionValueEvent`, no render at every frame: EasyUI's was read at each render, and stood still through a drag),
+  with `aria-valuetext` ("40%", then the confirmed words) and `aria-disabled`.
+- `smooth-accordion` (0.25.0): a question is a `type="button"` (EasyUI's submitted a form around it) that names its
+  answer (`aria-controls`, while it is open), the answer a `region` named by its question; `headingLevel` puts each
+  question in a heading, at the page's letter-spacing.
+- `airport-matrix-clock` (0.25.0): a row says its time and its city as text (`sr-only`), its characters hidden: EasyUI
+  named its spans with `aria-label`, which a span without a role does not take. The region is named by its title
+  ("World times" without one): its name listed every time, which the rows say themselves now.
+- `directional-tooltip` (0.25.0): the pointer can reach it (WCAG 1.4.13): it waits 120 ms once the pointer has left its
+  trigger or itself, stays while the pointer is over it, and a press on it leaves it (EasyUI's took no pointer,
+  `pointer-events-none`, and closed as the pointer left the trigger). Escape and the focus as before.
+- `donut-chart` (0.25.0): its segments `aria-hidden` (EasyUI named each path with `aria-label`, which a path without a
+  role does not take): its figures are in its table for screen readers, the keyboard reads them in the legend.
+- `smart-comparison` (0.25.0): the table holds rows alone: the search, the toggle and the plan switcher above it, out
+  of it (it was the whole card), a category's toggle in the `rowheader` of a row of its own, the words for nothing
+  found in a cell. The `aria-label`, `aria-labelledby` and `aria-describedby` given to it name the table.
+- `flysheet` (0.25.0): its trigger says it opens a dialog (`aria-haspopup`) only while the sheet covers the page: one
+  pushing the page aside is a region beside it, which it says nothing of; the content tells the trigger.
 
 ## ioiti-ui's own changes
 

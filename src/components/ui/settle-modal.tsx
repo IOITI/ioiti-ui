@@ -7,6 +7,9 @@ import { X } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_MD, DIALOG, SCRIM } from '../../lib/recipes.js';
+// ioiti-ui: the focus kept as every layer over the page keeps it; a dialog without a name said to its developer.
+import { devWarn } from '../../lib/dev.js';
+import { useFocusScope } from '../../lib/focus-scope.js';
 
 export interface SettleModalProps {
   open: boolean;
@@ -18,6 +21,13 @@ export interface SettleModalProps {
   footer?: React.ReactNode;
   /** Hide the close (X) button in the top-right */
   hideCloseButton?: boolean;
+  /**
+   * ioiti-ui: its name, for a dialog without a `title`: a screen reader says "dialog" and nothing else without one. In
+   * development, a dialog with neither says so in the console.
+   */
+  'aria-label'?: string;
+  /** ioiti-ui: the id of what names it, where that is not its `title` (a heading of its own in `children`). */
+  'aria-labelledby'?: string;
   /** Click on backdrop closes the modal (default true) */
   closeOnBackdrop?: boolean;
   /**
@@ -28,7 +38,6 @@ export interface SettleModalProps {
   className?: string;
 }
 
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const sizeMap: Record<NonNullable<SettleModalProps['size']>, string> = {
   sm: 'max-w-sm',
@@ -62,6 +71,8 @@ export const SettleModal: React.FC<SettleModalProps> = ({
   closeOnBackdrop = true,
   size = 'md',
   className,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
 }) => {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -89,46 +100,29 @@ export const SettleModal: React.FC<SettleModalProps> = ({
     onCloseRef.current = onClose;
   });
 
+  // ioiti-ui: the focus as every layer over the page keeps it (useFocusScope): moved in, kept in by Tab, given back to
+  // what opened it, the latest layer opened keeping it (what floats beside a control in it keeps its own keys). It goes
+  // to the dialog itself, not a control in it: Enter does nothing until the user has moved to the control they mean.
+  useFocusScope(dialogRef, {
+    active: open,
+    initialFocus: () => dialogRef.current,
+    onEscape: () => onCloseRef.current(),
+  });
+
   useEffect(() => {
     if (!open) return;
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    // The dialog itself, not a control in it: Enter does nothing until the
-    // user has moved to the control they mean.
-    dialogRef.current?.focus();
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onCloseRef.current();
-        return;
-      }
-      const dialog = dialogRef.current;
-      if (e.key !== 'Tab' || !dialog) return;
-      const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((element) => element.tabIndex >= 0);
-      if (focusable.length === 0) {
-        e.preventDefault();
-        return;
-      }
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const active = document.activeElement;
-      const outside = !dialog.contains(active) || active === dialog;
-      if (e.shiftKey && (outside || active === first)) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && (outside || active === last)) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener('keydown', onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
-      if (opener?.isConnected) opener.focus();
     };
   }, [open]);
+
+  // ioiti-ui: a dialog without a name said to its developer, once (in development only).
+  const unnamed = !title && !ariaLabel && !ariaLabelledBy;
+  useEffect(() => {
+    if (open && unnamed) devWarn('dialog-unnamed');
+  }, [open, unnamed]);
 
   return createPortal(
     <AnimatePresence>
@@ -138,7 +132,9 @@ export const SettleModal: React.FC<SettleModalProps> = ({
           tabIndex={-1}
           // ioiti-ui: kept above the page while a page changes, as every layer over it (over-page, motion.css).
           className="fixed inset-0 z-50 flex items-center justify-center p-4 text-left outline-none over-page"
-          aria-labelledby={title ? titleId : undefined}
+          // ioiti-ui: named by its title, or by what the caller says names it.
+          aria-labelledby={ariaLabelledBy ?? (title ? titleId : undefined)}
+          aria-label={ariaLabel}
           // ioiti-ui: its description is read with its title.
           aria-describedby={description ? `${titleId}-description` : undefined}
           role="dialog"

@@ -7,6 +7,7 @@ import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
+import { ToastRegionContext } from '../toast-context.js';
 
 export type VelocityToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 export type VelocityToastPosition =
@@ -105,7 +106,9 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
-  const [isVisible, setIsVisible] = useState(open);
+  // ioiti-ui: shown a render after its frame, the live region its words are said in (below).
+  const [isVisible, setIsVisible] = useState(false);
+  const inRegion = React.useContext(ToastRegionContext);
   // ioiti-ui: the time stops under the pointer (EasyUI's) and while the keyboard is in the toast, the time to reach
   // its action or Close for who cannot point at it.
   const [isHovered, setIsHovered] = useState(false);
@@ -131,6 +134,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
     remainingRef.current = duration;
     startRef.current = performance.now();
   }, [open, duration, progressMV]);
+
 
   // Animate progress from 100 -> 0 over `remaining` ms. When isPaused we
   // simply skip the tween (progressMV holds its current value).
@@ -186,6 +190,10 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
         wrapperClassName
       )}
       style={wrapperStyle}
+      // ioiti-ui: its frame is the live region, there before its words: they are put in it a render after it, and are
+      // said then (a region drawn with its words, as the toast was, is missed by some screen readers). Politely, or at
+      // once for what went wrong (alert). In ToastProvider's regions, there from the start, it is none of its own.
+      role={inRegion ? undefined : variant === 'error' ? 'alert' : 'status'}
     >
       <AnimatePresence onExitComplete={onExitComplete}>
         {isVisible && (
@@ -208,8 +216,6 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
               'pointer-events-auto relative overflow-hidden p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none',
               className
             )}
-            role="status"
-            aria-live="polite"
           >
             <div className="flex items-center justify-between gap-3 relative z-10">
               <div className="size-8 rounded-lg bg-surface-raised border border-border flex items-center justify-center shrink-0">

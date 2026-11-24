@@ -206,6 +206,9 @@ interface SheetCtx {
   contentId: string;
   hasTitle: boolean;
   setHasTitle: (v: boolean) => void;
+  // ioiti-ui: whether its content pushes the page aside (a region beside it, no dialog): its trigger opens no popup then.
+  pushing: boolean;
+  setPushing: (v: boolean) => void;
 }
 const SheetContext = React.createContext<SheetCtx | null>(null);
 function useSheet() {
@@ -252,23 +255,25 @@ export function Flysheet({ open, defaultOpen = false, onOpenChange, children }: 
   const isOpen = own && parentOpen;
   const [hasDesc, setHasDesc] = React.useState(false);
   const [hasTitle, setHasTitle] = React.useState(false);
+  const [pushing, setPushing] = React.useState(false);
   const titleId = React.useId();
   const descId = React.useId();
   const contentId = React.useId();
   const value = React.useMemo(
-    () => ({ open: isOpen, setOpen, titleId, descId, hasDesc, setHasDesc, contentId, hasTitle, setHasTitle }),
-    [isOpen, setOpen, titleId, descId, hasDesc, contentId, hasTitle]
+    () => ({ open: isOpen, setOpen, titleId, descId, hasDesc, setHasDesc, contentId, hasTitle, setHasTitle, pushing, setPushing }),
+    [isOpen, setOpen, titleId, descId, hasDesc, contentId, hasTitle, pushing]
   );
   return <SheetContext.Provider value={value}>{children}</SheetContext.Provider>;
 }
 
 /** Unstyled button, bring your own classes. ioiti-ui: it closes the sheet too (one that leaves it in reach). */
 export function FlysheetTrigger({ onClick, ...props }: React.ComponentProps<"button">) {
-  const { open, setOpen, contentId } = useSheet();
+  const { open, setOpen, contentId, pushing } = useSheet();
   return (
     <button
       type="button"
-      aria-haspopup="dialog"
+      // ioiti-ui: a dialog it opens, over the page; none where the sheet pushes the page aside (a region beside it).
+      aria-haspopup={pushing ? undefined : "dialog"}
       // ioiti-ui: says whether the sheet is open, and which it is.
       aria-expanded={open}
       aria-controls={open ? contentId : undefined}
@@ -392,6 +397,11 @@ export function FlysheetContent({
   const offset = placement === "beside" && parent ? parent.edge : 0;
   const z = !parent ? 10 : placement === "beside" ? parent.z - 1 : parent.z + 1;
   const pushing = type === "push" && horizontal && !isChild && viewport >= pushMinWidth;
+  // ioiti-ui: said to the sheet, whose trigger then says it opens no dialog.
+  const { setPushing } = useSheet();
+  React.useLayoutEffect(() => {
+    setPushing(pushing);
+  }, [pushing, setPushing]);
   const modal = parent ? parent.modal : modalProp && !pushing;
   const closesOutside = closeOnOutsideClick ?? modal;
   // A pushed sheet is part of the page: it neither slides in nor is dragged away.
@@ -768,6 +778,8 @@ export function FlysheetTitle({ className, ...props }: React.ComponentProps<"h2"
     return () => setHasTitle(false);
   }, [setHasTitle]);
   // ioiti-ui: as large as a page's title (PageHeader), which a sheet's is, over the page.
+  // ioiti-ui: its words are its children, in its props (which the linter cannot see).
+  // oxlint-disable-next-line jsx-a11y/heading-has-content -- given by its caller
   return <h2 className={cn("text-2xl font-bold tracking-tight", className)} {...props} id={titleId} />;
 }
 

@@ -1,10 +1,11 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
+import { prepareLiveRegions } from '../lib/announce.js'
 import { cn } from '../lib/utils.js'
 import { VelocityToast } from './ui/velocity-toast.js'
 
-import { ToastContext, ToastInsetContext } from './toast-context.js'
+import { ToastContext, ToastInsetContext, ToastRegionContext } from './toast-context.js'
 import type { ShowToast, ToastMessage } from './toast-context.js'
 
 /** Beyond this, the oldest waiting toasts are dropped: a burst must not take minutes to read out. */
@@ -55,36 +56,49 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
 
   const current = queue[0]
 
+  // The live regions what a control says is said in (announce.ts: "Copied", "3 unsaved changes"), there before the
+  // first words: words put in a region as it is made are missed by some screen readers. A toast is said in its frame.
+  useEffect(() => {
+    prepareLiveRegions()
+  }, [])
+
   // Lifted above what sits at the bottom of the page, as long as it is there.
   const [insets, setInsets] = useState<Record<string, number>>({})
   const setInset = useCallback((key: string, inset: number) => {
     setInsets((now) => (now[key] === inset ? now : { ...now, [key]: inset }))
   }, [])
   const lift = Math.max(0, ...Object.values(insets))
+  const urgent = current?.variant === 'error'
+  const toast = current && (
+    <VelocityToast
+      key={current.id}
+      open={leaving !== current.id}
+      onDismiss={() => setLeaving(current.id)}
+      onExitComplete={() => {
+        setQueue((waiting) => waiting.filter((toast) => toast.id !== current.id))
+        setLeaving(null)
+      }}
+      title={current.title}
+      description={current.description}
+      action={current.action}
+      variant={current.variant ?? 'default'}
+      position="bottom-center"
+      // The frame stays above the page while a page changes, as every layer over it (over-page, motion.css).
+      wrapperClassName={cn('over-page motion-safe:transition-[margin-bottom] motion-safe:duration-300 motion-safe:ease-soft', wrapperClassName)}
+      wrapperStyle={lift ? { marginBottom: lift } : undefined}
+      duration={displayTime(current, queue.length - 1)}
+    />
+  )
 
   return (
     <ToastContext.Provider value={show}>
       <ToastInsetContext.Provider value={setInset}>{children}</ToastInsetContext.Provider>
-      {current && (
-        <VelocityToast
-          key={current.id}
-          open={leaving !== current.id}
-          onDismiss={() => setLeaving(current.id)}
-          onExitComplete={() => {
-            setQueue((waiting) => waiting.filter((toast) => toast.id !== current.id))
-            setLeaving(null)
-          }}
-          title={current.title}
-          description={current.description}
-          action={current.action}
-          variant={current.variant ?? 'default'}
-          position="bottom-center"
-          // The frame stays above the page while a page changes, as every layer over it (over-page, motion.css).
-          wrapperClassName={cn('over-page motion-safe:transition-[margin-bottom] motion-safe:duration-300 motion-safe:ease-soft', wrapperClassName)}
-          wrapperStyle={lift ? { marginBottom: lift } : undefined}
-          duration={displayTime(current, queue.length - 1)}
-        />
-      )}
+      {/* The live regions the toasts are said in, there from the start: a toast put in a region made with it is missed
+          by some screen readers. Politely, or at once for what went wrong. */}
+      <ToastRegionContext.Provider value={true}>
+        <div role="status">{current && !urgent && toast}</div>
+        <div role="alert">{current && urgent && toast}</div>
+      </ToastRegionContext.Provider>
     </ToastContext.Provider>
   )
 }

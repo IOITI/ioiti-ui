@@ -1,35 +1,77 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "react",
-    "typescript",
-    "oxc"
-  ],
+  "plugins": ["react", "typescript", "oxc", "jsx-a11y"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": [
-      "warn",
-      {
-        "allowConstantExport": true
-      }
-    ]
+    "react/only-export-components": ["warn", {"allowConstantExport": true}],
+    // What a screen reader and a keyboard need, read in the code (AGENTS.md): on, as errors.
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/anchor-ambiguous-text": "error",
+    "jsx-a11y/aria-activedescendant-has-tabindex": "error",
+    "jsx-a11y/aria-props": "error",
+    "jsx-a11y/aria-proptypes": "error",
+    "jsx-a11y/aria-role": "error",
+    "jsx-a11y/aria-unsupported-elements": "error",
+    "jsx-a11y/autocomplete-valid": "error",
+    "jsx-a11y/heading-has-content": "error",
+    "jsx-a11y/html-has-lang": "error",
+    "jsx-a11y/iframe-has-title": "error",
+    "jsx-a11y/img-redundant-alt": "error",
+    "jsx-a11y/lang": "error",
+    "jsx-a11y/media-has-caption": "error",
+    "jsx-a11y/no-access-key": "error",
+    "jsx-a11y/no-aria-hidden-on-focusable": "error",
+    "jsx-a11y/no-distracting-elements": "error",
+    "jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
+    "jsx-a11y/no-redundant-roles": "error",
+    "jsx-a11y/role-has-required-aria-props": "error",
+    "jsx-a11y/role-supports-aria-props": "error",
+    "jsx-a11y/scope": "error",
+    "jsx-a11y/tabindex-no-positive": "error",
+    // Off, each for its reason: a pattern the design uses on purpose, or what the rule cannot see.
+    // a link component is given its words by its caller (<a {...props} />), which the rule cannot see.
+    "jsx-a11y/anchor-has-content": "off",
+    // links are drawn by the application's link component (linkComponent), their href given at run time.
+    "jsx-a11y/anchor-is-valid": "off",
+    // the keys of a list or a grid are on its focused element (aria-activedescendant), not on each row.
+    "jsx-a11y/click-events-have-key-events": "off",
+    // a scrim takes a click and is aria-hidden: Escape and a close button are the keyboard's way.
+    "jsx-a11y/no-static-element-interactions": "off",
+    // a listbox or a grid takes its keys on its own element, the activedescendant pattern.
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    // an option or a cell is reached by aria-activedescendant, not by its own focus.
+    "jsx-a11y/interactive-supports-focus": "off",
+    // a region that scrolls takes the focus, so that the keyboard scrolls it.
+    "jsx-a11y/no-noninteractive-tabindex": "off",
+    // an <li role="option"> is the listbox pattern.
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": "off",
+    // a switch, a slider, a listbox drawn on purpose where no element does what they do.
+    "jsx-a11y/prefer-tag-over-role": "off",
+    // a control's label comes from a Field or a FormItem around it, which the rule cannot see.
+    "jsx-a11y/control-has-associated-label": "off",
+    // a label names its control by id, given by a Field or a FormItem, which the rule cannot see.
+    "jsx-a11y/label-has-associated-control": "off",
+    // a hovered row is marked as the keys mark it, on the element that holds the focus.
+    "jsx-a11y/mouse-events-have-key-events": "off",
+    // OTPInput's autoFocus is the caller's choice, for a page that is only that code.
+    "jsx-a11y/no-autofocus": "off"
   },
   "ignorePatterns": [
-    "dist/**",
-    "gallery/dist/**",
-    "templates/app/dist/**",
-    "src/components/ui/**",
-    "src/lib/chart-primitives.tsx",
-    "src/lib/dashboard-chart-utils.ts"
+      "dist/**",
+      "gallery/dist/**",
+      "templates/app/dist/**",
+      "src/components/ui/**",
+      "src/lib/chart-primitives.tsx",
+      "src/lib/dashboard-chart-utils.ts"
   ],
   "overrides": [
-    {
-      "files": [
-        "design-system/previews/**"
-      ],
-      "rules": {
-        "react/only-export-components": "off"
+      {
+          "files": [
+              "design-system/previews/**"
+          ],
+          "rules": {
+              "react/only-export-components": "off"
+          }
       }
-    }
   ]
 }

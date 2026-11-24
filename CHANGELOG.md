@@ -11,11 +11,93 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- **`SettleModal`'s `aria-label` and `aria-labelledby`**, for a dialog without a `title`: a dialog with no name at all
+  says so in the console, once, in development only.
+- **`Sidebar`'s `drawerId`**, the id of the drawer a phone shows, for the button that opens it to name
+  (`aria-controls`); `AppShell` gives it, and its button says whether the drawer is open (`aria-expanded`).
+- **`SpringSelect` takes `id`** (for a `Field`'s `htmlFor`), `aria-label`, `aria-labelledby`, `aria-describedby`,
+  `aria-invalid`, and `name` (its value sent with a form, through a hidden input).
+- **`Switch` and `StretchSwitch` take `id`, `name`, `value`, `required`, `ref`**, `aria-label`, `aria-labelledby`,
+  `aria-describedby` and `aria-invalid`; with a `name`, they are sent with their form while on, as a checkbox is.
+- **`SmoothAccordion`'s `headingLevel`** (`2`…`6`): each question in a heading of that level, which a screen reader
+  lists with the page's; none by default, drawn the same.
+- **`announce(message, politeness)`**, new export (with its type `Politeness`): what an application says to a screen
+  reader once something has happened, through the package's live regions, there before its words, politely or at once
+  (`'assertive'`); in the dialog that keeps the focus, where a screen reader listens.
+- **Held to axe**: every page of the gallery and every layer its examples open, by axe-core in the tests (WCAG 2.2, A
+  and AA; `test/a11y.ts`), and the code by the linter's accessibility rules (`jsx-a11y`), EasyUI's copies included.
+
+### Changed
+
+- **What a component says to its developer** (a dialog without a name, more series than a chart compares) is said
+  once, in development only: a production build keeps none of its words (`check:package` holds it). A chart of five
+  series said it in production too.
+- **A control whose `FormItem` says it is wrong is drawn in error** (`Input`, `Select`, `Textarea`): its `error`, or a
+  `FormMessage` under it, as under a `Field` with an error.
+- **What an application bundles grows by 3.2 kB gzipped** (the whole package 182.6 kB, the template 182.2 kB with React
+  and the rest): what keeps the focus, says things to screen readers and ties a field's parts together.
+- **`SpringSelect`'s `onChange` is told of a change only** (choosing the value it has says nothing), and a click on its
+  label gives it the focus without opening its list, as a select's label does.
+
 ### Fixed
 
+- **A phone's drawer keeps the focus** (`AppShell`, `Sidebar`): opened, the focus goes to the page shown in it, Tab stays
+  in it, Escape or its new close button closes it, and the focus goes back to the button that opened it. It stayed on
+  the page behind the drawer's scrim, which a screen reader was told was out of reach (`aria-modal`).
+- **A toast is said as it comes, what went wrong at once** (`useToast`, `UndoToast`, `VelocityToast`): its words go in a
+  live region there before them (`ToastProvider` holds two from the start, `status` and `alert`), where a region drawn
+  with its words was missed by some screen readers, and an error was said politely.
+- **`SettleModal` leaves Escape to what is inside it**: Escape taken by a field or a menu in a dialog no longer closes
+  the dialog as well.
+- **`SpringSelect` is chosen from the keyboard, and heard as a combobox.** The focus stays on its button, whose keys
+  open the list on the value, move in it past what cannot be chosen (the arrows, Home, End, PageUp, PageDown, the first
+  letters of an option) and choose (Enter, Space, Tab), Escape closing it without a change; a screen reader hears its
+  label, the option the keys are on and its error. Its keys opened the list and chose nothing (the focus never went into
+  it), and a panel's overflow cut the list, drawn over the page now.
+- **`FormItem` ties its parts together**: `FormLabel` names its control, and a screen reader reads `FormDescription` and
+  `FormMessage` with it and hears it invalid while a message is under it. Nothing tied them: a label without `htmlFor`
+  named no control, and the item's `error` was written on its `div`.
+- **`Switch` and `StretchSwitch` can be named and described from outside**: `aria-label`, `aria-labelledby`, or the
+  label, description and error of a `Field` or a `FormItem` around them; a screen reader heard "switch, off" and no
+  more. A press on a switch's words inside a `Field` turns it once (the label passed the press on, turning it back).
+- **`Combobox` names its search and its list** after its field (its `Field`'s label, `aria-label`, `aria-labelledby`):
+  the search had its placeholder alone, the list no name. "No results." is said beside the list, which holds options.
+- **`DragToConfirm` says how far it is while it is dragged** ("40%", then the confirmed words), and that it is disabled:
+  it kept the value of its last render, 0 through a whole drag.
+- **`SmoothAccordion` ties each question to its answer**: the answer is a region named by its question, which says
+  what it opens and no longer submits a form it is in.
+- **`AirportMatrixClock` is read**: each row's time and city as text ("15:13, Paris"), the region named by its title; it
+  read none (names given to spans, which take none) and named the region with every time.
+- **`TimeRangePicker` names the panel of an end by its tab** (Absolute, Relative, Now); its own fields keep out of a
+  `Field` or a `FormItem` it is in, as `LogViewer`'s search does (they took its id: two elements had it).
+- **`Hint` stays while the pointer goes onto it** (WCAG 1.4.13): it waits 120 ms once the pointer has left its control,
+  and a press on it leaves it; it closed at once, its words out of reach of the pointer. Escape still hides it.
+- **`DonutChart` says its figures once**, in its table for a screen reader and its legend for a keyboard: its
+  segments were each named by a label on a path, which takes none.
+- **`SmartComparison` is a table a screen reader can walk**: its search, its toggle and the plan switcher above the
+  table, a group's toggle in a row of its own, "nothing found" in a cell; they stood loose among its rows (axe:
+  critical). What names it names the table.
+- **An `IconButton` with a `hint` gets the focus back when a `Popover` it opens closes**: the popover silences its hint
+  while open, and the button, drawn without its `Hint` then, was another one once closed: the focus went to the page.
+- **`FlysheetTrigger` says it opens a dialog only when the sheet covers the page**: one that pushes the page aside is a
+  region beside it, not a popup.
 - **CI's job on Node 22.12** builds the package and checks it as an application installs it (`check:package`), and no
   longer runs the tests, whose jsdom needs Node 22.22.2, 24.15 or later: it failed on every run, and held the
   gallery's publication back. `npm run release` and the tests ask for the Node of `.nvmrc` (24) before anything else.
+
+### Upgrading
+
+An application changes nothing in its code. Its tests may:
+
+- find a toast in the region it is said in, `within(screen.getByRole('status')).getByText('Saved')`: the region stays,
+  empty, once the toast has left;
+- read a `DonutChart`'s figures in its table or its legend, not on its segments (`Shop: 560`);
+- find `SmartComparison`'s `role="table"` inside the element its `className` goes to;
+- leave out, under a `FormItem` or a `Field`, the ids, `aria-describedby`, `aria-invalid` and `error` they wrote by hand
+  (they are kept if given); an `Input`, a `Select` or a `Textarea` with a `FormMessage` under it is drawn in error now;
+- expect no `onChange` from a `SpringSelect` given the value it has.
 
 ## [0.24.0] - 2026-11-24
 

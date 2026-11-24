@@ -11,5 +11,5 @@ The tooltip under `Hint`: it comes from the side asked, or the other one when th
 ```
 
 - Pages use `Hint`, which is built on it. Never a `title` attribute.
-- It shows on hover, on keyboard focus and on a tap; Escape, a tap elsewhere or a scroll hides it. Screen readers read it as the trigger's description, shown or not.
+- It shows on hover, on keyboard focus and on a tap; Escape, a tap elsewhere or a scroll hides it. The pointer can go onto it: it waits 120 ms once the pointer has left its trigger, and stays while the pointer is over it. Screen readers read it as the trigger's description, shown or not.
 - It floats in the document's body, kept on the screen: `surface`, `border`, `text-primary`, `shadow-elevated`, `radius-md`; `glass-float` under glass.

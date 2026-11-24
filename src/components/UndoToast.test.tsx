@@ -70,10 +70,23 @@ describe('UndoToast', () => {
     await act(async () => {
       await new Promise((resolve) => realTimeout(resolve, 400))
     })
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    // Gone, its frame left empty: the live region it is said in, there for the next time.
+    expect(screen.queryByText('2 files removed')).not.toBeInTheDocument()
+    expect(screen.getByRole('status')).toBeEmptyDOMElement()
 
     rerender(toast(true))
     await advance(2000)
     expect(left()).toBeCloseTo(75, 0)
+  })
+
+  it('is said in its frame, a live region there before its words; what went wrong at once', async () => {
+    const toast = (open: boolean, variant?: 'error') => <UndoToast open={open} variant={variant} title="2 files removed" duration={8000} />
+    const { rerender } = render(toast(false))
+    expect(screen.getByRole('status')).toBeEmptyDOMElement()
+    rerender(toast(true))
+    await advance(0)
+    expect(screen.getByRole('status')).toHaveTextContent('2 files removed')
+    rerender(toast(true, 'error'))
+    expect(screen.getByRole('alert')).toHaveTextContent('2 files removed')
   })
 })

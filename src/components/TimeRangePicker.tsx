@@ -14,6 +14,7 @@ import { SegmentedControl } from './SegmentedControl.js'
 import { Button } from './ui/button.js'
 import { Calendar } from './ui/calendar.js'
 import { DrawCheckbox } from './ui/draw-checkbox.js'
+import { FieldContext } from './field-context.js'
 import { Select } from './ui/form.js'
 
 export interface CommonRange {
@@ -55,6 +56,14 @@ const REFRESH_UNITS: { value: 's' | 'm' | 'h'; label: string; ms: number }[] = [
 ]
 
 /** The interval in its largest whole unit: 90 s is 90 seconds, 120 s two minutes. */
+/**
+ * What a popover of the picker holds: its own fields, never the field of a Field or a FormItem the picker is in (its
+ * id, what describes it): its Selects would take them, twice over.
+ */
+function OwnFields({ children }: { children: ReactNode }) {
+  return <FieldContext.Provider value={null}>{children}</FieldContext.Provider>
+}
+
 function inUnits(interval: number): { count: number; unit: 's' | 'm' | 'h' } {
   const unit = [...REFRESH_UNITS].reverse().find((each) => interval >= each.ms && interval % each.ms === 0) ?? REFRESH_UNITS[0]
   return { count: Math.max(1, Math.round(interval / unit.ms)), unit: unit.value }
@@ -165,7 +174,9 @@ export function AutoRefresh({ value, onChange, onRefresh, className }: AutoRefre
         </Button>
       }
     >
-      <RefreshEvery settings={value} onChange={onChange} />
+      <OwnFields>
+        <RefreshEvery settings={value} onChange={onChange} />
+      </OwnFields>
     </Popover>
   )
 }
@@ -298,6 +309,14 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
     return `now${p ? '-' : '+'}${c ?? 1}${u}${r ? `/${u}` : ''}`
   }
   const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`
+  // Each tab says which panel it shows (aria-controls), and each panel is named by its tab's words, which carry an id
+  // (SegmentedControl gives its tabs none).
+  const labelledBy = (each: EndMode) => `${panel}-${each}-tab`
+  const tab = (each: EndMode, words: string) => ({
+    value: each,
+    label: <span id={labelledBy(each)}>{words}</span>,
+    panelId: `${panel}-${each}`,
+  })
 
   return (
     <div className="flex w-[19rem] max-w-[calc(100vw-2rem)] flex-col gap-3">
@@ -313,14 +332,10 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
           else if (next === 'relative') onChange(relativeText({}))
           else onChange(localIso(date))
         }}
-        options={[
-          { value: 'absolute', label: 'Absolute', panelId: `${panel}-absolute` },
-          { value: 'relative', label: 'Relative', panelId: `${panel}-relative` },
-          { value: 'now', label: 'Now', panelId: `${panel}-now` },
-        ]}
+        options={[tab('absolute', 'Absolute'), tab('relative', 'Relative'), tab('now', 'Now')]}
       />
       {mode === 'absolute' && (
-        <div id={`${panel}-absolute`} role="tabpanel" className="flex flex-col gap-2">
+        <div id={`${panel}-absolute`} role="tabpanel" aria-labelledby={labelledBy('absolute')} className="flex flex-col gap-2">
           <Calendar
             mode="single"
             value={date}
@@ -352,7 +367,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
         </div>
       )}
       {mode === 'relative' && (
-        <div id={`${panel}-relative`} role="tabpanel" className="flex flex-col gap-3">
+        <div id={`${panel}-relative`} role="tabpanel" aria-labelledby={labelledBy('relative')} className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <div className="w-16">
               <NumberInput
@@ -407,7 +422,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
         </div>
       )}
       {mode === 'now' && (
-        <div id={`${panel}-now`} role="tabpanel" className="flex flex-col gap-2 text-sm text-muted-foreground">
+        <div id={`${panel}-now`} role="tabpanel" aria-labelledby={labelledBy('now')} className="flex flex-col gap-2 text-sm text-muted-foreground">
           <p>Now is the moment the range is read: each refresh moves it.</p>
           <Button size="sm" variant="outline" onClick={() => onChange('now')}>
             Set the {which} to now
@@ -503,13 +518,15 @@ export function TimeRangePicker({
           </button>
         }
       >
-        <EndEditor
-          which={which}
-          value={text}
-          locale={locale}
-          weekStartsOn={weekStartsOn}
-          onChange={(next) => setDraft((now) => (which === 'start' ? { ...now, from: next } : { ...now, to: next }))}
-        />
+        <OwnFields>
+          <EndEditor
+            which={which}
+            value={text}
+            locale={locale}
+            weekStartsOn={weekStartsOn}
+            onChange={(next) => setDraft((now) => (which === 'start' ? { ...now, from: next } : { ...now, to: next }))}
+          />
+        </OwnFields>
       </Popover>
     )
   }
@@ -535,7 +552,9 @@ export function TimeRangePicker({
             </button>
           }
         >
-          <QuickSelect apply={apply} commonlyUsed={commonlyUsed} recentlyUsed={recent} refresh={refresh} onRefreshChange={onRefreshChange} />
+          <OwnFields>
+            <QuickSelect apply={apply} commonlyUsed={commonlyUsed} recentlyUsed={recent} refresh={refresh} onRefreshChange={onRefreshChange} />
+          </OwnFields>
         </Popover>
         <span aria-hidden className="h-5 w-px shrink-0 bg-border" />
         {dates || changed ? (

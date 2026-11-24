@@ -4,6 +4,9 @@ import React, { useId, useState } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
+// ioiti-ui: what a Field or a FormItem around it tells it (its id, what describes it, whether it is wrong).
+import { invalidOf } from '../../lib/field-border.js';
+import { joinIds, useFieldControl } from '../field-context.js';
 
 export interface StretchSwitchProps {
   checked?: boolean;
@@ -13,6 +16,24 @@ export interface StretchSwitchProps {
   label?: React.ReactNode;
   description?: string;
   className?: string;
+  /** ioiti-ui: the switch's id, for a `<label htmlFor>` elsewhere; in a FormItem, the item's, which its FormLabel names. */
+  id?: string;
+  /** ioiti-ui: the name it is sent under with its form while on, as a checkbox is; nothing is sent while off. */
+  name?: string;
+  /** ioiti-ui: what it sends under its `name` while on. */
+  value?: string;
+  /** ioiti-ui: it must be on (`aria-required`): the page checks it, and says so. */
+  required?: boolean;
+  /** ioiti-ui: its name, where no label names it (its own, a Field's, a FormLabel). */
+  'aria-label'?: string;
+  /** ioiti-ui: the id of what names it: a heading, a label elsewhere. */
+  'aria-labelledby'?: string;
+  /** ioiti-ui: the ids of what is read out with it, after its description; a Field or a FormItem around it adds its own. */
+  'aria-describedby'?: string;
+  /** ioiti-ui: marked invalid, as a Field or a FormItem in error marks it. */
+  'aria-invalid'?: boolean | 'true' | 'false';
+  /** ioiti-ui: the switch itself (its button), to focus it. */
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 const TRACK_WIDTH = 36; // px (w-9)
@@ -42,11 +63,27 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
   label,
   description,
   className,
+  id: givenId,
+  name,
+  value = 'on',
+  required,
+  'aria-label': ariaLabel,
+  'aria-labelledby': labelledBy,
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
+  ref,
 }) => {
   const [isOn, setIsOn] = useState(defaultChecked);
   const id = useId();
   const isControlled = checked !== undefined;
   const current = isControlled ? checked : isOn;
+  // ioiti-ui: named and described from outside too (`aria-*`, a Field or a FormItem around it), its id from a
+  // FormItem, whose FormLabel then names it; it could take none of them.
+  const control = useFieldControl({
+    id: givenId,
+    describedBy: joinIds(description ? `${id}-description` : null, describedBy),
+    invalid: invalidOf(undefined, ariaInvalid),
+  });
 
   const x = useMotionValue(current ? TRAVEL : 0);
   const [isPressed, setIsPressed] = useState(false);
@@ -78,7 +115,11 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
       {(label || description) && (
         <div
           className={cn('text-left cursor-pointer', disabled && 'cursor-not-allowed')}
-          onClick={handleToggle}
+          onClick={(event) => {
+            // ioiti-ui: a label around the switch (a Field's) would pass this click on to it, turning it back.
+            event.preventDefault();
+            handleToggle();
+          }}
         >
           {label && (
             <div id={`${id}-label`} className="text-sm font-medium text-foreground leading-tight">{label}</div>
@@ -92,11 +133,16 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
       )}
 
       <button
+        ref={ref}
+        id={control.id}
         type="button"
         role="switch"
         aria-checked={current}
-        aria-labelledby={label ? `${id}-label` : undefined}
-        aria-describedby={description ? `${id}-description` : undefined}
+        aria-label={ariaLabel}
+        aria-labelledby={labelledBy ?? (label && !ariaLabel ? `${id}-label` : undefined)}
+        aria-describedby={control.describedBy}
+        aria-invalid={control.invalid || undefined}
+        aria-required={required || undefined}
         disabled={disabled}
         onPointerDown={() => !disabled && setIsPressed(true)}
         onPointerUp={() => setIsPressed(false)}
@@ -121,6 +167,9 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
           )}
         />
       </button>
+      {/* ioiti-ui: sent with its form while on, as a checkbox is: a hidden input, which a label around the switch (a
+          Field's) cannot take for its control, as it would a checkbox. */}
+      {name && current ? <input type="hidden" name={name} value={value} disabled={disabled} /> : null}
     </div>
   );
 };

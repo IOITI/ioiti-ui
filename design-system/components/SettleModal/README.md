@@ -13,5 +13,6 @@ A dialog, in four widths (and a full one, for two things side by side): it settl
 ```
 
 - One dialog at a time, drawn in the document's body. The focus moves into it, Tab stays in it, and it goes back to what opened it; Escape or a click outside closes it.
+- Named by its `title`; one without a title is named by `aria-label` (or `aria-labelledby`), or a screen reader says "dialog" and nothing else: in development, a dialog with no name says so in the console.
 - The footer is on the right: a ghost Cancel, then the one primary button. To confirm what cannot be undone, `ConfirmAction` (built on it). A record beside the page is a `Flysheet`.
 - It draws with `surface`, `border`, `text-primary`, `text-secondary`, `shadow-elevated` and `radius-2xl`, over a black scrim at 50%; under glass, `glass-float` over `glass-scrim`.

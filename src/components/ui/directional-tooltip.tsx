@@ -62,6 +62,12 @@ const arrowStyles: Record<TooltipSide, { position: string; borderColorSide: stri
 const EDGE = 8;
 
 /**
+ * ioiti-ui: how long it stays once the pointer has left its trigger, or itself (ms): time for the pointer to cross the
+ * gap onto it, or back (WCAG 1.4.13, content on hover is hoverable).
+ */
+const GRACE = 120;
+
+/**
  * ioiti-ui: where the tooltip goes, on the screen: beside its trigger on its side, flipped to the other side when
  * there is no room, and kept inside the screen. Fixed coordinates, so that no scrolling or clipping parent
  * (a table) cuts it.
@@ -119,17 +125,33 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
   const triggerRef = useRef<HTMLElement | null>(null);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const timeoutRef = useRef<number | null>(null);
+  // ioiti-ui: the closing the pointer leaving asks for, after GRACE.
+  const closeTimeoutRef = useRef<number | null>(null);
   const [place, setPlace] = useState<{ left: number; top: number; side: TooltipSide; arrow: number } | null>(null);
   const id = useId();
   const descriptionId = `${id}-description`;
 
-  const handleOpen = () => {
+  // ioiti-ui: what opens, closes or toggles it calls off both the opening and the closing still to come.
+  const clearTimers = () => {
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    if (closeTimeoutRef.current) window.clearTimeout(closeTimeoutRef.current);
+  };
+  const handleOpen = () => {
+    clearTimers();
     timeoutRef.current = window.setTimeout(() => setOpen(true), delayDuration);
   };
   const handleClose = () => {
-    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    clearTimers();
     setOpen(false);
+  };
+  // ioiti-ui: the pointer gone from the trigger or the tooltip: it closes after GRACE, unless the pointer comes onto
+  // the tooltip (or back onto its trigger) first. It closed at once, before the pointer could reach it.
+  const closeSoon = () => {
+    clearTimers();
+    closeTimeoutRef.current = window.setTimeout(() => setOpen(false), GRACE);
+  };
+  const stayOpen = () => {
+    if (closeTimeoutRef.current) window.clearTimeout(closeTimeoutRef.current);
   };
 
   // ioiti-ui: nothing to say, nothing shown: a field can stay wrapped while its hint comes and goes (rewrapped, it would lose the focus).
@@ -145,11 +167,12 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
     setPlace(placement(trigger.getBoundingClientRect(), { width: box.offsetWidth, height: box.offsetHeight }, side, align, offset));
   }, [isOpen, side, align, offset, content]);
 
-  // ioiti-ui: a tap elsewhere, Escape, or the page scrolling hides it.
+  // ioiti-ui: a tap elsewhere (than its trigger and itself), Escape, or the page scrolling hides it.
   useEffect(() => {
     if (!open) return;
     const outside = (event: PointerEvent) => {
-      if (!triggerRef.current?.contains(event.target as Node)) handleClose();
+      const target = event.target as Node;
+      if (!triggerRef.current?.contains(target) && !boxRef.current?.contains(target)) handleClose();
     };
     const escape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') handleClose();
@@ -166,6 +189,8 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
 
   useEffect(() => () => {
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    // ioiti-ui: and the closing asked for.
+    if (closeTimeoutRef.current) window.clearTimeout(closeTimeoutRef.current);
   }, []);
 
   // Clone the trigger and wire ref + hover handlers
@@ -185,7 +210,8 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
       (children.props as any).onMouseEnter?.(e);
     },
     onMouseLeave: (e: React.MouseEvent) => {
-      handleClose();
+      // ioiti-ui: not at once, for the pointer to reach the tooltip.
+      closeSoon();
       (children.props as any).onMouseLeave?.(e);
     },
     onFocus: (e: React.FocusEvent) => {
@@ -199,7 +225,7 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
     // ioiti-ui: a tap shows it, or hides it again: a phone has no hover.
     onPointerDown: (e: React.PointerEvent) => {
       if (e.pointerType === 'touch') {
-        if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+        clearTimers();
         setOpen((current) => !current);
       }
       (children.props as any).onPointerDown?.(e);
@@ -234,10 +260,14 @@ export const DirectionalTooltip: React.FC<DirectionalTooltipProps> = ({
                 // ioiti-ui: it leaves quicker than it came (easeExit), as everything that floats.
                 exit={{ opacity: 0, scale: 0.96, x: offsetT.x * 0.5, y: offsetT.y * 0.5, transition: motionTransitions.easeExit }}
                 transition={motionTransitions.springSnappy}
+                // ioiti-ui: the pointer over it keeps it (it took no pointer, and closed as the pointer went for it);
+                // leaving it closes it as leaving the trigger does.
+                onMouseEnter={stayOpen}
+                onMouseLeave={closeSoon}
                 // ioiti-ui: long hints wrap, within the screen; glass under the glass material (glass-float).
                 className={cn(
                   TOOLTIP,
-                  'fixed z-[60] w-max max-w-[min(20rem,calc(100vw-1rem))] whitespace-normal px-2.5 py-1.5 text-xs leading-relaxed pointer-events-none',
+                  'fixed z-[60] w-max max-w-[min(20rem,calc(100vw-1rem))] whitespace-normal px-2.5 py-1.5 text-xs leading-relaxed',
                   className
                 )}
                 style={place ? { left: place.left, top: place.top } : { left: -9999, top: -9999 }}

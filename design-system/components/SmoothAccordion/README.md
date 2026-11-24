@@ -2,7 +2,7 @@
 
 Questions and their answers, opened one at a time or several: an answer eases open under its question, and the chevron turns.
 
-**You provide** `items` (`[{ id, title, subtitle?, content }]`); `defaultOpen` (the ids open at first), `allowMultiple` (several open at once; one at a time by default).
+**You provide** `items` (`[{ id, title, subtitle?, content }]`); `defaultOpen` (the ids open at first), `allowMultiple` (several open at once; one at a time by default); `headingLevel` (`2`…`6`: each question in a heading of that level, for a page whose outline they belong to; none by default, drawn the same either way).
 
 ```tsx
 <SmoothAccordion defaultOpen={['returns']} items={[
@@ -11,6 +11,6 @@ Questions and their answers, opened one at a time or several: an answer eases op
 ]} />
 ```
 
-- Each question is a button (`aria-expanded`): Tab moves between them, Enter or Space opens and closes.
+- Each question is a button (`aria-expanded`, and `aria-controls` its answer while it is open), its answer a region named by it: Tab moves between them, Enter or Space opens and closes.
 - One box, hairlines between its items, a `subtitle` in `muted-foreground`; `glass-card` under glass.
 - A single "more" under a figure or a table is a `Disclosure` (the browser's `<details>`, which find in the page opens). Views of one thing, one shown at a time: `AnimatedTabs`.

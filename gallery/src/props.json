@@ -3660,7 +3660,7 @@
    {
     "name": "description",
     "type": "ReactNode",
-    "description": "What the value is for, or how to write it: under the control, in muted text, read out with it (`aria-describedby`, when the control is one element). The label alone names the control."
+    "description": "What the value is for, or how to write it: under the control, in muted text, read out with it (`aria-describedby`). The label alone names the control."
    },
    {
     "name": "error",
@@ -3670,7 +3670,7 @@
    {
     "name": "htmlFor",
     "type": "string",
-    "description": "The control's `id`, for a control that must not sit inside its label: a Combobox (a label passes an option's click on to its field). The label is then beside it, and names it by `htmlFor`."
+    "description": "The control's `id`, for a control that must not sit inside its label: a Combobox (a label passes an option's click on to its field). The label is then beside it, and names it by `htmlFor`; the package's Input, Select, Textarea and switches take it without being given it."
    },
    {
     "name": "className",
@@ -3680,7 +3680,7 @@
     "name": "children",
     "type": "ReactNode",
     "required": true,
-    "description": "The control: an Input, a Select, a Combobox…"
+    "description": "The control: an Input, a Select, a Combobox, a Switch…"
    }
   ]
  },
@@ -3924,7 +3924,8 @@
   "props": [
    {
     "name": "error",
-    "type": "string"
+    "type": "string",
+    "description": "What is wrong with its value: its control is marked invalid (`aria-invalid`), as a FormMessage under it marks it."
    }
   ],
   "inherits": {
@@ -6782,6 +6783,16 @@
     "description": "Hide the close (X) button in the top-right"
    },
    {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, for a dialog without a `title`: a screen reader says \"dialog\" and nothing else without one. In development, a dialog with neither says so in the console."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it, where that is not its `title` (a heading of its own in `children`)."
+   },
+   {
     "name": "closeOnBackdrop",
     "type": "boolean",
     "default": "true",
@@ -6888,6 +6899,11 @@
    {
     "name": "onMobileOpenChange",
     "type": "(open: boolean) => void"
+   },
+   {
+    "name": "drawerId",
+    "type": "string",
+    "description": "The id of the drawer a phone shows, for the control that opens it to name (`aria-controls`, as AppShell's does)."
    },
    {
     "name": "className",
@@ -7282,6 +7298,18 @@
     "default": "[]"
    },
    {
+    "name": "headingLevel",
+    "type": "2 | 3 | 4 | 5 | 6",
+    "values": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
+    ],
+    "description": "Each question in a heading of this level, which a screen reader lists with the page's own (none by default); drawn as without it."
+   },
+   {
     "name": "className",
     "type": "string"
    }
@@ -7607,6 +7635,36 @@
     "name": "className",
     "type": "string",
     "description": "Custom class name for the root"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The trigger's id, for a `<label htmlFor>` (a `Field htmlFor`)."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The value is sent with the form around it under this name (a hidden input)."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, where no `label` is shown."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it, in place of its `label`."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
    }
   ]
  },
@@ -7925,6 +7983,52 @@
    {
     "name": "className",
     "type": "string"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The switch's id, for a `<label htmlFor>` elsewhere; in a FormItem, the item's, which its FormLabel names."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name it is sent under with its form while on, as a checkbox is; nothing is sent while off."
+   },
+   {
+    "name": "value",
+    "type": "string",
+    "default": "'on'",
+    "description": "What it sends under its `name` while on."
+   },
+   {
+    "name": "required",
+    "type": "boolean",
+    "description": "It must be on (`aria-required`): the page checks it, and says so."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, where no label names it (its own, a Field's, a FormLabel)."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it: a heading, a label elsewhere."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "The ids of what is read out with it, after its description; a Field or a FormItem around it adds its own."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field or a FormItem in error marks it."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLButtonElement>",
+    "description": "The switch itself (its button), to focus it."
    }
   ]
  },
@@ -7961,6 +8065,52 @@
    {
     "name": "className",
     "type": "string"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The switch's id, for a `<label htmlFor>` elsewhere; in a FormItem, the item's, which its FormLabel names."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name it is sent under with its form while on, as a checkbox is; nothing is sent while off."
+   },
+   {
+    "name": "value",
+    "type": "string",
+    "default": "'on'",
+    "description": "What it sends under its `name` while on."
+   },
+   {
+    "name": "required",
+    "type": "boolean",
+    "description": "It must be on (`aria-required`): the page checks it, and says so."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, where no label names it (its own, a Field's, a FormLabel)."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it: a heading, a label elsewhere."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "The ids of what is read out with it, after its description; a Field or a FormItem around it adds its own."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field or a FormItem in error marks it."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLButtonElement>",
+    "description": "The switch itself (its button), to focus it."
    }
   ]
  },
