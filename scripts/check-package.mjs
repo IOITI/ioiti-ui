@@ -1,18 +1,25 @@
 // What an application gets when it installs ioiti-ui, checked end to end: the package packed as a
 // release ships it, installed into a copy of the starter template (templates/app), the template
-// built, and the result read. Run after `npm run build`.
+// built, the result read, and what an application bundles weighed. Run after `npm run build`.
 //
-//   npm run check:package [-- --keep]     (--keep leaves the temporary folder, and says where)
+//   npm run check:package [-- --keep] [-- --update-budget]
+//
+// --keep leaves the temporary folder, and says where; --update-budget writes what was weighed as the new
+// budget (test/size-budget.json), after a change that weighs more on purpose.
 import { execFileSync } from 'node:child_process'
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { gzipSync } from 'node:zlib'
+
+import { build } from 'vite'
 
 import { topLevelBlocks } from './golden-from.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const keep = process.argv.includes('--keep')
+const updateBudget = process.argv.includes('--update-budget')
 const failures = []
 
 function check(ok, what) {
@@ -95,6 +102,66 @@ const FILES = [
   'dist/code/index.d.ts',
 ]
 
+// What is weighed: one component alone (tree-shaking holds: it bundles what it uses, not the package), then each
+// entry whole. The peers (React, framer-motion, the router, CodeMirror) are the application's own: left out here,
+// counted in the template, which has them all.
+const WEIGHED = {
+  'Button, alone': "export { Button } from 'ioiti-ui'",
+  'ioiti-ui, whole': "export * from 'ioiti-ui'",
+  'ioiti-ui/react-router, whole': "export * from 'ioiti-ui/react-router'",
+  'ioiti-ui/code, whole (its languages included)': "export * from 'ioiti-ui/code'",
+}
+const PEERS = /^(?:react|react-dom|framer-motion|react-router)(?:\/|$)|^@(?:codemirror|lezer)\//
+const BUDGET = join(root, 'test/size-budget.json')
+
+/** What a module of the application bundles from the installed package, minified and gzipped (bytes, its chunks summed). */
+async function bundled(app, work, source) {
+  const entry = join(app, `weighed-${Object.values(WEIGHED).indexOf(source)}.js`)
+  writeFileSync(entry, `${source}\n`)
+  const results = await build({
+    root: app,
+    configFile: false,
+    logLevel: 'silent',
+    publicDir: false,
+    build: {
+      write: false,
+      minify: true,
+      outDir: join(work, 'weighed'),
+      emptyOutDir: false,
+      lib: { entry, formats: ['es'], fileName: 'weighed' },
+      rolldownOptions: { external: (id) => PEERS.test(id) },
+    },
+  })
+  return [results]
+    .flat()
+    .flatMap((result) => result.output)
+    .filter((file) => file.type === 'chunk')
+    .reduce((sum, chunk) => sum + gzipSync(chunk.code).length, 0)
+}
+
+/** Each weight against its budget (and its tolerance), the one component against the whole; or the budget written. */
+function weigh(measured) {
+  const kB = (bytes) => `${(bytes / 1024).toFixed(1)} kB`
+  const budget = existsSync(BUDGET) ? JSON.parse(readFileSync(BUDGET, 'utf8')) : { tolerance: 0.05, gzipped: {} }
+  const tolerance = `+${Math.round(budget.tolerance * 100)} %`
+  for (const [name, size] of Object.entries(measured)) {
+    const allowed = budget.gzipped[name]
+    if (updateBudget) console.log(`     ${name}: ${kB(size)} gzipped`)
+    else if (allowed === undefined) check(false, `${name}: ${kB(size)} gzipped, and no budget for it (npm run check:package -- --update-budget)`)
+    else {
+      check(size <= allowed * (1 + budget.tolerance), `${name}: ${kB(size)} gzipped, within its budget of ${kB(allowed)} (${tolerance})`)
+      if (size < allowed * (1 - budget.tolerance)) console.log(`     ${name} weighs less than its budget: --update-budget records it`)
+    }
+  }
+  const [one, whole] = [measured['Button, alone'], measured['ioiti-ui, whole']]
+  check(one * 10 <= whole, `one component bundles a tenth of the package at most (${kB(one)} of ${kB(whole)}): the rest is shaken off`)
+  if (updateBudget) {
+    const about = 'What an application bundles, gzipped, in bytes (scripts/check-package.mjs). A change that weighs more on purpose writes it again: npm run check:package -- --update-budget.'
+    writeFileSync(BUDGET, `${JSON.stringify({ about, tolerance: budget.tolerance, gzipped: measured }, null, 2)}\n`)
+    console.log(`     the budget written: ${BUDGET}`)
+  }
+}
+
 if (!existsSync(join(root, 'dist/index.js'))) {
   console.error('check:package: nothing built yet (npm run build)')
   process.exit(1)
@@ -176,6 +243,14 @@ try {
 
   run('node', ['--input-type=module', '-e', "await import('ioiti-ui'); await import('ioiti-ui/react-router'); await import('ioiti-ui/vite')"], app)
   check(true, 'Node imports ioiti-ui, ioiti-ui/react-router and ioiti-ui/vite')
+
+  // What an application bundles, gzipped, held to its budget: one component alone, each entry whole, the template.
+  const measured = {}
+  for (const [name, source] of Object.entries(WEIGHED)) measured[name] = await bundled(app, work, source)
+  const gzippedAssets = (suffix) => assets.filter((name) => name.endsWith(suffix)).reduce((sum, name) => sum + gzipSync(readFileSync(join(dist, 'assets', name))).length, 0)
+  measured['the template: its JavaScript'] = gzippedAssets('.js')
+  measured['the template: its CSS'] = gzippedAssets('.css')
+  weigh(measured)
 } catch (error) {
   failures.push(String(error.message ?? error).split('\n')[0])
 } finally {

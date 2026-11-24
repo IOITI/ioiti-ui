@@ -1,0 +1,42 @@
+# Updates proposed as pull requests, each held by CI like any change: once a week, grouped, to be few.
+version: 2
+updates:
+  # The workflows' actions, pinned to commits: their next versions.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+
+  # The package's dependencies and tools.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dependencies:
+        dependency-type: production
+      tools:
+        dependency-type: development
+        update-types: [minor, patch]
+    ignore:
+      # Pinned on purpose: the golden reference (test/golden/) holds the CSS that this Tailwind CSS builds, and the
+      # fonts the design was taken with. They change by hand, with a new reference (scripts/golden-from.mjs).
+      - dependency-name: tailwindcss
+      - dependency-name: '@tailwindcss/vite'
+      - dependency-name: '@fontsource-variable/*'
+
+  # The starter template, which installs ioiti-ui from a tag (npm run release sets it) and the same Tailwind CSS.
+  - package-ecosystem: npm
+    directory: /templates/app
+    schedule:
+      interval: monthly
+    groups:
+      template:
+        patterns: ['*']
+    ignore:
+      - dependency-name: ioiti-ui
+      - dependency-name: tailwindcss
+      - dependency-name: '@tailwindcss/vite'

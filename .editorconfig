@@ -1,0 +1,14 @@
+# The files as the code writes them: UTF-8, LF, two spaces, a newline at the end.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+# Two spaces at the end of a line are a line break in Markdown.
+trim_trailing_whitespace = false

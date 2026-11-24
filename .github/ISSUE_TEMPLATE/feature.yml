@@ -1,0 +1,21 @@
+name: An idea
+description: A component, a variant or a token the design lacks, or an API to change.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What an application needs
+      description: The page, the case, and what it does today without it.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: How it would look and behave; the components of the gallery it is near.
+  - type: textarea
+    id: api
+    attributes:
+      label: The API it changes, if any
+      description: Nothing changes at once. An old name is kept, deprecated, until 1.0.

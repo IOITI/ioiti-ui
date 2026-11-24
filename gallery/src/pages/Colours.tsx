@@ -394,7 +394,7 @@ export function Colours() {
 
       <Panel
         title="Every look"
-        description="The weakest text and the weakest mark of each of the 20 looks, the text on an accent's gradient included. The design's one exception shows in the dark flat ones: --text-subtle on a hovered surface (4.44)."
+        description={`The weakest text and the weakest mark of each of the ${LOOKS.length} looks, the text on an accent's gradient included. The design's one exception shows in the dark flat ones: --text-subtle on a hovered surface (4.44).`}
         dense
       >
         <EveryLook />

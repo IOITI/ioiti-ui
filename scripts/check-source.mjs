@@ -140,6 +140,20 @@ for (const file of filesUnder('src')) {
     })
 }
 
+// What an application gives a component is drawn as text, which React escapes: no component writes HTML (SECURITY.md).
+// Two write a fixed style sheet of their own as raw HTML, nothing of what they are given: ActivityHeatmap's cells,
+// the 404's drawing.
+const RAW_HTML = /dangerouslySetInnerHTML|\.(?:inner|outer)HTML\s*=|insertAdjacentHTML|document\.write\(/
+const RAW_HTML_EXEMPT = new Set([join('src', 'components', 'ui', 'activity-heatmap.tsx'), join('src', 'components', 'ui', 'not-found.tsx')])
+for (const file of filesUnder('src')) {
+  if (!/\.(ts|tsx)$/.test(file) || /\.test\.(ts|tsx)$/.test(file) || file.startsWith(join('src', 'test')) || RAW_HTML_EXEMPT.has(file)) continue
+  readFileSync(join(root, file), 'utf8')
+    .split('\n')
+    .forEach((line, index) => {
+      if (!/^\s*(\/\/|\*|\/\*)/.test(line) && RAW_HTML.test(line)) problems.push(`${file}:${index + 1}: HTML written raw: draw what is given as text (SECURITY.md)`)
+    })
+}
+
 // The gallery is an application made with the package: it imports `ioiti-ui`, never the package's source.
 for (const file of filesUnder(join('gallery', 'src'))) {
   const text = readFileSync(join(root, file), 'utf8')
@@ -183,4 +197,4 @@ if (problems.length) {
   console.error(`\ncheck-source: ${problems.length} problem${problems.length === 1 ? '' : 's'}`)
   process.exit(1)
 }
-console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, text sizes on the scale, one recipe per role (colours, shadows, radii, curves, disabled), examples import what an application would, no name of the original application')
+console.log('check-source: imports end in .js, react-router only in its adapter, CodeMirror only in src/code, one focus ring, hints not titles, text sizes on the scale, one recipe per role (colours, shadows, radii, curves, disabled), no HTML written raw, examples import what an application would, no name of the original application')

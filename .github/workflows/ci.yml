@@ -8,13 +8,24 @@ on:
   # By hand (Actions > CI > Run workflow): the checks again and, on main, the gallery published again.
   workflow_dispatch:
 
+# Read-only, but where a job says otherwise (the gallery's publication).
+permissions:
+  contents: read
+
+# A pull request's run is cancelled by the next push to it; main's runs each go to the end (the run's own id).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+# The actions are pinned to a commit (the version beside it); .github/dependabot.yml proposes the next ones.
 jobs:
   checks:
     name: Lint, types, tests, builds, and the package as an application gets it
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -26,25 +37,56 @@ jobs:
       - run: npm run build:gallery
       - run: npm run check:package
 
+  # The oldest Node an application may build with (package.json's engines): the package builds, its tests pass, and
+  # the template installs it, builds and weighs it there.
+  node-22:
+    name: The package on Node 22.12, the oldest engines allows
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.12.0
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm run check:package
+
+  # What an application installs with ioiti-ui (its dependencies, not the tools that build it), against npm's advisories.
+  # Apart from the checks: an advisory published tomorrow says so here without holding the gallery back.
+  audit:
+    name: What an application installs, against npm's advisories
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+      - run: npm audit --omit=dev --audit-level=high
+
   # main's gallery on GitHub Pages (https://ioiti.github.io/ioiti-ui/), once every check has passed.
   # Pages publishes what this workflow gives it: Settings > Pages > Source is GitHub Actions.
   gallery:
     name: The gallery, built under the site's path
-    needs: checks
+    needs: [checks, node-22]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       pages: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
       - name: The site's address
         id: pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - run: npm ci
       - run: npm run build
       - name: The gallery on dist/, under the site's path (/ioiti-ui/)
@@ -53,7 +95,7 @@ jobs:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
       - name: Any page's address opens the gallery (Pages answers 404.html where it has no file)
         run: cp gallery/dist/index.html gallery/dist/404.html
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: gallery/dist
 
@@ -61,6 +103,7 @@ jobs:
     name: The gallery, on GitHub Pages
     needs: gallery
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       pages: write
       id-token: write
@@ -73,4 +116,4 @@ jobs:
       cancel-in-progress: false
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

@@ -18,7 +18,8 @@ npm run preview    # serves dist/
 ## Make it yours
 
 - **The name**: `appName` in `src/main.tsx` (the sidebar, every tab's title), the `<title>` of
-  `index.html`, the `name` of `package.json`, `title` in `src/pages/LoginPage.tsx`.
+  `index.html`, the `name` of `package.json`, `title` in `src/pages/LoginPage.tsx`. The sidebar shows the
+  `version` of `package.json` under the name (`src/router.tsx`).
 - **The theme's key**: `themeStorageKey` in `vite.config.ts`. One key per application, or two
   applications on one site share the theme chosen.
 - **The look**: an accent (`neutral`, `violet`, `indigo`, `blue`, `bloom`, `lagoon`, `aurora`, `dusk`, `golden`) and a material (`flat`,
@@ -35,7 +36,7 @@ npm run preview    # serves dist/
 
 ## ioiti-ui
 
-`package.json` names the version used: `github:IOITI/ioiti-ui#v0.3.0`. Another version is another
+`package.json` names the version used: `github:IOITI/ioiti-ui#v0.23.2`. Another version is another
 tag (its CHANGELOG says what changed). `src/index.css` imports Tailwind CSS and the design in one
 line; it never imports `tailwindcss` itself as well.
 

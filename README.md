@@ -1,5 +1,10 @@
 # ioiti-ui
 
+[![CI](https://github.com/IOITI/ioiti-ui/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/IOITI/ioiti-ui/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/tag/IOITI/ioiti-ui?sort=semver&label=version)](https://github.com/IOITI/ioiti-ui/releases)
+[![Licence](https://img.shields.io/badge/licence-MIT-blue)](LICENSE)
+[![Gallery](https://img.shields.io/badge/gallery-every%20component-555)](https://ioiti.github.io/ioiti-ui/)
+
 IOITI's design system: the design tokens, the React components and the application shell of WATA's admin
 interface, as a package any application can install. React 19, Tailwind CSS 4, framer-motion, lucide-react.
 
@@ -10,10 +15,10 @@ interface, as a package any application can install. React 19, Tailwind CSS 4, f
 - **Motion**: calm and the same everywhere, framer-motion's springs and the stylesheets' curves alike. A page
   changes in one cross-fade, the shell still; a look in one cross-fade of the whole page; what floats arrives and
   leaves the same way. Reduced where the system asks.
-- **171 components** (counting their parts): 50 of EasyUI's, reworked for the keyboard, screen readers,
+- **185 components** (counting their parts): 50 of EasyUI's, reworked for the keyboard, screen readers,
   phones and a light theme; the blocks pages are made of (panels, tiles, tables, fields, charts, menus, inputs,
   a range of time, a tour); and the shell (sidebar, top bar, the trail of where a page is, keyboard shortcuts).
-- **Checked**: every text colour is 4.5:1 on every surface of every look (20), one focus ring everywhere, links
+- **Checked**: every text colour is 4.5:1 on every surface of every look (36), one focus ring everywhere, links
   that open in another tab, nothing loaded from another origin (a strict Content-Security-Policy holds).
 
 The gallery shows all of it, in every look: https://ioiti.github.io/ioiti-ui/ (`main`'s, published by CI once every
@@ -23,7 +28,7 @@ code of each, its guidelines and its props; ⌘K finds a component, a part of on
 ## Start a new application
 
 ```bash
-npx degit IOITI/ioiti-ui/templates/app#v0.3.0 my-app
+npx degit IOITI/ioiti-ui/templates/app#v0.23.2 my-app
 cd my-app && npm install && npm run dev
 ```
 
@@ -33,7 +38,7 @@ The template has a sign-in page, the shell with its menu, a dashboard and a list
 ## Add it to an application
 
 ```bash
-npm install github:IOITI/ioiti-ui#v0.3.0 react react-dom framer-motion react-router
+npm install github:IOITI/ioiti-ui#v0.23.2 react react-dom framer-motion react-router
 npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3 vite @vitejs/plugin-react
 ```
 
@@ -246,6 +251,25 @@ default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src
 `style-src` needs `'unsafe-inline'`: the animations set inline styles, and the code editors (`ioiti-ui/code`)
 write their own style sheet when they appear. They draw no mark as a `data:` image.
 
+## Browser support
+
+The browsers Tailwind CSS 4 is made for, and later: **Safari 16.4**, **Chrome and Edge 111**, **Firefox 128**. A
+browser without view transitions changes a page and a look at once instead of in a cross-fade; nothing else differs.
+
+## Node
+
+An application builds with **Node.js 22.12** or later (the Vite plugin runs there, as Vite 8 does); the package
+itself is worked on with Node.js 24 (`.nvmrc`). CI checks the package on both.
+
+## Versions and stability
+
+- **A version is a git tag**, installed as `github:IOITI/ioiti-ui#v0.23.2`. Its notes are in `CHANGELOG.md` and on
+  its GitHub Release: what is added, changed, deprecated, removed and fixed, and under **Upgrading** what an
+  application does about it.
+- **Until 1.0, nothing changes at once.** An API renamed or reshaped keeps its old name working, which says it is
+  deprecated (a warning in the console, once, in development only) and a line of the CHANGELOG's Deprecated says
+  what replaces it; it goes at 1.0. From 1.0, semantic versioning.
+
 ## Working on it
 
 Node.js 24 (`nvm use`).
@@ -253,18 +277,19 @@ Node.js 24 (`nvm use`).
 ```bash
 npm ci
 npm run gallery          # the gallery on the source, http://localhost:5180
-npm run lint             # oxlint, and scripts/check-source.mjs
+npm run lint             # oxlint, scripts/check-source.mjs, scripts/check-docs.mjs, the props
 npm run typecheck
 npm test                 # Vitest and Testing Library, jsdom
 npm run build            # dist/
 npm run build:gallery    # the gallery on dist/
-npm run check:package    # the package as a release packs it, installed into the template, built and read
+npm run check:package    # the package as a release packs it, installed into the template, built, read and weighed
 npm run dev              # dist/ kept built, for an application on a file: link
 ```
 
-`AGENTS.md` holds the conventions of the code; `docs/easyui-changes.md` what was changed in EasyUI's
-components and how to add one; `docs/releasing.md` how a version is made; `docs/fidelity.md` how the design
-is held to the original; `docs/provenance.md` where everything comes from.
+`CONTRIBUTING.md` says how a change is made and proposed; `AGENTS.md` holds the conventions of the code;
+`docs/easyui-changes.md` what was changed in EasyUI's components and how to add one; `docs/releasing.md` how a
+version is made; `docs/fidelity.md` how the design is held to the original; `docs/provenance.md` where everything
+comes from. A flaw that puts an application at risk is reported privately (`SECURITY.md`).
 
 ## Licences
 

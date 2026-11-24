@@ -1,4 +1,4 @@
-import { ACCENTS, CodeBlock, LookPicker, PageHeader, Panel, ThemeToggle, useTheme } from 'ioiti-ui'
+import { ACCENTS, CodeBlock, LookPicker, MATERIALS, PageHeader, Panel, ThemeToggle, useTheme } from 'ioiti-ui'
 import accentsCss from 'ioiti-ui/accents.css?raw'
 import designCss from 'ioiti-ui/design.css?raw'
 import glassCss from 'ioiti-ui/glass.css?raw'
@@ -125,7 +125,7 @@ ioiti({ themeStorageKey: 'my-app.theme', accent: 'violet', material: 'glass' })
             document.body); never on a white text on ink.
           </Rule>
           <Rule title="Every look, checked">
-            The gallery's tests hold text at 4.5:1 and marks at 3:1 on every surface of the 20 looks, glass over its
+            The gallery's tests hold text at 4.5:1 and marks at 3:1 on every surface of the {2 * ACCENTS.length * MATERIALS.length} looks, glass over its
             backdrop's strongest colours, a grain at its strongest speck; a look's tokens are in its own file, in
             blocks of one selector.
           </Rule>

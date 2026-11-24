@@ -1,0 +1,46 @@
+name: Something wrong
+description: A component, a token or the shell that does not do what it says.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: A flaw that puts an application at risk is reported privately (SECURITY.md), never here.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The tag the application installs (its package.json), or main.
+      placeholder: v0.24.0
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens, and what should
+      description: The component, what was done, what was seen. A page or an example of the gallery that shows it helps most.
+    validations:
+      required: true
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options: [Light, Dark, Both]
+    validations:
+      required: true
+  - type: input
+    id: look
+    attributes:
+      label: Accent and material
+      placeholder: neutral, flat
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and system
+      placeholder: Safari 26, macOS
+    validations:
+      required: true
+  - type: textarea
+    id: more
+    attributes:
+      label: What else helps
+      description: Reduced motion, a screen reader, a phone, the console's errors, a screenshot.

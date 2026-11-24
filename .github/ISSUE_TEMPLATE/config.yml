@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: The gallery
+    url: https://ioiti.github.io/ioiti-ui/
+    about: Every component, its examples, guidelines and props, in every look.
+  - name: A security flaw
+    url: https://github.com/IOITI/ioiti-ui/security/advisories/new
+    about: Reported privately, never in an issue (SECURITY.md).

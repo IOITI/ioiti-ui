@@ -3,6 +3,7 @@ import { RouterAppShell, RouterRoot } from 'ioiti-ui/react-router'
 import { LogOut } from 'lucide-react'
 import { createBrowserRouter, useNavigate } from 'react-router'
 
+import { version } from '../package.json'
 import { MENU } from './menu'
 import { HomePage } from './pages/HomePage'
 import { ItemsPage } from './pages/ItemsPage'
@@ -24,7 +25,7 @@ export const router = createBrowserRouter([
         element: (
           <RouterAppShell
             menu={MENU}
-            appDetail="v0.1.0"
+            appDetail={`v${version}`}
             sidebarFooter={<SignOut />}
             topBarEnd={
               <>

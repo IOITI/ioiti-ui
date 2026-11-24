@@ -1,7 +1,14 @@
 import { Button, ButtonLink, CodeBlock, PageHeader, Panel, ThemeToggle, useToast } from 'ioiti-ui'
 import { ArrowRight } from 'lucide-react'
 
+import packageJson from '../../../package.json'
+import templateJson from '../../../templates/app/package.json'
 import { Demo } from '../parts'
+
+// What the commands install, read where a release sets it: the tag of this version, the template's Tailwind CSS.
+const TAG = `v${packageJson.version}`
+const TAILWIND = templateJson.devDependencies.tailwindcss
+const TAILWIND_VITE = templateJson.devDependencies['@tailwindcss/vite']
 
 function ToastButton() {
   const toast = useToast()
@@ -26,14 +33,14 @@ export function GettingStarted() {
       />
 
       <Panel title="Start a new application" description="The starter template has the shell, a sign-in page, a dashboard and a list, ready to change.">
-        <CodeBlock language="shell" code={`npx degit IOITI/ioiti-ui/templates/app#v0.3.0 my-app
+        <CodeBlock language="shell" code={`npx degit IOITI/ioiti-ui/templates/app#${TAG} my-app
 cd my-app && npm install && npm run dev`} />
       </Panel>
 
       <Panel title="Or add it to an application" description="Installed from a tag of its repository: a release carries the package built, nothing is built on install.">
         <div className="space-y-3">
-          <CodeBlock language="shell" code={`npm install github:IOITI/ioiti-ui#v0.3.0 react react-dom framer-motion react-router
-npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`} />
+          <CodeBlock language="shell" code={`npm install github:IOITI/ioiti-ui#${TAG} react react-dom framer-motion react-router
+npm install -D tailwindcss@${TAILWIND} @tailwindcss/vite@${TAILWIND_VITE} vite @vitejs/plugin-react`} />
           <p className="text-sm text-muted-foreground">
             One line of CSS brings Tailwind and the design: the tokens of both themes, the fonts, the focus ring. It
             replaces <code>@import "tailwindcss"</code>, never sits beside it.

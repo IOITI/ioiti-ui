@@ -1,17 +1,23 @@
 name: Verify a release
 
-# A tag is what applications install: check that it installs as it is, from GitHub, and builds.
+# A tag is what applications install: check that it installs as it is, from GitHub, and builds; then give it its
+# GitHub Release, its notes taken from CHANGELOG.md.
 on:
   push:
     tags: ['v*']
+
+# Read-only, but where a job says otherwise (the Release).
+permissions:
+  contents: read
 
 jobs:
   install-the-tag:
     name: The template installs the tag from GitHub and builds
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .nvmrc
       - name: The release commit carries dist/, and nothing for npm to build
@@ -20,10 +26,44 @@ jobs:
           test -f dist/styles/styles.css
           node -e "const m = require('./package.json'); if (m.scripts) { console.error('A release commit has no scripts: npm would build it on install.'); process.exit(1) }"
       - name: The template, on this tag from GitHub
+        # The tag's name reaches the shell as a variable, never written into the script.
+        env:
+          DEPENDENCY: github:${{ github.repository }}#${{ github.ref_name }}
         run: |
           cp -r templates/app "$RUNNER_TEMP/app"
           cd "$RUNNER_TEMP/app"
-          node -e "const f = 'package.json', p = require('./' + f); p.dependencies['ioiti-ui'] = 'github:${{ github.repository }}#${{ github.ref_name }}'; require('fs').writeFileSync(f, JSON.stringify(p, null, 2))"
+          node -e "const f = 'package.json', p = require('./' + f); p.dependencies['ioiti-ui'] = process.env.DEPENDENCY; require('fs').writeFileSync(f, JSON.stringify(p, null, 2))"
           npm install --no-audit --no-fund
           npm run build
           test -f dist/ioiti-theme.js
+
+  # The Release says what the CHANGELOG says of the version (scripts/release-notes.mjs), once the tag is known to
+  # install; a pre-release (1.0.0-rc.1) is marked so. Pushed again, the tag's Release takes the notes again.
+  github-release:
+    name: The tag's GitHub Release, its notes from CHANGELOG.md
+    needs: install-the-tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+      - name: The notes
+        run: node scripts/release-notes.mjs "$TAG" > "$RUNNER_TEMP/notes.md"
+        env:
+          TAG: ${{ github.ref_name }}
+      - name: The Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+          else
+            prerelease=()
+            case "$TAG" in *-*) prerelease=(--prerelease) ;; esac
+            gh release create "$TAG" --verify-tag --title "ioiti-ui $TAG" --notes-file "$RUNNER_TEMP/notes.md" "${prerelease[@]}"
+          fi

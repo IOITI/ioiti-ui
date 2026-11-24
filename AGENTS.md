@@ -18,9 +18,10 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
 | `gallery/` | an application made with the package: a page per component, in both themes (`gallery/src/components/<category>/`: its `category.ts`, then a folder per component of one file per example, whose code the page shows; `gallery/src/catalogue/` draws them, with each component's guidelines and props) |
 | `templates/app/` | the starter template an application is copied from |
-| `scripts/` | build, release, the package and source checks, the import codemod, the golden reference, the grains, the props (`props.mjs`) |
+| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), the import codemod, the golden reference, the grains, the props (`props.mjs`) |
 | `design-system/` | the claude.ai Design System artifact's files (`design-system/README.md`); `components/<Name>/README.md` are also the gallery's guidelines |
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
+| `test/size-budget.json` | what an application bundles, gzipped, which `check:package` holds it to |
 
 ## Commands
 
@@ -31,6 +32,7 @@ npm run lint && npm run typecheck && npm test && npm run build && npm run build:
 npm run gallery                    # http://localhost:5180, on src/
 npm run props                      # gallery/src/props.json, after a change of a component's props (lint checks it)
 npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
+npm run check:package -- --update-budget   # test/size-budget.json, after a change that weighs more on purpose
 ```
 
 ## Rules
@@ -39,6 +41,11 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
   `design.css` WATA's values; `check:package` holds a build to `test/golden/reference-blocks.json` and the
   gallery's test the contrast table. A change on purpose is a new reference (`scripts/golden-from.mjs`) and a
   line of CHANGELOG.md. `design.css`'s import order is load-bearing (`--border` and `--accent` are set twice).
+- **A change has its line in the CHANGELOG**, under `## [Unreleased]`, in its section (Added, Changed, Deprecated,
+  Removed, Fixed, Security), the API's name first, in the house voice; Upgrading says what an application does when
+  something changes, is deprecated or removed (`scripts/changelog.mjs`). A number or a version a doc gives is computed
+  where it is shown (the gallery's pages) or held by `scripts/check-docs.mjs` (README.md, AGENTS.md, the template's
+  README): it never goes stale.
 - **Two values for every colour** (`light dark:dark`, or a token with both); text at 4.5:1 on every surface of
   every look (a theme, an accent, a material: 36). The one known exception is pinned in
   `gallery/src/tokens.test.ts`, which composites glass over its backdrop, and a grain at its strongest speck,
@@ -141,4 +148,7 @@ npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 ## Releasing
 
 `dist/` is only in release commits, apart from `main`, whose `package.json` has no scripts: npm then
-installs a tag without building it. `npm run release` makes them; never commit `dist/` on a branch.
+installs a tag without building it. `npm run release` makes them; never commit `dist/` on a branch. It names and
+dates what is under `[Unreleased]`, sets the version where the READMEs install it, and releases nothing while a
+version the CHANGELOG names before is no tag on origin (`--at <commit>` makes one never made). CI installs each tag
+pushed and makes its GitHub Release from its section (`.github/workflows/verify-release.yml`).

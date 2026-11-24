@@ -1,7 +1,52 @@
 # Changelog
 
-What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
-application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
+What changes from one version of ioiti-ui to the next, for an application made with it. A version is a git tag
+(`v0.1.0`), which an application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`); its GitHub
+Release says the same as its section here.
+
+From 0.24.0, a version's notes are in sections, in this order: **Added**, **Changed**, **Deprecated**, **Removed**,
+**Fixed**, **Security**, then **Upgrading**, what an application does about them (a version that changes,
+deprecates or removes anything has it). Each line starts with what it is about, an API's name where it has one.
+What is not released yet is under [Unreleased]. The versions before 0.24.0 keep their one list, as they were written.
+
+## [Unreleased]
+
+### Added
+
+- **A GitHub Release for every tag pushed**: its notes are its section here, the line that installs it and the
+  commits since the version before (`scripts/release-notes.mjs`, run by CI's `verify-release`).
+- **`CONTRIBUTING.md` and `SECURITY.md`**, and forms for an issue (a bug says its version, its look and its
+  browser) and for a pull request (what a change owes: its line here, its examples, its props).
+- **The README says** which browsers (Safari 16.4, Chrome and Edge 111, Firefox 128), which Node (22.12 and later,
+  to build an application) and how a version changes an API: deprecated first, its old name kept working until
+  1.0.
+- **What an application bundles, weighed**: `check:package` measures one component alone, each entry whole and the
+  template, gzipped, against `test/size-budget.json`; one component that bundles more than a tenth of the package
+  fails it (the rest is shaken off).
+
+### Changed
+
+- **This CHANGELOG is in sections** from this version, and what is not released yet is under [Unreleased], which
+  `npm run release` names and dates.
+- **`npm run release`** releases no version while one the CHANGELOG names before it is no tag on origin, and says
+  the command that mends it; `--at <commit>` releases a version whose tag was never made, from the commit that set
+  it. It sets the tag the READMEs install with the version, and commits once every check has passed.
+- **CI checks the package on Node 22.12 too**, the oldest `engines` allows, and audits what an application installs
+  with it; its actions are pinned to commits, its jobs read-only but the ones that publish.
+
+### Fixed
+
+- **v0.17.0, v0.18.0 and v0.18.1 can be installed**: the CHANGELOG named them, and their tags were never made.
+  They are made now, from the commits that set them.
+- **The install commands** of the README, the gallery's Getting started and the template's README named v0.3.0:
+  they name the version, which `npm run lint` holds them to (`scripts/check-docs.mjs`), as it holds the README's
+  counts: 185 components (it said 171), 36 looks (20). Getting started installs `vite` and `@vitejs/plugin-react`
+  with Tailwind, as the README does.
+- **The template's sidebar** shows the version of its `package.json` under the name; it said v0.1.0 whatever it was.
+
+### Upgrading
+
+An application changes nothing.
 
 ## [0.23.2] - 2026-11-24
 
@@ -1114,3 +1159,48 @@ tokens and the same shell, in both themes (`docs/fidelity.md`).
 - **`ioiti-ui/react-router`**: `RouterRoot`, `RouterAppShell`, `RouterLink`.
 - **`ioiti-ui/vite`**: `ioiti()`, the pre-paint script in the pages, no font as a `data:` URI, one React.
 - **The gallery** (`npm run gallery`) and **the starter template** (`templates/app`).
+
+[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.23.2...main
+[0.23.2]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.23.2
+[0.23.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.23.1
+[0.23.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.23.0
+[0.22.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.22.0
+[0.21.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.21.0
+[0.20.3]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.20.3
+[0.20.2]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.20.2
+[0.20.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.20.1
+[0.20.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.20.0
+[0.19.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.19.0
+[0.18.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.18.1
+[0.18.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.18.0
+[0.17.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.17.0
+[0.16.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.16.0
+[0.15.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.15.0
+[0.14.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.14.1
+[0.14.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.14.0
+[0.13.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.13.1
+[0.13.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.13.0
+[0.12.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.12.0
+[0.11.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.11.1
+[0.11.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.11.0
+[0.10.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.10.0
+[0.9.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.9.0
+[0.8.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.8.0
+[0.7.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.7.0
+[0.6.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.6.0
+[0.5.4]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.5.4
+[0.5.3]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.5.3
+[0.5.2]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.5.2
+[0.5.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.5.1
+[0.5.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.5.0
+[0.4.6]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.4.6
+[0.4.5]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.4.5
+[0.4.4]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.4.4
+[0.4.3]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.4.3
+[0.4.2]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.4.2
+[0.4.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.4.1
+[0.4.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.4.0
+[0.3.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.3.0
+[0.2.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.2.1
+[0.2.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.2.0
+[0.1.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.1.0
