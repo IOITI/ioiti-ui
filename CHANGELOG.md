@@ -11,6 +11,8 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-11-24
+
 ### Added
 
 - `docs/conventions.md`, a page of the gallery's foundations (Conventions): what a prop is called, so that an
@@ -1541,7 +1543,8 @@ tokens and the same shell, in both themes (`docs/fidelity.md`).
 - **`ioiti-ui/vite`**: `ioiti()`, the pre-paint script in the pages, no font as a `data:` URI, one React.
 - **The gallery** (`npm run gallery`) and **the starter template** (`templates/app`).
 
-[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.29.0...main
+[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.30.0...main
+[0.30.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.30.0
 [0.29.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.29.0
 [0.28.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.28.0
 [0.27.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.27.0

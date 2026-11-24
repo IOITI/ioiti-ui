@@ -28,7 +28,7 @@ code of each, its guidelines and its props; ⌘K finds a component, a part of on
 ## Start a new application
 
 ```bash
-npx degit IOITI/ioiti-ui/templates/app#v0.29.0 my-app
+npx degit IOITI/ioiti-ui/templates/app#v0.30.0 my-app
 cd my-app && npm install && npm run dev
 ```
 
@@ -38,7 +38,7 @@ The template has a sign-in page, the shell with its menu, a dashboard and a list
 ## Add it to an application
 
 ```bash
-npm install github:IOITI/ioiti-ui#v0.29.0 react react-dom framer-motion react-router
+npm install github:IOITI/ioiti-ui#v0.30.0 react react-dom framer-motion react-router
 npm install -D tailwindcss@4.3.3 @tailwindcss/vite@4.3.3 vite @vitejs/plugin-react
 ```
 
@@ -294,7 +294,7 @@ itself is worked on with Node.js 24 (`.nvmrc`). CI checks the package on both.
 
 ## Versions and stability
 
-- **A version is a git tag**, installed as `github:IOITI/ioiti-ui#v0.29.0`. Its notes are in `CHANGELOG.md` and on
+- **A version is a git tag**, installed as `github:IOITI/ioiti-ui#v0.30.0`. Its notes are in `CHANGELOG.md` and on
   its GitHub Release: what is added, changed, deprecated, removed and fixed, and under **Upgrading** what an
   application does about it.
 - **Until 1.0, nothing changes at once.** An API renamed or reshaped keeps its old name working, which says it is
