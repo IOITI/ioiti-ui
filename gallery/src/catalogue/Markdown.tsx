@@ -54,6 +54,17 @@ function BlockOf({ block }: { block: Block }) {
   }
 }
 
+/** Blocks of Markdown as they are, titles included: a page of the docs (docs/conventions.md). */
+export function MarkdownBlocks({ blocks }: { blocks: Block[] }) {
+  return (
+    <div className="space-y-4">
+      {blocks.map((block, index) => (
+        <BlockOf key={index} block={block} />
+      ))}
+    </div>
+  )
+}
+
 /** A component's guidelines, as the gallery shows them (its README, less its title, summary and "You provide"). */
 export function Guidelines({ markdown }: { markdown: string }) {
   return (

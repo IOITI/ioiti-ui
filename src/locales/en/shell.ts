@@ -51,7 +51,7 @@ export const shell = {
   signInDivider: 'or',
   /** "State": StateSummary's name, its button's and its panel's. */
   state: 'State',
-  /** "All good": what StateSummary says while nothing stands out and nothing is neutral. */
+  /** "All good": what StateSummary says while nothing stands out, nothing is neutral and nothing is info. */
   allGood: 'All good',
   /** "State: Payments down": StateSummary's button as a screen reader hears it, its name and what it says. */
   stateButton: ({ label, state }: { label: string; state: string }) => `${label}: ${state}`,

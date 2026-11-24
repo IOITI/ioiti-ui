@@ -1,10 +1,14 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Bell, CheckCheck, X } from 'lucide-react';
 import { useAnchoredLayer } from '../../lib/anchor.js';
+// ioiti-ui: held by its caller or by itself, as every layer (useControllableState); a former name said once, in
+// development (deprecated).
+import { useControllableState } from '../../lib/controllable.js';
+import { deprecated } from '../../lib/deprecated.js';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -40,10 +44,14 @@ export interface NotificationBellProps {
   onMarkAsRead: (id: string) => void;
   /** Optional handler to mark all as read. */
   onMarkAllAsRead?: () => void;
-  /** Controlled open state of notification drawer/panel. */
+  /** ioiti-ui: its panel open, held by the page (told of each change by `onOpenChange`). */
+  open?: boolean;
+  /** ioiti-ui: its panel open at first, the bell holding it then; closed by default. */
+  defaultOpen?: boolean;
+  /** @deprecated Use `open`. Removed in 1.0. */
   isOpen?: boolean;
-  /** Open state change handler. */
-  onOpenChange?: (isOpen: boolean) => void;
+  /** Open state change handler. ioiti-ui: told of every change, whoever holds it. */
+  onOpenChange?: (open: boolean) => void;
   /** Show numeric counter inside red badge. Default is true. */
   showCount?: boolean;
   /** ioiti-ui: what draws an entry's link; the application's (LinkProvider) by default. */
@@ -81,7 +89,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   notifications,
   onMarkAsRead,
   onMarkAllAsRead,
-  isOpen: controlledIsOpen,
+  open,
+  defaultOpen = false,
+  isOpen: formerOpen,
   onOpenChange,
   showCount = true,
   linkComponent,
@@ -97,19 +107,15 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   // ioiti-ui: its words in the provider's language, its counts in its locale ("1 unread notification", counted).
   const words = useMessages().notification;
   const { formatNumber } = useFormat();
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
 
-  const isPanelOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
-  const setPanelOpen = useCallback(
-    (open: boolean) => {
-      if (onOpenChange) onOpenChange(open);
-      else setInternalIsOpen(open);
-    },
-    [onOpenChange]
-  );
+  // ioiti-ui: `open`, as every layer; `isOpen`, its former name, read where it alone is given. Held by the bell unless
+  // the page holds it, `onOpenChange` told either way: given without `isOpen`, it took the bell's own state's place,
+  // and the panel never opened.
+  if (formerOpen !== undefined) deprecated('notification-bell-is-open', 'NotificationBell');
+  const [isPanelOpen, setPanelOpen] = useControllableState(open ?? formerOpen, defaultOpen, onOpenChange);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const prevCountRef = useRef(unreadCount);

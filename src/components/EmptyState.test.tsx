@@ -22,7 +22,7 @@ describe('EmptyState', () => {
           description="Rules written in the repository appear here once they are pushed."
           actions={
             <>
-              <ButtonLink to="/rules/new">New rule</ButtonLink>
+              <ButtonLink href="/rules/new">New rule</ButtonLink>
               <Button variant="outline" onClick={imported}>
                 Import from Sigma
               </Button>
@@ -46,7 +46,7 @@ describe('EmptyState', () => {
   it('is smaller in a panel, its heading one under the panel\'s', () => {
     render(
       <Panel title="Alerts of the day">
-        <EmptyState compact icon={<SearchX />} title="No alert matches" description="Try another time range." />
+        <EmptyState density="compact" icon={<SearchX />} title="No alert matches" description="Try another time range." />
       </Panel>,
     )
 
@@ -64,7 +64,7 @@ describe('EmptyState', () => {
     expect(container.querySelector('svg')).toBeNull()
     expect(container.querySelector('p')).toBeNull()
 
-    rerender(<EmptyState compact title="Nothing archived" headingLevel={2} />)
+    rerender(<EmptyState density="compact" title="Nothing archived" headingLevel={2} />)
     expect(screen.getByRole('heading', { level: 2, name: 'Nothing archived' })).toBeInTheDocument()
   })
 
@@ -74,7 +74,7 @@ describe('EmptyState', () => {
         <TableBody>
           <TableRow>
             <TableCell colSpan={4}>
-              <EmptyState compact title="No rule matches these filters" description="Clear a filter to see more of them." />
+              <EmptyState density="compact" title="No rule matches these filters" description="Clear a filter to see more of them." />
             </TableCell>
           </TableRow>
         </TableBody>

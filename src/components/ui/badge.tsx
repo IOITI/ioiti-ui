@@ -6,6 +6,8 @@ import { X } from "lucide-react";
 import { cn } from "../../lib/utils.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { TONE_LINE, TONE_MARK, TONE_SOFT, TONE_SOLID, TONE_TEXT, type Tone } from "../../lib/recipes.js";
+// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md).
+import type { StatusTone } from "../../lib/tones.js";
 // ioiti-ui: its × button's name in the provider's language (`status`).
 import { useMessages } from "../locale-context.js";
 
@@ -13,15 +15,20 @@ import { useMessages } from "../locale-context.js";
 const spring = motionTransitions.springSnappy;
 
 export type BadgeVariant = "soft" | "solid" | "outline";
-export type BadgeTone = "neutral" | "success" | "warning" | "danger";
+/**
+ * ioiti-ui: a StatusTone, the tones of a state (Alert's too): `neutral`, `info`, `success`, `warning`, `danger`. EasyUI's
+ * had no `info`.
+ */
+export type BadgeTone = StatusTone;
 
 // ioiti-ui: the design's tones (recipes.ts), the same as every other component's: danger is the negative red, not a
-// palette's step, and each word keeps 4.5:1 on every surface.
-const TONE: Record<BadgeTone, Tone> = { neutral: "neutral", success: "positive", warning: "warning", danger: "negative" };
+// palette's step, and each word keeps 4.5:1 on every surface. Info in its own, as Alert draws it.
+const TONE: Record<BadgeTone, Tone> = { neutral: "neutral", info: "info", success: "positive", warning: "warning", danger: "negative" };
 
 const styles: Record<BadgeVariant, Record<BadgeTone, string>> = {
   soft: {
     neutral: TONE_SOFT.neutral,
+    info: TONE_SOFT.info,
     success: TONE_SOFT.positive,
     warning: TONE_SOFT.warning,
     danger: TONE_SOFT.negative,
@@ -29,12 +36,14 @@ const styles: Record<BadgeVariant, Record<BadgeTone, string>> = {
   solid: {
     // ioiti-ui: the emphasis, in the accent where the theme has one (accent:); the tones keep their colours.
     neutral: `${TONE_SOLID.neutral} accent:bg-brand accent:text-brand-foreground`,
+    info: TONE_SOLID.info,
     success: TONE_SOLID.positive,
     warning: TONE_SOLID.warning,
     danger: TONE_SOLID.negative,
   },
   outline: {
     neutral: `${TONE_LINE.neutral} text-text-secondary`,
+    info: `${TONE_LINE.info} ${TONE_TEXT.info}`,
     success: `${TONE_LINE.positive} ${TONE_TEXT.positive}`,
     warning: `${TONE_LINE.warning} ${TONE_TEXT.warning}`,
     danger: `${TONE_LINE.negative} ${TONE_TEXT.negative}`,
@@ -43,6 +52,7 @@ const styles: Record<BadgeVariant, Record<BadgeTone, string>> = {
 
 const dots: Record<BadgeTone, string> = {
   neutral: TONE_MARK[TONE.neutral],
+  info: TONE_MARK[TONE.info],
   success: TONE_MARK[TONE.success],
   warning: TONE_MARK[TONE.warning],
   danger: TONE_MARK[TONE.danger],

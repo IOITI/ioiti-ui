@@ -19,6 +19,8 @@ import {
   useElementWidth,
 } from "../../lib/chart-primitives.js";
 import type { HourCycle, WeekDay } from "../../lib/locale.js";
+// ioiti-ui: its former name said once in development.
+import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { useLocale, useMessages } from "../locale-context.js";
 
@@ -83,6 +85,8 @@ export interface ActivityHeatmapProps {
   minCell?: number;
   animated?: boolean;
   /** ioiti-ui: the grid's name; by default "Activity heatmap." and its summary, in the provider's words. */
+  "aria-label"?: string;
+  /** @deprecated Use `aria-label`. Removed in 1.0. */
   ariaLabel?: string;
   className?: string;
 }
@@ -163,9 +167,13 @@ export function ActivityHeatmap({
   legend,
   minCell = 11,
   animated = true,
+  "aria-label": givenName,
   ariaLabel,
   className = "",
 }: ActivityHeatmapProps) {
+  // ioiti-ui: its former name read as today's, said once in development.
+  if (ariaLabel !== undefined) deprecated("aria-label-camel", "ActivityHeatmap");
+  const name = givenName ?? ariaLabel;
   const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
   // ioiti-ui: the provider's locale, first day of the week, clock and words (IoitiProvider) where the props give none.
@@ -405,7 +413,7 @@ export function ActivityHeatmap({
           width={width}
           height={svgH}
           role="img"
-          aria-label={ariaLabel ?? words.label(typeof summary === "string" ? summary : "")}
+          aria-label={name ?? words.label(typeof summary === "string" ? summary : "")}
           tabIndex={0}
           onKeyDown={onKey}
           onBlur={() => setActive(null)}

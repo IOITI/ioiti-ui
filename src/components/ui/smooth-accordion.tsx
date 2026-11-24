@@ -1,8 +1,12 @@
 'use client';
 
-import React, { useId, useState } from 'react';
+import React, { useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState); a former name said once, in
+// development (deprecated).
+import { useControllableState } from '../../lib/controllable.js';
+import { deprecated } from '../../lib/deprecated.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -16,6 +20,13 @@ export interface AccordionItem {
 export interface SmoothAccordionProps {
   items: AccordionItem[];
   allowMultiple?: boolean;
+  /** ioiti-ui: the ids of the items open, held by the page (told of each change by `onChange`). */
+  value?: string[];
+  /** ioiti-ui: the ids of the items open at first, the accordion holding them then; none by default. */
+  defaultValue?: string[];
+  /** ioiti-ui: told of the ids of the items open, at each opening and closing. */
+  onChange?: (value: string[]) => void;
+  /** @deprecated Use `defaultValue`. Removed in 1.0. */
   defaultOpen?: string[];
   /**
    * ioiti-ui: each question in a heading of this level, which a screen reader lists with the page's own (none by
@@ -28,22 +39,26 @@ export interface SmoothAccordionProps {
 export const SmoothAccordion: React.FC<SmoothAccordionProps> = ({
   items,
   allowMultiple = false,
-  defaultOpen = [],
+  value,
+  defaultValue,
+  onChange,
+  defaultOpen,
   headingLevel,
   className,
 }) => {
-  const [openIds, setOpenIds] = useState<string[]>(defaultOpen);
+  // ioiti-ui: `value`, `defaultValue` and `onChange`, as every control; `defaultOpen`, the former name of
+  // `defaultValue`, read where it alone is given.
+  if (defaultOpen !== undefined) deprecated('smooth-accordion-default-open', 'SmoothAccordion');
+  const [openIds, setOpenIds] = useControllableState<string[]>(value, defaultValue ?? defaultOpen ?? [], onChange);
   // ioiti-ui: the ids that tie each question to its answer (aria-controls, aria-labelledby).
   const baseId = useId();
   const Heading = headingLevel ? (`h${headingLevel}` as const) : null;
 
   const toggle = (id: string) => {
     if (allowMultiple) {
-      setOpenIds((prev) =>
-        prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-      );
+      setOpenIds(openIds.includes(id) ? openIds.filter((item) => item !== id) : [...openIds, id]);
     } else {
-      setOpenIds((prev) => (prev.includes(id) ? [] : [id]));
+      setOpenIds(openIds.includes(id) ? [] : [id]);
     }
   };
 

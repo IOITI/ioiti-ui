@@ -38,7 +38,7 @@ export default function ProductTourTour() {
       </div>
       <ProductTour
         open={open}
-        onClose={() => setOpen(false)}
+        onOpenChange={setOpen}
         steps={[
           { title: 'The orders, in three steps', body: 'The arrows move from one to the next, Escape ends it.' },
           { target: search, title: 'Find one', body: 'Every word typed must be in the order: its number, its customer.', placement: 'bottom' },

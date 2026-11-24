@@ -12,10 +12,10 @@ export default function RouterLeaveGuardAllowed() {
         <Input id="carrier-note" value={note} onChange={(event) => setNote(event.target.value)} />
       </Field>
       <div className="flex flex-wrap items-center gap-3">
-        <ButtonLink to="/patterns/sign-in" variant="outline" size="sm">
+        <ButtonLink href="/patterns/sign-in" variant="outline" size="sm">
           The sign-in page: let through
         </ButtonLink>
-        <ButtonLink to="/components/forms" variant="outline" size="sm">
+        <ButtonLink href="/components/forms" variant="outline" size="sm">
           The forms: asks first
         </ButtonLink>
       </div>

@@ -43,7 +43,7 @@ export default function DataTableStates() {
         columns={COLUMNS}
         getRowId={(order) => order.id}
         selectable={false}
-        isLoading={shown === 'loading'}
+        loading={shown === 'loading'}
         error={shown === 'failed' ? 'The orders could not be read: the server did not answer. Try again in a minute.' : null}
         emptyTitle="No order yet"
         emptyDescription="Orders appear here as soon as the shop takes one."

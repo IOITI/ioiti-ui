@@ -25,7 +25,7 @@ export default function FanChartExpectedAndActual() {
   const percent = (value: number) => formatPercent(value, true, 1)
   return (
     <FanChart
-      ariaLabel="The real trades' result against where the backtest's simulated paths went"
+      aria-label="The real trades' result against where the backtest's simulated paths went"
       data={PATHS}
       bands={[
         { lower: 'p5', upper: 'p95', label: '90 % of the paths' },

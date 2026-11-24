@@ -74,7 +74,7 @@ export function SignInPattern() {
       footer={
         <div className="flex flex-col items-start gap-3">
           <p>Need an account? Ask an administrator.</p>
-          <ButtonLink to="/components/shell/auth-layout" variant="ghost" size="sm" leftIcon={<ArrowLeft className="size-3.5" />} className="-ml-3">
+          <ButtonLink href="/components/shell/auth-layout" variant="ghost" size="sm" leftIcon={<ArrowLeft className="size-3.5" />} className="-ml-3">
             Back to the gallery
           </ButtonLink>
         </div>
@@ -108,7 +108,7 @@ export function SignInPattern() {
               />
             </FormControl>
           </FormItem>
-          <Button type="submit" fullWidth isLoading={pending === 'password'} disabled={pending !== null || !username || !password}>
+          <Button type="submit" fullWidth pending={pending === 'password'} disabled={pending !== null || !username || !password}>
             Sign in
           </Button>
         </Form>

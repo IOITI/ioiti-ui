@@ -11,6 +11,8 @@ import {
   useDismissOutside,
   useElementWidth,
 } from "../../lib/chart-primitives.js";
+// ioiti-ui: its former name said once in development.
+import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 // ioiti-ui: the words in the interface's language.
 import { useMessages } from "../locale-context.js";
@@ -41,6 +43,8 @@ export interface FunnelChartProps {
    * ioiti-ui: its name for a screen reader, and its table's caption. By default, in the interface's language, "Funnel
    * with 4 stages from Visited to Paid" and "Funnel data".
    */
+  "aria-label"?: string;
+  /** @deprecated Use `aria-label`. Removed in 1.0. */
   ariaLabel?: string;
   className?: string;
   /**
@@ -70,12 +74,16 @@ export function FunnelChart({
   formatValue: givenFormatValue,
   showSummary = true,
   animated = true,
+  "aria-label": givenName,
   ariaLabel,
   className = "",
   summaryLabel: givenSummaryLabel,
   noun: givenNoun,
   emptyText: givenEmptyText,
 }: FunnelChartProps) {
+  // ioiti-ui: its former name read as today's, said once in development.
+  if (ariaLabel !== undefined) deprecated("aria-label-camel", "FunnelChart");
+  const name = givenName ?? ariaLabel;
   const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
   // ioiti-ui: the numbers, percentages and words in the interface's locale and language, where the application gives
@@ -156,7 +164,7 @@ export function FunnelChart({
           height={H}
           role="img"
           // ioiti-ui: the interface's language, its stages counted as it counts them ("1 stage").
-          aria-label={ariaLabel ?? words.funnelChartName({ count: n, first: stages[0].label, last: stages[n - 1].label })}
+          aria-label={name ?? words.funnelChartName({ count: n, first: stages[0].label, last: stages[n - 1].label })}
           tabIndex={0}
           onKeyDown={onKey}
           onBlur={() => setActive(null)}
@@ -294,7 +302,7 @@ export function FunnelChart({
       <div className="sr-only">
         <table>
           {/* ioiti-ui: its caption and heads in the interface's language. */}
-          <caption>{ariaLabel ?? words.funnelTableCaption}</caption>
+          <caption>{name ?? words.funnelTableCaption}</caption>
           <thead>
             <tr>
               <th scope="col">{words.stageColumn}</th>

@@ -5,7 +5,7 @@ import { ORDERS_BY_HOUR } from '../../../samples/charts'
 export default function ActivityHeatmapWeekdayByHour() {
   return (
     <ActivityHeatmap
-      ariaLabel="Orders by weekday and hour"
+      aria-label="Orders by weekday and hour"
       mode="hours"
       matrix={ORDERS_BY_HOUR}
       rowLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri']}

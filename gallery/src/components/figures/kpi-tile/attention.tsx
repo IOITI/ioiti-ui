@@ -6,7 +6,7 @@ export default function KpiTileAttention() {
       <KpiTile label="Storage" value="91%" hint="of 50 GB" tone="warning" toneLabel="Near the limit">
         <Meter ratio={0.91} tone="warning" label="Storage used" scale={['0', '50 GB']} />
       </KpiTile>
-      <KpiTile label="Failed payments" value="12" hint="In the last hour" tone="negative" toneLabel="Failing" />
+      <KpiTile label="Failed payments" value="12" hint="In the last hour" tone="danger" toneLabel="Failing" />
       <KpiTile label="Orders waiting" value="3" hint="Oldest: 20 min" />
     </KpiGrid>
   )

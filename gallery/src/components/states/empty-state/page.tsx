@@ -11,7 +11,7 @@ export default function EmptyStatePage() {
       description="Rules pushed to the repository appear here, with what they detect and where they run."
       actions={
         <>
-          <ButtonLink to="/components/forms" leftIcon={<Plus className="size-4" />}>
+          <ButtonLink href="/components/forms" leftIcon={<Plus className="size-4" />}>
             Write a rule
           </ButtonLink>
           <Button variant="outline">Import from Sigma</Button>

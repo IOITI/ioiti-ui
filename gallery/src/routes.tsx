@@ -3,6 +3,7 @@ import {
   Accessibility,
   BookOpen,
   ChartPie,
+  ClipboardList,
   Inbox,
   Languages,
   LayoutDashboard,
@@ -23,6 +24,7 @@ import { ComponentIndex } from './catalogue/ComponentIndex'
 import type { CategoryInfo, FamilyInfo } from './catalogue/types'
 import { ChartColours } from './pages/ChartColours'
 import { Colours } from './pages/Colours'
+import { Conventions } from './pages/Conventions'
 import { DashboardPattern } from './pages/DashboardPattern'
 import { GettingStarted } from './pages/GettingStarted'
 import { LanguagesAndFormats } from './pages/Languages'
@@ -61,6 +63,7 @@ const FOUNDATIONS: GalleryPage[] = [
   { id: '/foundations/usable-by-all', path: '/foundations/usable-by-all', label: 'Usable by all', section: 'Foundations', icon: <Accessibility />, element: <UsableByAll /> },
   { id: '/foundations/chart-colours', path: '/foundations/chart-colours', label: 'Chart colours', section: 'Foundations', icon: <ChartPie />, element: <ChartColours /> },
   { id: '/foundations/languages', path: '/foundations/languages', label: 'Languages and formats', section: 'Foundations', icon: <Languages />, element: <LanguagesAndFormats /> },
+  { id: '/foundations/conventions', path: '/foundations/conventions', label: 'Conventions', section: 'Foundations', icon: <ClipboardList />, element: <Conventions /> },
 ]
 
 /** Each category, its components under it. */

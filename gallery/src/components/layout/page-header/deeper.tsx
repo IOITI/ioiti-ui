@@ -61,7 +61,7 @@ export default function PageHeaderDeeper() {
                   description="Sent to Acme on 12 October."
                   parents={[{ label: 'October', href: '/invoices?month=10' }]}
                   actions={
-                    <ButtonLink to="/invoices/2026-0042.pdf" variant="outline" size="sm" leftIcon={<Download />}>
+                    <ButtonLink href="/invoices/2026-0042.pdf" variant="outline" size="sm" leftIcon={<Download />}>
                       Download
                     </ButtonLink>
                   }

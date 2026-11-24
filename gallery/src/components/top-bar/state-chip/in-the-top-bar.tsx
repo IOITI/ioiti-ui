@@ -14,7 +14,7 @@ export default function StateChipInTheTopBar() {
         <div className="flex shrink-0 items-center gap-2 empty:hidden">
           {needsRestart && (
             <StateChip
-              to="/patterns/settings"
+              href="/patterns/settings"
               tone="warning"
               icon={<RotateCw className="size-3.5" aria-hidden />}
               label="Restart needed"

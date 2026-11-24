@@ -24,7 +24,7 @@ export default function TimeRangePickerRefreshed() {
 
   return (
     <div className="flex w-full max-w-2xl flex-col gap-4">
-      <TimeRangePicker value={range} onChange={setRange} onRefresh={load} isLoading={loading} refresh={refresh} onRefreshChange={setRefresh} />
+      <TimeRangePicker value={range} onChange={setRange} onRefresh={load} loading={loading} refresh={refresh} onRefreshChange={setRefresh} />
       <p className="text-xs text-muted-foreground" aria-live="polite">
         Now: from {at(from)} to {at(to)} (Paris time). {loads ? `Loaded again ${loads} ${loads === 1 ? 'time' : 'times'}.` : 'Not loaded again yet.'}
       </p>

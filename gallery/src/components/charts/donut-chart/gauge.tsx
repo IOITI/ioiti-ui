@@ -4,7 +4,7 @@ export default function DonutChartGauge() {
   return (
     <div className="grid gap-8 sm:grid-cols-2">
       <DonutChart
-        ariaLabel="Storage used"
+        aria-label="Storage used"
         variant="semi"
         centerLabel="Used"
         showLegend={false}
@@ -16,7 +16,7 @@ export default function DonutChartGauge() {
         ]}
       />
       <DonutChart
-        ariaLabel="Seats taken"
+        aria-label="Seats taken"
         variant="semi"
         centerLabel="Seats taken"
         showLegend={false}

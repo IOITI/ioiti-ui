@@ -2,9 +2,10 @@ import { useId } from 'react'
 import type { ChangeEvent, ReactNode } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
+import { deprecated } from '../lib/deprecated.js'
 import { cn } from '../lib/utils.js'
 import { useFormat, useMessages } from './locale-context.js'
-import { METER_FILL } from './meter-tones.js'
+import { METER_FILL, meterTone } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 import { NumberInput } from './NumberInput.js'
 
@@ -23,6 +24,8 @@ interface SliderBase {
   /** What it sets, shown above it: "Risk per trade". */
   label: ReactNode
   /** Its name for a screen reader, where the label is not text. */
+  'aria-label'?: string
+  /** @deprecated Use `aria-label`. Removed in 1.0. */
   ariaLabel?: string
   min?: number
   max?: number
@@ -99,7 +102,7 @@ function Track({
             <span
               key={index}
               aria-hidden
-              className={cn('absolute inset-y-0 opacity-30', METER_FILL[level.tone])}
+              className={cn('absolute inset-y-0 opacity-30', METER_FILL[meterTone(level.tone, 'Slider')])}
               style={{ left: `${at(level.from)}%`, width: `${at(level.to) - at(level.from)}%` }}
             />
           ))}
@@ -147,6 +150,7 @@ function Header({ id, label, said }: { id: string; label: ReactNode; said: strin
  */
 export function Slider({
   label,
+  'aria-label': givenName,
   ariaLabel,
   value,
   defaultValue,
@@ -161,6 +165,9 @@ export function Slider({
   disabled = false,
   className,
 }: SliderProps) {
+  // Its former name read as today's, said once in development.
+  if (ariaLabel !== undefined) deprecated('aria-label-camel', 'Slider')
+  const name = givenName ?? ariaLabel
   const format = useValueFormat(given, step)
   const [current, setCurrent] = useControllableState(value, defaultValue ?? min, onChange)
   const id = useId()
@@ -178,8 +185,8 @@ export function Slider({
             step={step}
             value={current}
             disabled={disabled}
-            aria-labelledby={ariaLabel ? undefined : id}
-            aria-label={ariaLabel}
+            aria-labelledby={name ? undefined : id}
+            aria-label={name}
             aria-valuetext={format(current)}
             onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrent(Number(event.target.value))}
             className={RANGE}
@@ -189,7 +196,7 @@ export function Slider({
       {showInput && (
         <div className="w-28 shrink-0">
           <NumberInput
-            label={typeof label === 'string' ? label : ariaLabel}
+            label={typeof label === 'string' ? label : name}
             value={current}
             onChange={(typed) => typed !== null && setCurrent(Math.min(max, Math.max(min, typed)))}
             min={min}
@@ -207,6 +214,7 @@ export function Slider({
 /** Two values along a scale, a range between them: a price from and to, the hours a task may run. */
 export function RangeSlider({
   label,
+  'aria-label': givenName,
   ariaLabel,
   value,
   defaultValue,
@@ -220,13 +228,15 @@ export function RangeSlider({
   disabled = false,
   className,
 }: RangeSliderProps) {
+  // Its former name read as today's, said once in development.
+  if (ariaLabel !== undefined) deprecated('aria-label-camel', 'RangeSlider')
   const format = useValueFormat(given, step)
   const words = useMessages().numberInput
   const [current, setCurrent] = useControllableState<[number, number]>(value, defaultValue ?? [min, max], onChange)
   const id = useId()
   const [low, high] = current
   const at = (number: number) => ((number - min) / (max - min || 1)) * 100
-  const name = ariaLabel ?? (typeof label === 'string' ? label : words.rangeName)
+  const name = givenName ?? ariaLabel ?? (typeof label === 'string' ? label : words.rangeName)
   return (
     <div className={cn('w-full', disabled && 'opacity-50', className)}>
       <Header id={id} label={label} said={words.rangeValue({ from: format(low), to: format(high) })} />

@@ -16,7 +16,7 @@ export default function StepperReview() {
     window.setTimeout(() => {
       setSending(false)
       setCurrent(0)
-      toast({ title: 'Quote sent to Atelier Brun', variant: 'success' })
+      toast({ title: 'Quote sent to Atelier Brun', tone: 'success' })
     }, 900)
   }
   return (
@@ -43,7 +43,7 @@ export default function StepperReview() {
             Next
           </Button>
         ) : (
-          <Button size="sm" isLoading={sending} loadingText="Sending" onClick={send}>
+          <Button size="sm" pending={sending} loadingText="Sending" onClick={send}>
             Send the quote
           </Button>
         )}

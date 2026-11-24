@@ -2,6 +2,8 @@
 
 import React, { useId, useState } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState).
+import { useControllableState } from '../../lib/controllable.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 // ioiti-ui: what a Field or a FormItem around it tells it (its id, what describes it, whether it is wrong).
@@ -73,10 +75,8 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
   'aria-invalid': ariaInvalid,
   ref,
 }) => {
-  const [isOn, setIsOn] = useState(defaultChecked);
+  const [current, setCurrent] = useControllableState(checked, defaultChecked, onChange);
   const id = useId();
-  const isControlled = checked !== undefined;
-  const current = isControlled ? checked : isOn;
   // ioiti-ui: named and described from outside too (`aria-*`, a Field or a FormItem around it), its id from a
   // FormItem, whose FormLabel then names it; it could take none of them.
   const control = useFieldControl({
@@ -99,9 +99,7 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
 
   const handleToggle = () => {
     if (disabled) return;
-    const next = !current;
-    if (!isControlled) setIsOn(next);
-    onChange?.(next);
+    setCurrent(!current);
   };
 
   return (

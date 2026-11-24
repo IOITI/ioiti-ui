@@ -51,7 +51,7 @@ describe('AttachmentChip', () => {
   })
 
   it('shows an image small, says while it is made ready, and says why it could not be taken', () => {
-    const { container, rerender } = render(<AttachmentChip label="chart.png" thumbnail="data:image/png;base64,AAAA" busy />)
+    const { container, rerender } = render(<AttachmentChip label="chart.png" thumbnail="data:image/png;base64,AAAA" pending />)
 
     expect(container.querySelector('img')).toBeNull()
     expect(container.firstElementChild).toHaveAttribute('aria-busy', 'true')
@@ -66,7 +66,7 @@ describe('AttachmentChip', () => {
   it("says its words in the language given, and an application's own over English's", () => {
     const { unmount } = render(
       <IoitiProvider locale="fr-FR" messages={fr}>
-        <AttachmentChip label="export.csv" busy onRemove={() => {}} />
+        <AttachmentChip label="export.csv" pending onRemove={() => {}} />
       </IoitiProvider>,
     )
     expect(screen.getByRole('button', { name: 'Retirer export.csv' })).toBeInTheDocument()
@@ -75,7 +75,7 @@ describe('AttachmentChip', () => {
 
     render(
       <IoitiProvider messages={{ ai: { removeAttachment: (label: string) => `Detach ${label}` } }}>
-        <AttachmentChip label="export.csv" busy onRemove={() => {}} />
+        <AttachmentChip label="export.csv" pending onRemove={() => {}} />
       </IoitiProvider>,
     )
     expect(screen.getByRole('button', { name: 'Detach export.csv' })).toBeInTheDocument()

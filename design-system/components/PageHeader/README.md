@@ -6,7 +6,7 @@ The title of a page and what it does, with its actions on the right; it names th
 
 ```tsx
 <PageHeader title="Orders" description="Every order, newest first."
-  actions={<ButtonLink to="/orders/new" size="sm" leftIcon={<Plus />}>New order</ButtonLink>} />
+  actions={<ButtonLink href="/orders/new" size="sm" leftIcon={<Plus />}>New order</ButtonLink>} />
 ```
 
 - One a page, set in `page-title` (h1). It is the page's first block.

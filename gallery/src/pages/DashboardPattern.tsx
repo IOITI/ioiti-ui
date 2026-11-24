@@ -103,7 +103,7 @@ export function DashboardPattern() {
           <Meter ratio={0.3} label="Orders of the day's limit" scale={['0', '10']} />
         </KpiTile>
         <KpiTile label="Returns" value="2.1%" change={-0.4} goodWhen="down" hint="Under 5 %">
-          <Meter ratio={0.42} tone="positive" label="Returns against their limit" scale={['0', '5 %']} />
+          <Meter ratio={0.42} tone="success" label="Returns against their limit" scale={['0', '5 %']} />
         </KpiTile>
         <KpiTile label="Next import" value={<span className="text-positive">Open</span>} hint="At 12:00, in 2 h 48" />
       </KpiGrid>
@@ -123,7 +123,7 @@ export function DashboardPattern() {
         <StatusHistory label="Imports, the last 24 hours" slots={IMPORTS} scale={['24 h ago', 'Now']} />
       </Panel>
 
-      <Panel title="Open orders" description="Placed today, not sent yet." action={<TextLink to="/components/tables/data-table" variant="quiet">All orders</TextLink>} dense>
+      <Panel title="Open orders" description="Placed today, not sent yet." action={<TextLink href="/components/tables/data-table" variant="quiet">All orders</TextLink>} density="compact">
         {/* On a phone, what matters first without scrolling sideways. */}
         <ul className="divide-y divide-border/40 text-xs sm:hidden">
           {OPEN.map((order) => (
@@ -149,7 +149,7 @@ export function DashboardPattern() {
               <TableRow key={order.id}>
                 <TableCell className="max-w-[18rem] truncate font-medium">{order.customer}</TableCell>
                 <TableCell>
-                  <TextLink to="/components/tables/data-table" variant="hover" className="font-mono">
+                  <TextLink href="/components/tables/data-table" variant="hover" className="font-mono">
                     {order.id}
                   </TextLink>
                 </TableCell>
@@ -166,7 +166,7 @@ export function DashboardPattern() {
       </Panel>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Latest events" dense>
+        <Panel title="Latest events" density="compact">
           <ul className="divide-y divide-border/40 text-xs">
             {EVENTS.map((event) => (
               <li key={event.what} className="flex items-center justify-between gap-3 py-2.5">
@@ -181,7 +181,7 @@ export function DashboardPattern() {
             ))}
           </ul>
         </Panel>
-        <Panel title="Services" dense>
+        <Panel title="Services" density="compact">
           <ul className="divide-y divide-border/40 text-xs">
             {SERVICES.map((service) => (
               <li key={service.name} className="flex items-center justify-between gap-3 py-2.5">

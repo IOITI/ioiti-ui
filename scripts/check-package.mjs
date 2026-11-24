@@ -276,6 +276,15 @@ try {
     Object.values(DEV_MESSAGES).some((message) => developed.includes(message.slice(0, 40))),
     'a development build keeps them (SettleModal says a dialog without a name): the check above reads the right words',
   )
+  // What the package deprecated (src/lib/deprecations.ts) is said in development only: a production build keeps none of
+  // the list (its ids), which a development build of a component that warns keeps.
+  const { DEPRECATIONS } = await import(pathToFileURL(join(app, 'node_modules/ioiti-ui/dist/lib/deprecations.js')).href)
+  const ids = Object.keys(DEPRECATIONS)
+  const keptIds = ids.filter((id) => id.includes('-') && codes['ioiti-ui, whole'].includes(id))
+  check(keptIds.length === 0, `a production build keeps none of the deprecations' list${keptIds.length ? `: ${keptIds.join(', ')}` : ''}`)
+  const { code: warned } = await bundled(app, work, "export { Button } from 'ioiti-ui'", 'development')
+  check(warned.includes('button-is-loading'), 'a development build keeps it (Button says isLoading is deprecated): the check above reads the right words')
+
   // A language is bundled by an application that imports it, never by one that speaks English: the template's JavaScript
   // has none of French's words, which the French entry bundled alone has.
   const { code: french } = await bundled(app, work, "export { fr } from 'ioiti-ui/locales/fr'")

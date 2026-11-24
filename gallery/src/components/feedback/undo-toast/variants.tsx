@@ -1,42 +1,42 @@
 import { Button, UndoToast } from 'ioiti-ui'
-import type { UndoToastVariant } from 'ioiti-ui'
+import type { StatusTone } from 'ioiti-ui'
 import { Archive } from 'lucide-react'
 import { useState } from 'react'
 
-const VARIANTS: { variant: UndoToastVariant; title: string; description: string }[] = [
-  { variant: 'default', title: 'Order IT-1042 deleted', description: 'Deleted for good in a few seconds' },
-  { variant: 'success', title: 'Invoice marked as paid', description: 'Its customer is told in a few seconds' },
-  { variant: 'warning', title: 'Price lowered by 40 %', description: 'Applied to the shop in a few seconds' },
-  { variant: 'error', title: 'Customer blocked', description: 'Their orders stop in a few seconds' },
-  { variant: 'info', title: 'Moved to the spring catalogue', description: 'Published in a few seconds' },
+const TONES: { tone: StatusTone; title: string; description: string }[] = [
+  { tone: 'neutral', title: 'Order IT-1042 deleted', description: 'Deleted for good in a few seconds' },
+  { tone: 'success', title: 'Invoice marked as paid', description: 'Its customer is told in a few seconds' },
+  { tone: 'warning', title: 'Price lowered by 40 %', description: 'Applied to the shop in a few seconds' },
+  { tone: 'danger', title: 'Customer blocked', description: 'Their orders stop in a few seconds' },
+  { tone: 'info', title: 'Moved to the spring catalogue', description: 'Published in a few seconds' },
 ]
 
 export default function UndoToastVariants() {
-  const [open, setOpen] = useState<'variant' | 'archive' | null>(null)
+  const [open, setOpen] = useState<'tone' | 'archive' | null>(null)
   // The last one chosen: its words stay while it leaves.
-  const [chosen, setChosen] = useState(VARIANTS[0])
+  const [chosen, setChosen] = useState(TONES[0])
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {VARIANTS.map((each) => (
+      {TONES.map((each) => (
         <Button
-          key={each.variant}
+          key={each.tone}
           size="sm"
           variant="outline"
           onClick={() => {
             setChosen(each)
-            setOpen('variant')
+            setOpen('tone')
           }}
         >
-          {each.variant}
+          {each.tone}
         </Button>
       ))}
       <Button size="sm" variant="outline" leftIcon={<Archive />} onClick={() => setOpen('archive')}>
         Its own words and icon
       </Button>
       <UndoToast
-        key={chosen.variant}
-        open={open === 'variant'}
-        variant={chosen.variant}
+        key={chosen.tone}
+        open={open === 'tone'}
+        tone={chosen.tone}
         title={chosen.title}
         description={chosen.description}
         onDismiss={() => setOpen(null)}

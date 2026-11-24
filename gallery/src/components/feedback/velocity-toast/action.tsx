@@ -26,7 +26,7 @@ export default function VelocityToastAction() {
       <VelocityToast
         open={open === 'button'}
         onDismiss={() => setOpen(null)}
-        variant="error"
+        tone="danger"
         title="The sync stopped"
         description="The warehouse did not answer."
         action={{ label: 'Retry', onClick: () => setRetried((count) => count + 1) }}

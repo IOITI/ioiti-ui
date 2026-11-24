@@ -6,7 +6,7 @@ export default function LineChartCompared() {
   const { formatMoney } = useFormat()
   return (
     <LineChart
-      ariaLabel="Revenue of three shops each week since May, and last year's"
+      aria-label="Revenue of three shops each week since May, and last year's"
       data={REVENUE_BY_SHOP}
       series={[
         { key: 'north', label: 'North street' },

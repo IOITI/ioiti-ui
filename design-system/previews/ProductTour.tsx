@@ -29,7 +29,7 @@ function Preview() {
       </div>
       <ProductTour
         open={open}
-        onClose={() => setOpen(false)}
+        onOpenChange={setOpen}
         steps={[
           { title: 'What floats over the page', body: 'Three of the layers this page shows, one after the other. The arrows move from one to the next, Escape ends it.' },
           { target: '#popover', title: 'A popover', body: 'A panel beside its button: filters, a few settings.', placement: 'bottom' },

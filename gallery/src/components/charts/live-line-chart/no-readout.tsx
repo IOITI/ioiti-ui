@@ -21,7 +21,7 @@ export default function LiveLineChartNoReadout() {
         <span className="text-sm text-muted-foreground">Jobs waiting</span>
         <span className="text-lg font-semibold tabular-nums">{waiting}</span>
       </div>
-      <LiveLineChart ariaLabel="Jobs waiting in the queue" source={queue} initial={KNOWN} windowSeconds={30} height={96} showReadout={false} />
+      <LiveLineChart aria-label="Jobs waiting in the queue" source={queue} initial={KNOWN} windowSeconds={30} height={96} showReadout={false} />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { AnimatedTabs } from './ui/animated-tabs.js'
 
@@ -46,7 +46,7 @@ describe('AnimatedTabs', () => {
     render(
       <AnimatedTabs
         renderContent={false}
-        activeTab="open"
+        value="open"
         tabs={[
           { id: 'open', label: 'Open', href: '/orders?status=open' },
           { id: 'done', label: 'Done', href: '/orders?status=done' },
@@ -55,5 +55,68 @@ describe('AnimatedTabs', () => {
     )
     expect(screen.queryByRole('tablist')).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Open' })).toHaveAttribute('aria-current', 'page')
+  })
+})
+
+// What the package says of a former name, once, in development.
+const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
+const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
+
+describe('AnimatedTabs holding the tab shown', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('holds it from defaultValue, or leaves it to the page (value), onChange told either way', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    const { unmount } = render(<AnimatedTabs label="Views" tabs={TABS} defaultValue="payments" onChange={changed} />)
+    expect(screen.getByRole('tab', { name: 'Payments 0' })).toHaveAttribute('aria-selected', 'true')
+    await user.click(screen.getByRole('tab', { name: 'History' }))
+    expect(changed).toHaveBeenLastCalledWith('history')
+    expect(screen.getByRole('tab', { name: 'History' })).toHaveAttribute('aria-selected', 'true')
+    unmount()
+
+    // Held by the page: a click tells it, and the tab stays until the page moves it.
+    render(<AnimatedTabs label="Views" tabs={TABS} value="lines" onChange={changed} />)
+    await user.click(screen.getByRole('tab', { name: 'History' }))
+    expect(changed).toHaveBeenLastCalledWith('history')
+    expect(screen.getByRole('tab', { name: 'Lines 4' })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('takes its default as the first tab shown only', async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<AnimatedTabs label="Views" tabs={TABS} defaultValue="payments" />)
+    await user.click(screen.getByRole('tab', { name: 'History' }))
+    rerender(<AnimatedTabs label="Views" tabs={TABS} defaultValue="lines" />)
+    expect(screen.getByRole('tab', { name: 'History' })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('says nothing of its names of today', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    render(<AnimatedTabs label="Views" tabs={TABS} value="lines" onChange={() => {}} />)
+    render(<AnimatedTabs label="Views" tabs={TABS} defaultValue="lines" />)
+    expect(deprecations(warn)).toHaveLength(0)
+  })
+
+  it('still takes its former names, activeTab and defaultTab, each said once in development', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { unmount } = render(<AnimatedTabs label="Views" tabs={TABS} activeTab="history" />)
+    expect(screen.getByRole('tab', { name: 'History' })).toHaveAttribute('aria-selected', 'true')
+    unmount()
+    const { rerender } = render(<AnimatedTabs label="Views" tabs={TABS} defaultTab="payments" />)
+    rerender(<AnimatedTabs label="Views" tabs={TABS} defaultTab="payments" />)
+    expect(screen.getByRole('tab', { name: 'Payments 0' })).toHaveAttribute('aria-selected', 'true')
+
+    const said = deprecations(warn).map(([message]) => String(message))
+    expect(said).toHaveLength(2)
+    expect(said[0]).toContain("(AnimatedTabs's activeTab: value)")
+    expect(said[1]).toContain("(AnimatedTabs's defaultTab: defaultValue)")
+  })
+
+  it('takes value over activeTab, given both', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    render(<AnimatedTabs label="Views" tabs={TABS} value="lines" activeTab="history" />)
+    expect(screen.getByRole('tab', { name: 'Lines 4' })).toHaveAttribute('aria-selected', 'true')
   })
 })

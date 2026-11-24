@@ -3,7 +3,7 @@ import { DonutChart } from 'ioiti-ui'
 export default function DonutChartPartsOfAWhole() {
   return (
     <DonutChart
-      ariaLabel="Orders by channel"
+      aria-label="Orders by channel"
       centerLabel="Orders"
       // Four segments take the compare colours; the fifth and those after it are one segment, in grey.
       data={[

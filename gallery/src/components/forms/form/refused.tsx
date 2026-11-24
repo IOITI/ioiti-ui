@@ -31,7 +31,7 @@ export default function FormRefused() {
           <Input id="refused-password" type="password" autoComplete="current-password" showPasswordToggle defaultValue="not the one" />
         </FormControl>
       </FormItem>
-      <Button type="submit" fullWidth isLoading={busy} loadingText="Signing in">
+      <Button type="submit" fullWidth pending={busy} loadingText="Signing in">
         Sign in
       </Button>
       <FormMessage error={refused} />

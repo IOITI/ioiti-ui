@@ -21,7 +21,7 @@ export default function AnimatedTabsLinks() {
   })
   return (
     <div className="space-y-3">
-      <AnimatedTabs label="Views of the order" renderContent={false} tabs={VIEWS} activeTab={view} onChange={setView} />
+      <AnimatedTabs label="Views of the order" renderContent={false} tabs={VIEWS} value={view} onChange={setView} />
       <p className="text-sm text-muted-foreground">{SAID[view]}</p>
     </div>
   )

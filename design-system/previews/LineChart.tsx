@@ -34,7 +34,7 @@ function delays() {
 createRoot(document.getElementById('root')!).render(
   <div className="w-full space-y-8 p-5">
     <LineChart
-      ariaLabel="Balance of four runs"
+      aria-label="Balance of four runs"
       data={runs()}
       series={[
         { key: 'a', label: 'Run 41' },
@@ -46,14 +46,14 @@ createRoot(document.getElementById('root')!).render(
       formatValue={(value) => formatMoney(value)}
     />
     <LineChart
-      ariaLabel="Delay of the orders through the day"
+      aria-label="Delay of the orders through the day"
       data={delays()}
       series={[{ key: 'delay', label: 'Delay' }]}
       area
       zero
       height={200}
       timeZone="Europe/Paris"
-      references={[{ value: 250, label: 'Limit, 250 ms', tone: 'negative' }]}
+      references={[{ value: 250, label: 'Limit, 250 ms', tone: 'danger' }]}
       markers={[{ t: Date.UTC(2026, 9, 27, 12, 30), label: 'Restart' }]}
       formatValue={(value) => `${Math.round(value)} ms`}
     />

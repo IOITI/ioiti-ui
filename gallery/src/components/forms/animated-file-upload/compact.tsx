@@ -7,7 +7,7 @@ export default function AnimatedFileUploadCompact() {
       <div className="flex flex-col gap-1">
         <span className="text-xs font-semibold text-text-primary">Proof of delivery</span>
         <AnimatedFileUpload
-          variant="compact"
+          density="compact"
           multiple={false}
           accept="image/*,application/pdf"
           maxSize={10 * 1024 * 1024}
@@ -18,7 +18,7 @@ export default function AnimatedFileUploadCompact() {
       </div>
       <div className="flex flex-col gap-1">
         <span className="text-xs font-semibold text-text-primary">Customs documents</span>
-        <AnimatedFileUpload variant="compact" disabled label="Customs documents" dropTitle="Drop files" dropSubtitle="once a country outside the EU is chosen" />
+        <AnimatedFileUpload density="compact" disabled label="Customs documents" dropTitle="Drop files" dropSubtitle="once a country outside the EU is chosen" />
       </div>
     </div>
   )

@@ -250,7 +250,7 @@ describe('a chart in American English', () => {
     const hours = [0, 1, 2, 3].map((index) => ({ t: Date.UTC(2026, 9, 1, 13 + index), a: index }))
     render(
       <IoitiProvider locale="en-US">
-        <LineChart ariaLabel="Orders" data={hours} series={[{ key: 'a', label: 'Orders' }]} animated={false} />
+        <LineChart aria-label="Orders" data={hours} series={[{ key: 'a', label: 'Orders' }]} animated={false} />
       </IoitiProvider>,
     )
     const table = screen.getByRole('table', { name: 'Orders' })

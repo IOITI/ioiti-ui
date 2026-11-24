@@ -9,7 +9,7 @@ const SHOPS_BY_CHANGE = [1, 2, 4, 7, 11, 15, 17, 14, 11, 8, 5, 3, 1, 1].map((cou
 export default function BarChartOneSetApart() {
   return (
     <BarChart
-      ariaLabel="Shops by change in sales on last month, this shop marked"
+      aria-label="Shops by change in sales on last month, this shop marked"
       height={200}
       data={SHOPS_BY_CHANGE}
       series={[{ key: 'count', label: 'Shops' }]}

@@ -13,7 +13,7 @@ export default function PageHeaderActions() {
             <Button variant="outline" size="sm" leftIcon={<Download />}>
               Export
             </Button>
-            <ButtonLink to="/components/forms" size="sm" leftIcon={<Plus />}>
+            <ButtonLink href="/components/forms" size="sm" leftIcon={<Plus />}>
               New order
             </ButtonLink>
           </>

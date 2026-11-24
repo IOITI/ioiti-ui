@@ -2,6 +2,7 @@ import { Badge } from 'ioiti-ui'
 
 const TONES = [
   { tone: 'neutral', word: 'Draft' },
+  { tone: 'info', word: 'Sent' },
   { tone: 'success', word: 'Paid' },
   { tone: 'warning', word: 'Due soon' },
   { tone: 'danger', word: 'Overdue' },
@@ -9,7 +10,7 @@ const TONES = [
 
 export default function BadgeVariants() {
   return (
-    <div className="grid w-fit grid-cols-[auto_repeat(4,auto)] items-center gap-x-4 gap-y-3 text-xs text-muted-foreground">
+    <div className="grid w-fit grid-cols-[auto_repeat(5,auto)] items-center gap-x-4 gap-y-3 text-xs text-muted-foreground">
       {(['soft', 'solid', 'outline'] as const).map((variant) => (
         <div key={variant} className="contents">
           <span className="font-mono">{variant}</span>

@@ -70,7 +70,7 @@ const feedback: CategoryInfo = {
       names: ['ToastProvider'],
       keywords: ['toast', 'useToast', 'notification', 'snackbar'],
       examples: [
-        { id: 'variants', title: 'Its variants', description: 'useToast() from inside the provider: one at a time, at the bottom centre, each for its whole time. An error stays 8 s.' },
+        { id: 'variants', title: 'Its tones', description: 'useToast() from inside the provider: one at a time, at the bottom centre, each for its whole time. What went wrong (danger) stays 8 s.' },
         { id: 'action', title: 'With an action', description: 'One may lead on, by a link or a button (its action, which closes it): it stays 6 s, its time stopping under the pointer or while the keyboard is in it.' },
         { id: 'queued', title: 'Several at once', description: 'Shown one after the other, never one over another: when others wait, the one shown moves along faster.' },
         { id: 'provider', title: 'The provider', description: 'Once around the application; IoitiProvider and RouterRoot include it. wrapperClassName lifts its toasts above a bar fixed at the bottom.' },
@@ -94,7 +94,7 @@ const feedback: CategoryInfo = {
       keywords: ['undo', 'delete', 'remove', 'restore'],
       examples: [
         { id: 'remove', title: 'A removal to undo', description: 'An Undo instead of a question: nothing is sent before the time runs out. The time runs on under the pointer; it stops while the keyboard is in the toast, the time to reach Undo.' },
-        { id: 'variants', title: 'Variants and words', description: 'Its tone follows what was done; its Undo and what it says once undone can be said in the page’s words.' },
+        { id: 'variants', title: 'Tones and words', description: 'Its tone follows what was done; its Undo and what it says once undone can be said in the page’s words.' },
         { id: 'positions', title: 'Positions and countdown', description: 'Bottom centre by default; the countdown bar can go, the time stays.' },
       ],
     },

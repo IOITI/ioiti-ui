@@ -17,7 +17,7 @@ function Times() {
   }
   return (
     <div className="flex w-full max-w-2xl flex-col gap-4 p-5">
-      <TimeRangePicker value={range} onChange={setRange} onRefresh={load} isLoading={loading} refresh={refresh} onRefreshChange={setRefresh} />
+      <TimeRangePicker value={range} onChange={setRange} onRefresh={load} loading={loading} refresh={refresh} onRefreshChange={setRefresh} />
       <p className="text-xs text-muted-foreground">
         Now: from {formatDateTime(resolved.from?.toISOString(), 'Europe/Paris', false)} to {formatDateTime(resolved.to?.toISOString(), 'Europe/Paris', false)} (Paris
         time).

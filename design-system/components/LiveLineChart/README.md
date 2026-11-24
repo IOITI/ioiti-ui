@@ -2,7 +2,7 @@
 
 A value as it arrives, over the last minutes: the line scrolls, a frame only when it moves, and a pause, or the pointer over it, holds it still for reading.
 
-**You provide** `source` (called once with `push(value, time?)`, it returns what stops the feed), `ariaLabel`, `formatValue`; `initial` (values already known, `intervalMs` apart and ending now) or `initialPoints` (`[{ t, v }]`), `intervalMs` (`1000` by default), `windowSeconds` (`60` by default), `height`, `formatChange` (the change over the window), `formatTick`, `domain`, `unit`, `color`, `showReadout`.
+**You provide** `source` (called once with `push(value, time?)`, it returns what stops the feed), `aria-label`, `formatValue`; `initial` (values already known, `intervalMs` apart and ending now) or `initialPoints` (`[{ t, v }]`), `intervalMs` (`1000` by default), `windowSeconds` (`60` by default), `height`, `formatChange` (the change over the window), `formatTick`, `domain`, `unit`, `color`, `showReadout`.
 
 ```tsx
 const feed = (push: (value: number) => void) => {
@@ -10,7 +10,7 @@ const feed = (push: (value: number) => void) => {
   socket.onmessage = (event) => push(Number(event.data))
   return () => socket.close()
 }
-<LiveLineChart ariaLabel="Response time" source={feed} windowSeconds={60} height={180}
+<LiveLineChart aria-label="Response time" source={feed} windowSeconds={60} height={180}
   formatValue={(v) => `${v.toFixed(1)} ms`} formatChange={(c) => `${c > 0 ? '+' : c < 0 ? '−' : ''}${Math.abs(c).toFixed(1)} ms`} />
 ```
 

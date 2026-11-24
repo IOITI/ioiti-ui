@@ -3,36 +3,13 @@
 import * as React from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState): its own copy is gone.
+import { useControllableState } from "../../lib/controllable.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { PRESSABLE } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 import type { WeekDay } from "../../lib/locale.js";
 import { useLocale, useMessages } from "../locale-context.js";
-
-function useControllableState<T>(
-  value: T | undefined,
-  defaultValue: T,
-  onChange?: (value: T) => void
-): [T, (next: T) => void] {
-  const [internal, setInternal] = React.useState<T>(defaultValue);
-  const controlled = value !== undefined;
-  const current = controlled ? (value as T) : internal;
-
-  const onChangeRef = React.useRef(onChange);
-  React.useEffect(() => {
-    onChangeRef.current = onChange;
-  });
-
-  const set = React.useCallback(
-    (next: T) => {
-      if (!controlled) setInternal(next);
-      onChangeRef.current?.(next);
-    },
-    [controlled]
-  );
-
-  return [current, set];
-}
 
 // ioiti-ui: the design's spring for what moves within a layer (springSnappy), not one written here.
 const spring = motionTransitions.springSnappy;

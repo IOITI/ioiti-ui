@@ -2,7 +2,7 @@
 
 The states the user must not miss, in one control of the top bar: the gravest one's words in its tone, how many more, and a dot while all is well. It opens on every state, each a link to where it is dealt with.
 
-**You provide** `items` (`[{ id, tone, icon?, label, detail?, href? }]`, `tone` from the gravest: `danger` to fix · `warning` to watch · `success` good news · `neutral` to know, asking nothing · `ok`); optionally `label` (`State`, its name), `okLabel` (`All good`), `footer` (a link to the page where they all are).
+**You provide** `items` (`[{ id, tone, icon?, label, detail?, href? }]`, `tone`, a `StatusTone` or `ok`, from the gravest: `danger` to fix · `warning` to watch · `success` good news · `info` worth knowing, asking nothing · `neutral` to know, asking nothing · `ok`); optionally `label` (`State`, its name), `okLabel` (`All good`), `footer` (a link to the page where they all are).
 
 ```tsx
 <AppShell … topBarChips={
@@ -11,12 +11,12 @@ The states the user must not miss, in one control of the top bar: the gravest on
       { id: 'bank', tone: expired ? 'danger' : 'ok', icon: <KeyRound />, label: expired ? 'Sign in again' : 'Bank connected', href: '/settings/bank' },
       { id: 'live', tone: live ? 'ok' : 'neutral', label: live ? 'Live updates' : 'Polling' },
     ]}
-    footer={<TextLink to="/services" variant="quiet">Every service</TextLink>} />
+    footer={<TextLink href="/services" variant="quiet">Every service</TextLink>} />
 } />
 ```
 
 - In `AppShell`'s `topBarChips`, where several `StateChip`s would take the top bar's room. One state alone that applies now and then is still a `StateChip`.
-- The pill takes the gravest tone (the `StateChip`'s washes); under 1280px its icon and how many stand out, from 1280px the gravest's words and "+N" (its words are longer than a StateChip's, which shows them from 1024px). `neutral` and `ok` stand out only once it is opened: grey or green dot, the neutral state's words or `okLabel` from 640px.
+- The pill takes the gravest tone (the `StateChip`'s washes); under 1280px its icon and how many stand out, from 1280px the gravest's words and "+N" (its words are longer than a StateChip's, which shows them from 1024px). `info`, `neutral` and `ok` stand out only once it is opened: a dot in their tone, the gravest quiet state's words (an `info`'s, then a `neutral`'s) or `okLabel` from 640px.
 - Its button is named by the words it shows, then how many of each tone stand out ("State: Payments down (1 to fix, 1 to
   watch)", or the one state's words): a screen reader hears them, a person speaking to the computer says them.
 - Opened (a `Popover`, in `document.body`), the states that stand out come first, the gravest first, then the quiet ones in grey; a state followed closes it, one opened in another tab leaves it open; Escape gives the focus back.

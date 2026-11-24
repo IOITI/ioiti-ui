@@ -11,7 +11,7 @@ export default function EmptyStateCompact() {
           <p className="text-sm text-muted-foreground">12 alerts, the newest at 14:02.</p>
         ) : (
           <EmptyState
-            compact
+            density="compact"
             icon={<SearchX />}
             title="No alert matches these filters"
             description="Nothing of high severity came in during the last 24 hours."

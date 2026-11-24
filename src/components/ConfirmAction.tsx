@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 
+import { useControllableState } from '../lib/controllable.js'
 import { useMessages } from './locale-context.js'
 import { Alert, AlertDescription } from './ui/alert.js'
 import { Button } from './ui/button.js'
@@ -7,7 +8,12 @@ import { DragToConfirm } from './ui/drag-to-confirm.js'
 import { SettleModal } from './ui/settle-modal.js'
 
 interface ConfirmActionProps {
-  open: boolean
+  /** Open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`). */
+  open?: boolean
+  /** Open at first, the dialog holding it then (Cancel and Escape close it); closed by default. */
+  defaultOpen?: boolean
+  /** Told of every change, whoever holds it: `false` when Cancel, Escape, its backdrop or its × closes it. */
+  onOpenChange?: (open: boolean) => void
   title: string
   /** Exactly what will happen, in the user's terms. */
   description: ReactNode
@@ -32,7 +38,8 @@ interface ConfirmActionProps {
   blocked?: boolean
   error?: string | null
   onConfirm: () => void
-  onClose: () => void
+  /** Told when Cancel, Escape, its backdrop or its × closes it (never while `pending`). */
+  onClose?: () => void
 }
 
 /**
@@ -42,6 +49,8 @@ interface ConfirmActionProps {
  */
 export function ConfirmAction({
   open,
+  defaultOpen = false,
+  onOpenChange,
   title,
   description,
   confirmLabel,
@@ -57,21 +66,30 @@ export function ConfirmAction({
   onClose,
 }: ConfirmActionProps) {
   const words = useMessages().dialog
+  // Open, held by the page or by the dialog (useControllableState); what closes it tells onOpenChange and onClose, never
+  // while what it confirms is under way.
+  const [shown, setShown] = useControllableState(open, defaultOpen, onOpenChange)
+  const close = () => {
+    setShown(false)
+    onClose?.()
+  }
   return (
     <SettleModal
-      open={open}
-      onClose={pending ? () => {} : onClose}
+      open={shown}
+      onOpenChange={(next) => {
+        if (!next && !pending) close()
+      }}
       title={title}
       closeOnBackdrop={!pending}
-      hideCloseButton={pending}
+      showCloseButton={!pending}
       size="md"
       footer={
         <>
-          <Button variant="ghost" size="sm" onClick={onClose} disabled={pending}>
+          <Button variant="ghost" size="sm" onClick={close} disabled={pending}>
             {cancelLabel ?? words.cancel}
           </Button>
           {gesture === 'button' && (
-            <Button size="sm" isLoading={pending} disabled={blocked} onClick={onConfirm}>
+            <Button size="sm" pending={pending} disabled={blocked} onClick={onConfirm}>
               {confirmLabel}
             </Button>
           )}
@@ -93,10 +111,10 @@ export function ConfirmAction({
         {gesture === 'slide' && (
           <DragToConfirm
             // A fresh slider every time the dialog opens or an attempt failed.
-            key={`${open}-${error ?? ''}`}
+            key={`${shown}-${error ?? ''}`}
             label={confirmLabel}
             confirmedLabel={pending ? (workingLabel ?? words.working) : (doneLabel ?? words.done)}
-            variant="warning"
+            tone="warning"
             autoResetDelay={0}
             haptic={false}
             disabled={pending || blocked}

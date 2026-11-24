@@ -13,7 +13,7 @@ export default function NotFoundStateOutsideTheShell() {
         parallax={false}
         footer="Signed in? Your own reports are on your dashboard."
       >
-        <ButtonLink to="/patterns/dashboard" leftIcon={<House className="size-4" />}>
+        <ButtonLink href="/patterns/dashboard" leftIcon={<House className="size-4" />}>
           Go to the dashboard
         </ButtonLink>
       </NotFound>

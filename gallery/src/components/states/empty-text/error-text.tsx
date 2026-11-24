@@ -16,7 +16,7 @@ export default function EmptyTextErrorText() {
   }
   return (
     <div className="flex flex-col items-start gap-2">
-      <Button size="sm" leftIcon={<Send />} isLoading={sending} loadingText="Sending" onClick={send}>
+      <Button size="sm" leftIcon={<Send />} pending={sending} loadingText="Sending" onClick={send}>
         Send the invoice
       </Button>
       {/* Under its button, read out at once. */}

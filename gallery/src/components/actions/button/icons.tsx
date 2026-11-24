@@ -14,7 +14,7 @@ export default function ButtonIcons() {
       <Button variant="ghost" rightIcon={<ArrowRight />}>
         Continue
       </Button>
-      <Button variant="destructive" leftIcon={<Trash2 />}>
+      <Button variant="danger" leftIcon={<Trash2 />}>
         Delete
       </Button>
     </div>

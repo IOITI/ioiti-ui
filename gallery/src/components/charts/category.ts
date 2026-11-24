@@ -40,7 +40,7 @@ const charts: CategoryInfo = {
       keywords: ['bars', 'columns', 'grouped', 'stacked', 'histogram'],
       examples: [
         { id: 'grouped-or-stacked', title: 'Side by side or stacked', description: 'Things compared in the four compare colours, never recycled; changing the variant moves the bars from one to the other. The arrow keys move from one category to the next.' },
-        { id: 'gains-and-losses', title: 'Gains and losses', description: 'Losses go below zero, and tone="sign" colours each bar as a gain or a loss. A category may say more: its title and details, in the tooltip and the table.' },
+        { id: 'gains-and-losses', title: 'Gains and losses', description: 'Losses go below zero, and colorBy="sign" colours each bar as a gain or a loss. A category may say more: its title and details, in the tooltip and the table.' },
         { id: 'one-set-apart', title: 'One set apart', description: 'One category set apart among those it is set against, the others grey; counts step by whole numbers, the axis names every other one.' },
         { id: 'missing-and-empty', title: 'A value missing, or none', description: 'A value not counted is no bar and a dash, never a bar of zero; with no data, it says so.' },
       ],

@@ -33,10 +33,10 @@ export default function IoitiProviderPartsAlone() {
         <div className="flex flex-col gap-4">
           <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Orders', href: '/orders' }, { label: 'Order 2026-0042' }]} />
           <div className="flex flex-wrap items-center gap-4">
-            <ButtonLink to="/orders/new" size="sm" leftIcon={<Plus />}>
+            <ButtonLink href="/orders/new" size="sm" leftIcon={<Plus />}>
               New order
             </ButtonLink>
-            <TextLink to="/orders?status=late" className="text-sm">
+            <TextLink href="/orders?status=late" className="text-sm">
               The late ones
             </TextLink>
           </div>

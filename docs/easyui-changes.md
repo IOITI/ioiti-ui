@@ -195,7 +195,7 @@ otherwise).
   dot when a child has a badge, in the gravest tone among them.
 - `sidebar`: a section placed at the foot (`place: "footer"`) is drawn above Collapse, without a heading; its
   entries are lit by their own hover (the sliding hover box is measured in the list).
-- `sidebar`: `badgeTone` on an entry and a child (`SidebarBadgeTone`: `neutral`, `warning`, `negative`): a badge
+- `sidebar`: `badgeTone` on an entry and a child (`SidebarBadgeTone`: `neutral`, `warning`, `danger`): a badge
   that says a state ("Degraded", "2 open") is in its tone's text colour with a dot, without the count's grey
   pill. The tip naming an entry of the folded sidebar is drawn in `document.body`, as every layer: a sidebar
   that took a blur, a filter or a transform would be the tip's containing block, its overflow cutting the tip.
@@ -758,6 +758,60 @@ otherwise).
   `statusLabel`, or its status in words where it has none (EasyUI said the status's code); the commit's button and its
   hint too.
 - `peek-card` (0.29.0): its link's words are the provider's language's ("Open"); `hrefLabel` still wins.
+- `velocity-toast` (0.30.0): `tone`, a `StatusTone` (`neutral` by default, `info`, `success`, `warning`, `danger`), draws
+  its icon and, for `danger`, makes its frame an `alert`, said at once. `variant`, EasyUI's, is deprecated: read as a tone
+  (`default` as `neutral`, `error` as `danger`), said once in development (`toast-variant`); `VelocityToastVariant` goes
+  with it. `tone` wins where both are given.
+- `undo-toast` (0.30.0): the same `tone` (`neutral` by default: its bin), its `variant` deprecated as VelocityToast's
+  (`toast-variant`), `UndoToastVariant` with it.
+- `drag-to-confirm` (0.30.0): `tone`, a `StatusTone`; without one, its `actionType`'s as before (`danger` to delete,
+  `warning` to unlock, `info` to submit, `neutral` otherwise). `variant`, EasyUI's, is deprecated: read as a tone
+  (`default` as `neutral`), said once in development (`drag-to-confirm-variant`); `DragConfirmVariant` goes with it.
+  `success` is drawn in the positive tone on its way too, its fill and its icon: EasyUI's drew it as the default until it
+  was confirmed.
+- `badge` (0.30.0): `BadgeTone` is `StatusTone`: an `info` tone, drawn as Alert draws it (the recipes' `info`: its faint
+  ground, its fill, its line, its dot).
+- `alert` (0.30.0): `AlertTone` is `StatusTone`, the same five values.
+- `button` (0.30.0): `pending`, an action under way that the button started (its spinner and `loadingText`, pressed no
+  more meanwhile), and the variant `danger`, the tones' word. `isLoading` and `destructive`, their former names, are
+  read as them, each said once in development; removed in 1.0.
+- `combobox`, `calendar`, `date-picker`, `sidebar`, `flysheet` (0.30.0): their own copy of `useControllableState` is
+  gone; they hold a value as every component of the package does (`src/lib/controllable.ts`), which passes on what goes
+  with a change (why a sheet closed).
+- `animated-tabs`, `notification-bell`, `otp-input`, `dynamic-island`, `stretch-switch`, `spring-select`,
+  `smooth-accordion`, `settle-modal`, `product-tour`, `form` (0.30.0): the state they held by hand (`form`'s
+  `RadioGroup` and `Switch`) is held by `useControllableState`: theirs unless the page gives it, the page told of every
+  change either way.
+- `combobox` (0.30.0): `onChange`, as every control; `onValueChange`, its former name, still told where it alone is
+  given, said once in development (removed in 1.0).
+- `animated-tabs` (0.30.0): `value` and `defaultValue`, as every control; `activeTab` and `defaultTab`, their former
+  names, read where they alone are given (removed in 1.0). A default is the tab shown first only: EasyUI's showed
+  `defaultTab` again whenever it changed.
+- `notification-bell` (0.30.0): `open`, as every layer, and `defaultOpen`; `isOpen`, its former name, read where it
+  alone is given (removed in 1.0). `onOpenChange` given without `isOpen` took the place of the bell's own state, and its
+  panel never opened: the bell holds it now, and tells `onOpenChange`.
+- `otp-input` (0.30.0): `defaultValue`, the code its boxes start with. Held by the page, the boxes show its `value` as
+  it is drawn, where an effect copied it a render later.
+- `smooth-accordion` (0.30.0): `value` and `onChange`, the ids of the items open, and `defaultValue`; `defaultOpen`, its
+  former name, read where it alone is given (removed in 1.0).
+- `settle-modal` (0.30.0): `open`, `defaultOpen` and `onOpenChange`, as every layer: held by itself, it closes itself;
+  `onClose` is told too, as it closes. `showCloseButton`; `hideCloseButton`, its former name the other way round, read
+  where it alone is given (removed in 1.0).
+- `product-tour` (0.30.0): `open`, `defaultOpen` and `onOpenChange` (with why it ended, `{ reason }`), as every layer;
+  `onClose` is told too.
+- `flysheet` (0.30.0): `showCloseButton`; `showClose`, its former name, read where it alone is given (removed in 1.0).
+- `sidebar` (0.30.0): a badge's tones are a status's (`neutral`, `warning`, `danger`); `negative`, the former name of
+  `danger`, is read as it, said once in development (removed in 1.0).
+- `bar-chart` (0.30.0): `aria-label` names it and its table's caption, and `colorBy` colours its bars by series or by
+  sign. `ariaLabel` and `tone`, their former names, are read as them, each said once in development; removed in 1.0.
+- `donut-chart`, `funnel-chart`, `activity-heatmap`, `live-line-chart` (0.30.0): `aria-label` names it (and, for the
+  donut and the funnel, their table's caption). `ariaLabel`, its former name, is read as it and said once in
+  development; removed in 1.0.
+- `advanced-data-table` (0.30.0): `loading` says the records are on their way, on `DataTable` and `AdvancedDataTable`
+  (each warns under its own name), and to the parts through the context (`loading`, and `isLoading` with the same
+  value). `isLoading`, EasyUI's name, is read as it and said once in development; removed in 1.0.
+- `animated-file-upload` (0.30.0): `density="compact"` draws the inline zone. EasyUI's `variant="compact"` is read as it
+  and said once in development; removed in 1.0. `density="regular"` wins over it.
 
 ## ioiti-ui's own changes
 

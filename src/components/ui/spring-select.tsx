@@ -7,6 +7,8 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Check } from 'lucide-react';
 import { useAnchoredLayer } from '../../lib/anchor.js';
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState).
+import { useControllableState } from '../../lib/controllable.js';
 import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { fold } from '../../lib/search.js';
 import { cn } from '../../lib/utils.js';
@@ -128,7 +130,11 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   const errorId = `${rootId}-error`;
   const optionId = (idx: number) => `${rootId}-option-${idx}`;
   const [open, setOpen] = useState(false);
-  const [internalValue, setInternalValue] = useState<string | undefined>(defaultValue);
+  const [current, setCurrent] = useControllableState<string | undefined>(
+    value,
+    defaultValue,
+    onChange as ((value: string | undefined) => void) | undefined
+  );
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   // ioiti-ui: the list as wide as the trigger, read as it opens (inside the root, it took the root's width).
   const [width, setWidth] = useState<number>();
@@ -139,8 +145,6 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   // ioiti-ui: what was typed, until it is forgotten.
   const typed = useRef({ text: '', timer: 0 });
 
-  const isControlled = value !== undefined;
-  const current = isControlled ? value : internalValue;
   const currentOption = options.find((o) => o.value === current);
   // ioiti-ui: wrong by its `error`, or by `aria-invalid` (a Field's).
   const invalid = invalidOf(error, ariaInvalid);
@@ -192,8 +196,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   // ioiti-ui: told of a change only, as a select's `change`: the option chosen again (or left by Tab) says nothing.
   const choose = (opt: SpringSelectOption) => {
     if (opt.value === current) return;
-    if (!isControlled) setInternalValue(opt.value);
-    onChange?.(opt.value);
+    setCurrent(opt.value);
   };
 
   const handleSelect = (opt: SpringSelectOption, idx: number) => {

@@ -13,10 +13,10 @@ export default function BarChartMissingAndEmpty() {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="min-w-0 rounded-xl border border-dashed border-border p-3">
-        <BarChart ariaLabel="Parcels sent this week" data={PARCELS} series={[{ key: 'parcels', label: 'Parcels' }]} height={180} integer />
+        <BarChart aria-label="Parcels sent this week" data={PARCELS} series={[{ key: 'parcels', label: 'Parcels' }]} height={180} integer />
       </div>
       <div className="min-w-0 rounded-xl border border-dashed border-border p-3">
-        <BarChart ariaLabel="Parcels sent next week" data={[]} series={[{ key: 'parcels', label: 'Parcels' }]} height={180} />
+        <BarChart aria-label="Parcels sent next week" data={[]} series={[{ key: 'parcels', label: 'Parcels' }]} height={180} />
       </div>
     </div>
   )

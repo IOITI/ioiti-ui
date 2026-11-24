@@ -5,12 +5,10 @@ import type { Formatters } from './format.js'
 import { DEFAULT_LOCALE } from './locale.js'
 import { bindMessages } from './messages.js'
 import type { BoundCatalogue } from './messages.js'
+import type { SignTone } from './tones.js'
 
 /** Which way is good news: `down` for a cost, a latency, a churn. */
 export type GoodWhen = 'up' | 'down'
-
-/** What a change means: good news, bad news, or none (no change). */
-export type ChangeTone = 'positive' | 'negative' | 'neutral'
 
 /** The words a change is said in: a locale's (`useMessages().numberInput`), English's by default. */
 export type ChangeWords = Pick<BoundCatalogue<Messages>['numberInput'], 'changeNone' | 'changeUp' | 'changeDown'>
@@ -23,8 +21,11 @@ export function formatChange(change: number, formats: Pick<Formatters, 'formatPe
   return formats.formatPercent(change, true, 1)
 }
 
-/** The tone of a change, by its meaning: a rise is good news where up is good, bad news where down is. */
-export function changeTone(change: number, goodWhen: GoodWhen = 'up'): ChangeTone {
+/**
+ * The tone of a change, by its meaning (a SignTone: `positive` is good news, `negative` bad news, `neutral` none): a rise
+ * is good news where up is good, bad news where down is.
+ */
+export function changeTone(change: number, goodWhen: GoodWhen = 'up'): SignTone {
   if (!Number.isFinite(change) || change === 0) return 'neutral'
   return (change > 0) === (goodWhen === 'up') ? 'positive' : 'negative'
 }

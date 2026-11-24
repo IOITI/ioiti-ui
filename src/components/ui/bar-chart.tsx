@@ -33,6 +33,8 @@ import {
 // ioiti-ui: more to say of a category, in the tooltip and the table.
 import { detailsText, type ChartDetail } from "../../lib/chart-details.js";
 import { niceDomain } from "../../lib/chart-scale.js";
+// ioiti-ui: its former names said once in development.
+import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { ChartLegend } from "../ChartLegend.js";
 // ioiti-ui: the words in the interface's language.
@@ -55,7 +57,10 @@ export interface BarChartProps {
    * ioiti-ui: `series` colours each series (one series in the series colour, things compared in the four
    * compare colours, never recycled); `sign` colours each bar by its sign, a gain's colour up and a loss's
    * down (daily gains and losses).
+   * @default "series"
    */
+  colorBy?: "series" | "sign";
+  /** @deprecated Use `colorBy`. Removed in 1.0. */
   tone?: "series" | "sign";
   height?: number;
   /** ioiti-ui: a value in the tooltip and the table: as the interface's locale writes it by default ("1,234.5"). */
@@ -82,6 +87,8 @@ export interface BarChartProps {
    * ioiti-ui: its name for a screen reader, and its table's caption. By default, in the interface's language, "Bar
    * chart of Profit, Fees across 7 categories" and "Chart data".
    */
+  "aria-label"?: string;
+  /** @deprecated Use `aria-label`. Removed in 1.0. */
   ariaLabel?: string;
   className?: string;
 }
@@ -115,7 +122,8 @@ export function BarChart({
   data,
   series,
   variant = "grouped",
-  tone = "series",
+  colorBy: givenColorBy,
+  tone,
   height = 260,
   formatValue: givenFormatValue,
   formatTick: givenFormatTick,
@@ -126,9 +134,15 @@ export function BarChart({
   marked,
   showLegend = true,
   animated = true,
+  "aria-label": givenName,
   ariaLabel,
   className = "",
 }: BarChartProps) {
+  // ioiti-ui: its former names read as today's, each said once in development.
+  if (tone !== undefined) deprecated("bar-chart-tone", "BarChart");
+  if (ariaLabel !== undefined) deprecated("aria-label-camel", "BarChart");
+  const colorBy = givenColorBy ?? tone ?? "series";
+  const name = givenName ?? ariaLabel;
   // ioiti-ui: reduced as the system asks or IoitiProvider's reducedMotion says.
   const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
@@ -200,7 +214,7 @@ export function BarChart({
   // ioiti-ui: a sign's colour; else, with a category marked, the series colour for it and grey for the others.
   const setApart = marked !== undefined && series.length === 1;
   const fillOf = (si: number, v: number, i: number) =>
-    tone === "sign"
+    colorBy === "sign"
       ? v >= 0
         ? POSITIVE_COLOUR
         : NEGATIVE_COLOUR
@@ -279,7 +293,7 @@ export function BarChart({
           height={height}
           role="img"
           // ioiti-ui: its categories counted as the language counts them ("1 category").
-          aria-label={ariaLabel ?? words.barChartName({ series: series.map((s) => s.label), count: n })}
+          aria-label={name ?? words.barChartName({ series: series.map((s) => s.label), count: n })}
           tabIndex={0}
           onKeyDown={onKey}
           onBlur={() => setActive(null)}
@@ -445,7 +459,7 @@ export function BarChart({
       <div className="sr-only">
         <table>
           {/* ioiti-ui: its caption and heads in the interface's language. */}
-          <caption>{ariaLabel ?? words.tableCaption}</caption>
+          <caption>{name ?? words.tableCaption}</caption>
           <thead>
             <tr>
               <th scope="col">{words.categoryColumn}</th>

@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
 import { SmoothAccordion } from './ui/smooth-accordion.js'
@@ -13,7 +13,7 @@ const ITEMS = [
 describe('SmoothAccordion', () => {
   it('ties each question to its answer, a region named by it', async () => {
     const user = userEvent.setup()
-    const { container } = render(<SmoothAccordion defaultOpen={['returns']} items={ITEMS} />)
+    const { container } = render(<SmoothAccordion defaultValue={['returns']} items={ITEMS} />)
 
     const returns = screen.getByRole('button', { name: 'Can an order be returned?' })
     const answer = screen.getByRole('region', { name: 'Can an order be returned?' })
@@ -60,11 +60,61 @@ describe('SmoothAccordion', () => {
     expect(screen.queryByRole('heading')).not.toBeInTheDocument()
     unmount()
 
-    const { container } = render(<SmoothAccordion headingLevel={3} defaultOpen={['returns']} items={ITEMS} />)
+    const { container } = render(<SmoothAccordion headingLevel={3} defaultValue={['returns']} items={ITEMS} />)
     const headings = screen.getAllByRole('heading', { level: 3 })
     expect(headings).toHaveLength(2)
     expect(within(headings[0]).getByRole('button', { name: 'Can an order be returned?' })).toBeInTheDocument()
     expect(headings[1]).toHaveAccessibleName('Where is the invoice? In every order’s page')
     await expectAccessible(container)
+  })
+})
+
+// What the package says of a former name, once, in development.
+const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
+const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
+
+describe('SmoothAccordion holding what is open', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('tells onChange of the items open, held by itself or by the page (value)', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    const { unmount } = render(<SmoothAccordion allowMultiple defaultValue={['returns']} onChange={changed} items={ITEMS} />)
+    await user.click(screen.getByRole('button', { name: /Where is the invoice\?/ }))
+    expect(changed).toHaveBeenLastCalledWith(['returns', 'invoice'])
+    expect(screen.getByRole('button', { name: /Where is the invoice\?/ })).toHaveAttribute('aria-expanded', 'true')
+    unmount()
+
+    // Held by the page: the click tells it, and nothing opens until the page says so.
+    const { rerender } = render(<SmoothAccordion value={[]} onChange={changed} items={ITEMS} />)
+    const returns = screen.getByRole('button', { name: 'Can an order be returned?' })
+    await user.click(returns)
+    expect(changed).toHaveBeenLastCalledWith(['returns'])
+    expect(returns).toHaveAttribute('aria-expanded', 'false')
+    rerender(<SmoothAccordion value={['returns']} onChange={changed} items={ITEMS} />)
+    expect(returns).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('says nothing of its names of today, and still takes defaultOpen, said once in development', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { unmount } = render(<SmoothAccordion defaultValue={['returns']} items={ITEMS} />)
+    expect(deprecations(warn)).toHaveLength(0)
+    unmount()
+
+    const { rerender } = render(<SmoothAccordion defaultOpen={['invoice']} items={ITEMS} />)
+    rerender(<SmoothAccordion defaultOpen={['invoice']} items={ITEMS} />)
+    expect(screen.getByRole('button', { name: /Where is the invoice\?/ })).toHaveAttribute('aria-expanded', 'true')
+    const said = deprecations(warn)
+    expect(said).toHaveLength(1)
+    expect(String(said[0][0])).toContain("(SmoothAccordion's defaultOpen: defaultValue)")
+  })
+
+  it('takes defaultValue over defaultOpen, given both', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    render(<SmoothAccordion defaultValue={['returns']} defaultOpen={['invoice']} items={ITEMS} />)
+    expect(screen.getByRole('button', { name: 'Can an order be returned?' })).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('button', { name: /Where is the invoice\?/ })).toHaveAttribute('aria-expanded', 'false')
   })
 })

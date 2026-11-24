@@ -129,9 +129,9 @@ export const MENU: Menu = {
 export function OrdersPage() {
   return (
     <>
-      <PageHeader title="Orders" description="Every order, newest first." actions={<ButtonLink to="/orders/new">New order</ButtonLink>} />
+      <PageHeader title="Orders" description="Every order, newest first." actions={<ButtonLink href="/orders/new">New order</ButtonLink>} />
       <KpiGrid>…</KpiGrid>
-      <Panel title="Open" dense>
+      <Panel title="Open" density="compact">
         <Table aria-label="Open orders">…</Table>
       </Panel>
     </>

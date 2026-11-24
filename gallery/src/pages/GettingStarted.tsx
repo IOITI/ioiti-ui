@@ -13,7 +13,7 @@ const TAILWIND_VITE = templateJson.devDependencies['@tailwindcss/vite']
 function ToastButton() {
   const toast = useToast()
   return (
-    <Button variant="outline" size="sm" onClick={() => toast({ title: 'Saved', description: 'Toasts come one at a time, at the bottom.', variant: 'success' })}>
+    <Button variant="outline" size="sm" onClick={() => toast({ title: 'Saved', description: 'Toasts come one at a time, at the bottom.', tone: 'success' })}>
       Show a toast
     </Button>
   )
@@ -26,7 +26,7 @@ export function GettingStarted() {
         title="Getting started"
         description="ioiti-ui is IOITI's design system: the tokens, the components and the frame of its applications, for React 19 and Tailwind CSS 4."
         actions={
-          <ButtonLink to="/patterns/dashboard" variant="outline" size="sm" rightIcon={<ArrowRight className="size-3.5" />}>
+          <ButtonLink href="/patterns/dashboard" variant="outline" size="sm" rightIcon={<ArrowRight className="size-3.5" />}>
             A page made with it
           </ButtonLink>
         }

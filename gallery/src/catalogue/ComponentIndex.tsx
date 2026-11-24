@@ -41,7 +41,7 @@ export function ComponentIndex() {
         {CATEGORIES.map((category) => {
           const Icon = category.icon
           return (
-            <ButtonLink key={category.slug} to={categoryPath(category)} variant="outline" size="xs" leftIcon={<Icon />}>
+            <ButtonLink key={category.slug} href={categoryPath(category)} variant="outline" size="xs" leftIcon={<Icon />}>
               {category.label}
             </ButtonLink>
           )
@@ -65,7 +65,7 @@ export function ComponentIndex() {
                     className="min-w-0 space-y-1.5 rounded-2xl border border-border/70 bg-surface/50 p-4 dark:bg-surface/25 glass-card glass-edge"
                   >
                     <div className="flex items-baseline justify-between gap-3">
-                      <TextLink to={path} variant="hover">
+                      <TextLink href={path} variant="hover">
                         <span className="font-medium">{family.name}</span>
                       </TextLink>
                       <span className="shrink-0 text-xs text-muted-foreground">{category.label}</span>

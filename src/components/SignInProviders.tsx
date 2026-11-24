@@ -104,7 +104,7 @@ export function SignInProviders({
             <Hint content={provider.hint} wrap={disabled} className="flex w-full *:flex-1">
               {/* Busy, it stays the link it was: the browser follows a link only while it is in the page. */}
               <ButtonLink
-                to={disabled ? null : provider.href}
+                href={disabled ? null : provider.href}
                 reloadDocument
                 variant={variant}
                 leftIcon={busy ? <LoaderCircle className="size-4 motion-safe:animate-spin" aria-hidden /> : provider.icon}

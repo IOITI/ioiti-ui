@@ -51,7 +51,7 @@ function Page({ pathname }: { pathname: string }) {
       <PageHeader title={entry?.label ?? 'Page not found'} description="A page of the menu: its entry is marked, the trail ends with it." />
       {pathname === '/orders' && (
         <p className="text-sm text-muted-foreground">
-          The latest: <TextLink to="/orders/2026-0042">Order 2026-0042</TextLink>, a page deeper than the menu.
+          The latest: <TextLink href="/orders/2026-0042">Order 2026-0042</TextLink>, a page deeper than the menu.
         </p>
       )}
     </>
@@ -85,7 +85,7 @@ export default function AppShellInABox() {
           topBarChips={
             pathname !== '/settings/billing' && (
               <StateChip
-                to="/settings/billing"
+                href="/settings/billing"
                 tone="warning"
                 icon={<CreditCard className="size-3.5" aria-hidden />}
                 label="Card expires soon"

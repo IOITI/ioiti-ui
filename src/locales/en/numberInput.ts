@@ -10,7 +10,7 @@ export const numberInput = {
   rangeTo: (label: string) => `${label}, to`,
   /** "20 € – 80 €": the range a RangeSlider holds, written above it. */
   rangeValue: ({ from, to }: { from: string; to: string }) => `${from} – ${to}`,
-  /** "Range": a RangeSlider's name where its label is not text and it is given no `ariaLabel`. */
+  /** "Range": a RangeSlider's name where its label is not text and it is given no `aria-label`. */
   rangeName: 'Range',
   /** "unchanged": a change of nothing, for a screen reader. */
   changeNone: 'unchanged',

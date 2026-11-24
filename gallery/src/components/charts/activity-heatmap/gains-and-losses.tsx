@@ -14,7 +14,7 @@ export default function ActivityHeatmapGainsAndLosses() {
   const { formatMoney } = useFormat()
   return (
     <ActivityHeatmap
-      ariaLabel="Margin of each working day"
+      aria-label="Margin of each working day"
       data={MARGIN_BY_DAY}
       startDate={MARGIN_BY_DAY[0]?.date}
       weeks={21}

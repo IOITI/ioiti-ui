@@ -7,6 +7,10 @@ import { X } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_MD, DIALOG, SCRIM } from '../../lib/recipes.js';
+// ioiti-ui: held by its caller or by itself, as every layer (useControllableState); a former name said once, in
+// development (deprecated).
+import { useControllableState } from '../../lib/controllable.js';
+import { deprecated } from '../../lib/deprecated.js';
 // ioiti-ui: the focus kept as every layer over the page keeps it; a dialog without a name said to its developer.
 import { devWarn } from '../../lib/dev.js';
 import { useFocusScope } from '../../lib/focus-scope.js';
@@ -14,14 +18,22 @@ import { useFocusScope } from '../../lib/focus-scope.js';
 import { useMessages } from '../locale-context.js';
 
 export interface SettleModalProps {
-  open: boolean;
-  onClose: () => void;
+  /** ioiti-ui: open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`). */
+  open?: boolean;
+  /** ioiti-ui: open at first, the dialog holding it then (it closes itself); closed by default. */
+  defaultOpen?: boolean;
+  /** ioiti-ui: told of every change, whoever holds it: `false` when Escape, its backdrop or its × closes it. */
+  onOpenChange?: (open: boolean) => void;
+  /** Told when Escape, its backdrop or its × closes it. */
+  onClose?: () => void;
   title?: React.ReactNode;
   description?: React.ReactNode;
   children?: React.ReactNode;
   /** Footer area (typically action buttons) */
   footer?: React.ReactNode;
-  /** Hide the close (X) button in the top-right */
+  /** ioiti-ui: its close (×) button, in the top-right (true), as every layer names it. */
+  showCloseButton?: boolean;
+  /** @deprecated Use `showCloseButton`. Removed in 1.0. The other way round: `hideCloseButton` is `showCloseButton={false}`. */
   hideCloseButton?: boolean;
   /**
    * ioiti-ui: its name, for a dialog without a `title`: a screen reader says "dialog" and nothing else without one. In
@@ -63,19 +75,32 @@ const sizeMap: Record<NonNullable<SettleModalProps['size']>, string> = {
  * and goes back to where it was when it closes.
  */
 export const SettleModal: React.FC<SettleModalProps> = ({
-  open,
-  onClose,
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+  onClose: onClosed,
   title,
   description,
   children,
   footer,
-  hideCloseButton = false,
+  showCloseButton,
+  hideCloseButton,
   closeOnBackdrop = true,
   size = 'md',
   className,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
 }) => {
+  // ioiti-ui: open, held by the page or by the dialog (useControllableState); what closes it tells `onOpenChange` and
+  // `onClose`. `showCloseButton`, as every layer names it; `hideCloseButton`, its former name the other way round, read
+  // where it alone is given.
+  const [open, setOpen] = useControllableState(openProp, defaultOpen, onOpenChange);
+  const onClose = () => {
+    setOpen(false);
+    onClosed?.();
+  };
+  if (hideCloseButton !== undefined) deprecated('hide-close-button', 'SettleModal');
+  const withCloseButton = showCloseButton ?? !hideCloseButton;
   const titleId = useId();
   const words = useMessages().dialog;
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -170,7 +195,7 @@ export const SettleModal: React.FC<SettleModalProps> = ({
               className
             )}
           >
-            {!hideCloseButton && (
+            {withCloseButton && (
               <button
                 type="button"
                 aria-label={words.close}

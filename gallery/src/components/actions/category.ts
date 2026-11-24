@@ -12,9 +12,9 @@ const actions: CategoryInfo = {
       slug: 'button',
       name: 'Button',
       names: ['Button'],
-      keywords: ['primary', 'submit', 'loading', 'destructive'],
+      keywords: ['primary', 'submit', 'loading', 'pending', 'danger', 'destructive'],
       examples: [
-        { id: 'variants', title: 'Variants', description: 'Primary for the one action a page or a dialog is for; outline and ghost for the others; destructive for what removes; success for what completes.' },
+        { id: 'variants', title: 'Variants', description: 'Primary for the one action a page or a dialog is for; outline and ghost for the others; danger for what removes; success for what completes.' },
         { id: 'sizes', title: 'Sizes', description: 'xs on a line of text or a row of a table, sm beside a section’s heading, md on its own, lg alone on a page. Its icon is as tall as its words, at every size.' },
         { id: 'icons', title: 'With an icon', description: 'An icon before the words says what kind of action it is; after them, where it leads or that it opens more. Icon alone: size="icon" with an aria-label, or an IconButton.' },
         { id: 'states', title: 'Busy and disabled', description: 'Busy, it says what it does and cannot be pressed twice; disabled, it says why in a Hint beside it rather than in a title.' },
@@ -28,7 +28,7 @@ const actions: CategoryInfo = {
       keywords: ['link', 'navigate', 'router'],
       examples: [
         { id: 'variants', title: 'A link drawn as a button', description: 'It goes through the router, and opens in another tab with ⌘ or Ctrl: every variant and size of Button.' },
-        { id: 'nowhere', title: 'Nowhere to go', description: 'Given no address (to={null}), it is a button that cannot be pressed: a “Next day” on the last day.' },
+        { id: 'nowhere', title: 'Nowhere to go', description: 'Given no address (href={null}), it is a button that cannot be pressed: a “Next day” on the last day.' },
       ],
     },
     {

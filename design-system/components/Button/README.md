@@ -1,12 +1,12 @@
 # Button
 
-An action: primary for the one thing a page or a dialog is for, outline and ghost for the others, destructive for what removes.
+An action: primary for the one thing a page or a dialog is for, outline and ghost for the others, danger for what removes.
 
-**You provide** the words as `children`, `onClick`; `variant` (`primary` · `secondary` · `outline` · `ghost` · `destructive` · `success` · `link`), `size` (`xs` 24px · `sm` 32px · `md` 40px · `lg` 48px · `icon`), `leftIcon` / `rightIcon` (a lucide icon, sized to the words), `isLoading` with `loadingText`, `disabled`, `fullWidth`.
+**You provide** the words as `children`, `onClick`; `variant` (`primary` · `secondary` · `outline` · `ghost` · `danger` · `success` · `link`; `danger` formerly `destructive`), `size` (`xs` 24px · `sm` 32px · `md` 40px · `lg` 48px · `icon`), `leftIcon` / `rightIcon` (a lucide icon, sized to the words), `pending` with `loadingText` while the action it started is under way (formerly `isLoading`), `disabled`, `fullWidth`.
 
 ```tsx
 <Button leftIcon={<Plus />}>New order</Button>
-<Button variant="outline" isLoading loadingText="Saving">Save</Button>
+<Button variant="outline" pending loadingText="Saving">Save</Button>
 ```
 
 - One primary button per page or dialog. Its fill is `primary` (ink), the accent's `brand` where one is chosen, its gradient for a gradient accent (Bloom, Lagoon, Aurora, Dusk, Golden hour).

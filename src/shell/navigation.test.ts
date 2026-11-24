@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { fr } from '../locales/fr.js'
 import { MENU } from '../test/menu.js'
@@ -271,5 +271,34 @@ describe('the trail in a language', () => {
   it('keeps its former constants in English', () => {
     expect(PAGE_NOT_FOUND).toBe('Page not found')
     expect(DEFAULT_HOME).toEqual({ label: 'Home', href: '/' })
+  })
+})
+
+describe('a badge in a former tone', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  const TONED = (tone: 'danger' | 'negative'): Menu => ({
+    sections: ['Work'],
+    entries: [
+      { id: 'orders', path: '/orders', label: 'Orders', section: 'Work', badge: '2 late', badgeTone: tone },
+      { id: 'returns', path: '/orders/returns', label: 'Returns', section: 'Work', parent: 'orders', badge: 'Blocked', badgeTone: tone },
+    ],
+  })
+
+  it('is the sidebar\'s danger, said once in development, and nothing is said of danger', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const said = () => warn.mock.calls.filter(([message]) => String(message).startsWith('ioiti-ui: a name or a value the package deprecated'))
+    const [today] = sidebarSections(TONED('danger'))
+    expect(today.items[0].badgeTone).toBe('danger')
+    expect(said()).toHaveLength(0)
+
+    const [former] = sidebarSections(TONED('negative'))
+    sidebarSections(TONED('negative'))
+    expect(former.items[0].badgeTone).toBe('danger')
+    expect(former.items[0].children?.[0].badgeTone).toBe('danger')
+    expect(said()).toHaveLength(1)
+    expect(String(said()[0][0])).toContain(`(AppShell's badgeTone="negative": danger)`)
   })
 })

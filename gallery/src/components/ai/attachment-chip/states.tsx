@@ -15,7 +15,7 @@ export default function AttachmentChipStates() {
         {/* A record: its label leads to it. */}
         {shown.includes('link') && <AttachmentChip label="Comparison of two shops" icon={<FlaskConical />} href="/components/ai/ai-agent-activity" />}
         {/* Made ready: a spinner in place of its icon. */}
-        {shown.includes('uploading') && <AttachmentChip label="chart-2026-10-30.png" detail="Uploading…" busy onRemove={() => remove('uploading')} />}
+        {shown.includes('uploading') && <AttachmentChip label="chart-2026-10-30.png" detail="Uploading…" pending onRemove={() => remove('uploading')} />}
         {/* Not taken, and why. */}
         {shown.includes('refused') && <AttachmentChip label="statement.pdf" detail="Larger than 5 MB" tone="danger" onRemove={() => remove('refused')} />}
         {/* Nothing to do with it: a paperclip, by default. */}

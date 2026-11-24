@@ -11,7 +11,7 @@ export default function SpotlightSearchActions() {
   // Each does something where it is chosen, in place of a page to go to.
   const items: SpotlightSearchItem[] = [
     { id: 'new', title: 'New order', category: 'Actions', icon: <FilePlus2 />, action: () => toast({ title: 'Order 2026-0043 created' }) },
-    { id: 'export', title: 'Export the orders', category: 'Actions', description: 'As a CSV file', icon: <Download />, action: () => toast({ title: 'Orders exported', variant: 'success' }) },
+    { id: 'export', title: 'Export the orders', category: 'Actions', description: 'As a CSV file', icon: <Download />, action: () => toast({ title: 'Orders exported', tone: 'success' }) },
     { id: 'carrier', title: 'Change the carrier', category: 'Actions', description: 'Of every order not sent yet', icon: <Truck />, keywords: ['shipping', 'delivery'], action: () => toast({ title: 'Carrier changed' }) },
     { id: 'light', title: 'Light theme', category: 'Appearance', icon: <Sun />, keywords: ['day', 'theme'], action: () => setPreference('light') },
     { id: 'dark', title: 'Dark theme', category: 'Appearance', icon: <Moon />, keywords: ['night', 'theme'], action: () => setPreference('dark') },

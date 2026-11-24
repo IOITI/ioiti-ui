@@ -33,10 +33,10 @@ function Page() {
   const toast = useToast()
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <ButtonLink to="/components/shell/app-shell" variant="outline" size="sm" rightIcon={<ArrowRight />}>
+      <ButtonLink href="/components/shell/app-shell" variant="outline" size="sm" rightIcon={<ArrowRight />}>
         AppShell, through the router
       </ButtonLink>
-      <Button variant="outline" size="sm" onClick={() => toast({ title: 'Order saved', variant: 'success' })}>
+      <Button variant="outline" size="sm" onClick={() => toast({ title: 'Order saved', tone: 'success' })}>
         Show a toast
       </Button>
     </div>

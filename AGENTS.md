@@ -13,7 +13,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
 | `src/shell/` | the application shell, the trail, the 404, the sign-in frame |
-| `src/lib/` | helpers (`cn`, formats, theme, CSV, dates, date maths, keys, the clock), a locale's week, clock and numbers (`locale.ts`), the catalogue's kit (`messages.ts`), the placing of a layer (`anchor.ts`), a frame that scrolls (`scroll-region.ts`), the charts' scales and colours, EasyUI's chart helpers |
+| `src/lib/` | helpers (`cn`, formats, theme, CSV, dates, date maths, keys, the clock), a locale's week, clock and numbers (`locale.ts`), the catalogue's kit (`messages.ts`), the two tones (`tones.ts`), what is deprecated (`deprecations.ts`, `deprecated.ts`), the placing of a layer (`anchor.ts`), a frame that scrolls (`scroll-region.ts`), the charts' scales and colours, EasyUI's chart helpers |
 | `src/locales/` | the words the package says: English's catalogue (`en.ts`, a file per namespace in `en/`), the one every language is typed after, and French's (`fr.ts`, `fr/`); the entries `ioiti-ui/locales/en` and `ioiti-ui/locales/fr` |
 | `src/react-router/` | the adapter for React Router, the only code that imports it |
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
@@ -114,6 +114,15 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   page shown (`#part`) is a plain `<a>`, never a route: the browser scrolls what holds it and keeps the query
   (`RouterLink` draws it so).
 - **A `Hint`, never a `title`**, for what a control means (the theme button's `title` is the original's).
+- **A name follows the conventions** (`docs/conventions.md`, a page of the gallery's foundations): `value`,
+  `defaultValue`, `onChange` for a value, `open`, `defaultOpen`, `onOpenChange` for what opens, held by
+  `useControllableState` (`src/lib/controllable.ts`), never by hand; `loading` for content not there yet, `pending` for
+  an action under way; `aria-*` as ARIA writes them; `href` for a link; `showCloseButton`; `density="compact"`; a
+  state's tone a `StatusTone`, a figure's a `SignTone` (`src/lib/tones.ts`).
+- **A deprecation** goes through `src/lib/deprecations.ts` (the old name, what replaces it, since when), `@deprecated`
+  on the old prop (the props tables mark it; `props.mjs --check` refuses a retired name not so marked), `deprecated(id)`
+  when it is given (once, in development: a production build keeps none of it, `check:package`), and a line of the
+  CHANGELOG's Deprecated section (`check-docs`). It is removed only in a major (1.0).
 - **A word the package says comes from its catalogue** (`src/locales/en/<namespace>.ts`, French in `src/locales/fr/`):
   a component says it with `useMessages()`, never written in its code (`check-strings` fails on one; `// i18n-exempt:
   <why>` for what is no word to translate: a brand, a code, a symbol). A word added in English is added in French in the

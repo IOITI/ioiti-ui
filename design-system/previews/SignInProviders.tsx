@@ -57,7 +57,7 @@ function SignIn({ caption, stuck }: { caption: string; stuck?: string }) {
               />
             </FormControl>
           </FormItem>
-          <Button type="submit" fullWidth isLoading={pending === 'password'} disabled={pending !== null || !username || !password}>
+          <Button type="submit" fullWidth pending={pending === 'password'} disabled={pending !== null || !username || !password}>
             Sign in
           </Button>
         </Form>

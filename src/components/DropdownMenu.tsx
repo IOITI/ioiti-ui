@@ -467,7 +467,11 @@ interface DropdownMenuProps {
   items: DropdownMenuItem[]
   /** The menu's name for a screen reader: "Actions on the order". */
   label: string
+  /** Open, held by the page (told of each change by `onOpenChange`). */
   open?: boolean
+  /** Open at first, the menu holding it then; closed by default. */
+  defaultOpen?: boolean
+  /** Told of every change, whoever holds it. */
   onOpenChange?: (open: boolean) => void
   side?: AnchorSide
   align?: AnchorAlign
@@ -479,8 +483,17 @@ interface DropdownMenuProps {
  * arrow keys move, a letter jumps to the next item that starts with it, Escape closes, Tab leaves.
  * For one action and its variants, `SplitButton`.
  */
-export function DropdownMenu({ trigger, items, label, open, onOpenChange, side = 'bottom', align = 'start' }: DropdownMenuProps) {
-  const [shown, setShown] = useControllableState(open, false, onOpenChange)
+export function DropdownMenu({
+  trigger,
+  items,
+  label,
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  side = 'bottom',
+  align = 'start',
+}: DropdownMenuProps) {
+  const [shown, setShown] = useControllableState(open, defaultOpen, onOpenChange)
   const [fromEnd, setFromEnd] = useState(false)
   const id = useId()
   const triggerRef = useRef<HTMLElement | null>(null)

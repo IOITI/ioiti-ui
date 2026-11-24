@@ -50,7 +50,7 @@ createRoot(document.getElementById('root')!).render(
       weekStart={1}
       format={(value) => formatMoney(value, 'EUR', true)}
       legend={['Loss', 'Gain']}
-      ariaLabel="Result of each day"
+      aria-label="Result of each day"
     />
     <ActivityHeatmap
       mode="hours"
@@ -59,7 +59,7 @@ createRoot(document.getElementById('root')!).render(
       hours={[9, 10, 11, 12, 13, 14, 15, 16, 17]}
       unit="orders"
       emptyText="Closed"
-      ariaLabel="Orders by weekday and hour"
+      aria-label="Orders by weekday and hour"
     />
   </div>,
 )

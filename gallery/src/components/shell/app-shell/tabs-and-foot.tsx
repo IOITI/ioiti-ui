@@ -54,7 +54,7 @@ export default function AppShellTabsAndFoot() {
                   { id: 'jobs', label: 'Jobs', href: '/ops' },
                   { id: 'history', label: 'History', href: '/ops?tab=history' },
                 ]}
-                activeTab={search === '?tab=history' ? 'history' : 'jobs'}
+                value={search === '?tab=history' ? 'history' : 'jobs'}
                 onChange={(id) => navigate(id === 'history' ? '/ops?tab=history' : '/ops')}
                 renderContent={false}
               />

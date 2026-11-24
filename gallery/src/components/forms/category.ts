@@ -116,7 +116,7 @@ const forms: CategoryInfo = {
         { id: 'sequential', title: 'One file after the other', description: 'A drop zone: the files are handled one after the other here, each answered with a link to what it became.' },
         { id: 'statuses', title: 'Each state of a file', description: 'A list as it stands midway, given as initialFiles, a file in each status: queued, uploading, processing, complete with its link, error with why and a way to try again.' },
         { id: 'limits', title: 'What it takes, and what not', description: 'The types the chooser offers (accept), a largest size and a number of files: a file too large is listed with why, the files past the number are left out.' },
-        { id: 'compact', title: 'Compact, or disabled', description: 'compact for a form’s column; disabled, while what the files are for is not chosen yet.' },
+        { id: 'compact', title: 'Compact, or disabled', description: 'density="compact" for a form’s column; disabled, while what the files are for is not chosen yet.' },
       ],
     },
   ],

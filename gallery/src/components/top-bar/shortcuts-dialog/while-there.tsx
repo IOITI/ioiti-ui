@@ -11,7 +11,7 @@ export default function ShortcutsDialogWhileThere() {
     'mod+shift+e',
     () => {
       setHeard('Export the orders')
-      toast({ title: 'Orders exported', variant: 'success' })
+      toast({ title: 'Orders exported', tone: 'success' })
     },
     { description: 'Export the orders', group: 'Orders', enabled: on },
   )

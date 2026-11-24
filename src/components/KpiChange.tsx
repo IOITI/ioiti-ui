@@ -1,9 +1,10 @@
 import { changeTone, changeWords, formatChange } from '../lib/change.js'
-import type { ChangeTone, GoodWhen } from '../lib/change.js'
+import type { GoodWhen } from '../lib/change.js'
+import type { SignTone } from '../lib/tones.js'
 import { cn } from '../lib/utils.js'
 import { useFormat, useMessages } from './locale-context.js'
 
-const TONE_TEXT: Record<ChangeTone, string> = {
+const TONE_TEXT: Record<SignTone, string> = {
   positive: 'text-positive',
   negative: 'text-negative',
   neutral: 'text-muted-foreground',

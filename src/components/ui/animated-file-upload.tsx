@@ -17,6 +17,8 @@ import {
   Code
 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
+// ioiti-ui: its former value said once in development.
+import { deprecated } from '../../lib/deprecated.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
@@ -54,7 +56,12 @@ export interface AnimatedFileUploadProps {
   dropTitle?: string;
   /** Custom label for secondary browse action. ioiti-ui: "or browse from your device" in the provider's language by default. */
   dropSubtitle?: string;
-  /** Layout mode: standard full-size or compact inline */
+  /**
+   * ioiti-ui: `compact`: the inline zone, for a form's column (EasyUI's `variant="compact"`); the full-size one by default.
+   * @default 'regular'
+   */
+  density?: 'regular' | 'compact';
+  /** Layout mode: standard full-size. ioiti-ui: `compact` is deprecated: use `density="compact"`, removed in 1.0. */
   variant?: 'standard' | 'compact';
   /** Disabled state */
   disabled?: boolean;
@@ -117,6 +124,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
   maxFiles = 10,
   dropTitle,
   dropSubtitle,
+  density,
   variant = 'standard',
   disabled = false,
   initialFiles,
@@ -357,7 +365,9 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
     }
   };
 
-  const isCompact = variant === 'compact';
+  // ioiti-ui: its former value read as today's, said once in development.
+  if (variant === 'compact') deprecated('upload-variant-compact', 'AnimatedFileUpload');
+  const isCompact = (density ?? (variant === 'compact' ? 'compact' : 'regular')) === 'compact';
 
   return (
     <div className={cn('w-full select-none font-sans', className)}>

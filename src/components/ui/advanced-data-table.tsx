@@ -24,6 +24,8 @@ import { cn } from '../../lib/utils.js';
 import { fieldBorder } from '../../lib/field-border.js';
 // ioiti-ui: the filters' lists float as everything that floats.
 import { useAnchoredLayer } from '../../lib/anchor.js';
+// ioiti-ui: its former name said once in development.
+import { deprecated } from '../../lib/deprecated.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DISABLED, FLOATING, MENU_ROW, PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { SelectionBasket } from './selection-basket.js';
@@ -118,6 +120,9 @@ export interface DataTableContextValue<T = any> {
   totalFilteredCount: number;
   paginatedData: T[];
   // Loading & State
+  /** ioiti-ui: the records are on their way (the table's `loading`). */
+  loading?: boolean;
+  /** @deprecated Use `loading`. Removed in 1.0. */
   isLoading?: boolean;
   error?: string | null;
   accentColor?: string;
@@ -750,7 +755,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     expandOnRowClick,
     rowLabel,
     viewMode,
-    isLoading,
+    loading,
     error,
     clearFilters,
   } = useDataTable();
@@ -808,7 +813,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     );
   }
 
-  if (isLoading) {
+  if (loading) {
     // ioiti-ui: the design's skeleton (seen in both themes: `surface-raised` is darker than the frame in dark, its
     // rows were not seen), and said, as the bell's list says it.
     return (
@@ -1154,7 +1159,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
     setPageSize,
     totalPages,
     totalFilteredCount,
-    isLoading,
+    loading,
   } = useDataTable();
   const shouldReduceMotion = useReducedMotionConfig();
   // ioiti-ui: its words in the provider's language, its count in its locale.
@@ -1173,7 +1178,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
     >
       {/* Count Indicator. ioiti-ui: while the records load, no count of what was there before (or of none). */}
       <div className="text-muted-foreground tabular-nums">
-        {isLoading ? (
+        {loading ? (
           words.loading
         ) : (
           <Marked
@@ -1222,7 +1227,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(1)}
-            disabled={isLoading || currentPage <= 1}
+            disabled={loading || currentPage <= 1}
             aria-label={words.firstPage}
             className={PAGE_BUTTON}
           >
@@ -1232,7 +1237,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={isLoading || currentPage <= 1}
+            disabled={loading || currentPage <= 1}
             aria-label={words.previousPage}
             className={PAGE_BUTTON}
           >
@@ -1247,7 +1252,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={isLoading || currentPage >= totalPages}
+            disabled={loading || currentPage >= totalPages}
             aria-label={words.nextPage}
             className={PAGE_BUTTON}
           >
@@ -1257,7 +1262,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             type="button"
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setCurrentPage(totalPages)}
-            disabled={isLoading || currentPage >= totalPages}
+            disabled={loading || currentPage >= totalPages}
             aria-label={words.lastPage}
             className={PAGE_BUTTON}
           >
@@ -1325,6 +1330,9 @@ export interface DataTableProps<T = any> {
   singleExpand?: boolean;
   /** ioiti-ui: what names a row, for its expand button ("Open …"). */
   rowLabel?: (row: T) => string;
+  /** ioiti-ui: the records are on their way: rows to come in their place, said, and nothing counted yet. */
+  loading?: boolean;
+  /** @deprecated Use `loading`. Removed in 1.0. */
   isLoading?: boolean;
   error?: string | null;
   className?: string;
@@ -1352,11 +1360,15 @@ export function DataTable<T = any>({
   expandOnRowClick = false,
   singleExpand = false,
   rowLabel,
+  loading: givenLoading,
   isLoading,
   error,
   className,
   children,
 }: DataTableProps<T>) {
+  // ioiti-ui: its former name read as today's, said once in development.
+  if (isLoading !== undefined) deprecated('is-loading', 'DataTable');
+  const loading = givenLoading ?? isLoading;
   const [viewMode, setViewMode] = useState<DataTableViewMode>(() => {
     if (defaultViewMode === 'auto') {
       if (typeof window !== 'undefined' && window.innerWidth < 640) {
@@ -1605,7 +1617,8 @@ export function DataTable<T = any>({
     totalPages,
     totalFilteredCount,
     paginatedData,
-    isLoading,
+    loading,
+    isLoading: loading,
     error,
     accentColor,
   };
@@ -1673,10 +1686,14 @@ export function AdvancedDataTable<T = any>({
   emptyDescription,
   onBulkDelete,
   onBulkExport,
+  loading,
+  isLoading,
   ...props
 }: AdvancedDataTableProps<T>) {
+  // ioiti-ui: its former name read as today's, said once in development (as AdvancedDataTable's).
+  if (isLoading !== undefined) deprecated('is-loading', 'AdvancedDataTable');
   return (
-    <DataTable data={data} columns={columns} {...props}>
+    <DataTable data={data} columns={columns} loading={loading ?? isLoading} {...props}>
       <DataTableToolbar
         title={title}
         searchPlaceholder={searchPlaceholder}

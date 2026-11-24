@@ -16,7 +16,7 @@ export default function UserMenuPicture() {
             icon: <Copy />,
             onSelect: () => {
               void copyToClipboard('u-20417').then((copied) =>
-                toast(copied ? { title: 'User ID copied' } : { title: 'The browser refused to copy it', variant: 'error' }),
+                toast(copied ? { title: 'User ID copied' } : { title: 'The browser refused to copy it', tone: 'danger' }),
               )
             },
           },

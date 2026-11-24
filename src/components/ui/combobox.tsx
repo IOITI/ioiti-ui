@@ -5,37 +5,16 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { useAnchoredLayer } from "../../lib/anchor.js";
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState): its own copy is gone.
+import { useControllableState } from "../../lib/controllable.js";
+// ioiti-ui: a former name said once, in development (deprecated).
+import { deprecated } from "../../lib/deprecated.js";
 import { fieldBorder, invalidOf } from "../../lib/field-border.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { DISABLED, FLOATING, MENU_ROW } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 // ioiti-ui: its words in the provider's language (`select`).
 import { useMessages } from "../locale-context.js";
-
-function useControllableState<T>(
-  value: T | undefined,
-  defaultValue: T,
-  onChange?: (value: T) => void
-): [T, (next: T) => void] {
-  const [internal, setInternal] = React.useState<T>(defaultValue);
-  const controlled = value !== undefined;
-  const current = controlled ? (value as T) : internal;
-
-  const onChangeRef = React.useRef(onChange);
-  React.useEffect(() => {
-    onChangeRef.current = onChange;
-  });
-
-  const set = React.useCallback(
-    (next: T) => {
-      if (!controlled) setInternal(next);
-      onChangeRef.current?.(next);
-    },
-    [controlled]
-  );
-
-  return [current, set];
-}
 
 // ioiti-ui: the design's spring for what moves within a layer (springSnappy), not one written here.
 const spring = motionTransitions.springSnappy;
@@ -53,6 +32,9 @@ export interface ComboboxProps {
   options: ComboboxOption[];
   value?: string | null;
   defaultValue?: string | null;
+  /** ioiti-ui: told of the value chosen, as every control of the package is (`onChange`). */
+  onChange?: (value: string | null) => void;
+  /** @deprecated Use `onChange`. Removed in 1.0. */
   onValueChange?: (value: string | null) => void;
   /** ioiti-ui: what it says while nothing is chosen; the provider's language's by default ("Select…"). */
   placeholder?: string;
@@ -98,6 +80,7 @@ export function Combobox({
   options,
   value,
   defaultValue = null,
+  onChange,
   onValueChange,
   placeholder: givenPlaceholder,
   searchPlaceholder: givenSearchPlaceholder,
@@ -117,7 +100,9 @@ export function Combobox({
   const placeholder = givenPlaceholder ?? words.placeholder;
   const searchPlaceholder = givenSearchPlaceholder ?? words.search;
   const emptyText = givenEmptyText ?? words.noResults;
-  const [selected, setSelected] = useControllableState<string | null>(value, defaultValue, onValueChange);
+  // ioiti-ui: `onChange`, as every control; `onValueChange`, its former name, still told where it alone is given.
+  if (onValueChange !== undefined) deprecated("combobox-on-value-change", "Combobox");
+  const [selected, setSelected] = useControllableState<string | null>(value, defaultValue, onChange ?? onValueChange);
   const [open, setOpen] = React.useState(false);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const layerRef = React.useRef<HTMLDivElement>(null);

@@ -207,7 +207,7 @@ describe('ActivityHeatmap in the provider’s language', () => {
 
     const own = render(
       <IoitiProvider locale="fr-FR" messages={fr}>
-        <ActivityHeatmap data={DAYS} endDate={END} weeks={4} unit="livraisons" legend={['Perte', 'Gain']} ariaLabel="Livraisons" />
+        <ActivityHeatmap data={DAYS} endDate={END} weeks={4} unit="livraisons" legend={['Perte', 'Gain']} aria-label="Livraisons" />
       </IoitiProvider>,
     )
     expect(screen.getByText(/dernières semaines$/).textContent).toBe('3 livraisons au cours des 4 dernières semaines')

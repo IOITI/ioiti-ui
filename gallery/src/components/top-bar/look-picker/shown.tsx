@@ -10,7 +10,7 @@ export default function LookPickerShown() {
       <div className="flex flex-wrap items-center gap-3">
         <LookPicker />
         <Button size="sm">Save</Button>
-        <TextLink to="/foundations/themes" className="text-sm">
+        <TextLink href="/foundations/themes" className="text-sm">
           The looks, side by side
         </TextLink>
       </div>

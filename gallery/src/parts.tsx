@@ -34,7 +34,7 @@ export function Demo({ id, title, description, names, from = 'ioiti-ui', classNa
           {pages.map(({ family, path }, index) => (
             <span key={path}>
               {index > 0 ? ', ' : ''}
-              <TextLink to={path}>{family.name}</TextLink>
+              <TextLink href={path}>{family.name}</TextLink>
             </span>
           ))}
           .

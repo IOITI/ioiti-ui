@@ -23,7 +23,7 @@ const strokes = (container: HTMLElement) =>
 
 describe('LineChart', () => {
   it('gives screen readers every point as a table, a gap as a dash', () => {
-    render(<LineChart ariaLabel="Balance of two runs" data={RUNS} series={SERIES} animated={false} />)
+    render(<LineChart aria-label="Balance of two runs" data={RUNS} series={SERIES} animated={false} />)
     const table = screen.getByRole('table', { name: 'Balance of two runs' })
     expect(within(table).getAllByRole('row')).toHaveLength(RUNS.length + 1)
     expect(within(table).getByRole('row', { name: '05 Oct 2026 1,048 —' })).toBeInTheDocument()
@@ -40,7 +40,7 @@ describe('LineChart', () => {
         data={RUNS}
         series={[{ key: 'a', label: 'Balance' }]}
         area
-        references={[{ value: 1100, label: 'Limit', tone: 'negative' }]}
+        references={[{ value: 1100, label: 'Limit', tone: 'danger' }]}
         animated={false}
       />,
     )
@@ -52,7 +52,7 @@ describe('LineChart', () => {
 
   it('reads its points with the keyboard', async () => {
     const user = userEvent.setup()
-    render(<LineChart ariaLabel="Balance" data={RUNS} series={SERIES} animated={false} />)
+    render(<LineChart aria-label="Balance" data={RUNS} series={SERIES} animated={false} />)
 
     await user.tab()
     expect(screen.getByRole('img', { name: 'Balance' })).toHaveFocus()
@@ -78,7 +78,7 @@ describe('LineChart', () => {
     const user = userEvent.setup()
     const { container } = render(
       <LineChart
-        ariaLabel="Runs"
+        aria-label="Runs"
         data={RUNS}
         series={SERIES}
         connectGaps

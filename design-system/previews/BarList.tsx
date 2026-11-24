@@ -8,7 +8,7 @@ createRoot(document.getElementById('root')!).render(
       items={[
         { label: 'Too small', value: 42, href: '#too-small' },
         { label: 'Not as described', value: 28 },
-        { label: 'Damaged on the way', value: 17, tone: 'negative' },
+        { label: 'Damaged on the way', value: 17, tone: 'danger' },
         { label: 'Changed their mind', value: 11 },
       ]}
     />

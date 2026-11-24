@@ -90,7 +90,7 @@ export function SettingsPattern() {
     window.setTimeout(() => {
       setSaved(draft)
       setSaving(false)
-      toast({ title: 'Settings saved', variant: 'success' })
+      toast({ title: 'Settings saved', tone: 'success' })
     }, 800)
   }
 
@@ -168,7 +168,7 @@ export function SettingsPattern() {
       <SaveBar
         open={dirty}
         message={`${changes.length} unsaved change${changes.length === 1 ? '' : 's'}`}
-        saving={saving}
+        pending={saving}
         onDiscard={() => setDraft(saved)}
         onSave={save}
       />

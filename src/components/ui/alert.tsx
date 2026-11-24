@@ -5,11 +5,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X, type LucideIcon } from "lucide-react";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { CLOSE_MD, TONE_LINE, TONE_SOFT, TONE_TEXT, type Tone } from "../../lib/recipes.js";
+// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md).
+import type { StatusTone } from "../../lib/tones.js";
 import { cn } from "../../lib/utils.js";
 // ioiti-ui: its × button's name in the provider's language (`status`).
 import { useMessages } from "../locale-context.js";
 
-export type AlertTone = "neutral" | "info" | "success" | "warning" | "danger";
+/** ioiti-ui: a StatusTone, the tones of a state (Badge's too): `neutral`, `info`, `success`, `warning`, `danger`. */
+export type AlertTone = StatusTone;
 
 // ioiti-ui: the design's tones (recipes.ts): an alert's box is the tone's faint ground and line, its icon the tone.
 const TONE: Record<AlertTone, Tone> = { neutral: "neutral", info: "info", success: "positive", warning: "warning", danger: "negative" };

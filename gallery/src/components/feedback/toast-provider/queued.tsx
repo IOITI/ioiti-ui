@@ -9,7 +9,7 @@ export default function ToastProviderQueued() {
         variant="outline"
         onClick={() => {
           toast({ title: 'Export requested' })
-          toast({ title: 'Export ready', variant: 'info' })
+          toast({ title: 'Export ready', tone: 'info' })
         }}
       >
         Two at once
@@ -18,8 +18,8 @@ export default function ToastProviderQueued() {
         size="sm"
         variant="outline"
         onClick={() => {
-          for (const file of ['invoice-0040.pdf', 'invoice-0041.pdf', 'invoice-0042.pdf']) toast({ title: `${file} sent`, variant: 'success' })
-          toast({ title: 'Could not send invoice-0043.pdf', description: 'The address bounced.', variant: 'error' })
+          for (const file of ['invoice-0040.pdf', 'invoice-0041.pdf', 'invoice-0042.pdf']) toast({ title: `${file} sent`, tone: 'success' })
+          toast({ title: 'Could not send invoice-0043.pdf', description: 'The address bounced.', tone: 'danger' })
         }}
       >
         A burst of four

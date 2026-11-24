@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
       description="Rules pushed to the repository appear here, with what they detect and where they run."
       actions={
         <>
-          <ButtonLink to="#write" leftIcon={<Plus className="size-4" />}>Write a rule</ButtonLink>
+          <ButtonLink href="#write" leftIcon={<Plus className="size-4" />}>Write a rule</ButtonLink>
           <Button variant="outline">Import from Sigma</Button>
         </>
       }

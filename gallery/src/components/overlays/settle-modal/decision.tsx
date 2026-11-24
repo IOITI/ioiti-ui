@@ -17,8 +17,8 @@ export default function SettleModalDecision() {
       {/* A choice to make: no ×, and a click beside it does not close it. Escape still does. */}
       <SettleModal
         open={open}
-        onClose={() => setOpen(false)}
-        hideCloseButton
+        onOpenChange={setOpen}
+        showCloseButton={false}
         closeOnBackdrop={false}
         size="sm"
         title="Keep the draft?"

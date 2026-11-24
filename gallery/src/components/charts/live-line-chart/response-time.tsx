@@ -14,7 +14,7 @@ export default function LiveLineChartResponseTime() {
   const { formatNumber } = useFormat()
   return (
     <LiveLineChart
-      ariaLabel="Response time"
+      aria-label="Response time"
       source={responseTimes}
       initial={[48.2, 49.1, 50.4, 49.8, 51.2, 50.6, 49.9, 50.1]}
       windowSeconds={60}

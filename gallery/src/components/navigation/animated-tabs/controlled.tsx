@@ -13,7 +13,7 @@ export default function AnimatedTabsControlled() {
   const shown = TABS.find((each) => each.id === tab)
   return (
     <div className="flex flex-col items-start gap-4">
-      <AnimatedTabs label="Orders by state" renderContent={false} tabs={TABS} activeTab={tab} onChange={setTab} />
+      <AnimatedTabs label="Orders by state" renderContent={false} tabs={TABS} value={tab} onChange={setTab} />
       <div className="flex flex-wrap items-center gap-3">
         <Button size="sm" variant="outline" onClick={() => setTab('late')} disabled={tab === 'late'}>
           Show the late order

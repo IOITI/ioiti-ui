@@ -149,7 +149,7 @@ export function States() {
           description="Rules pushed to the repository appear here, with what they detect and where they run."
           actions={
             <>
-              <ButtonLink to="/components/forms" leftIcon={<Plus className="size-4" />}>
+              <ButtonLink href="/components/forms" leftIcon={<Plus className="size-4" />}>
                 Write a rule
               </ButtonLink>
               <Button variant="outline">Import from Sigma</Button>
@@ -161,7 +161,7 @@ export function States() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel title="Alerts of the day" description="High severity, the last 24 hours.">
           <EmptyState
-            compact
+            density="compact"
             icon={<SearchX />}
             title="No alert matches these filters"
             description="Nothing of high severity came in during the last 24 hours."
@@ -172,7 +172,7 @@ export function States() {
             }
           />
         </Panel>
-        <Panel title="Runs" description="The last runs of the rule." dense>
+        <Panel title="Runs" description="The last runs of the rule." density="compact">
           <Table aria-label="Runs">
             <TableHead>
               <TableRow>
@@ -184,7 +184,7 @@ export function States() {
             <TableBody>
               <TableRow>
                 <TableCell colSpan={3}>
-                  <EmptyState compact title="No run yet" description="A rule runs once it is deployed." />
+                  <EmptyState density="compact" title="No run yet" description="A rule runs once it is deployed." />
                 </TableCell>
               </TableRow>
             </TableBody>

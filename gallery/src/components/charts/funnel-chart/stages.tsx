@@ -4,7 +4,7 @@ export default function FunnelChartStages() {
   const { formatNumber } = useFormat()
   return (
     <FunnelChart
-      ariaLabel="Visits, from the first page to the payment"
+      aria-label="Visits, from the first page to the payment"
       noun="Visits"
       summaryLabel="of the visits ended in a purchase"
       formatValue={(value) => formatNumber(value)}

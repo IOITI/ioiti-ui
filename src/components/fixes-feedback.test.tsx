@@ -159,7 +159,7 @@ describe('a data table loading its records', () => {
     render(
       <AdvancedDataTable
         title="Orders"
-        isLoading
+        loading
         data={[{ id: 'a', name: 'Old row' }]}
         columns={[{ id: 'name', header: 'Name', accessorKey: 'name' }]}
       />,

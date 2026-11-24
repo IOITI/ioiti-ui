@@ -6,7 +6,7 @@ const LIMIT = 50
 
 // The page knows its thresholds: near the limit from 80 %, past it at 100 %.
 function toneOf(ratio: number): MeterTone {
-  if (ratio >= 1) return 'negative'
+  if (ratio >= 1) return 'danger'
   if (ratio >= 0.8) return 'warning'
   return 'neutral'
 }

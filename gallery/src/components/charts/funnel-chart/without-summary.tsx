@@ -6,7 +6,7 @@ export default function FunnelChartWithoutSummary() {
       {/* Its own heading says what the summary would: the summary is left out. */}
       <p className="mb-3 text-sm font-medium">Orders of October, placed to delivered</p>
       <FunnelChart
-        ariaLabel="Orders of October, from placed to delivered"
+        aria-label="Orders of October, from placed to delivered"
         noun="Orders"
         showSummary={false}
         stages={[

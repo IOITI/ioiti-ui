@@ -5,7 +5,7 @@ export default function SmoothAccordionSeveral() {
     <SmoothAccordion
       className="max-w-2xl"
       allowMultiple
-      defaultOpen={['standard', 'express']}
+      defaultValue={['standard', 'express']}
       items={[
         {
           id: 'standard',

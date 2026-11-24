@@ -7,7 +7,7 @@ import { Popover } from '../components/Popover.js'
 import { isPlainClick } from '../lib/links.js'
 import { PRESSABLE, TONE_MARK, TONE_SOFT } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
-import { byGravity, gravestTone, STATE_TONE, standsOut, stateSentence } from './state-summary.js'
+import { byGravity, gravestTone, quietLead, STATE_TONE, standsOut, stateSentence } from './state-summary.js'
 import type { StateItem, StateTone } from './state-summary.js'
 
 // The pill in the gravest tone, as StateChip draws a state: its faint ground, a step stronger under the pointer
@@ -16,6 +16,8 @@ const PILL: Record<StateTone, string> = {
   danger: cn(TONE_SOFT.negative, 'hover:bg-negative/10 aria-expanded:bg-negative/10 dark:hover:bg-negative/20 dark:aria-expanded:bg-negative/20'),
   warning: cn(TONE_SOFT.warning, 'hover:bg-warning/10 aria-expanded:bg-warning/10 dark:hover:bg-warning/20 dark:aria-expanded:bg-warning/20'),
   success: cn(TONE_SOFT.positive, 'hover:bg-positive/10 aria-expanded:bg-positive/10 dark:hover:bg-positive/20 dark:aria-expanded:bg-positive/20'),
+  // Quiet: its dot alone in its tone.
+  info: 'text-muted-foreground hover:bg-surface-hover hover:text-foreground aria-expanded:bg-surface-hover',
   neutral: 'text-muted-foreground hover:bg-surface-hover hover:text-foreground aria-expanded:bg-surface-hover',
   ok: 'text-muted-foreground hover:bg-surface-hover hover:text-foreground aria-expanded:bg-surface-hover',
 }
@@ -28,7 +30,10 @@ interface StateSummaryProps {
    * default ("State").
    */
   label?: string
-  /** What it says while nothing stands out and nothing is neutral; the provider's language's by default ("All good"). */
+  /**
+   * What it says while nothing stands out and nothing is said quietly (`info`, `neutral`); the provider's language's by
+   * default ("All good").
+   */
   okLabel?: string
   /** Under the states, in the panel: a link to the page where they all are. */
   footer?: ReactNode
@@ -51,7 +56,8 @@ export function StateSummary({ items, label: givenLabel, okLabel: givenOkLabel, 
   const out = ordered.filter((item) => standsOut(item.tone))
   const quiet = ordered.filter((item) => !standsOut(item.tone))
   const lead = out[0]
-  const neutral = quiet.find((item) => item.tone === 'neutral')
+  // Where nothing stands out: the gravest quiet state that says something (info, then neutral), its words in the pill.
+  const quietOne = quietLead(quiet)
   // What it is named holds the words it shows (WCAG 2.5.3, label in name): the gravest state's, then how many of each
   // tone where several stand out ("State: Payments down (1 to fix, 1 to watch)"). What it shows is for the eye: its count,
   // and under 1280px no words (a name given over them would hold none of them at one width or the other).
@@ -92,7 +98,7 @@ export function StateSummary({ items, label: givenLabel, okLabel: givenOkLabel, 
             <>
               <Dot tone={tone} />
               <span aria-hidden className="hidden sm:inline">
-                {neutral?.label ?? okLabel}
+                {quietOne?.label ?? okLabel}
               </span>
             </>
           )}

@@ -79,7 +79,7 @@ function Guard({ within, allowed, title, message, stayLabel, leaveLabel }: Guard
       size="sm"
       footer={
         <>
-          <Button variant="destructive" onClick={() => blocker.proceed?.()}>
+          <Button variant="danger" onClick={() => blocker.proceed?.()}>
             {leaveLabel}
           </Button>
           <Button onClick={() => blocker.reset?.()}>{stayLabel}</Button>

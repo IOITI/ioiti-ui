@@ -6,7 +6,7 @@ export default function DonutChartSmallAndEmpty() {
       <div className="w-56 rounded-2xl border border-border/70 bg-surface/50 p-4 dark:bg-surface/25">
         <p className="mb-2 text-sm font-medium">Tickets by state</p>
         <DonutChart
-          ariaLabel="Tickets by state"
+          aria-label="Tickets by state"
           centerLabel="Tickets"
           size={160}
           thickness={12}
@@ -19,7 +19,7 @@ export default function DonutChartSmallAndEmpty() {
       </div>
       <div className="w-56 rounded-2xl border border-border/70 bg-surface/50 p-4 dark:bg-surface/25">
         <p className="mb-2 text-sm font-medium">Refunds by reason</p>
-        <DonutChart ariaLabel="Refunds by reason" centerLabel="Refunds" size={160} thickness={12} data={[]} />
+        <DonutChart aria-label="Refunds by reason" centerLabel="Refunds" size={160} thickness={12} data={[]} />
       </div>
     </div>
   )

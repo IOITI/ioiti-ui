@@ -11,7 +11,7 @@ export default function ToastProviderAction() {
           toast({
             title: 'Export ready',
             description: 'orders-2026-10-26.csv',
-            variant: 'success',
+            tone: 'success',
             action: { label: 'Open it', href: '/patterns/dashboard' },
           })
         }
@@ -25,8 +25,8 @@ export default function ToastProviderAction() {
           toast({
             title: 'Could not send the invoice',
             description: 'The mail server does not answer.',
-            variant: 'error',
-            action: { label: 'Retry', onClick: () => toast({ title: 'Invoice sent', variant: 'success' }) },
+            tone: 'danger',
+            action: { label: 'Retry', onClick: () => toast({ title: 'Invoice sent', tone: 'success' }) },
           })
         }
       >

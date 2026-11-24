@@ -3,9 +3,9 @@ import type { MeterTone } from 'ioiti-ui'
 
 const QUOTAS: { label: string; figure: string; ratio: number; tone: MeterTone }[] = [
   { label: 'Seats taken', figure: '7 of 10', ratio: 0.7, tone: 'neutral' },
-  { label: 'Error budget used', figure: '12%', ratio: 0.12, tone: 'positive' },
+  { label: 'Error budget used', figure: '12%', ratio: 0.12, tone: 'success' },
   { label: 'Storage used', figure: '45 of 50 GB', ratio: 0.9, tone: 'warning' },
-  { label: 'Emails sent this month', figure: '10,000 of 10,000', ratio: 1, tone: 'negative' },
+  { label: 'Emails sent this month', figure: '10,000 of 10,000', ratio: 1, tone: 'danger' },
 ]
 
 export default function MeterTones() {

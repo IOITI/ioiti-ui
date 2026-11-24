@@ -16,7 +16,7 @@ const SECTIONS: SidebarSection[] = [
         badge: 38,
         children: [
           { id: 'open', label: 'Open', badge: 12 },
-          { id: 'returns', label: 'Returns', badge: '2 late', badgeTone: 'negative' },
+          { id: 'returns', label: 'Returns', badge: '2 late', badgeTone: 'danger' },
           { id: 'archived', label: 'Archived' },
         ],
       },

@@ -39,7 +39,7 @@ createRoot(document.getElementById('root')!).render(
       height={180}
       formatValue={(value) => `${value.toFixed(1)} ms`}
       formatChange={(change) => `${change > 0 ? '+' : change < 0 ? '−' : ''}${Math.abs(change).toFixed(1)} ms`}
-      ariaLabel="Response time"
+      aria-label="Response time"
     />
     <p className="text-xs text-muted-foreground">A reading a second. The pointer over the line, or Live, pauses it for reading.</p>
   </div>,

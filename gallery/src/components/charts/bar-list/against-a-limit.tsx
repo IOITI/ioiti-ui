@@ -12,7 +12,7 @@ export default function BarListAgainstALimit() {
           max={500}
           format={(value) => `${formatNumber(value)} GB`}
           items={[
-            { label: 'Database', value: 468, tone: 'negative' },
+            { label: 'Database', value: 468, tone: 'danger' },
             { label: 'Backups', value: 402, tone: 'warning' },
             { label: 'Uploads', value: 251 },
             { label: 'Logs', value: 96 },
@@ -26,8 +26,8 @@ export default function BarListAgainstALimit() {
           max={100}
           format={(value) => formatPercent(value, false, 1)}
           items={[
-            { label: 'Payments', value: 99.9, tone: 'positive' },
-            { label: 'Search', value: 98.2, tone: 'positive' },
+            { label: 'Payments', value: 99.9, tone: 'success' },
+            { label: 'Search', value: 98.2, tone: 'success' },
             { label: 'Mail', value: 91.4, tone: 'warning' },
           ]}
         />

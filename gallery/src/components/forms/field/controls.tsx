@@ -28,7 +28,7 @@ export default function FieldControls() {
       </Field>
       {/* A Combobox takes its label beside it: htmlFor, and its own id. */}
       <Field label="Country" htmlFor="field-country">
-        <Combobox id="field-country" options={COUNTRIES} value={country} onValueChange={setCountry} placeholder="Choose a country" className="w-full" />
+        <Combobox id="field-country" options={COUNTRIES} value={country} onChange={setCountry} placeholder="Choose a country" className="w-full" />
       </Field>
       <Field label="Timeout" description="How long a request may take before it is given up">
         <Input inputMode="numeric" defaultValue="250" suffix="ms" />

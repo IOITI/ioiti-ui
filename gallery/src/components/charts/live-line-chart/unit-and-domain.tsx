@@ -17,7 +17,7 @@ export default function LiveLineChartUnitAndDomain() {
   const { formatNumber } = useFormat()
   return (
     <LiveLineChart
-      ariaLabel="Load of the build server"
+      aria-label="Load of the build server"
       source={load}
       initial={KNOWN}
       intervalMs={2000}

@@ -271,7 +271,7 @@ export function Colours() {
       </Panel>
 
       {GROUPS.map((group) => (
-        <Panel key={group.title} title={group.title} description={group.description} dense>
+        <Panel key={group.title} title={group.title} description={group.description} density="compact">
           <Table aria-label={group.title} className="min-w-[44rem]">
             <TableHead>
               <TableRow>
@@ -307,7 +307,7 @@ export function Colours() {
       <Panel
         title="Accents"
         description="What is chosen, current or primary, in a preset's colour: a fill and the text on it, a tint, the accent as text. Each preset sets the focus ring and the one-series charts too (accents.css)."
-        dense
+        density="compact"
       >
         <Table aria-label="Accents" className="min-w-[60rem]">
           <TableHead>
@@ -339,7 +339,7 @@ export function Colours() {
         </Table>
       </Panel>
 
-      <Panel title="Glass" description="The glass material's backdrop and surfaces, and the light on them (glass.css)." dense>
+      <Panel title="Glass" description="The glass material's backdrop and surfaces, and the light on them (glass.css)." density="compact">
         <Table aria-label="Glass" className="min-w-[44rem]">
           <TableHead>
             <TableRow>
@@ -387,7 +387,7 @@ export function Colours() {
       <Panel
         title={`The look shown: ${theme}, ${accent}, ${material}`}
         description="Text at 4.5:1 and marks (the accent's fill, the focus ring) at 3:1, each at its worst over what a surface can show: glass over the base and each wash at its strongest, with its light and reflection and the accent's grain, a dialog over its scrim. Choose another with the palette button."
-        dense
+        density="compact"
       >
         <LookContrast look={{ theme, accent, material }} />
       </Panel>
@@ -395,7 +395,7 @@ export function Colours() {
       <Panel
         title="Every look"
         description={`The weakest text and the weakest mark of each of the ${LOOKS.length} looks, the text on an accent's gradient included. The design's one exception shows in the dark flat ones: --text-subtle on a hovered surface (4.44).`}
-        dense
+        density="compact"
       >
         <EveryLook />
       </Panel>

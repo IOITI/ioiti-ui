@@ -131,7 +131,7 @@ function Moments() {
           variant="outline"
           onClick={() => {
             toast({ title: 'Export requested' })
-            toast({ title: 'Export ready', variant: 'info' })
+            toast({ title: 'Export ready', tone: 'info' })
           }}
         >
           Two toasts in a row
@@ -140,7 +140,7 @@ function Moments() {
       </div>
       <p className="text-sm text-muted-foreground sm:col-span-2">
         What arrives where a skeleton was fades in; what was there already is shown as it is:{' '}
-        <TextLink to="/patterns/states">Empty, loading, failed</TextLink> shows both.
+        <TextLink href="/patterns/states">Empty, loading, failed</TextLink> shows both.
       </p>
     </div>
   )
@@ -196,10 +196,10 @@ export function Motion() {
           </p>
           <p className="flex flex-wrap gap-x-4 gap-y-2">
             <span className="text-muted-foreground">Try it:</span>
-            <TextLink to="/foundations/type">Type</TextLink>
-            <TextLink to="/foundations/colours">Colours</TextLink>
-            <TextLink to="/components/overlays">Overlays</TextLink>
-            <TextLink to="?query=another">This page, another query (nothing moves)</TextLink>
+            <TextLink href="/foundations/type">Type</TextLink>
+            <TextLink href="/foundations/colours">Colours</TextLink>
+            <TextLink href="/components/overlays">Overlays</TextLink>
+            <TextLink href="?query=another">This page, another query (nothing moves)</TextLink>
           </p>
           <CodeBlock language="tsx" code={`// React Router: nothing to do, its changes of page are React transitions.
 <RouterAppShell menu={MENU} />
@@ -217,7 +217,7 @@ startTransition(() => setPathname(next))`} />
         <Moments />
       </Panel>
 
-      <Panel title="What floats" description="One motion for each kind of thing in front of the page." dense>
+      <Panel title="What floats" description="One motion for each kind of thing in front of the page." density="compact">
         <Table aria-label="The motion of what floats">
           <TableHead>
             <TableRow>

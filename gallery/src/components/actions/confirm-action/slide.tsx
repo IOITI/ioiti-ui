@@ -12,12 +12,12 @@ export default function ConfirmActionSlide() {
     window.setTimeout(() => {
       setPending(false)
       setOpen(false)
-      toast({ title: 'Project deleted', variant: 'success' })
+      toast({ title: 'Project deleted', tone: 'success' })
     }, 900)
   }
   return (
     <>
-      <Button variant="destructive" size="sm" leftIcon={<Trash2 />} onClick={() => setOpen(true)}>
+      <Button variant="danger" size="sm" leftIcon={<Trash2 />} onClick={() => setOpen(true)}>
         Delete the project
       </Button>
       <ConfirmAction
@@ -29,7 +29,7 @@ export default function ConfirmActionSlide() {
         doneLabel="Deleted"
         pending={pending}
         onConfirm={confirm}
-        onClose={() => setOpen(false)}
+        onOpenChange={setOpen}
       />
     </>
   )

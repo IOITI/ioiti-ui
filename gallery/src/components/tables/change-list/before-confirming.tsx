@@ -16,7 +16,7 @@ export default function ChangeListBeforeConfirming() {
     window.setTimeout(() => {
       setApplying(false)
       setOpen(false)
-      toast({ title: '3 settings changed', variant: 'success' })
+      toast({ title: '3 settings changed', tone: 'success' })
     }, 700)
   }
   return (
@@ -34,7 +34,7 @@ export default function ChangeListBeforeConfirming() {
             <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button size="sm" isLoading={applying} loadingText="Applying" onClick={apply}>
+            <Button size="sm" pending={applying} loadingText="Applying" onClick={apply}>
               Apply the changes
             </Button>
           </>

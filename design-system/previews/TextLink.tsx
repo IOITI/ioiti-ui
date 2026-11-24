@@ -29,12 +29,12 @@ function Preview() {
       <div className="flex flex-col items-start gap-3 p-5">
         <div className="flex flex-wrap items-center gap-3">
           <p className="text-sm">
-            Read <TextLink to="/foundations/usable-by-all">the rules</TextLink> before writing a page.
+            Read <TextLink href="/foundations/usable-by-all">the rules</TextLink> before writing a page.
           </p>
-          <TextLink to="/components/tables" variant="hover" className="text-sm font-medium">
+          <TextLink href="/components/tables" variant="hover" className="text-sm font-medium">
             Order 2026-0042
           </TextLink>
-          <TextLink to="/components/tables" variant="quiet">
+          <TextLink href="/components/tables" variant="quiet">
             View all
           </TextLink>
         </div>

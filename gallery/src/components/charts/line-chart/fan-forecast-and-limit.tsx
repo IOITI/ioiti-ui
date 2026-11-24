@@ -11,11 +11,11 @@ const FORECAST = Array.from({ length: 12 }, (_, index) => {
 export default function FanChartForecastAndLimit() {
   return (
     <FanChart
-      ariaLabel="Stock forecast for the next twelve months"
+      aria-label="Stock forecast for the next twelve months"
       data={FORECAST}
       bands={[{ lower: 'low', upper: 'high', label: '4 forecasts in 5' }]}
       lines={[{ key: 'median', label: 'Median forecast', dashed: true }]}
-      references={[{ value: 400, label: 'Reorder below 400', tone: 'negative' }]}
+      references={[{ value: 400, label: 'Reorder below 400', tone: 'danger' }]}
       markers={[{ x: 6, label: 'New supplier' }]}
       zero
       height={220}

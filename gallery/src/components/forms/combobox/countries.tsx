@@ -21,7 +21,7 @@ export default function ComboboxCountries() {
   return (
     <div className="flex w-full max-w-sm flex-col gap-2">
       <Field label="Country of delivery" htmlFor="combobox-country">
-        <Combobox id="combobox-country" options={COUNTRIES} value={country} onValueChange={setCountry} placeholder="Choose a country" className="w-full" />
+        <Combobox id="combobox-country" options={COUNTRIES} value={country} onChange={setCountry} placeholder="Choose a country" className="w-full" />
       </Field>
       <p className="text-sm text-muted-foreground" aria-live="polite">
         {chosen ? `Chosen: ${chosen.label} (${chosen.value}).` : 'No country chosen.'}

@@ -221,11 +221,11 @@ describe('a link made of words', () => {
   it('is underlined in text, underlined under the pointer in a list, quiet as a panel\'s way further', () => {
     render(
       <>
-        <TextLink to="/terms">the terms</TextLink>
-        <TextLink to="/orders/42" variant="hover">
+        <TextLink href="/terms">the terms</TextLink>
+        <TextLink href="/orders/42" variant="hover">
           Order 42
         </TextLink>
-        <TextLink to="/orders" variant="quiet">
+        <TextLink href="/orders" variant="quiet">
           View all
         </TextLink>
       </>,

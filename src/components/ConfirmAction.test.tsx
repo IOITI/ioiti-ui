@@ -26,7 +26,7 @@ function DeleteFromATableCell() {
               confirmLabel="Slide to delete"
               description="The project and its files are removed."
               onConfirm={() => {}}
-              onClose={() => setOpen(false)}
+              onOpenChange={setOpen}
             />
           </td>
         </tr>
@@ -321,5 +321,35 @@ describe('the confirmation in a language', () => {
     own.focus()
     await user.keyboard('{Enter}')
     expect(own).toHaveAttribute('aria-valuetext', 'Confirmed ✓')
+  })
+})
+
+describe('the confirmation held open', () => {
+  it('by itself (defaultOpen): Cancel closes it, and tells onOpenChange and onClose', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    const closed = vi.fn()
+    render(
+      <ConfirmAction defaultOpen title="Delete" confirmLabel="Slide to delete" description="…" onConfirm={() => {}} onOpenChange={changed} onClose={closed} />,
+    )
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(changed).toHaveBeenCalledWith(false)
+    expect(closed).toHaveBeenCalledOnce()
+  })
+
+  it('stays while what it confirms is under way: no close button, Escape and its backdrop close nothing', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    const closed = vi.fn()
+    render(
+      <ConfirmAction open pending title="Delete" confirmLabel="Slide to delete" description="…" onConfirm={() => {}} onOpenChange={changed} onClose={closed} />,
+    )
+    expect(screen.queryByRole('button', { name: 'Close' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled()
+    await user.keyboard('{Escape}')
+    expect(changed).not.toHaveBeenCalled()
+    expect(closed).not.toHaveBeenCalled()
+    expect(screen.getByRole('dialog', { name: 'Delete' })).toBeInTheDocument()
   })
 })

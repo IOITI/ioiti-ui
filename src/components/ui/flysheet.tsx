@@ -4,6 +4,10 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls, type PanInfo } from "framer-motion";
 import { X } from "lucide-react";
+// ioiti-ui: held by its caller or by itself, as every layer (useControllableState, which passes why it closed on):
+// its own copy is gone. A former name said once, in development (deprecated).
+import { useControllableState } from "../../lib/controllable.js";
+import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { CLOSE_MD, SCRIM } from "../../lib/recipes.js";
 import { useScrollRegion } from "../../lib/scroll-region.js";
@@ -19,32 +23,6 @@ import { useMessages } from "../locale-context.js";
  * sheet beside its parent, or over it where there is no room; the padding of its parts; its close
  * button outside it; why it closed. Each change is marked.
  */
-
-function useControllableState<T, D>(
-  value: T | undefined,
-  defaultValue: T,
-  onChange?: (value: T, details?: D) => void
-): [T, (next: T, details?: D) => void] {
-  const [internal, setInternal] = React.useState<T>(defaultValue);
-  const controlled = value !== undefined;
-  const current = controlled ? (value as T) : internal;
-
-  const onChangeRef = React.useRef(onChange);
-  React.useEffect(() => {
-    onChangeRef.current = onChange;
-  });
-
-  // ioiti-ui: what goes with a change (why a sheet closed) is passed on.
-  const set = React.useCallback(
-    (next: T, details?: D) => {
-      if (!controlled) setInternal(next);
-      onChangeRef.current?.(next, details);
-    },
-    [controlled]
-  );
-
-  return [current, set];
-}
 
 // ioiti-ui: the sheets' and the drawer's motion, the design's own (EasyUI's was 380/38/0.9).
 const spring = motionTransitions.springSheet;
@@ -248,7 +226,7 @@ export interface FlysheetProps {
 }
 
 export function Flysheet({ open, defaultOpen = false, onOpenChange, children }: FlysheetProps) {
-  const [own, setOpen] = useControllableState<boolean, Details>(open, defaultOpen, onOpenChange);
+  const [own, setOpen] = useControllableState<boolean, [details?: Details]>(open, defaultOpen, onOpenChange);
   // ioiti-ui: a sheet inside another closes with it, and says so (`parent`).
   const parent = React.useContext(SheetContext);
   const parentOpen = parent ? parent.open : true;
@@ -332,6 +310,9 @@ export interface FlysheetContentProps {
   onResize?: (width: number) => void;
   /** ioiti-ui: the padding of its header, body and footer (`md`, EasyUI's). */
   padding?: FlysheetPadding;
+  /** ioiti-ui: its close button (true), as every layer names it (`showCloseButton`). */
+  showCloseButton?: boolean;
+  /** @deprecated Use `showCloseButton`. Removed in 1.0. */
   showClose?: boolean;
   /** ioiti-ui: the close button inside the panel, or outside it, on the side facing the page. */
   closePosition?: "inside" | "outside";
@@ -353,13 +334,17 @@ export function FlysheetContent({
   maxWidth,
   onResize,
   padding = "md",
-  showClose = true,
+  showCloseButton,
+  showClose,
   closePosition = "inside",
   "aria-label": ariaLabel,
   className,
   children,
 }: FlysheetContentProps) {
   const { open, setOpen, titleId, descId, hasDesc, contentId, hasTitle } = useSheet();
+  // ioiti-ui: `showCloseButton`, as every layer names it; `showClose`, its former name, read where it alone is given.
+  if (showClose !== undefined) deprecated("show-close", "FlysheetContent");
+  const withCloseButton = showCloseButton ?? showClose ?? true;
   // ioiti-ui: the sheet this one is a child of, if any: it takes its side and its mode, and is drawn
   // in its layer, beside it while it fits there, over it otherwise.
   const parent = React.useContext(LayerContext);
@@ -647,7 +632,7 @@ export function FlysheetContent({
   // ioiti-ui: outside the panel when asked (Elastic's), but inside while a child is beside it, which it
   // would cover; the design's greys (EasyUI's neutral-400 was 2.5:1 on white) and its one focus ring.
   const outside = closePosition === "outside" && child !== "beside";
-  const closeButton = showClose ? (
+  const closeButton = withCloseButton ? (
     <button
       type="button"
       aria-label={words.close}

@@ -18,7 +18,7 @@ export default function MeterInATile() {
         <Meter ratio={0.3} label="Orders of the day’s limit" scale={['0', '10']} />
       </KpiTile>
       <KpiTile label="Returns" value="2.1%" hint="Under 5 %">
-        <Meter ratio={0.42} tone="positive" label="Returns against their limit" scale={['0', '5 %']} />
+        <Meter ratio={0.42} tone="success" label="Returns against their limit" scale={['0', '5 %']} />
       </KpiTile>
     </KpiGrid>
   )

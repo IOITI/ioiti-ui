@@ -24,7 +24,7 @@ export default function ChartLegendShowAndHide() {
         onToggle={toggle}
       />
       <LineChart
-        ariaLabel="Revenue of the shops shown, each week since May"
+        aria-label="Revenue of the shops shown, each week since May"
         data={REVENUE_BY_SHOP}
         series={SERIES.filter((_, index) => shown[index])}
         showLegend={false}

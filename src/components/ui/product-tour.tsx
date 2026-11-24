@@ -12,6 +12,8 @@ import {
   type MotionValue,
 } from "framer-motion";
 
+// ioiti-ui: held by its caller or by itself, as every layer (useControllableState).
+import { useControllableState } from "../../lib/controllable.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { DIALOG, SCRIM_FILL } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
@@ -49,8 +51,14 @@ export type TourCloseReason = "done" | "skip" | "dismiss";
 
 export interface ProductTourProps {
   steps: TourStep[];
-  open: boolean;
-  onClose: (reason: TourCloseReason) => void;
+  /** ioiti-ui: open, held by the page (told of each change by `onOpenChange`, of its end by `onClose`). */
+  open?: boolean;
+  /** ioiti-ui: open at first, the tour holding it then (it ends itself); closed by default. */
+  defaultOpen?: boolean;
+  /** ioiti-ui: told of every change, whoever holds it, with why it ended (`details.reason`), as `onClose` is. */
+  onOpenChange?: (open: boolean, details?: { reason: TourCloseReason }) => void;
+  /** Told when it ends, and why: its last step done, skipped, or dismissed (Escape, a click beside it). */
+  onClose?: (reason: TourCloseReason) => void;
   onStepChange?: (index: number) => void;
   startAt?: number;
   closeOnOverlayClick?: boolean;
@@ -164,8 +172,10 @@ const slide = {
 
 export function ProductTour({
   steps,
-  open,
-  onClose,
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+  onClose: onEnded,
   onStepChange,
   startAt = 0,
   closeOnOverlayClick = false,
@@ -175,6 +185,16 @@ export function ProductTour({
   // animated by hand, are not reduced by MotionConfig.
   const reduce = useReducedMotionConfig();
   const words = useMessages().tour;
+  // ioiti-ui: open, held by the page or by the tour (useControllableState); its end tells `onOpenChange` and `onClose`.
+  const [open, setOpen] = useControllableState<boolean, [details?: { reason: TourCloseReason }]>(
+    openProp,
+    defaultOpen,
+    onOpenChange
+  );
+  const onClose = (reason: TourCloseReason) => {
+    setOpen(false, { reason });
+    onEnded?.(reason);
+  };
 
   const [mounted, setMounted] = useState(false);
   const [index, setIndex] = useState(startAt);

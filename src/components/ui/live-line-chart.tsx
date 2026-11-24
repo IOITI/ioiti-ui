@@ -20,6 +20,8 @@ import {
 } from "../../lib/dashboard-chart-utils.js";
 
 import { AXIS_COLOUR, GRID_COLOUR } from "../../lib/chart-colours.js";
+// ioiti-ui: its former name said once in development.
+import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { PRESSABLE, TONE_MARK } from "../../lib/recipes.js";
 // ioiti-ui: the words in the interface's language, and its formats.
@@ -68,6 +70,8 @@ export interface LiveLineChartProps {
   /** Big current value + pause button above the chart (default true) */
   showReadout?: boolean;
   /** ioiti-ui: its name for a screen reader: "Live chart of the last 60 s, currently 42" by default, in its language. */
+  "aria-label"?: string;
+  /** @deprecated Use `aria-label`. Removed in 1.0. */
   ariaLabel?: string;
   className?: string;
 }
@@ -109,9 +113,13 @@ export function LiveLineChart({
   initialPoints,
   domain,
   showReadout = true,
+  "aria-label": givenName,
   ariaLabel,
   className = "",
 }: LiveLineChartProps) {
+  // ioiti-ui: its former name read as today's, said once in development.
+  if (ariaLabel !== undefined) deprecated("aria-label-camel", "LiveLineChart");
+  const name = givenName ?? ariaLabel;
   const reduce = useReducedMotionConfig();
   // ioiti-ui: the numbers, percentages, units and words in the interface's locale and language, where the application
   // gives none of its own.
@@ -433,7 +441,7 @@ export function LiveLineChart({
           height={height}
           role="img"
           // ioiti-ui: in the interface's language.
-          aria-label={ariaLabel ?? words.liveChartName({ span: span(winS), value: latest === null ? undefined : formatValue(latest), unit })}
+          aria-label={name ?? words.liveChartName({ span: span(winS), value: latest === null ? undefined : formatValue(latest), unit })}
           className="block touch-pan-y overflow-visible"
         >
           <defs>

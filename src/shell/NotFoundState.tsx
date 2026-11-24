@@ -63,7 +63,7 @@ export function NotFoundState({
     <NotFound title={title} description={description} path={path} suggestions={suggestions} focusOnMount={focusOnMount}>
       {/* Home is a place, a link; the page before is a step back in this tab's history. */}
       {home && (
-        <ButtonLink to={home.href} leftIcon={<Home className="size-4" />}>
+        <ButtonLink href={home.href} leftIcon={<Home className="size-4" />}>
           {home.label}
         </ButtonLink>
       )}

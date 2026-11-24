@@ -119,3 +119,34 @@ describe('ProductTour in a language', () => {
     expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument()
   })
 })
+
+describe('ProductTour held open', () => {
+  const STEPS = [
+    { title: 'Welcome', body: 'A tour of two steps.' },
+    { title: 'That is all', body: 'Have a good day.' },
+  ]
+
+  it('by itself (defaultOpen): it ends itself, and tells onOpenChange and onClose why', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    const closed = vi.fn()
+    render(<ProductTour defaultOpen steps={STEPS} onOpenChange={changed} onClose={closed} />)
+    await screen.findByRole('dialog', { name: 'Welcome' })
+
+    await user.click(screen.getByRole('button', { name: 'Skip' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(changed).toHaveBeenCalledWith(false, { reason: 'skip' })
+    expect(closed).toHaveBeenCalledWith('skip')
+  })
+
+  it('by the page (open): onOpenChange told why, the tour open until the page closes it', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    render(<ProductTour open steps={STEPS} onOpenChange={changed} />)
+    await screen.findByRole('dialog', { name: 'Welcome' })
+
+    await user.keyboard('{Escape}')
+    expect(changed).toHaveBeenCalledWith(false, { reason: 'dismiss' })
+    expect(screen.getByRole('dialog', { name: 'Welcome' })).toBeInTheDocument()
+  })
+})

@@ -217,6 +217,9 @@ function describeProp(symbol, required, defaults, location) {
   const fallback = tagged ? oneLine(ts.displayPartsToString(tagged.text)) : defaults.get(symbol.getName())
   if (fallback !== undefined) prop.default = fallback
   if (description) prop.description = description
+  // A deprecated prop says what replaces it (its tag's words): the props tables mark it.
+  const deprecation = tags.find((tag) => tag.name === 'deprecated')
+  if (deprecation) prop.deprecated = oneLine(ts.displayPartsToString(deprecation.text)) || 'Deprecated.'
   return prop
 }
 
@@ -314,7 +317,33 @@ function generate() {
 }
 
 const text = generate()
+
+// The names the conventions retired (docs/conventions.md), and those src/lib/deprecations.ts lists for a component: a
+// prop so named is marked @deprecated, or the check fails. A new component cannot bring an old name back.
+const RETIRED = ['onValueChange', 'isLoading', 'ariaLabel', 'hideCloseButton', 'showClose', 'isOpen', 'activeTab', 'defaultTab', 'busy', 'saving']
+async function unmarked(components) {
+  const source = readFileSync(join(root, 'src/lib/deprecations.ts'), 'utf8')
+  const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } })
+  const { DEPRECATIONS } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`)
+  const listed = new Map()
+  for (const entry of Object.values(DEPRECATIONS)) {
+    if (entry.kind !== 'prop') continue
+    for (const component of entry.components) listed.set(`${component}.${entry.old}`, entry.new)
+  }
+  const problems = []
+  for (const [component, { props = [] }] of Object.entries(components)) {
+    for (const prop of props) {
+      const named = listed.has(`${component}.${prop.name}`) || RETIRED.includes(prop.name)
+      if (named && !prop.deprecated) problems.push(`${component}'s ${prop.name}: a name the conventions retired, not marked @deprecated (docs/conventions.md)`)
+    }
+  }
+  return problems
+}
+
 if (process.argv.includes('--check')) {
+  const problems = await unmarked(JSON.parse(text))
+  for (const problem of problems) console.error(`props: ${problem}`)
+  if (problems.length) process.exit(1)
   let current = ''
   try {
     current = readFileSync(OUT, 'utf8')

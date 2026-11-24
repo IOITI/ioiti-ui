@@ -27,7 +27,7 @@ const layout: CategoryInfo = {
       examples: [
         { id: 'parts', title: 'Title, description, action', description: 'Every section of a page sits in one: a hairline border, the surface at half its strength, soft corners. Its title is a section’s; its action, on the right, a small outline button or a quiet link.' },
         { id: 'set-apart', title: 'A box set apart', description: 'PanelInset: a figure’s detail, a note, a shade off the panel (a faint tint of it under glass), never a second card.' },
-        { id: 'dense', title: 'Dense, holding a table', description: 'dense brings the body close under the title: for a list or a table whose first row is the content.' },
+        { id: 'dense', title: 'Compact, holding a table', description: 'density="compact" brings the body close under the title: for a list or a table whose first row is the content.' },
       ],
     },
     {
@@ -58,7 +58,7 @@ const layout: CategoryInfo = {
       keywords: ['faq', 'accordion', 'questions', 'collapse'],
       examples: [
         { id: 'one-at-a-time', title: 'One at a time', description: 'Questions and their answers: opening one closes the other. A subtitle says more of a question.' },
-        { id: 'several', title: 'Several open', description: 'allowMultiple: each opens and closes on its own, for answers compared side by side; defaultOpen opens a few at first.' },
+        { id: 'several', title: 'Several open', description: 'allowMultiple: each opens and closes on its own, for answers compared side by side; defaultValue opens a few at first.' },
       ],
     },
     {

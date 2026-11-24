@@ -29,7 +29,7 @@ export function FamilyPage({ category, family, examples }: FamilyPageProps) {
         title={family.name}
         description={<InlineMarkdown text={summaryOfFamily(family)} />}
         actions={
-          <TextLink to={categoryPath(category)} variant="quiet">
+          <TextLink href={categoryPath(category)} variant="quiet">
             All of {category.label.toLowerCase()}
           </TextLink>
         }

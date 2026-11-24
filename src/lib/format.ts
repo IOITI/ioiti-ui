@@ -7,6 +7,7 @@ import type { Messages } from '../locales/en.js'
 import { DEFAULT_LOCALE, hourCycleOf } from './locale.js'
 import type { HourCycle } from './locale.js'
 import { bindMessages } from './messages.js'
+import type { SignTone } from './tones.js'
 
 const EMPTY = '—'
 const MINUS = '−'
@@ -280,9 +281,16 @@ export function toIsoDay(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
-export type Tone = 'positive' | 'negative' | 'neutral'
+/**
+ * Which way a figure goes.
+ *
+ * @deprecated Use `SignTone`. Removed in 1.0. The same three values (`positive`, `negative`, `neutral`), under the name
+ * of the package's vocabulary of signs (docs/conventions.md).
+ */
+export type Tone = SignTone
 
-export function toneOf(value: number | null | undefined): Tone {
+/** Which way a figure goes: `positive` above zero, `negative` below, `neutral` at zero or for no number. */
+export function toneOf(value: number | null | undefined): SignTone {
   if (!isNumber(value) || value === 0) return 'neutral'
   return value > 0 ? 'positive' : 'negative'
 }

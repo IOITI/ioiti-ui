@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { fr } from '../locales/fr.js'
 import { sidebarSections } from '../shell/navigation.js'
@@ -13,7 +13,7 @@ const SECTIONS = sidebarSections({
   entries: [
     { id: 'orders', path: '/orders', label: 'Orders', section: 'Work', badge: 38 },
     { id: 'api', path: '/api', label: 'API', section: 'Work', badge: 'Degraded', badgeTone: 'warning' },
-    { id: 'incidents', path: '/incidents', label: 'Incidents', section: 'Work', badge: '2 open', badgeTone: 'negative' },
+    { id: 'incidents', path: '/incidents', label: 'Incidents', section: 'Work', badge: '2 open', badgeTone: 'danger' },
   ],
 })
 
@@ -58,7 +58,7 @@ describe('a folded section', () => {
       { id: 'home', path: '/', label: 'Home', section: 'Main' },
       { id: 'reports', path: '/reports', label: 'Reports', section: 'Tools', badge: 3 },
       { id: 'system', path: '/system', label: 'System', section: 'Tools' },
-      { id: 'disk', path: '/system/disk', label: 'Disk', section: 'Tools', parent: 'system', badge: 'Critical', badgeTone: 'negative' },
+      { id: 'disk', path: '/system/disk', label: 'Disk', section: 'Tools', parent: 'system', badge: 'Critical', badgeTone: 'danger' },
     ],
   })
 
@@ -232,7 +232,7 @@ describe('the sidebar in French', () => {
       { id: 'orders', path: '/orders', label: 'Commandes', section: 'Travail' },
       { id: 'late', path: '/orders/late', label: 'En retard', section: 'Travail', parent: 'orders', badge: '2 en retard', badgeTone: 'warning' },
       { id: 'customers', path: '/customers', label: 'Clients', section: 'Travail' },
-      { id: 'disk', path: '/disk', label: 'Disque', section: 'Outils', badge: 'Critique', badgeTone: 'negative' },
+      { id: 'disk', path: '/disk', label: 'Disque', section: 'Outils', badge: 'Critique', badgeTone: 'danger' },
     ],
   })
   const French = ({ children }: { children: ReactNode }) => (
@@ -282,5 +282,76 @@ describe('the sidebar in French', () => {
     })
     expect(screen.getByRole('button', { name: 'Fold the menu' })).toBeInTheDocument()
     expect(screen.getByRole('navigation', { name: 'Pages' })).toBeInTheDocument()
+  })
+})
+
+// What the package says of a former name, once, in development.
+const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
+const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
+
+describe('the rail, held', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('by the sidebar: it folds, tells onCollapsedChange, and keeps the choice where it is asked to', () => {
+    window.localStorage.clear()
+    const changed = vi.fn()
+    const { unmount } = render(<Sidebar sections={SECTIONS} activeId="orders" collapsedStorageKey="test.rail" onCollapsedChange={changed} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse sidebar' }))
+    expect(changed).toHaveBeenLastCalledWith(true)
+    expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
+    expect(window.localStorage.getItem('test.rail')).toBe('true')
+    unmount()
+
+    // Kept: the next sidebar opens as it was left.
+    render(<Sidebar sections={SECTIONS} activeId="orders" collapsedStorageKey="test.rail" />)
+    expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
+  })
+
+  it('by the page (collapsed): told, neither folded nor kept until the page says so', () => {
+    window.localStorage.clear()
+    const changed = vi.fn()
+    const { rerender } = render(
+      <Sidebar sections={SECTIONS} activeId="orders" collapsed={false} collapsedStorageKey="test.rail" onCollapsedChange={changed} />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse sidebar' }))
+    expect(changed).toHaveBeenLastCalledWith(true)
+    expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeInTheDocument()
+    expect(window.localStorage.getItem('test.rail')).toBeNull()
+    rerender(<Sidebar sections={SECTIONS} activeId="orders" collapsed collapsedStorageKey="test.rail" onCollapsedChange={changed} />)
+    expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
+  })
+})
+
+describe('a badge in a former tone', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('says nothing of the tones of today', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    render(<Sidebar sections={SECTIONS} activeId="orders" />)
+    expect(deprecations(warn)).toHaveLength(0)
+  })
+
+  it('reads negative as danger, said once in development', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const sections = [
+      {
+        items: [
+          { id: 'system', label: 'System', href: '/system', children: [{ id: 'disk', label: 'Disk', href: '/system/disk', badge: 'Critical', badgeTone: 'negative' as const }] },
+          { id: 'api', label: 'API', href: '/api', badge: 'Down', badgeTone: 'negative' as const },
+        ],
+      },
+    ]
+    const { rerender } = render(<Sidebar sections={sections} activeId="disk" />)
+    rerender(<Sidebar sections={[...sections]} activeId="disk" />)
+
+    expect(screen.getByText('Down')).toHaveClass('text-negative')
+    expect(screen.getByText('Critical')).toHaveClass('text-negative')
+    const said = deprecations(warn)
+    expect(said).toHaveLength(1)
+    expect(String(said[0][0])).toContain(`(Sidebar's badgeTone="negative": danger)`)
   })
 })

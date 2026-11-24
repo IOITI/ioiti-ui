@@ -2,11 +2,11 @@
 
 A state the user must not miss, in the top bar of every page while it applies: a link to where it is dealt with.
 
-**You provide** `to` (the page where it is dealt with), `tone` (`warning` to watch · `danger` to fix · `success` for good news), `icon` (a lucide icon, `className="size-3.5"`, `aria-hidden`), `label` (its words, which name it), `hint` (what it means and what to do).
+**You provide** `href` (the page where it is dealt with, formerly `to`), `tone` (`warning` to watch · `danger` to fix · `success` for good news), `icon` (a lucide icon, `className="size-3.5"`, `aria-hidden`), `label` (its words, which name it), `hint` (what it means and what to do).
 
 ```tsx
 <AppShell … topBarChips={needsRestart && (
-  <StateChip to="/settings" tone="warning" icon={<RotateCw className="size-3.5" aria-hidden />}
+  <StateChip href="/settings" tone="warning" icon={<RotateCw className="size-3.5" aria-hidden />}
     label="Restart needed" hint="The services run an older configuration." />
 )} />
 ```

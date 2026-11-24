@@ -2,12 +2,12 @@
 
 A dialog, in four widths (and a full one, for two things side by side): it settles in from what opened it, keeps the focus, and gives it back.
 
-**You provide** `open`, `onClose`, `title`, `description`, the content as `children`, `footer` (the buttons); `size` (`sm` · `md` · `lg` · `xl` · `full`, `md` by default); `closeOnBackdrop` (`true`), `hideCloseButton`.
+**You provide** `open` / `onOpenChange` (or `defaultOpen`, the dialog then closing itself), `onClose` (told too as it closes), `title`, `description`, the content as `children`, `footer` (the buttons); `size` (`sm` · `md` · `lg` · `xl` · `full`, `md` by default); `closeOnBackdrop` (`true`), `showCloseButton` (`true`; formerly `hideCloseButton`, the other way round).
 
 ```tsx
-<SettleModal open={open} onClose={close} title="Rename the project"
+<SettleModal open={open} onOpenChange={setOpen} title="Rename the project"
   description="Its address stays the same: links to it keep working."
-  footer={<><Button variant="ghost" size="sm" onClick={close}>Cancel</Button><Button size="sm" onClick={rename}>Rename</Button></>}>
+  footer={<><Button variant="ghost" size="sm" onClick={() => setOpen(false)}>Cancel</Button><Button size="sm" onClick={rename}>Rename</Button></>}>
   <Input aria-label="Name" />
 </SettleModal>
 ```

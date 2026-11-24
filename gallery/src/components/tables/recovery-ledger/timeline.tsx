@@ -53,7 +53,7 @@ export default function RecoveryLedgerTimeline() {
         onConfirm={() => {
           if (asked) {
             setCurrent(asked.id)
-            toast({ title: `“${asked.description}” restored`, variant: 'success' })
+            toast({ title: `“${asked.description}” restored`, tone: 'success' })
           }
           setAsked(null)
         }}

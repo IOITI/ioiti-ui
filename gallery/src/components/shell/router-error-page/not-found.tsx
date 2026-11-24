@@ -36,14 +36,14 @@ function OrdersPage() {
       <ul className="flex flex-col gap-1.5 text-sm">
         {ORDERS.map((order) => (
           <li key={order.id}>
-            <TextLink to={`/orders/${order.id}`}>Order {order.id}</TextLink>{' '}
+            <TextLink href={`/orders/${order.id}`}>Order {order.id}</TextLink>{' '}
             <span className="text-muted-foreground">
               {order.customer}, {order.amount}
             </span>
           </li>
         ))}
         <li>
-          <TextLink to="/orders/2026-0017">Order 2026-0017</TextLink> <span className="text-muted-foreground">removed since: its link is an old one</span>
+          <TextLink href="/orders/2026-0017">Order 2026-0017</TextLink> <span className="text-muted-foreground">removed since: its link is an old one</span>
         </li>
       </ul>
     </>

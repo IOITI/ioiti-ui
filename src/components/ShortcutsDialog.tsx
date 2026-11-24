@@ -7,7 +7,11 @@ import { useShortcut, useShortcutRegistry } from './shortcuts-context.js'
 import { SettleModal } from './ui/settle-modal.js'
 
 interface ShortcutsDialogProps {
+  /** Open, held by the page (told of each change by `onOpenChange`). */
   open?: boolean
+  /** Open at first, the dialog holding it then; closed by default. */
+  defaultOpen?: boolean
+  /** Told of every change, whoever holds it: its keys and Escape open and close it. */
   onOpenChange?: (open: boolean) => void
   /** Its title; the provider's language's by default ("Keyboard shortcuts"). */
   title?: string
@@ -24,11 +28,11 @@ const KEYS_MARK = '\u0000'
  * description (`useShortcut`), while the parts that register them are on the page. `?` opens it, once
  * there is a shortcut to list; AppShell draws it.
  */
-export function ShortcutsDialog({ open, onOpenChange, title: givenTitle, keys = '?' }: ShortcutsDialogProps) {
+export function ShortcutsDialog({ open, defaultOpen = false, onOpenChange, title: givenTitle, keys = '?' }: ShortcutsDialogProps) {
   // Its words in the provider's language, the title given over its own.
   const words = useMessages().shortcuts
   const title = givenTitle ?? words.title
-  const [shown, setShown] = useControllableState(open, false, onOpenChange)
+  const [shown, setShown] = useControllableState(open, defaultOpen, onOpenChange)
   const registry = useShortcutRegistry()
   const all = useSyncExternalStore(registry.subscribe, registry.list, registry.list)
   // What it lists: every shortcut described, but the one that opens it; once, when two parts register the same
@@ -56,7 +60,7 @@ export function ShortcutsDialog({ open, onOpenChange, title: givenTitle, keys = 
   const again = words.showAgain(KEYS_MARK).split(KEYS_MARK)
 
   return (
-    <SettleModal open={shown} onClose={() => setShown(false)} title={title} size="md">
+    <SettleModal open={shown} onOpenChange={setShown} title={title} size="md">
       <div className="flex flex-col gap-5">
         {Array.from(groups.entries()).map(([group, shortcuts]) => (
           <section key={group}>

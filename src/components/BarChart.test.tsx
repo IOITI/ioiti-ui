@@ -15,7 +15,7 @@ const fills = (container: HTMLElement) =>
 
 describe('BarChart', () => {
   it('gives screen readers its figures as a table, losses with their sign', () => {
-    render(<BarChart ariaLabel="Profit by day" data={DAYS} series={[{ key: 'profit', label: 'Profit' }]} animated={false} />)
+    render(<BarChart aria-label="Profit by day" data={DAYS} series={[{ key: 'profit', label: 'Profit' }]} animated={false} />)
 
     const table = screen.getByRole('table', { name: 'Profit by day' })
     expect(within(table).getByRole('row', { name: 'Tue −80' })).toBeInTheDocument()
@@ -46,7 +46,7 @@ describe('BarChart', () => {
   })
 
   it('colours each bar by its sign, for gains and losses', () => {
-    const { container } = render(<BarChart data={DAYS} series={[{ key: 'profit', label: 'Profit' }]} tone="sign" animated={false} />)
+    const { container } = render(<BarChart data={DAYS} series={[{ key: 'profit', label: 'Profit' }]} colorBy="sign" animated={false} />)
     expect(fills(container)).toEqual(['var(--chart-positive)', 'var(--chart-negative)', 'var(--chart-positive)'])
   })
 
@@ -54,7 +54,7 @@ describe('BarChart', () => {
     const user = userEvent.setup()
     render(
       <BarChart
-        ariaLabel="Profit and fees"
+        aria-label="Profit and fees"
         data={DAYS}
         series={[
           { key: 'profit', label: 'Profit' },
@@ -81,7 +81,7 @@ describe('BarChart', () => {
     const user = userEvent.setup()
     render(
       <BarChart
-        ariaLabel="Profit by day"
+        aria-label="Profit by day"
         data={DAYS}
         series={[{ key: 'profit', label: 'Profit' }]}
         formatTitle={(datum) => `${datum.label}day`}
@@ -135,7 +135,7 @@ describe('BarChart', () => {
       { label: '09:30', spread: null },
     ]
     const { container } = render(
-      <BarChart ariaLabel="Spread" data={slots} series={[{ key: 'spread', label: 'Spread' }]} animated={false} />,
+      <BarChart aria-label="Spread" data={slots} series={[{ key: 'spread', label: 'Spread' }]} animated={false} />,
     )
     const table = screen.getByRole('table', { name: 'Spread' })
     expect(within(table).getByRole('row', { name: '09:30 —' })).toBeInTheDocument()

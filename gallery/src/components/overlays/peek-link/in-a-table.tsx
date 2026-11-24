@@ -22,7 +22,7 @@ export default function PeekLinkInATable() {
             <TableCell>
               {/* Read when the card opens: a few lines of the record, never all of it. */}
               <PeekLink
-                to="/patterns/dashboard"
+                href="/patterns/dashboard"
                 className="font-mono text-xs underline-offset-2 hover:underline"
                 content={() => (
                   <div className="space-y-1 text-sm">

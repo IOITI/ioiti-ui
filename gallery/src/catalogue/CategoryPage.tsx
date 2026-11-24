@@ -30,10 +30,10 @@ export function CategoryPage({ category, examples }: { category: CategoryInfo; e
             info={first}
             example={examples[exampleKey(family, first)]}
             code={false}
-            title={<TextLink to={path}>{family.name}</TextLink>}
+            title={<TextLink href={path}>{family.name}</TextLink>}
             description={<InlineMarkdown text={summaryOfFamily(family)} />}
             action={
-              <TextLink to={path} variant="quiet">
+              <TextLink href={path} variant="quiet">
                 {more === 1 ? 'Its example, code and props' : `All ${more} examples, code and props`}
               </TextLink>
             }

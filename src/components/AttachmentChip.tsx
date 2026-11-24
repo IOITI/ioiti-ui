@@ -1,6 +1,7 @@
 import type { ElementType, ReactNode } from 'react'
 import { LoaderCircle, Paperclip, X } from 'lucide-react'
 
+import { deprecated } from '../lib/deprecated.js'
 import { CLOSE_SM } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
@@ -25,6 +26,8 @@ interface AttachmentChipProps {
   /** `danger`: it could not be taken, `detail` says why. */
   tone?: 'neutral' | 'danger'
   /** While it is made ready (an upload): a spinner in place of its icon, said to screen readers. */
+  pending?: boolean
+  /** @deprecated Use `pending`. Removed in 1.0. */
   busy?: boolean
   className?: string
 }
@@ -52,14 +55,18 @@ export function AttachmentChip({
   linkComponent,
   onRemove,
   tone = 'neutral',
-  busy = false,
+  pending: givenPending,
+  busy,
   className,
 }: AttachmentChipProps) {
+  // Its former name read as today's, said once in development.
+  if (busy !== undefined) deprecated('busy', 'AttachmentChip')
+  const pending = givenPending ?? busy ?? false
   const applicationLink = useLinkComponent()
   const Link = linkComponent ?? applicationLink
   const words = useMessages().ai
   const danger = tone === 'danger'
-  const mark = busy ? (
+  const mark = pending ? (
     <LoaderCircle className="size-3.5 shrink-0 motion-safe:animate-spin" aria-hidden />
   ) : thumbnail ? (
     <img src={thumbnail} alt="" className="size-5 shrink-0 rounded-sm object-cover" />
@@ -95,7 +102,7 @@ export function AttachmentChip({
 
   return (
     <span
-      aria-busy={busy || undefined}
+      aria-busy={pending || undefined}
       className={cn(
         'inline-flex min-h-7 max-w-full items-center gap-1.5 rounded-md border py-0.5 pl-1.5 text-xs',
         onRemove ? 'pr-0.5' : 'pr-2',
@@ -113,7 +120,7 @@ export function AttachmentChip({
       ) : (
         named
       )}
-      {busy && <span className="sr-only">{words.attachmentPreparing}</span>}
+      {pending && <span className="sr-only">{words.attachmentPreparing}</span>}
       {detail && (
         <span className={cn('min-w-0 shrink truncate tabular-nums text-muted-foreground', danger && 'text-negative')}>
           {detail}

@@ -10,7 +10,7 @@ export default function KpiTileLimits() {
         <Meter ratio={0.62} label="Storage used" scale={['0', '50 GB']} />
       </KpiTile>
       <KpiTile label="Errors" value="0" hint="In the last hour">
-        <Meter ratio={0.05} tone="positive" label="Error budget used" />
+        <Meter ratio={0.05} tone="success" label="Error budget used" />
       </KpiTile>
     </KpiGrid>
   )

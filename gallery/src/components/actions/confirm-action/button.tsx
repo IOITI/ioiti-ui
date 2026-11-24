@@ -27,7 +27,7 @@ export default function ConfirmActionButton() {
         confirmLabel="Pause the imports"
         pending={pending}
         onConfirm={confirm}
-        onClose={() => setOpen(false)}
+        onOpenChange={setOpen}
       />
     </>
   )

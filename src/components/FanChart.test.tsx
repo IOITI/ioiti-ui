@@ -51,7 +51,7 @@ describe('FanChart', () => {
 
   it('gives screen readers each place as a row, a band as its range, nothing as a dash', () => {
     render(
-      <FanChart ariaLabel="Result against its reference" data={CONE} bands={BANDS} lines={LINES} xLabel="Trades"
+      <FanChart aria-label="Result against its reference" data={CONE} bands={BANDS} lines={LINES} xLabel="Trades"
         formatX={(x) => `Trade ${x}`} formatValue={(value) => value.toFixed(1)} animated={false} />,
     )
     const table = screen.getByRole('table', { name: 'Result against its reference' })
@@ -63,7 +63,7 @@ describe('FanChart', () => {
 
   it('reads a place with the keyboard: each line and each band there', async () => {
     const user = userEvent.setup()
-    render(<FanChart ariaLabel="Result" data={CONE} bands={BANDS} lines={LINES} formatX={(x) => `Trade ${x}`} animated={false} />)
+    render(<FanChart aria-label="Result" data={CONE} bands={BANDS} lines={LINES} formatX={(x) => `Trade ${x}`} animated={false} />)
 
     await user.tab()
     expect(screen.getByRole('img', { name: 'Result' })).toHaveFocus()

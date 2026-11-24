@@ -2,7 +2,7 @@
 
 Where things went, stage after stage: each stage's count and its share of the first, and what it lost on the way to the next, in words.
 
-**You provide** `stages` (`[{ label, value, dropLabel?, color? }]`, the widest first), `noun` (what is counted, `Users` by default), `summaryLabel` (beside the last stage's share, `overall conversion` by default), `formatValue`; `showSummary`, `ariaLabel`, `emptyText`, `animated`.
+**You provide** `stages` (`[{ label, value, dropLabel?, color? }]`, the widest first), `noun` (what is counted, `Users` by default), `summaryLabel` (beside the last stage's share, `overall conversion` by default), `formatValue`; `showSummary`, `aria-label`, `emptyText`, `animated`.
 
 ```tsx
 <FunnelChart noun="Visits" summaryLabel="of the visits ended in a purchase" stages={[

@@ -78,10 +78,10 @@ describe('on a narrow screen, no part is wider than its place', () => {
   it("keeps a chart's table for screen readers in a box of its own: a table is never narrower than its rows", () => {
     render(
       <>
-        <LineChart ariaLabel="Balance" data={POINTS} series={[{ key: 'balance', label: 'Balance' }]} animated={false} />
-        <BarChart ariaLabel="Profit by day" data={DAYS} series={[{ key: 'profit', label: 'Profit' }]} animated={false} />
-        <DonutChart ariaLabel="Orders by channel" data={SEGMENTS} animated={false} />
-        <FunnelChart ariaLabel="Visits" stages={STAGES} />
+        <LineChart aria-label="Balance" data={POINTS} series={[{ key: 'balance', label: 'Balance' }]} animated={false} />
+        <BarChart aria-label="Profit by day" data={DAYS} series={[{ key: 'profit', label: 'Profit' }]} animated={false} />
+        <DonutChart aria-label="Orders by channel" data={SEGMENTS} animated={false} />
+        <FunnelChart aria-label="Visits" stages={STAGES} />
       </>,
     )
 
@@ -105,7 +105,7 @@ describe('on a narrow screen, no part is wider than its place', () => {
 
   it("an assistant's composer wraps its controls, each whole, rather than run them under its send button", () => {
     render(
-      <PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} maxLength={8000}
+      <PromptComposer label="Ask" value="" onChange={() => {}} onSubmit={() => {}} maxLength={8000}
         footer="up to $5.00 a request · $0.43 of $50.00 this month"
         controls={<><button type="button">Opus 5.5</button><button type="button">high</button><button type="button">12.2k · 1%</button></>} />,
     )

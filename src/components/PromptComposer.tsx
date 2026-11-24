@@ -2,6 +2,8 @@ import { useId, useLayoutEffect, useRef, useState } from 'react'
 import type { ClipboardEvent, DragEvent, KeyboardEvent, ReactNode } from 'react'
 import { ArrowUp, Square } from 'lucide-react'
 
+import { useControllableState } from '../lib/controllable.js'
+import { deprecated } from '../lib/deprecated.js'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
@@ -15,12 +17,21 @@ interface PromptSuggestion {
 }
 
 interface PromptComposerProps {
-  value: string
-  onValueChange: (value: string) => void
+  /** The text typed, held by the page (told of each change by `onChange`). */
+  value?: string
+  /** The text it starts with, the composer holding it then: emptied once it is sent. */
+  defaultValue?: string
+  /** Told of the text at each change, whoever holds it. */
+  onChange?: (value: string) => void
+  /** @deprecated Use `onChange`. Removed in 1.0. */
+  onValueChange?: (value: string) => void
   /** The text sent, without its spaces around. */
   onSubmit: (value: string) => void
-  /** While `busy`: the request under way stopped. Without it, nothing can be sent until it ends. */
+  /** While `pending`: the request under way stopped. Without it, nothing can be sent until it ends. */
   onStop?: () => void
+  /** A request sent and not answered yet: nothing more can be sent meanwhile; `onStop` stops it. */
+  pending?: boolean
+  /** @deprecated Use `pending`. Removed in 1.0. */
   busy?: boolean
   disabled?: boolean
   /** Why nothing can be sent: shown on the button's hint, on hover, focus and tap. */
@@ -73,11 +84,14 @@ const FALLBACK_LINE_HEIGHT = 21
  * files dropped on it or pasted into it are handed over (`onFiles`).
  */
 export function PromptComposer({
-  value,
+  value: valueProp,
+  defaultValue = '',
+  onChange,
   onValueChange,
   onSubmit,
   onStop,
-  busy = false,
+  pending: pendingProp,
+  busy,
   disabled = false,
   disabledReason,
   label,
@@ -97,12 +111,18 @@ export function PromptComposer({
   const id = useId()
   const { formatNumber } = useFormat()
   const words = useMessages().ai
+  // Its text, held by the page or by itself (useControllableState); `onChange` and `pending`, as every control names
+  // them, their former names read where they alone are given.
+  if (onValueChange !== undefined) deprecated('prompt-composer-on-value-change', 'PromptComposer')
+  if (busy !== undefined) deprecated('busy', 'PromptComposer')
+  const [value, setValue] = useControllableState(valueProp, defaultValue, onChange ?? onValueChange)
+  const pending = pendingProp ?? busy ?? false
   const field = useRef<HTMLTextAreaElement>(null)
   // A drag of files over the frame: entered and left once for each element under it, so counted.
   const [dragged, setDragged] = useState(0)
   const takesFiles = !!onFiles && !disabled
   const over = maxLength !== undefined && value.length > maxLength
-  const canSend = !disabled && !busy && value.trim() !== '' && !over
+  const canSend = !disabled && !pending && value.trim() !== '' && !over
 
   // Its height follows its text, from minRows to maxRows.
   useLayoutEffect(() => {
@@ -117,7 +137,10 @@ export function PromptComposer({
   }, [value, minRows, maxRows])
 
   function send() {
-    if (canSend) onSubmit(value.trim())
+    if (!canSend) return
+    onSubmit(value.trim())
+    // Held by itself, its text is emptied once sent; held by the page, the page empties it (or keeps it).
+    if (valueProp === undefined) setValue('')
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -162,7 +185,7 @@ export function PromptComposer({
     : {}
 
   function suggest(prompt: string) {
-    onValueChange(prompt)
+    setValue(prompt)
     const element = field.current
     if (!element) return
     element.focus()
@@ -170,7 +193,7 @@ export function PromptComposer({
     requestAnimationFrame(() => element.setSelectionRange(prompt.length, prompt.length))
   }
 
-  const reason = disabled && !busy ? disabledReason : undefined
+  const reason = disabled && !pending ? disabledReason : undefined
   const sendButton = (
     <button
       type="button"
@@ -198,7 +221,7 @@ export function PromptComposer({
             <button
               key={suggestion.label}
               type="button"
-              disabled={disabled || busy}
+              disabled={disabled || pending}
               onClick={() => suggest(suggestion.prompt)}
               className={cn(
                 'cursor-pointer rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted-foreground transition-colors duration-150 hover:border-border-hover hover:text-foreground',
@@ -234,7 +257,7 @@ export function PromptComposer({
           placeholder={placeholder}
           disabled={disabled}
           aria-invalid={over || undefined}
-          onChange={(event) => onValueChange(event.target.value)}
+          onChange={(event) => setValue(event.target.value)}
           onKeyDown={onKeyDown}
           onPaste={onPaste}
           className="block w-full resize-none overflow-y-auto bg-transparent px-3.5 pt-3 text-sm leading-normal text-foreground outline-none placeholder:text-text-subtle disabled:cursor-not-allowed disabled:opacity-50"
@@ -254,7 +277,7 @@ export function PromptComposer({
               {footer}
             </div>
           </div>
-          {busy && onStop ? (
+          {pending && onStop ? (
             <button
               type="button"
               onClick={onStop}

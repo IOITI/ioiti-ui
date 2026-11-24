@@ -8,6 +8,8 @@ export interface Prop {
   required?: boolean
   default?: string
   description?: string
+  /** What replaces it, where it is deprecated: its `@deprecated` tag's words. */
+  deprecated?: string
 }
 
 /** What a component takes from elsewhere: an element's attributes, framer-motion's, another component's. */

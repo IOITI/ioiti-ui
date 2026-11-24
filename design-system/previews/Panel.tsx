@@ -13,7 +13,7 @@ function Preview() {
           <p className="mt-1 text-xs text-muted-foreground">To the account ending 4410, after the day's refunds.</p>
         </PanelInset>
       </Panel>
-      <Panel title="Dense" description="Its body close under the title, for a list." dense>
+      <Panel title="Compact" description="Its body close under the title, for a list." density="compact">
         <ul className="divide-y divide-border/40 text-xs">
           <li className="py-2.5">First row</li>
           <li className="py-2.5">Second row</li>

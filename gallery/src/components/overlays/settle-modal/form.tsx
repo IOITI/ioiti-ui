@@ -16,7 +16,7 @@ export default function SettleModalForm() {
       setSaving(false)
       setName(draft.trim())
       setOpen(false)
-      toast({ title: 'Project renamed', variant: 'success' })
+      toast({ title: 'Project renamed', tone: 'success' })
     }, 700)
   }
   return (
@@ -35,7 +35,7 @@ export default function SettleModalForm() {
       </Button>
       <SettleModal
         open={open}
-        onClose={() => setOpen(false)}
+        onOpenChange={setOpen}
         size="sm"
         title="Rename the project"
         description="Its address stays the same: links to it keep working."
@@ -44,7 +44,7 @@ export default function SettleModalForm() {
             <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button size="sm" type="submit" form="rename-project" disabled={Boolean(error)} isLoading={saving} loadingText="Renaming">
+            <Button size="sm" type="submit" form="rename-project" disabled={Boolean(error)} pending={saving} loadingText="Renaming">
               Rename
             </Button>
           </>

@@ -16,9 +16,9 @@ createRoot(document.getElementById('root')!).render(
         { value: 5, label: '5%' },
       ]}
       levels={[
-        { from: 0, to: 2, tone: 'positive' },
+        { from: 0, to: 2, tone: 'success' },
         { from: 2, to: 3.5, tone: 'warning' },
-        { from: 3.5, to: 5, tone: 'negative' },
+        { from: 3.5, to: 5, tone: 'danger' },
       ]}
     />
     <Slider label="Delay before retrying" defaultValue={30} min={0} max={120} step={5} format={(value) => `${value} s`} showInput />

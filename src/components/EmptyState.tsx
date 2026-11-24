@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 
+import { deprecated } from '../lib/deprecated.js'
 import { cn } from '../lib/utils.js'
 
 interface EmptyStateProps {
@@ -7,13 +8,21 @@ interface EmptyStateProps {
   icon?: ReactNode
   /** What there is not: "No detection rule yet". */
   title: ReactNode
-  /** The level of its heading, one under what holds it: 2 under the page's (3 when `compact`, under a panel's). */
+  /**
+   * The level of its heading, one under what holds it: 2 under the page's (3 when `density="compact"`, under a
+   * panel's).
+   */
   headingLevel?: 1 | 2 | 3 | 4 | 5 | 6
   /** Why, and what would bring something. */
   description?: ReactNode
   /** What to do about it: a `Button` for an action, a `ButtonLink` for a page, or a few. */
   actions?: ReactNode
-  /** Smaller and closer: inside a `Panel`, or across the columns of a table's body. */
+  /**
+   * `compact`: smaller and closer, inside a `Panel` or across the columns of a table's body; its heading a level lower.
+   * @default 'regular'
+   */
+  density?: 'regular' | 'compact'
+  /** @deprecated Use `density="compact"`. Removed in 1.0. */
   compact?: boolean
   className?: string
 }
@@ -22,7 +31,10 @@ interface EmptyStateProps {
  * What a page, a panel or a table says when it has nothing to show, and the way to something: an icon, what
  * there is not under a heading, why, and what to do about it. For one quiet line, `EmptyText`.
  */
-export function EmptyState({ icon, title, headingLevel, description, actions, compact = false, className }: EmptyStateProps) {
+export function EmptyState({ icon, title, headingLevel, description, actions, density, compact: formerCompact, className }: EmptyStateProps) {
+  // Its former name read as today's, said once in development.
+  if (formerCompact !== undefined) deprecated('empty-state-compact', 'EmptyState')
+  const compact = (density ?? (formerCompact ? 'compact' : 'regular')) === 'compact'
   const Heading = `h${headingLevel ?? (compact ? 3 : 2)}` as const
   return (
     // Its words wrap, in a table whose cells keep theirs on one line too.

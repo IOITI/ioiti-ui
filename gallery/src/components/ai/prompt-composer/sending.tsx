@@ -8,12 +8,12 @@ export default function PromptComposerSending() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="min-w-0 space-y-3">
-        {/* busy and no onStop: nothing can be sent, or stopped, until the answer has come. */}
+        {/* pending and no onStop: nothing can be sent, or stopped, until the answer has come. */}
         <PromptComposer
           label="Ask about the orders"
           value={value}
-          onValueChange={setValue}
-          busy={sending}
+          onChange={setValue}
+          pending={sending}
           onSubmit={(text) => {
             setSent([...sent, text])
             setSending(true)
@@ -29,8 +29,6 @@ export default function PromptComposerSending() {
       {/* Nothing can be sent at all: why, on the button's hint. */}
       <PromptComposer
         label="Ask about the invoices"
-        value=""
-        onValueChange={() => {}}
         onSubmit={() => {}}
         disabled
         disabledReason="The assistant is switched off for this workspace"

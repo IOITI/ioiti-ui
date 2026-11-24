@@ -6,21 +6,21 @@ createRoot(document.getElementById('root')!).render(
   <div className="flex flex-col items-start gap-3 p-5">
     <div className="flex flex-wrap items-center gap-3">
       <StateChip
-        to="#restart"
+        href="#restart"
         tone="warning"
         icon={<RotateCw className="size-3.5" aria-hidden />}
         label="Restart needed"
         hint="The services run an older configuration."
       />
       <StateChip
-        to="#sign-in-again"
+        href="#sign-in-again"
         tone="danger"
         icon={<KeyRound className="size-3.5" aria-hidden />}
         label="Sign in again"
         hint="The connection to the bank expired: nothing is sent until it is renewed."
       />
       <StateChip
-        to="#approved"
+        href="#approved"
         tone="success"
         icon={<BadgeCheck className="size-3.5" aria-hidden />}
         label="Approved"

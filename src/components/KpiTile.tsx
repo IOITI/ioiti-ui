@@ -2,9 +2,10 @@ import { useId } from 'react'
 import type { ReactNode } from 'react'
 
 import type { GoodWhen } from '../lib/change.js'
+import { deprecated } from '../lib/deprecated.js'
 import { cn } from '../lib/utils.js'
 import { KpiChange } from './KpiChange.js'
-import { METER_FILL, METER_TRACK } from './meter-tones.js'
+import { METER_FILL, METER_TRACK, meterTone } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 import { SECTION_FRAME } from '../lib/recipes.js'
 
@@ -31,11 +32,19 @@ interface KpiTileBaseProps {
   className?: string
 }
 
+/**
+ * What a tile that needs attention is, in the two tones of a status (StatusTone) that ask for it: `warning`, to watch (near
+ * a limit); `danger`, to deal with (past it, failing). `negative` is danger's former name: read as it, said once in
+ * development; removed in 1.0.
+ */
+type KpiTileTone = 'warning' | 'danger' | 'negative'
+
 /** A tile that needs attention: a faint tint of its tone, and always its word, never the colour alone. */
 type KpiTileToneProps =
   | { tone?: undefined; toneLabel?: undefined }
   | {
-      tone: 'warning' | 'negative'
+      /** `warning`, to watch; `danger`, to deal with (`negative`, its former name, until 1.0). */
+      tone: KpiTileTone
       /** What the tone says, in a word or two: "Near the limit", "Failing". */
       toneLabel: string
     }
@@ -43,11 +52,19 @@ type KpiTileToneProps =
 export type KpiTileProps = KpiTileBaseProps & KpiTileToneProps
 
 // Under the content (the tile isolates it): 5 %, its text still at 4.5:1 on every surface of every look.
-const TONE_TINT = { warning: 'bg-warning/5', negative: 'bg-negative/5' }
-const TONE_BORDER = { warning: 'border-warning/40', negative: 'border-negative/40' }
-const TONE_TEXT = { warning: 'text-warning', negative: 'text-negative' }
+const TONE_TINT = { warning: 'bg-warning/5', danger: 'bg-negative/5' }
+const TONE_BORDER = { warning: 'border-warning/40', danger: 'border-negative/40' }
+const TONE_TEXT = { warning: 'text-warning', danger: 'text-negative' }
 
-export function KpiTile({ label, value, hint, change, goodWhen, changeFormat, lead = false, tone, toneLabel, children, className }: KpiTileProps) {
+/** The tone a tile draws: `negative`, danger's former name, read as it, said once in development. */
+function drawnTone(tone: KpiTileTone | undefined): 'warning' | 'danger' | undefined {
+  if (tone !== 'negative') return tone
+  deprecated('kpi-tone-negative', 'KpiTile')
+  return 'danger'
+}
+
+export function KpiTile({ label, value, hint, change, goodWhen, changeFormat, lead = false, tone: givenTone, toneLabel, children, className }: KpiTileProps) {
+  const tone = drawnTone(givenTone)
   return (
     <div
       className={cn(
@@ -97,6 +114,7 @@ interface MeterProps {
 /** A single ratio against a limit. */
 export function Meter({ ratio, tone = 'neutral', label, scale }: MeterProps) {
   const clamped = Math.min(Math.max(ratio, 0), 1)
+  const drawn = meterTone(tone, 'Meter')
   return (
     <div>
       <div
@@ -105,11 +123,11 @@ export function Meter({ ratio, tone = 'neutral', label, scale }: MeterProps) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(clamped * 100)}
-        className={cn('h-1.5 w-full overflow-hidden rounded-full', METER_TRACK[tone])}
+        className={cn('h-1.5 w-full overflow-hidden rounded-full', METER_TRACK[drawn])}
       >
         {/* A new ratio slides to its place: the change is seen. */}
         <div
-          className={cn('h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-soft', METER_FILL[tone])}
+          className={cn('h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-soft', METER_FILL[drawn])}
           style={{ width: `${clamped * 100}%` }}
         />
       </div>

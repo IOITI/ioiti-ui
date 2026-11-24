@@ -2,10 +2,10 @@
 
 A range of time as people say it ("Last 24 hours", "Today"), which stays true as time goes by: chosen in two clicks or its ends set one by one, and refreshed by a press or on a timer (`AutoRefresh`, also alone beside a page's title).
 
-**You provide** for `TimeRangePicker`: `value` / `defaultValue` / `onChange` (`{ from, to }`, each `now`, `now` moved and rounded as `now-15m` or `now/d`, or an ISO moment), `onRefresh` (on Refresh, on each new range, and on the timer), `isLoading`; `commonlyUsed` (`[{ label, range }]`, in place of the usual ones), `refresh` with `onRefreshChange` (`{ interval, paused }`, in ms), `locale` and `weekStartsOn` where they differ from IoitiProvider's (en-GB and Monday by default), whose words and clock it takes. For `AutoRefresh`: `value`, `onChange`, `onRefresh`.
+**You provide** for `TimeRangePicker`: `value` / `defaultValue` / `onChange` (`{ from, to }`, each `now`, `now` moved and rounded as `now-15m` or `now/d`, or an ISO moment), `onRefresh` (on Refresh, on each new range, and on the timer), `loading` (formerly `isLoading`); `commonlyUsed` (`[{ label, range }]`, in place of the usual ones), `refresh` with `onRefreshChange` (`{ interval, paused }`, in ms), `locale` and `weekStartsOn` where they differ from IoitiProvider's (en-GB and Monday by default), whose words and clock it takes. For `AutoRefresh`: `value`, `onChange`, `onRefresh`.
 
 ```tsx
-<TimeRangePicker value={range} onChange={setRange} onRefresh={load} isLoading={loading}
+<TimeRangePicker value={range} onChange={setRange} onRefresh={load} loading={loading}
   refresh={refresh} onRefreshChange={setRefresh} />
 <AutoRefresh value={every} onChange={setEvery} onRefresh={reload} />
 ```

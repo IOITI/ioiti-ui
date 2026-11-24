@@ -26,11 +26,11 @@ export default function LineChartGaps() {
     <div className="grid gap-8 lg:grid-cols-2">
       <div className="min-w-0 space-y-2">
         <p className="text-sm font-medium">A gap where nothing was measured</p>
-        <LineChart ariaLabel="Parcels on time, gaps kept" data={ON_TIME} series={SERIES} height={200} formatValue={percent} />
+        <LineChart aria-label="Parcels on time, gaps kept" data={ON_TIME} series={SERIES} height={200} formatValue={percent} />
       </div>
       <div className="min-w-0 space-y-2">
         <p className="text-sm font-medium">Joined across: each on its own days</p>
-        <LineChart ariaLabel="Parcels on time, gaps joined" data={ON_TIME} series={SERIES} height={200} formatValue={percent} connectGaps />
+        <LineChart aria-label="Parcels on time, gaps joined" data={ON_TIME} series={SERIES} height={200} formatValue={percent} connectGaps />
       </div>
     </div>
   )

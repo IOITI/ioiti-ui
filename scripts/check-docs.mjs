@@ -13,7 +13,9 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { changelogProblems, formatChangelog, parseChangelog } from './changelog.mjs'
+import ts from 'typescript'
+
+import { changelogProblems, formatChangelog, parseChangelog, sectionsOf, UNRELEASED } from './changelog.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (file) => readFileSync(join(root, file), 'utf8')
@@ -89,6 +91,22 @@ if (written !== changelogText) {
     console.log('check-docs: the links at the foot of CHANGELOG.md written again')
   } else {
     problems.push('CHANGELOG.md: its foot does not link every version as scripts/changelog.mjs writes it (node scripts/check-docs.mjs --fix)')
+  }
+}
+
+// Every deprecation (src/lib/deprecations.ts) is named, in backticks, in the Deprecated section of the version it came in,
+// or of [Unreleased] until that version is released.
+const { outputText } = ts.transpileModule(read('src/lib/deprecations.ts'), {
+  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+})
+const { DEPRECATIONS } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`)
+const deprecatedIn = (name) => {
+  const version = changelog.versions.find((each) => each.name === name) ?? changelog.versions.find((each) => each.name === UNRELEASED)
+  return version ? (sectionsOf(version).sections.find((section) => section.name === 'Deprecated')?.lines.join('\n') ?? '') : ''
+}
+for (const [id, entry] of Object.entries(DEPRECATIONS)) {
+  if (!deprecatedIn(entry.since).includes(`\`${entry.old}\``)) {
+    problems.push(`CHANGELOG.md: \`${entry.old}\` (${id}, src/lib/deprecations.ts) is named in no Deprecated section of ${entry.since}`)
   }
 }
 

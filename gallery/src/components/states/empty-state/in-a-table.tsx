@@ -3,7 +3,7 @@ import { EmptyState, Panel, Table, TableBody, TableCell, TableHead, TableHeaderC
 export default function EmptyStateInATable() {
   return (
     <div className="max-w-lg">
-      <Panel title="Runs" description="The last runs of the rule." dense>
+      <Panel title="Runs" description="The last runs of the rule." density="compact">
         <Table aria-label="Runs">
           <TableHead>
             <TableRow>
@@ -16,7 +16,7 @@ export default function EmptyStateInATable() {
             <TableRow>
               {/* Across every column, the table keeping its head. */}
               <TableCell colSpan={3}>
-                <EmptyState compact title="No run yet" description="A rule runs once it is deployed." />
+                <EmptyState density="compact" title="No run yet" description="A rule runs once it is deployed." />
               </TableCell>
             </TableRow>
           </TableBody>

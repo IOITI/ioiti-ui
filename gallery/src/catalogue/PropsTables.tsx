@@ -67,6 +67,11 @@ function PropsTable({ name, component }: { name: string; component: ComponentPro
                       required
                     </Badge>
                   )}
+                  {prop.deprecated && (
+                    <Badge tone="danger" variant="outline">
+                      deprecated
+                    </Badge>
+                  )}
                 </span>
               </TableCell>
               <TableCell className="align-top whitespace-normal">
@@ -76,6 +81,12 @@ function PropsTable({ name, component }: { name: string; component: ComponentPro
               </TableCell>
               <TableCell className="align-top">{prop.default !== undefined ? <Code>{prop.default}</Code> : <span className="text-muted-foreground">–</span>}</TableCell>
               <TableCell className="min-w-64 align-top whitespace-normal text-muted-foreground">
+                {/* A deprecated prop says first what replaces it (its tag's words), then what it does. */}
+                {prop.deprecated ? (
+                  <p className="text-foreground">
+                    <InlineMarkdown text={prop.deprecated} />
+                  </p>
+                ) : null}
                 {prop.description ? <InlineMarkdown text={prop.description} /> : null}
               </TableCell>
             </TableRow>

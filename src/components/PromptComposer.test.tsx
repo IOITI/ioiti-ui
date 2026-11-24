@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { fr } from '../locales/fr.js'
 import { IoitiProvider } from './IoitiProvider.js'
@@ -10,7 +10,7 @@ function Composer(props: Partial<Parameters<typeof PromptComposer>[0]> & { start
   const [value, setValue] = useState(props.start ?? '')
   return (
     <PromptComposer label="Ask the assistant" onSubmit={() => {}} {...props} value={value}
-      onValueChange={(next) => { setValue(next); props.onValueChange?.(next) }} />
+      onChange={(next) => { setValue(next); props.onChange?.(next) }} />
   )
 }
 
@@ -27,13 +27,13 @@ describe('PromptComposer', () => {
     expect(sent).toHaveBeenCalledWith('Analyse this run')
   })
 
-  it('sends nothing empty, nothing while busy, and stops what is under way', () => {
+  it('sends nothing empty, nothing while pending, and stops what is under way', () => {
     const sent = vi.fn()
     const stopped = vi.fn()
-    const { rerender } = render(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={sent} />)
+    const { rerender } = render(<PromptComposer label="Ask" value="" onChange={() => {}} onSubmit={sent} />)
     expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled()
 
-    rerender(<PromptComposer label="Ask" value="Again" onValueChange={() => {}} onSubmit={sent} busy onStop={stopped} />)
+    rerender(<PromptComposer label="Ask" value="Again" onChange={() => {}} onSubmit={sent} pending onStop={stopped} />)
     expect(screen.queryByRole('button', { name: 'Send' })).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Stop' }))
     expect(stopped).toHaveBeenCalledOnce()
@@ -75,12 +75,12 @@ describe('PromptComposer', () => {
   })
 
   it("floats at a page's foot: its frame lifted, glass under the glass material, its focus said over the glass's edge", () => {
-    const { rerender } = render(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} floating />)
+    const { rerender } = render(<PromptComposer label="Ask" value="" onChange={() => {}} onSubmit={() => {}} floating />)
 
     const frame = screen.getByRole('textbox').parentElement!
     expect(frame).toHaveClass('glass-float', 'shadow-elevated', 'glass:focus-within:border-border-hover')
 
-    rerender(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} />)
+    rerender(<PromptComposer label="Ask" value="" onChange={() => {}} onSubmit={() => {}} />)
     expect(screen.getByRole('textbox').parentElement).not.toHaveClass('glass-float')
   })
 })
@@ -116,13 +116,13 @@ describe('PromptComposer with attachments', () => {
 
   it('takes no drag of text for files, and nothing while disabled', () => {
     const given = vi.fn()
-    const { rerender } = render(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} onFiles={given} />)
+    const { rerender } = render(<PromptComposer label="Ask" value="" onChange={() => {}} onSubmit={() => {}} onFiles={given} />)
     const frame = screen.getByRole('textbox').parentElement!
 
     fireEvent.dragEnter(frame, { dataTransfer: { types: ['text/plain'], files: [] } })
     expect(frame).not.toHaveAttribute('data-dropping')
 
-    rerender(<PromptComposer label="Ask" value="" onValueChange={() => {}} onSubmit={() => {}} onFiles={given} disabled />)
+    rerender(<PromptComposer label="Ask" value="" onChange={() => {}} onSubmit={() => {}} onFiles={given} disabled />)
     fireEvent.drop(frame, { dataTransfer: { types: ['Files'], files: files('chart.png') } })
     expect(given).not.toHaveBeenCalled()
   })
@@ -164,7 +164,7 @@ describe('PromptComposer in a locale', () => {
         <PromptComposer
           label="Demander"
           value=""
-          onValueChange={() => {}}
+          onChange={() => {}}
           onSubmit={() => {}}
           suggestions={[{ label: 'Résumer', prompt: 'Résume la journée' }]}
           attachments={<span>export.csv</span>}
@@ -178,7 +178,7 @@ describe('PromptComposer in a locale', () => {
 
     render(
       <IoitiProvider locale="fr-FR" messages={fr}>
-        <PromptComposer label="Demander" value="Encore" onValueChange={() => {}} onSubmit={() => {}} busy onStop={() => {}} />
+        <PromptComposer label="Demander" value="Encore" onChange={() => {}} onSubmit={() => {}} pending onStop={() => {}} />
       </IoitiProvider>,
     )
     expect(screen.getByRole('button', { name: 'Arrêter' })).toBeInTheDocument()
@@ -187,10 +187,77 @@ describe('PromptComposer in a locale', () => {
   it("takes an application's own words over English's, the others English still", () => {
     render(
       <IoitiProvider messages={{ ai: { send: 'Ask' } }}>
-        <PromptComposer label="Ask" value="Why?" onValueChange={() => {}} onSubmit={() => {}} suggestions={[{ label: 'Sum up', prompt: 'Sum up the day' }]} />
+        <PromptComposer label="Ask" value="Why?" onChange={() => {}} onSubmit={() => {}} suggestions={[{ label: 'Sum up', prompt: 'Sum up the day' }]} />
       </IoitiProvider>,
     )
     expect(screen.getByRole('button', { name: 'Ask' })).toBeEnabled()
     expect(screen.getByRole('group', { name: 'Requests to start from' })).toBeInTheDocument()
+  })
+})
+
+// What the package says of a former name, once, in development.
+const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
+const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
+
+describe('PromptComposer holding its text', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('holds it by itself from defaultValue, tells onChange, and empties itself once it is sent', () => {
+    const sent = vi.fn()
+    const changed = vi.fn()
+    render(<PromptComposer label="Ask" defaultValue="Why?" onChange={changed} onSubmit={sent} />)
+    const field = screen.getByRole('textbox', { name: 'Ask' })
+    expect(field).toHaveValue('Why?')
+
+    fireEvent.change(field, { target: { value: 'Why so late?' } })
+    expect(changed).toHaveBeenLastCalledWith('Why so late?')
+    fireEvent.keyDown(field, { key: 'Enter' })
+    expect(sent).toHaveBeenCalledWith('Why so late?')
+    expect(field).toHaveValue('')
+    expect(changed).toHaveBeenLastCalledWith('')
+  })
+
+  it('leaves the text the page holds as the page keeps it, once sent', () => {
+    const sent = vi.fn()
+    const changed = vi.fn()
+    render(<PromptComposer label="Ask" value="Why?" onChange={changed} onSubmit={sent} />)
+    fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Enter' })
+    expect(sent).toHaveBeenCalledWith('Why?')
+    expect(screen.getByRole('textbox')).toHaveValue('Why?')
+    expect(changed).not.toHaveBeenCalled()
+  })
+
+  it('says nothing of its names of today', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    render(<PromptComposer label="Ask" value="Again" onChange={() => {}} onSubmit={() => {}} pending onStop={() => {}} />)
+    expect(deprecations(warn)).toHaveLength(0)
+  })
+
+  it('still takes onValueChange and busy, each said once in development', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const told = vi.fn()
+    const { rerender } = render(<PromptComposer label="Ask" value="Again" onValueChange={told} onSubmit={() => {}} busy onStop={() => {}} />)
+    rerender(<PromptComposer label="Ask" value="Again" onValueChange={told} onSubmit={() => {}} busy onStop={() => {}} />)
+
+    expect(screen.getByRole('button', { name: 'Stop' })).toBeInTheDocument()
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Again, now' } })
+    expect(told).toHaveBeenCalledWith('Again, now')
+    const said = deprecations(warn).map(([message]) => String(message))
+    expect(said).toHaveLength(2)
+    expect(said[0]).toContain("(PromptComposer's onValueChange: onChange)")
+    expect(said[1]).toContain("(PromptComposer's busy: pending)")
+  })
+
+  it('tells onChange alone, and takes pending over busy, given both', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const told = vi.fn()
+    const changed = vi.fn()
+    render(<PromptComposer label="Ask" value="Again" onChange={changed} onValueChange={told} onSubmit={() => {}} pending={false} busy onStop={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Stop' })).not.toBeInTheDocument()
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Again, now' } })
+    expect(changed).toHaveBeenCalledWith('Again, now')
+    expect(told).not.toHaveBeenCalled()
   })
 })

@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
- * A value its caller may hold (`value` given, told of each change by `onChange`) or leave to the
- * component (`defaultValue` to start from): the two ways a control is used.
+ * A value its caller may hold (`value` given, told of each change by `onChange`) or leave to the component
+ * (`defaultValue` to start from): the two ways a control is used, and the one way a component holds a state
+ * (docs/conventions.md). `onChange` is told of every change either way, with what goes with it (why a sheet closed:
+ * `set(false, { reason })`).
  */
-export function useControllableState<T>(
+export function useControllableState<T, A extends unknown[] = []>(
   value: T | undefined,
   defaultValue: T,
-  onChange?: (value: T) => void,
-): [T, (next: T) => void] {
+  onChange?: (value: T, ...details: A) => void,
+): [T, (next: T, ...details: A) => void] {
   const [internal, setInternal] = useState<T>(defaultValue)
   const controlled = value !== undefined
   const current = controlled ? value : internal
@@ -20,9 +22,9 @@ export function useControllableState<T>(
   })
 
   const set = useCallback(
-    (next: T) => {
+    (next: T, ...details: A) => {
       if (!controlled) setInternal(next)
-      onChangeRef.current?.(next)
+      onChangeRef.current?.(next, ...details)
     },
     [controlled],
   )

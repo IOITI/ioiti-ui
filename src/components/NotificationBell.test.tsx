@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { fr } from '../locales/fr.js'
 import { IoitiProvider } from './IoitiProvider.js'
@@ -45,7 +45,7 @@ describe('NotificationBell', () => {
   })
 
   it('says it is reading them while it is, not that there are none', () => {
-    render(<NotificationBell isOpen loading notifications={[]} onMarkAsRead={() => {}} />)
+    render(<NotificationBell open loading notifications={[]} onMarkAsRead={() => {}} />)
 
     expect(screen.getByRole('status', { name: 'Loading the notifications' })).toBeInTheDocument()
     expect(screen.queryByText('No notifications right now')).not.toBeInTheDocument()
@@ -54,7 +54,7 @@ describe('NotificationBell', () => {
   it('says they could not be read, and offers to try again, in place of a list it does not have', async () => {
     const user = userEvent.setup()
     const retry = vi.fn()
-    render(<NotificationBell isOpen loading error notifications={[]} onMarkAsRead={() => {}} onRetry={retry} />)
+    render(<NotificationBell open loading error notifications={[]} onMarkAsRead={() => {}} onRetry={retry} />)
 
     expect(screen.getByText('The notifications could not be read.')).toBeInTheDocument()
     expect(screen.queryByText('No notifications right now')).not.toBeInTheDocument()
@@ -66,7 +66,7 @@ describe('NotificationBell', () => {
   it('keeps the last list read under an error, which says it in its own words', () => {
     render(
       <NotificationBell
-        isOpen
+        open
         error="Not up to date: the server does not answer."
         notifications={[{ id: '1', message: 'Export ready', timestamp: new Date(), read: false }]}
         onMarkAsRead={() => {}}
@@ -82,7 +82,7 @@ describe('NotificationBell', () => {
   it('says under the list what the application tells of it', () => {
     render(
       <NotificationBell
-        isOpen
+        open
         footer="The 30 latest are shown."
         notifications={[{ id: '1', message: 'Export ready', timestamp: new Date(), read: true }]}
         onMarkAsRead={() => {}}
@@ -161,7 +161,7 @@ describe('NotificationBell in a language', () => {
     const user = userEvent.setup()
     const french = (props: Partial<NotificationBellProps>) => (
       <IoitiProvider locale="fr-FR" messages={fr}>
-        <NotificationBell isOpen notifications={[]} onMarkAsRead={() => {}} {...props} />
+        <NotificationBell open notifications={[]} onMarkAsRead={() => {}} {...props} />
       </IoitiProvider>
     )
     const { rerender } = render(french({ loading: true }))
@@ -201,5 +201,64 @@ describe('NotificationBell in a language', () => {
     const panel = await screen.findByRole('dialog', { name: 'Alerts' })
     expect(within(panel).getByRole('button', { name: 'Read all' })).toBeInTheDocument()
     expect(within(panel).getByRole('button', { name: 'Close notifications' })).toBeInTheDocument()
+  })
+})
+
+// What the package says of a former name, once, in development.
+const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
+const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
+
+describe('NotificationBell holding its panel open', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('opens by itself with onOpenChange given alone, and tells it', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    render(<NotificationBell notifications={[]} onMarkAsRead={() => {}} onOpenChange={changed} />)
+    const bell = screen.getByRole('button', { name: 'Notifications' })
+
+    await user.click(bell)
+    expect(changed).toHaveBeenLastCalledWith(true)
+    expect(bell).toHaveAttribute('aria-expanded', 'true')
+    expect(await screen.findByRole('dialog', { name: 'Notifications' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Close notifications' }))
+    expect(changed).toHaveBeenLastCalledWith(false)
+    expect(bell).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('opens at first with defaultOpen, and leaves it to the page with open', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    const { unmount } = render(<NotificationBell defaultOpen notifications={[]} onMarkAsRead={() => {}} />)
+    expect(screen.getByRole('dialog', { name: 'Notifications' })).toBeInTheDocument()
+    unmount()
+
+    render(<NotificationBell open={false} notifications={[]} onMarkAsRead={() => {}} onOpenChange={changed} />)
+    const bell = screen.getByRole('button', { name: 'Notifications' })
+    await user.click(bell)
+    expect(changed).toHaveBeenLastCalledWith(true)
+    expect(bell).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('says nothing of its names of today, and still takes isOpen, said once in development', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { unmount } = render(<NotificationBell open notifications={[]} onMarkAsRead={() => {}} />)
+    expect(deprecations(warn)).toHaveLength(0)
+    unmount()
+
+    const { rerender } = render(<NotificationBell isOpen notifications={[]} onMarkAsRead={() => {}} />)
+    rerender(<NotificationBell isOpen notifications={[]} onMarkAsRead={() => {}} />)
+    expect(screen.getByRole('dialog', { name: 'Notifications' })).toBeInTheDocument()
+    const said = deprecations(warn)
+    expect(said).toHaveLength(1)
+    expect(String(said[0][0])).toContain("(NotificationBell's isOpen: open)")
+  })
+
+  it('takes open over isOpen, given both', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    render(<NotificationBell open={false} isOpen notifications={[]} onMarkAsRead={() => {}} />)
+    expect(screen.queryByRole('dialog', { name: 'Notifications' })).not.toBeInTheDocument()
   })
 })

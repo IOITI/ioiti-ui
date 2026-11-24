@@ -26,7 +26,7 @@ export default function StateSummaryInTheTopBar() {
         <div className="flex min-w-0 flex-1 items-center">
           <Breadcrumb wrap={false} items={[{ label: 'Home', href: '/' }, { label: 'Settings', href: '/patterns/settings' }, { label: 'Services' }]} />
         </div>
-        <StateSummary items={items} footer={<TextLink to="/patterns/settings" variant="quiet">Every service</TextLink>} />
+        <StateSummary items={items} footer={<TextLink href="/patterns/settings" variant="quiet">Every service</TextLink>} />
         <ThemeToggle />
       </div>
       <div className="flex flex-wrap gap-x-6 gap-y-3">

@@ -48,10 +48,10 @@ export default function AuthLayoutNotice() {
         </AuthLayout>
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <ButtonLink to="/patterns/sign-in?show=signing-in" size="sm" variant="outline">
+        <ButtonLink href="/patterns/sign-in?show=signing-in" size="sm" variant="outline">
           On its way to Gitea
         </ButtonLink>
-        <ButtonLink to="/patterns/sign-in?show=not-linked" size="sm" variant="outline">
+        <ButtonLink href="/patterns/sign-in?show=not-linked" size="sm" variant="outline">
           Back with an account not linked
         </ButtonLink>
       </div>

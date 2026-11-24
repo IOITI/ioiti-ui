@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
 import { fr } from '../locales/fr.js'
@@ -308,5 +308,66 @@ describe('a combobox', () => {
     expect(screen.getByRole('listbox', { name: 'Team' })).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search…')).toHaveAccessibleName('Team')
     await expectAccessible(document.body)
+  })
+})
+
+// What the package says of a former name, once, in development.
+const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
+const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
+
+describe('a combobox telling its choice', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  const OPTIONS = [
+    { value: 'fr', label: 'France' },
+    { value: 'de', label: 'Germany' },
+  ]
+
+  it('tells onChange, held by itself or by the page, and says nothing of it', async () => {
+    const user = userEvent.setup()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const changed = vi.fn()
+    const { unmount } = render(<Combobox aria-label="Country" options={OPTIONS} onChange={changed} />)
+    const trigger = screen.getByRole('combobox', { name: 'Country' })
+    await user.click(trigger)
+    await user.click(screen.getByRole('option', { name: 'Germany' }))
+    expect(changed).toHaveBeenLastCalledWith('de')
+    expect(trigger).toHaveTextContent('Germany')
+    unmount()
+
+    // Held by the page: told, and shown once the page takes it.
+    render(<Combobox aria-label="Country" options={OPTIONS} value="fr" onChange={changed} />)
+    const held = screen.getByRole('combobox', { name: 'Country' })
+    await user.click(held)
+    await user.click(screen.getByRole('option', { name: 'Germany' }))
+    expect(changed).toHaveBeenLastCalledWith('de')
+    expect(held).toHaveTextContent('France')
+    expect(deprecations(warn)).toHaveLength(0)
+  })
+
+  it('still tells onValueChange, said once in development, onChange alone when both are given', async () => {
+    const user = userEvent.setup()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const told = vi.fn()
+    const { rerender, unmount } = render(<Combobox aria-label="Country" options={OPTIONS} onValueChange={told} />)
+    rerender(<Combobox aria-label="Country" options={OPTIONS} onValueChange={told} />)
+    await user.click(screen.getByRole('combobox', { name: 'Country' }))
+    await user.click(screen.getByRole('option', { name: 'Germany' }))
+    await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument())
+    expect(told).toHaveBeenCalledWith('de')
+    const said = deprecations(warn)
+    expect(said).toHaveLength(1)
+    expect(String(said[0][0])).toContain("(Combobox's onValueChange: onChange)")
+    unmount()
+
+    const changed = vi.fn()
+    told.mockClear()
+    render(<Combobox aria-label="Country" options={OPTIONS} onChange={changed} onValueChange={told} />)
+    await user.click(screen.getByRole('combobox', { name: 'Country' }))
+    await user.click(screen.getByRole('option', { name: 'France' }))
+    expect(changed).toHaveBeenCalledWith('fr')
+    expect(told).not.toHaveBeenCalled()
   })
 })

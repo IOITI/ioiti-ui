@@ -48,6 +48,7 @@ export {
   toneOf,
 } from './lib/format.js'
 export type { FormatOptions, Formatters, Tone } from './lib/format.js'
+export type { SignTone, StatusTone } from './lib/tones.js'
 export { parseLocaleNumber } from './lib/locale.js'
 export type { HourCycle, WeekDay } from './lib/locale.js'
 export { mergeMessages } from './lib/messages.js'

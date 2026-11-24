@@ -14,7 +14,7 @@ The frame of every page: the sidebar with the application's menu, the top bar wi
 ```
 
 - The sidebar is beside the page from 768px, a drawer below; ⌘B (Ctrl+B) folds it, and with `collapsedStorageKey` every page opens it as the reader left it. Under glass the sidebar and the top bar are `glass-bar`, unblurred over the still backdrop; what floats from them is drawn in `document.body`.
-- An entry ends with a count (`badge: 38`), quiet, or a state in a word in its tone (`badge: 'Degraded', badgeTone: 'warning'`, or `negative`), with a dot.
+- An entry ends with a count (`badge: 38`), quiet, or a state in a word in its tone (`badge: 'Degraded', badgeTone: 'warning'`, or `danger`), with a dot.
 - The shell puts `page-gap` between the page's blocks: a page returns them side by side, no margins of its own.
 - A change of page fades the page alone; the sidebar and the top bar stay still and in use.
 - A page deeper than the menu (`/orders/42`) stands under the entry its address starts with; its `PageHeader` names it in the trail.

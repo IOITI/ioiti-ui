@@ -2,10 +2,10 @@
 
 A walk through a page, one part at a time: the page dims around each part, scrolled to it, with its step beside it (on a phone, at the bottom).
 
-**You provide** `open`, `onClose` (given `done` · `skip` · `dismiss`), `steps`: `{ title, body, target?, placement? }`, `target` being a CSS selector, a function returning the element, or a ref, and `placement` `auto` · `top` · `bottom` · `left` · `right`; a step without a target is centred (a welcome, a goodbye). Also `startAt`, `onStepChange`, `closeOnOverlayClick`; per step `padding`, `radius`, `scroll: false`.
+**You provide** `open` / `onOpenChange` (or `defaultOpen`, the tour then ending itself), `onClose` (given `done` · `skip` · `dismiss`, as `onOpenChange` is with `{ reason }`), `steps`: `{ title, body, target?, placement? }`, `target` being a CSS selector, a function returning the element, or a ref, and `placement` `auto` · `top` · `bottom` · `left` · `right`; a step without a target is centred (a welcome, a goodbye). Also `startAt`, `onStepChange`, `closeOnOverlayClick`; per step `padding`, `radius`, `scroll: false`.
 
 ```tsx
-<ProductTour open={open} onClose={() => setOpen(false)} steps={[
+<ProductTour open={open} onOpenChange={setOpen} steps={[
   { title: 'What floats over the page', body: 'The arrows move from one to the next, Escape ends it.' },
   { target: '#filters', title: 'A popover', body: 'A panel beside its button: filters, a few settings.', placement: 'bottom' },
 ]} />

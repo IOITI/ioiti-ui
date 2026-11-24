@@ -15,7 +15,7 @@ export function UsableByAll() {
         names={['Button', 'ButtonLink', 'Input']}
       >
         <Button size="sm">A button</Button>
-        <ButtonLink to="/foundations/colours" size="sm" variant="outline">
+        <ButtonLink href="/foundations/colours" size="sm" variant="outline">
           A link drawn as a button
         </ButtonLink>
         <div className="w-56">

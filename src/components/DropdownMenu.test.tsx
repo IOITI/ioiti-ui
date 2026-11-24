@@ -167,6 +167,31 @@ describe('DropdownMenu', () => {
   })
 })
 
+describe('DropdownMenu held open', () => {
+  const ITEMS: DropdownMenuItem[] = [{ label: 'Duplicate', onSelect: () => {} }]
+
+  it('opens at first with defaultOpen, then holds itself, onOpenChange told', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    render(<DropdownMenu label="Actions" trigger={<Button>Actions</Button>} items={ITEMS} defaultOpen onOpenChange={changed} />)
+    expect(screen.getByRole('menu', { name: 'Actions' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Actions' })).toHaveAttribute('aria-expanded', 'true')
+
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument())
+    expect(changed).toHaveBeenLastCalledWith(false)
+  })
+
+  it('stays as the page holds it (open), onOpenChange told', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    render(<DropdownMenu label="Actions" trigger={<Button>Actions</Button>} items={ITEMS} open={false} onOpenChange={changed} />)
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    expect(changed).toHaveBeenLastCalledWith(true)
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  })
+})
+
 describe('ContextMenu', () => {
   it('opens at the pointer on a right click, and from the keyboard', async () => {
     const user = userEvent.setup()

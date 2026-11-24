@@ -103,7 +103,7 @@ describe('the top bar', () => {
     renderShell({
       chips: (
         <StateChip
-          to="/settings"
+          href="/settings"
           tone="warning"
           icon={<TriangleAlert className="size-3.5" aria-hidden />}
           label="Restart needed"
@@ -120,7 +120,7 @@ describe('the top bar', () => {
 
   it('says good news not to miss in the success colour, still a link to where it goes on', () => {
     renderShell({
-      chips: <StateChip to="/changes" tone="success" icon={<TriangleAlert className="size-3.5" aria-hidden />} label="Approved" hint="Your pull request was approved: it can be merged." />,
+      chips: <StateChip href="/changes" tone="success" icon={<TriangleAlert className="size-3.5" aria-hidden />} label="Approved" hint="Your pull request was approved: it can be merged." />,
     })
 
     const chip = screen.getByRole('link', { name: 'Approved' })

@@ -183,7 +183,7 @@ function ErrorView({
             <Button
               size={page ? 'md' : 'sm'}
               variant={way ? 'primary' : 'outline'}
-              isLoading={retrying}
+              pending={retrying}
               leftIcon={kind === 'chunk' ? <RefreshCw className="size-4" /> : <RotateCcw className="size-4" />}
               onClick={retry}
             >
@@ -191,7 +191,7 @@ function ErrorView({
             </Button>
           )}
           {way && (
-            <ButtonLink to={way.href} variant={again ? 'outline' : 'primary'} size={page ? 'md' : 'sm'} leftIcon={<Home className="size-4" />}>
+            <ButtonLink href={way.href} variant={again ? 'outline' : 'primary'} size={page ? 'md' : 'sm'} leftIcon={<Home className="size-4" />}>
               {way.label}
             </ButtonLink>
           )}

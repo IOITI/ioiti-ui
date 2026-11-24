@@ -11,7 +11,7 @@ const ORDERS: { id: string; customer: string; status: string; tone: BadgeTone; a
 export default function PanelDense() {
   const { formatMoney } = useFormat()
   return (
-    <Panel title="Latest orders" description="The four sent last." action={<TextLink to="/components/tables" variant="quiet">All orders</TextLink>} dense>
+    <Panel title="Latest orders" description="The four sent last." action={<TextLink href="/components/tables" variant="quiet">All orders</TextLink>} density="compact">
       <Table aria-label="Latest orders">
         <TableHead>
           <TableRow>

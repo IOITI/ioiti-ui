@@ -3,7 +3,7 @@ import { useId } from 'react'
 import { NEGATIVE_COLOUR, POSITIVE_COLOUR, SERIES_COLOUR } from '../lib/chart-colours.js'
 import { monotonePath } from '../lib/dashboard-chart-utils.js'
 import { toneOf } from '../lib/format.js'
-import type { Tone } from '../lib/format.js'
+import type { SignTone } from '../lib/tones.js'
 import { cn } from '../lib/utils.js'
 import { useFormat, useMessages } from './locale-context.js'
 
@@ -16,10 +16,10 @@ interface SparklineProps {
   variant?: 'line' | 'bars'
   /**
    * Its colour: `auto` says the direction (a line by its last value against its first, each bar by its
-   * sign), a tone says one for all, `neutral` is the series colour (the accent's, where the look has one).
+   * sign), a tone (a SignTone) says one for all, `neutral` is the series colour (the accent's, where the look has one).
    * Where down is good (a delay), give the tone.
    */
-  tone?: 'auto' | Tone
+  tone?: 'auto' | SignTone
   /** In pixels. */
   width?: number
   height?: number
@@ -30,7 +30,7 @@ interface SparklineProps {
   className?: string
 }
 
-const COLOUR: Record<Tone, string> = { positive: POSITIVE_COLOUR, negative: NEGATIVE_COLOUR, neutral: SERIES_COLOUR }
+const COLOUR: Record<SignTone, string> = { positive: POSITIVE_COLOUR, negative: NEGATIVE_COLOUR, neutral: SERIES_COLOUR }
 
 /**
  * A small line or bars, without axes, for the trend of a figure: in a KpiTile, in a table's cell. For a

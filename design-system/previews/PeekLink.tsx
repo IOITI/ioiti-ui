@@ -14,7 +14,7 @@ function InvoicePreview() {
 createRoot(document.getElementById('root')!).render(
   <div className="flex min-h-[13rem] flex-col items-start gap-3 p-5">
     <div className="flex flex-wrap items-center gap-4">
-      <PeekLink to="#invoice-2026-0042" content={() => <InvoicePreview />} className="text-sm font-medium underline underline-offset-2">
+      <PeekLink href="#invoice-2026-0042" content={() => <InvoicePreview />} className="text-sm font-medium underline underline-offset-2">
         Invoice 2026-0042
       </PeekLink>
       <PeekCard renderContent={() => <InvoicePreview />} href="#invoice-2026-0042">

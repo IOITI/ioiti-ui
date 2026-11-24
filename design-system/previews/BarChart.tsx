@@ -36,7 +36,7 @@ function Preview() {
           ]}
         />
         <BarChart
-          ariaLabel="Orders by channel and month"
+          aria-label="Orders by channel and month"
           variant={variant}
           data={MONTHS}
           series={[
@@ -46,7 +46,7 @@ function Preview() {
           ]}
         />
       </div>
-      <BarChart ariaLabel="Margin by day" tone="sign" height={260} data={MARGIN} series={[{ key: 'margin', label: 'Margin' }]} formatValue={(value) => formatMoney(value)} />
+      <BarChart aria-label="Margin by day" colorBy="sign" height={260} data={MARGIN} series={[{ key: 'margin', label: 'Margin' }]} formatValue={(value) => formatMoney(value)} />
     </div>
   )
 }

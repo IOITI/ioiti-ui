@@ -21,7 +21,7 @@ export default function SaveBarFailed() {
         return
       }
       setSaved(sender)
-      toast({ title: 'Sender changed', variant: 'success' })
+      toast({ title: 'Sender changed', tone: 'success' })
     }, 700)
   }
   return (
@@ -32,7 +32,7 @@ export default function SaveBarFailed() {
       <SaveBar
         open={sender !== saved}
         message="The sender changed"
-        saving={saving}
+        pending={saving}
         error={error}
         onDiscard={() => {
           setSender(saved)

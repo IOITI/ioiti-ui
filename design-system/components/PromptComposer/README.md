@@ -2,11 +2,11 @@
 
 A request to an assistant: a field that grows with its text, sent with Enter, stopped while it is answered, with requests to start from and what it goes with above its field.
 
-**You provide** `label` (shown unless `hideLabel`), `value`, `onValueChange`, `onSubmit`; `busy` with `onStop`; `disabled` with `disabledReason`; `placeholder`; `suggestions` (`[{ label, prompt }]`); `attachments` (`AttachmentChip`s) and `onFiles` for files dropped or pasted; `controls` (a model's menu, a meter) and `footer` under the field; `maxLength`, `minRows` (2), `maxRows` (10); `floating` at a page's foot.
+**You provide** `label` (shown unless `hideLabel`), `value` / `onChange` (formerly `onValueChange`), or `defaultValue` (its own text, emptied once sent), `onSubmit`; `pending` (formerly `busy`) with `onStop`; `disabled` with `disabledReason`; `placeholder`; `suggestions` (`[{ label, prompt }]`); `attachments` (`AttachmentChip`s) and `onFiles` for files dropped or pasted; `controls` (a model's menu, a meter) and `footer` under the field; `maxLength`, `minRows` (2), `maxRows` (10); `floating` at a page's foot.
 
 ```tsx
-<PromptComposer label="Ask the assistant" value={value} onValueChange={setValue} onSubmit={send}
-  busy={answering} onStop={stop} maxLength={2000} footer="about 2 cents a question"
+<PromptComposer label="Ask the assistant" value={value} onChange={setValue} onSubmit={send}
+  pending={answering} onStop={stop} maxLength={2000} footer="about 2 cents a question"
   suggestions={[{ label: 'Summarise', prompt: 'Summarise October in three lines.' }]} />
 ```
 

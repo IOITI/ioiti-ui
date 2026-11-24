@@ -7,7 +7,7 @@ createRoot(document.getElementById('root')!).render(
     <PageHeader
       title="Orders"
       description="Every order, newest first."
-      actions={<ButtonLink to="#new" size="sm" leftIcon={<Plus />}>New order</ButtonLink>}
+      actions={<ButtonLink href="#new" size="sm" leftIcon={<Plus />}>New order</ButtonLink>}
     />
     <PageHeader
       title="Invoice 2026-0042"

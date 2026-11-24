@@ -38,7 +38,7 @@ const states: CategoryInfo = {
       keywords: ['progress', 'upload', 'import', 'percentage'],
       examples: [
         { id: 'values', title: 'Its value in words', description: 'How far a piece of work has come, in words beside the bar and for a screen reader; the percentage when no words are given. A long label wraps.' },
-        { id: 'tones', title: 'Tones and sizes', description: 'Neutral while it runs, positive once done, warning and negative when it goes wrong; sm in a card or a row.' },
+        { id: 'tones', title: 'Tones and sizes', description: 'Neutral while it runs, success once done, warning and danger when it goes wrong; sm in a card or a row.' },
         { id: 'indeterminate', title: 'Of unknown length', description: 'Without a value, the fill breathes: work under way whose end is not known.' },
         { id: 'running', title: 'Work under way', description: 'The value as the work gives it, then its outcome in its tone. A ratio against a limit is a Meter.' },
       ],

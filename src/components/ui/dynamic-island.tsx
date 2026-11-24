@@ -4,9 +4,11 @@
 // Its profile and share states, avatar, greeting and social links are gone. The pill stays in the flow of the top
 // bar it sits in, and the opened island grows from it below (shared layoutId), so the bar keeps its height.
 
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import { X } from 'lucide-react';
+// ioiti-ui: held by its caller or by itself, as every state (useControllableState).
+import { useControllableState } from '../../lib/controllable.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, FLOATING } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
@@ -45,9 +47,7 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
   onStateChange,
   className,
 }) => {
-  const [internalState, setInternalState] = useState<DynamicIslandState>(defaultState);
-  const isControlled = controlledState !== undefined;
-  const currentState = isControlled ? controlledState : internalState;
+  const [currentState, handleStateChange] = useControllableState(controlledState, defaultState, onStateChange);
 
   const rawId = useId();
   const instanceId = `dyn-island-${rawId.replace(/[:]/g, '')}`;
@@ -57,16 +57,6 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
   const closeRef = useRef<HTMLButtonElement>(null);
   const shouldReduceMotion = useReducedMotionConfig();
   const words = useMessages().toast;
-
-  const handleStateChange = useCallback(
-    (nextState: DynamicIslandState) => {
-      if (!isControlled) {
-        setInternalState(nextState);
-      }
-      onStateChange?.(nextState);
-    },
-    [isControlled, onStateChange]
-  );
 
   // ioiti-ui: the keyboard follows the island: into it when it opens, back to the pill when it closes.
   const opened = useRef(false);

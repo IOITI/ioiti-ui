@@ -22,6 +22,8 @@ import {
 } from "../../lib/chart-primitives.js";
 // ioiti-ui: the design's colours for things compared, and its grey for the rest.
 import { MUTED_COLOUR, seriesColours } from "../../lib/chart-colours.js";
+// ioiti-ui: its former name said once in development.
+import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 // ioiti-ui: the words in the interface's language.
 import { useMessages } from "../locale-context.js";
@@ -55,6 +57,8 @@ export interface DonutChartProps {
    * ioiti-ui: its name for a screen reader, and its table's caption. By default, in the interface's language, "Donut
    * chart. Total 750" ("Gauge chart…" for a gauge) and "Chart data".
    */
+  "aria-label"?: string;
+  /** @deprecated Use `aria-label`. Removed in 1.0. */
   ariaLabel?: string;
   className?: string;
 }
@@ -165,9 +169,13 @@ export function DonutChart({
   formatValue: givenFormatValue,
   showLegend = true,
   animated = true,
+  "aria-label": givenName,
   ariaLabel,
   className = "",
 }: DonutChartProps) {
+  // ioiti-ui: its former name read as today's, said once in development.
+  if (ariaLabel !== undefined) deprecated("aria-label-camel", "DonutChart");
+  const name = givenName ?? ariaLabel;
   // ioiti-ui: reduced as the system asks or IoitiProvider's reducedMotion says.
   const reduce = useReducedMotionConfig() ?? false;
   const anim = animated && !reduce;
@@ -232,7 +240,7 @@ export function DonutChart({
           height={H}
           role="img"
           // ioiti-ui: the interface's language.
-          aria-label={ariaLabel ?? (semi ? words.gaugeChartName(formatValue(total)) : words.donutChartName(formatValue(total)))}
+          aria-label={name ?? (semi ? words.gaugeChartName(formatValue(total)) : words.donutChartName(formatValue(total)))}
           className="block overflow-visible"
         >
           {/* track */}
@@ -320,7 +328,7 @@ export function DonutChart({
       <div className="sr-only">
         <table>
           {/* ioiti-ui: its caption and heads in the interface's language, its shares in its locale. */}
-          <caption>{ariaLabel ?? words.tableCaption}</caption>
+          <caption>{name ?? words.tableCaption}</caption>
           <thead>
             <tr>
               <th scope="col">{words.segmentColumn}</th>

@@ -47,9 +47,9 @@ describe('the header of a page', () => {
 })
 
 describe('a panel', () => {
-  it('is a section named by its title, its body close under it when dense', () => {
+  it('is a section named by its title, its body close under it when compact', () => {
     render(
-      <Panel title="Latest" dense>
+      <Panel title="Latest" density="compact">
         <p>first row</p>
       </Panel>,
     )

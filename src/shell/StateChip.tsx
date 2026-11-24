@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 
 import { Hint } from '../components/Hint.js'
 import { useLinkComponent } from '../components/link-context.js'
+import { deprecated } from '../lib/deprecated.js'
 import { TONE_SOFT } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 
@@ -15,7 +16,9 @@ const CHIP_TONE = {
 
 interface StateChipProps {
   /** The page where it is dealt with. */
-  to: string
+  href?: string
+  /** @deprecated Use `href`. Removed in 1.0. */
+  to?: string
   /** What it is: something to fix (danger), to watch (warning), or good news (success). */
   tone: keyof typeof CHIP_TONE
   icon: ReactNode
@@ -30,14 +33,16 @@ interface StateChipProps {
  * page where it is dealt with. On a narrow screen the icon stays and the words
  * are its name; what it means is its hint.
  */
-export function StateChip({ to, tone, icon, label, hint }: StateChipProps) {
+export function StateChip({ href, to, tone, icon, label, hint }: StateChipProps) {
   const Link = useLinkComponent()
+  // Its former name read as today's, said once in development.
+  if (to !== undefined) deprecated('link-to', 'StateChip')
   return (
     <Hint content={hint} side="bottom">
       {/* The application's link, held in context (LinkProvider): the same component at every render. */}
       {/* oxlint-disable-next-line react/static-components */}
       <Link
-        href={to}
+        href={href ?? to}
         aria-label={label}
         className={cn(
           'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-xs font-medium transition-colors lg:px-2.5',

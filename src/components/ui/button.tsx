@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
+import { deprecated } from '../../lib/deprecated.js';
 
 export type ButtonVariant =
   | 'default'
@@ -13,6 +14,9 @@ export type ButtonVariant =
   | 'secondary'
   | 'outline'
   | 'ghost'
+  // ioiti-ui: `danger`, the tones' word (StatusTone); `destructive` is its former name, read as it and said once in
+  // development (removed in 1.0).
+  | 'danger'
   | 'destructive'
   | 'success'
   | 'link'
@@ -26,7 +30,12 @@ export interface ButtonProps
   variant?: ButtonVariant;
   /** Dimension scale */
   size?: ButtonSize;
-  /** Loading state displaying an animated spinner */
+  /**
+   * ioiti-ui: an action under way, started by this button (a save, a send): its spinner and `loadingText` shown, and it
+   * cannot be pressed again meanwhile (`loading` is for content not there yet).
+   */
+  pending?: boolean;
+  /** @deprecated Use `pending`. Removed in 1.0. */
   isLoading?: boolean;
   /** Text or element displayed during loading */
   loadingText?: string;
@@ -59,6 +68,8 @@ const variantStyles: Record<ButtonVariant, string> = {
     'bg-transparent text-text-secondary hover:text-foreground hover:bg-surface-hover border border-transparent cursor-pointer',
   // ioiti-ui: the design's tones (recipes.ts): soft at rest, filled under the pointer (in dark too: its soft ground's
   // `dark:` came after a plain `hover:`), the page's own colour on it.
+  danger:
+    `${TONE_SOFT.negative} border ${TONE_LINE.negative} hover:bg-negative dark:hover:bg-negative hover:text-background cursor-pointer`,
   destructive:
     `${TONE_SOFT.negative} border ${TONE_LINE.negative} hover:bg-negative dark:hover:bg-negative hover:text-background cursor-pointer`,
   success:
@@ -128,7 +139,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     {
       variant = 'primary',
       size = 'md',
-      isLoading = false,
+      pending,
+      isLoading: formerPending,
       loadingText,
       leftIcon,
       rightIcon,
@@ -141,6 +153,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    // ioiti-ui: its former names read as today's, each said once in development.
+    if (formerPending !== undefined) deprecated('button-is-loading', 'Button');
+    if (variant === 'destructive') deprecated('button-destructive', 'Button');
+    const isLoading = pending ?? formerPending ?? false;
     const isDisabled = disabled || isLoading;
 
     return (

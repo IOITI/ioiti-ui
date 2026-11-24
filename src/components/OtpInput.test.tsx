@@ -54,3 +54,31 @@ describe('the one-time code', () => {
     expect(values()).toBe('7|||||')
   })
 })
+
+describe('the one-time code, held', () => {
+  it('by its boxes from defaultValue, the page told of the code and of its end', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    const completed = vi.fn()
+    render(<OTPInput aria-label="Code" length={4} defaultValue="12" onChange={changed} onComplete={completed} />)
+    const boxes = screen.getAllByRole('textbox') as HTMLInputElement[]
+    expect(boxes.map((box) => box.value).join('|')).toBe('1|2||')
+
+    await user.click(boxes[2])
+    await user.keyboard('34')
+    expect(changed).toHaveBeenLastCalledWith('1234')
+    expect(completed).toHaveBeenCalledWith('1234')
+  })
+
+  it('by the page (value): its boxes show the page’s code, a digit typed told and shown once the page takes it', () => {
+    const changed = vi.fn()
+    const { rerender } = render(<OTPInput aria-label="Code" length={4} value="12" onChange={changed} />)
+    const boxes = screen.getAllByRole('textbox') as HTMLInputElement[]
+    fireEvent.change(boxes[2], { target: { value: '3' } })
+    expect(changed).toHaveBeenLastCalledWith('123')
+    expect(boxes.map((box) => box.value).join('|')).toBe('1|2||')
+
+    rerender(<OTPInput aria-label="Code" length={4} value="123" onChange={changed} />)
+    expect(boxes.map((box) => box.value).join('|')).toBe('1|2|3|')
+  })
+})

@@ -13,7 +13,7 @@ export default function RouterLeaveGuardUnsaved() {
     window.setTimeout(() => {
       setSaved(limit ?? 0)
       setSaving(false)
-      toast({ title: 'Saved', variant: 'success' })
+      toast({ title: 'Saved', tone: 'success' })
     }, 700)
   }
   return (
@@ -23,7 +23,7 @@ export default function RouterLeaveGuardUnsaved() {
       </Field>
       <p className="text-sm text-muted-foreground">
         Change it, then go to{' '}
-        <ButtonLink to="/components/forms" variant="link">
+        <ButtonLink href="/components/forms" variant="link">
           the forms
         </ButtonLink>
         : the page asks first.
@@ -31,7 +31,7 @@ export default function RouterLeaveGuardUnsaved() {
       <SaveBar
         open={dirty}
         message="1 unsaved change"
-        saving={saving}
+        pending={saving}
         saveDisabled={limit === null}
         error={limit === null && 'The daily limit needs a value: an empty one cannot be saved.'}
         onDiscard={() => setLimit(saved)}

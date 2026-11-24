@@ -26,7 +26,7 @@ export default function BarChartGroupedOrStacked() {
         ]}
       />
       <BarChart
-        ariaLabel="Orders by channel and month"
+        aria-label="Orders by channel and month"
         variant={variant}
         data={MONTHS}
         series={[

@@ -13,7 +13,7 @@ export default function TextLinkInAList() {
       {ORDERS.map((order) => (
         <li key={order.id} className="flex items-center justify-between gap-3 py-2.5">
           <span className="flex min-w-0 items-center gap-3">
-            <TextLink to="/components/tables/interactive-timeline" variant="hover" className="font-mono">
+            <TextLink href="/components/tables/interactive-timeline" variant="hover" className="font-mono">
               {order.id}
             </TextLink>
             <span className="truncate text-muted-foreground">{order.customer}</span>

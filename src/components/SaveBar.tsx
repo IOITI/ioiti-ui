@@ -3,6 +3,7 @@ import { useContext, useEffect, useId, useLayoutEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 
 import { announce } from '../lib/announce.js'
+import { deprecated } from '../lib/deprecated.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { TOAST } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
@@ -18,7 +19,9 @@ interface SaveBarProps {
   onSave: () => void
   /** Gives up the changes; no Discard button without it. */
   onDiscard?: () => void
-  /** The save is on its way. */
+  /** The save is on its way: Save says so, and neither Save nor Discard can be pressed meanwhile. */
+  pending?: boolean
+  /** @deprecated Use `pending`. Removed in 1.0. */
   saving?: boolean
   /** Save cannot be pressed: what there is to save is not valid yet (say why in `error`). */
   saveDisabled?: boolean
@@ -46,7 +49,8 @@ export function SaveBar({
   message: givenMessage,
   onSave,
   onDiscard,
-  saving = false,
+  pending: givenPending,
+  saving,
   saveDisabled = false,
   error,
   saveLabel: givenSaveLabel,
@@ -55,6 +59,9 @@ export function SaveBar({
   label: givenLabel,
   className,
 }: SaveBarProps) {
+  // Its former name read as today's, said once in development.
+  if (saving !== undefined) deprecated('save-bar-saving', 'SaveBar')
+  const pending = givenPending ?? saving ?? false
   // Its words the provider's language's, its own props given over them.
   const words = useMessages().field
   // A `null` given says nothing, as it did.
@@ -112,11 +119,11 @@ export function SaveBar({
           <div className="flex shrink-0 items-center gap-2">
             {children}
             {onDiscard && (
-              <Button variant="ghost" size="sm" onClick={onDiscard} disabled={saving}>
+              <Button variant="ghost" size="sm" onClick={onDiscard} disabled={pending}>
                 {discardLabel}
               </Button>
             )}
-            <Button size="sm" onClick={onSave} isLoading={saving} loadingText={words.saving} disabled={saveDisabled}>
+            <Button size="sm" onClick={onSave} pending={pending} loadingText={words.saving} disabled={saveDisabled}>
               {saveLabel}
             </Button>
           </div>

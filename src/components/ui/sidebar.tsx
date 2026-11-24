@@ -4,6 +4,10 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronRight, PanelLeft, X } from "lucide-react";
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState): its own copy is gone. A former
+// name said once, in development (deprecated).
+import { useControllableState } from "../../lib/controllable.js";
+import { deprecated } from "../../lib/deprecated.js";
 import { ariaKeyShortcuts, keysText } from "../../lib/keys.js";
 import { isPlainClick } from "../../lib/links.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
@@ -17,31 +21,6 @@ import { LinkContext, useLinkComponent } from "../link-context.js";
 // ioiti-ui: its words in the provider's language (the catalogue's `shell`, its shortcut's `shortcuts`, its keys' `keys`).
 import { useMessages } from "../locale-context.js";
 import { useShortcut } from "../shortcuts-context.js";
-
-function useControllableState<T>(
-  value: T | undefined,
-  defaultValue: T,
-  onChange?: (value: T) => void
-): [T, (next: T) => void] {
-  const [internal, setInternal] = React.useState<T>(defaultValue);
-  const controlled = value !== undefined;
-  const current = controlled ? (value as T) : internal;
-
-  const onChangeRef = React.useRef(onChange);
-  React.useEffect(() => {
-    onChangeRef.current = onChange;
-  });
-
-  const set = React.useCallback(
-    (next: T) => {
-      if (!controlled) setInternal(next);
-      onChangeRef.current?.(next);
-    },
-    [controlled]
-  );
-
-  return [current, set];
-}
 
 // ioiti-ui: the sheets' and the drawer's motion, the design's own (EasyUI's was 420/36/0.8): its width,
 // its pill and its dot too.
@@ -58,7 +37,13 @@ const COLLAPSED = 56;
 
 // ioiti-ui: `href` makes an entry a link, which can be opened in another tab as well as followed.
 // `badgeTone`: a badge that says a state ("Degraded", "2 open") in its tone, with a dot; a count stays neutral.
-export type SidebarBadgeTone = "neutral" | "warning" | "negative";
+/**
+ * A badge's tone: `neutral` (a count), `warning` or `danger`, a status's words (StatusTone). `negative` is the former
+ * name of `danger`: read as it, said once in development; removed in 1.0.
+ */
+export type SidebarBadgeTone = "neutral" | "warning" | "danger" | "negative";
+/** ioiti-ui: a badge's tone as it is drawn: today's names. */
+type BadgeTone = Exclude<SidebarBadgeTone, "negative">;
 export type SidebarChild = { id: string; label: string; badge?: string | number; badgeTone?: SidebarBadgeTone; href?: string };
 export type SidebarItem = {
   id: string;
@@ -73,6 +58,34 @@ export type SidebarItem = {
 // in it): each reader's choice is kept by the browser, by the section's `id` (else its title). `place: "footer"`, a
 // section drawn at the foot of the sidebar, above Collapse, without a heading.
 export type SidebarSection = { id?: string; title?: string; foldable?: boolean; place?: "footer"; items: SidebarItem[] };
+
+// ioiti-ui: the entries as they are drawn, their badges' tones in today's names.
+type DrawnChild = Omit<SidebarChild, "badgeTone"> & { badgeTone?: BadgeTone };
+type DrawnItem = Omit<SidebarItem, "badgeTone" | "children"> & { badgeTone?: BadgeTone; children?: DrawnChild[] };
+type DrawnSection = Omit<SidebarSection, "items"> & { items: DrawnItem[] };
+
+/** ioiti-ui: a badge's tone in today's name: `negative`, the former name of `danger`, read as it and said once. */
+function badgeToneOf(tone: SidebarBadgeTone | undefined): BadgeTone | undefined {
+  if (tone !== "negative") return tone;
+  deprecated("sidebar-badge-negative", "Sidebar");
+  return "danger";
+}
+
+/** ioiti-ui: the sections as they are drawn: the same ones, unless a badge has a former tone. */
+function drawnSections(sections: SidebarSection[]): DrawnSection[] {
+  const former = (entry: { badgeTone?: SidebarBadgeTone }) => entry.badgeTone === "negative";
+  if (!sections.some((section) => section.items.some((item) => former(item) || item.children?.some(former)))) {
+    return sections as DrawnSection[];
+  }
+  return sections.map((section) => ({
+    ...section,
+    items: section.items.map((item) => ({
+      ...item,
+      badgeTone: badgeToneOf(item.badgeTone),
+      children: item.children?.map((child) => ({ ...child, badgeTone: badgeToneOf(child.badgeTone) })),
+    })),
+  }));
+}
 
 // ioiti-ui: the sections each reader folded (true) or unfolded (false), by key. The browser may refuse to keep them
 // (a private window, blocked storage): the sidebar then forgets them, and works the same.
@@ -120,32 +133,32 @@ function openOf(sections: SidebarSection[], activeId: string, chosen: Set<string
 }
 
 // ioiti-ui: a state's badge, in the tone's text colour (4.5:1 on every surface of every look), its dot beside it.
-const BADGE_TONE: Record<Exclude<SidebarBadgeTone, "neutral">, string> = {
+const BADGE_TONE: Record<Exclude<BadgeTone, "neutral">, string> = {
   warning: "text-warning",
-  negative: "text-negative",
+  danger: "text-negative",
 };
 
 /**
  * ioiti-ui: what badges say while they are out of sight (an entry closed, a section folded, the rail): nothing, a
  * count (neutral), or the gravest state among them.
  */
-function gravestBadge(entries: { badge?: string | number; badgeTone?: SidebarBadgeTone }[]): SidebarBadgeTone | null {
+function gravestBadge(entries: { badge?: string | number; badgeTone?: BadgeTone }[]): BadgeTone | null {
   const badged = entries.filter((c) => c.badge !== undefined);
   if (!badged.length) return null;
-  if (badged.some((c) => c.badgeTone === "negative")) return "negative";
+  if (badged.some((c) => c.badgeTone === "danger")) return "danger";
   if (badged.some((c) => c.badgeTone === "warning")) return "warning";
   return "neutral";
 }
 
-const childrenBadge = (item: SidebarItem) => gravestBadge(item.children ?? []);
+const childrenBadge = (item: DrawnItem) => gravestBadge(item.children ?? []);
 
 /**
  * ioiti-ui: what a screen reader hears of badges out of sight, after the name of what holds them ("Orders, with a
  * warning"), and the rail's tip says after it: in the provider's language.
  */
-function useUnseenWords(): Record<SidebarBadgeTone, string> {
+function useUnseenWords(): Record<BadgeTone, string> {
   const words = useMessages().shell;
-  return { neutral: words.unseenCounts, warning: words.unseenWarning, negative: words.unseenWrong };
+  return { neutral: words.unseenCounts, warning: words.unseenWarning, danger: words.unseenWrong };
 }
 
 /**
@@ -163,7 +176,7 @@ function BadgeSeparator() {
 }
 
 /** ioiti-ui: the dot that says badges are out of sight, in the gravest tone among them; a count's in grey. */
-function UnseenDot({ tone, className }: { tone: SidebarBadgeTone; className?: string }) {
+function UnseenDot({ tone, className }: { tone: BadgeTone; className?: string }) {
   return (
     <span
       aria-hidden
@@ -240,9 +253,14 @@ export function Sidebar({
   onMobileOpenChange,
   drawerId,
   className,
-  ...content
+  sections: givenSections,
+  ...rest
 }: SidebarProps) {
-  // ioiti-ui: the reader's choice kept, read once, as the sidebar is first drawn.
+  // ioiti-ui: its badges' tones in today's names (`negative` read as `danger`), worked out again with its sections.
+  const sections = React.useMemo(() => drawnSections(givenSections), [givenSections]);
+  const content = { ...rest, sections };
+  // ioiti-ui: the reader's choice kept, read once, as the sidebar is first drawn; then held as every state is
+  // (useControllableState), each choice kept while the sidebar holds it.
   const [kept] = React.useState(() => readCollapsed(collapsedStorageKey));
   const [collapsed, setShown] = useControllableState(collapsedProp, kept ?? defaultCollapsed, onCollapsedChange);
   const setCollapsed = (next: boolean) => {
@@ -381,9 +399,10 @@ export function SidebarTrigger({ className, ...props }: React.ComponentProps<"bu
 /* ───────────────────────── internals ───────────────────────── */
 
 /** ioiti-ui: what a rail's tip says after an entry's name: its badge, in its tone. */
-type TipNote = { text: string; tone: SidebarBadgeTone };
+type TipNote = { text: string; tone: BadgeTone };
 
-type PanelProps = Pick<SidebarProps, "sections" | "activeId" | "onActiveChange" | "header" | "footer" | "linkComponent"> & {
+type PanelProps = Pick<SidebarProps, "activeId" | "onActiveChange" | "header" | "footer" | "linkComponent"> & {
+  sections: DrawnSection[];
   collapsed: boolean;
   onToggle?: () => void;
   onNavigate?: () => void;
@@ -470,11 +489,11 @@ function Panel({
   };
 
   /** ioiti-ui: the pages of an entry, in its flyout: its own first (unless one of its children's), then theirs. */
-  const flyoutItems = (item: SidebarItem): DropdownMenuItem[] => {
+  const flyoutItems = (item: DrawnItem): DropdownMenuItem[] => {
     const children = item.children ?? [];
     const own = item.href !== undefined && !children.some((c) => c.href === item.href);
     // Its badge, as the sidebar says it: a count quiet, a state in its tone.
-    const named = (label: string, badge?: string | number, tone?: SidebarBadgeTone): React.ReactNode =>
+    const named = (label: string, badge?: string | number, tone?: BadgeTone): React.ReactNode =>
       badge === undefined ? (
         label
       ) : (
@@ -511,7 +530,7 @@ function Panel({
   // ioiti-ui: the entries of the sections at the foot of the sidebar, above Collapse.
   const footItems = sections.filter((section) => section.place === "footer").flatMap((section) => section.items);
 
-  const renderItem = (item: SidebarItem, place: "list" | "footer" = "list") => {
+  const renderItem = (item: DrawnItem, place: "list" | "footer" = "list") => {
     const hasChildren = !!item.children?.length;
     const isOpen = hasChildren && open.has(item.id) && !collapsed;
     const childActive = !!item.children?.some((c) => c.id === activeId);

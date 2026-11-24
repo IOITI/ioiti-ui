@@ -22,7 +22,7 @@ export default function SaveBarStates() {
       <SaveBar
         open
         message={state === 'invalid' ? '2 unsaved changes' : '3 unsaved changes'}
-        saving={state === 'saving'}
+        pending={state === 'saving'}
         saveDisabled={state === 'invalid'}
         error={state === 'invalid' && 'A delivery window ends before it starts: change it to save.'}
         // Its state is chosen above: here its buttons do nothing.

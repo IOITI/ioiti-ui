@@ -30,7 +30,7 @@ function DashboardPage() {
     <>
       <PageHeader title="Dashboard" description="The figures of the day." />
       <p className="text-sm text-muted-foreground">
-        The server of the orders fails the first time it is asked: <TextLink to="/orders">open the orders</TextLink>.
+        The server of the orders fails the first time it is asked: <TextLink href="/orders">open the orders</TextLink>.
       </p>
     </>
   )

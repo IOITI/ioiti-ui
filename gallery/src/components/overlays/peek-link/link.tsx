@@ -14,7 +14,7 @@ export default function PeekLinkLink() {
   return (
     <p className="max-w-md text-sm">
       Acme paid{' '}
-      <PeekLink to="/patterns/dashboard" content={() => <InvoicePreview />} className="font-medium underline underline-offset-2">
+      <PeekLink href="/patterns/dashboard" content={() => <InvoicePreview />} className="font-medium underline underline-offset-2">
         invoice 2026-0042
       </PeekLink>{' '}
       on Tuesday, four days before it was due.

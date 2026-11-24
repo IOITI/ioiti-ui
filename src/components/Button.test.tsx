@@ -38,7 +38,7 @@ describe('Button', () => {
 
   it('sizes a ButtonLink\'s icons the same way', () => {
     render(
-      <ButtonLink to="/orders" size="sm" leftIcon={<Pencil />}>
+      <ButtonLink href="/orders" size="sm" leftIcon={<Pencil />}>
         Orders
       </ButtonLink>,
     )

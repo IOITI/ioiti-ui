@@ -44,7 +44,7 @@ export function Typography() {
         </div>
       </Panel>
 
-      <Panel title="Sizes" description="Tailwind's sizes, as the components use them." dense>
+      <Panel title="Sizes" description="Tailwind's sizes, as the components use them." density="compact">
         <Table aria-label="Sizes" className="min-w-[44rem]">
           <TableHead>
             <TableRow>

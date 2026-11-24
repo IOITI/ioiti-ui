@@ -2,7 +2,7 @@ import { SmartComparison, useToast } from 'ioiti-ui'
 
 export default function SmartComparisonPlans() {
   const toast = useToast()
-  const choose = (plan: string) => () => toast({ title: `${plan} chosen`, variant: 'success' })
+  const choose = (plan: string) => () => toast({ title: `${plan} chosen`, tone: 'success' })
   return (
     <SmartComparison
       label="Plans compared"

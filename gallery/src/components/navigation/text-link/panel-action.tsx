@@ -12,11 +12,11 @@ export default function TextLinkPanelAction() {
       className="max-w-md"
       title="Latest events"
       action={
-        <TextLink to="/components/tables/interactive-timeline" variant="quiet">
+        <TextLink href="/components/tables/interactive-timeline" variant="quiet">
           View all
         </TextLink>
       }
-      dense
+      density="compact"
     >
       <ul className="divide-y divide-border/40 text-xs">
         {EVENTS.map((event) => (

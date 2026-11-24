@@ -30,7 +30,7 @@ export default function TableRowAction() {
           return (
             <TableRow key={invoice.id}>
               <TableCell>
-                <TextLink to="/components/tables/description-list" variant="hover" className="font-mono">
+                <TextLink href="/components/tables/description-list" variant="hover" className="font-mono">
                   {invoice.id}
                 </TextLink>
               </TableCell>

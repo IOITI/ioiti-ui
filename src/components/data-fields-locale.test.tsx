@@ -180,7 +180,7 @@ describe('the tables in French', () => {
     const { rerender } = render(<AdvancedDataTable data={[]} columns={COLUMNS} />, { wrapper: French })
     expect(screen.getByRole('heading', { name: 'Rien à afficher' })).toBeInTheDocument()
 
-    rerender(<AdvancedDataTable data={[]} columns={COLUMNS} isLoading />)
+    rerender(<AdvancedDataTable data={[]} columns={COLUMNS} loading />)
     expect(screen.getByRole('status', { name: 'Chargement des enregistrements' })).toBeInTheDocument()
     expect(screen.getByText('Chargement…')).toBeInTheDocument()
 
@@ -390,7 +390,7 @@ describe('the fields in French', () => {
     expect(within(bar).getByRole('button', { name: 'Ignorer' })).toBeInTheDocument()
     expect(within(bar).getByRole('button', { name: 'Enregistrer' })).toBeInTheDocument()
 
-    rerender(<SaveBar open onSave={() => {}} saving saveLabel="Publier" />)
+    rerender(<SaveBar open onSave={() => {}} pending saveLabel="Publier" />)
     expect(screen.getByText('Enregistrement…')).toBeInTheDocument()
     rerender(<SaveBar open onSave={() => {}} saveLabel="Publier" />)
     expect(screen.getByRole('button', { name: 'Publier' })).toBeInTheDocument()

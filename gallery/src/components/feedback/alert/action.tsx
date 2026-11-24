@@ -19,7 +19,7 @@ export default function AlertAction() {
       <Alert
         tone="danger"
         action={
-          <Button size="sm" variant="outline" leftIcon={<RotateCw />} onClick={() => toast({ title: 'Invoices sent', variant: 'success' })}>
+          <Button size="sm" variant="outline" leftIcon={<RotateCw />} onClick={() => toast({ title: 'Invoices sent', tone: 'success' })}>
             Try again
           </Button>
         }

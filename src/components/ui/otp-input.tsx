@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState).
+import { useControllableState } from '../../lib/controllable.js';
 import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DISABLED } from '../../lib/recipes.js';
@@ -12,6 +14,8 @@ import { useMessages } from '../locale-context.js';
 export interface OTPInputProps {
   length?: number;
   value?: string;
+  /** ioiti-ui: the code it starts with, the boxes holding it then (`value` held by the page instead). */
+  defaultValue?: string;
   onChange?: (value: string) => void;
   onComplete?: (value: string) => void;
   autoFocus?: boolean;
@@ -32,9 +36,13 @@ export interface OTPInputProps {
 
 const DIGIT_REGEX = /^[0-9]$/;
 
+/** ioiti-ui: a code's digits, a box each. */
+const digitsOf = (code: string, length: number) => Array.from({ length }, (_, i) => code[i] ?? '');
+
 export const OTPInput: React.FC<OTPInputProps> = ({
   length = 6,
   value,
+  defaultValue = '',
   onChange,
   onComplete,
   autoFocus = false,
@@ -52,37 +60,31 @@ export const OTPInput: React.FC<OTPInputProps> = ({
   const ariaLabel = givenAriaLabel ?? words.otpName;
   // ioiti-ui: in error by its own prop, or marked invalid (a Field around it).
   const invalid = invalidOf(error, ariaInvalid);
-  const isControlled = value !== undefined;
-  const [digits, setDigits] = useState<string[]>(() =>
-    Array.from({ length }, (_, i) => value?.[i] ?? '')
+  // ioiti-ui: held by the page (`value`, each box a digit of it) or by the boxes (from `defaultValue`), as every control
+  // (useControllableState): the page told of the code, and once it is whole, either way. Held by the boxes, a box
+  // emptied keeps its place.
+  const [digits, setDigits] = useControllableState<string[]>(
+    value === undefined ? undefined : digitsOf(value, length),
+    digitsOf(defaultValue, length),
+    (next) => {
+      const joined = next.join('');
+      onChange?.(joined);
+      if (joined.length === length && next.every(Boolean)) {
+        onComplete?.(joined);
+      }
+    }
   );
   const [poppedIndex, setPoppedIndex] = useState<number | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  // Keep internal state in sync when used as a controlled component.
-  useEffect(() => {
-    if (isControlled) {
-      setDigits(Array.from({ length }, (_, i) => value?.[i] ?? ''));
-    }
-  }, [value, length, isControlled]);
 
   useEffect(() => {
     if (autoFocus) inputRefs.current[0]?.focus();
   }, [autoFocus]);
 
-  const emit = (next: string[]) => {
-    const joined = next.join('');
-    onChange?.(joined);
-    if (joined.length === length && next.every(Boolean)) {
-      onComplete?.(joined);
-    }
-  };
-
   const setDigitAt = (index: number, char: string) => {
     const next = [...digits];
     next[index] = char;
-    if (!isControlled) setDigits(next);
-    emit(next);
+    setDigits(next);
     setPoppedIndex(index);
   };
 
@@ -92,8 +94,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
     if (!pasted) return false;
 
     const next = Array.from({ length }, (_, i) => pasted[i] ?? '');
-    if (!isControlled) setDigits(next);
-    emit(next);
+    setDigits(next);
     setPoppedIndex(pasted.length - 1);
 
     const focusIndex = Math.min(pasted.length, length - 1);
@@ -106,8 +107,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
     const placed = text.slice(0, length - index);
     const next = [...digits];
     for (let i = 0; i < placed.length; i++) next[index + i] = placed[i];
-    if (!isControlled) setDigits(next);
-    emit(next);
+    setDigits(next);
     setPoppedIndex(index + placed.length - 1);
     inputRefs.current[Math.min(index + placed.length, length - 1)]?.focus();
   };

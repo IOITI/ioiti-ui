@@ -24,8 +24,8 @@ export default function BarChartGainsAndLosses() {
   const { formatMoney } = useFormat()
   return (
     <BarChart
-      ariaLabel="Margin by day"
-      tone="sign"
+      aria-label="Margin by day"
+      colorBy="sign"
       height={220}
       data={MARGIN}
       series={[{ key: 'margin', label: 'Margin' }]}

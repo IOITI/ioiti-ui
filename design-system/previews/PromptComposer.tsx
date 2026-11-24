@@ -3,9 +3,8 @@ import { ChevronDown, FileText, Gauge, Paperclip } from 'lucide-react'
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
-// It floats at the foot of what scrolls under it, with no band behind it.
+// It floats at the foot of what scrolls under it, with no band behind it. Its text its own: emptied once sent.
 function FloatingComposer() {
-  const [value, setValue] = useState('')
   return (
     <div className="relative h-72 overflow-y-auto rounded-2xl border border-border/70 px-4 pt-4">
       <div className="space-y-3 text-sm text-muted-foreground">
@@ -16,7 +15,7 @@ function FloatingComposer() {
         ))}
       </div>
       <div className="sticky bottom-3 mt-4">
-        <PromptComposer label="Ask again" hideLabel value={value} onValueChange={setValue} onSubmit={() => setValue('')} placeholder="Ask again…" floating />
+        <PromptComposer label="Ask again" hideLabel onSubmit={() => {}} placeholder="Ask again…" floating />
       </div>
     </div>
   )
@@ -24,14 +23,14 @@ function FloatingComposer() {
 
 function Composer() {
   const [value, setValue] = useState('')
-  const [busy, setBusy] = useState(false)
+  const [pending, setPending] = useState(false)
   // What the request goes with: a file dropped on the frame or pasted into the field joins them.
   const [attached, setAttached] = useState<string[]>(['October.csv'])
   return (
     <PromptComposer
       label="Ask the assistant"
       value={value}
-      onValueChange={setValue}
+      onChange={setValue}
       attachments={
         attached.length > 0
           ? attached.map((name) => (
@@ -41,12 +40,12 @@ function Composer() {
       }
       onFiles={(files) => setAttached([...attached, ...files.map((file) => file.name).filter((name) => !attached.includes(name))])}
       onSubmit={() => {
-        setBusy(true)
+        setPending(true)
         setValue('')
-        window.setTimeout(() => setBusy(false), 2500)
+        window.setTimeout(() => setPending(false), 2500)
       }}
-      onStop={() => setBusy(false)}
-      busy={busy}
+      onStop={() => setPending(false)}
+      pending={pending}
       maxLength={2000}
       footer="about 2 cents a question"
       controls={

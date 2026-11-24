@@ -6,11 +6,18 @@ import { Check, X, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
+// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md); its former `variant` read as
+// one (toastTone).
+import type { StatusTone } from '../../lib/tones.js';
 import { useLinkComponent } from '../link-context.js';
 // ioiti-ui: its close button named in the provider's language.
 import { useMessages } from '../locale-context.js';
-import { ToastRegionContext } from '../toast-context.js';
+import { ToastRegionContext, toastTone } from '../toast-context.js';
 
+/**
+ * @deprecated Use `StatusTone`, which `tone` takes. Removed in 1.0. ioiti-ui: the values of the former `variant`, read as
+ * a tone's (`default` as `neutral`, `error` as `danger`).
+ */
 export type VelocityToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 export type VelocityToastPosition =
   | 'top-left'
@@ -33,6 +40,14 @@ export interface VelocityToastProps {
   title: string;
   description?: string;
   duration?: number;
+  /**
+   * ioiti-ui: what it says, a StatusTone (its icon): `neutral` by default, `info`, `success`, `warning`; `danger` for what
+   * went wrong, read out at once.
+   */
+  tone?: StatusTone;
+  /**
+   * @deprecated Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`.
+   */
   variant?: VelocityToastVariant;
   position?: VelocityToastPosition;
   showProgress?: boolean;
@@ -63,14 +78,15 @@ const positionClasses: Record<VelocityToastPosition, string> = {
 const ACTION_CLASS =
   'inline-flex shrink-0 items-center gap-1 px-2.5 py-1 rounded-md border border-border bg-surface-raised text-sm font-medium text-foreground transition-[color,background-color,border-color,scale] hover:bg-surface-hover hover:border-border-hover focus-ring';
 
-const variantIcon = (variant: VelocityToastVariant, custom?: React.ReactNode) => {
+// ioiti-ui: drawn by its tone (StatusTone), `danger` where EasyUI's variant said `error`.
+const toneIcon = (tone: StatusTone, custom?: React.ReactNode) => {
   if (custom) return custom;
-  switch (variant) {
+  switch (tone) {
     case 'success':
       return <Check className={cn('size-4', TONE_TEXT.positive)} />;
     case 'warning':
       return <AlertTriangle className={cn('size-4', TONE_TEXT.warning)} />;
-    case 'error':
+    case 'danger':
       return <AlertCircle className={cn('size-4', TONE_TEXT.negative)} />;
     case 'info':
       return <Info className={cn('size-4', TONE_TEXT.info)} />;
@@ -95,7 +111,9 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
   title,
   description,
   duration = 4000,
-  variant = 'default',
+  // ioiti-ui: its tone, and its former variant (read below).
+  tone: givenTone,
+  variant,
   position = 'bottom-center',
   showProgress = true,
   icon,
@@ -106,6 +124,8 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
   action,
   linkComponent,
 }) => {
+  // ioiti-ui: its tone, `neutral` by default; its former `variant` read as one, said once in development.
+  const tone = toastTone(givenTone, variant, 'VelocityToast');
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
   const words = useMessages().toast;
@@ -196,7 +216,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
       // ioiti-ui: its frame is the live region, there before its words: they are put in it a render after it, and are
       // said then (a region drawn with its words, as the toast was, is missed by some screen readers). Politely, or at
       // once for what went wrong (alert). In ToastProvider's regions, there from the start, it is none of its own.
-      role={inRegion ? undefined : variant === 'error' ? 'alert' : 'status'}
+      role={inRegion ? undefined : tone === 'danger' ? 'alert' : 'status'}
     >
       <AnimatePresence onExitComplete={onExitComplete}>
         {isVisible && (
@@ -222,7 +242,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
           >
             <div className="flex items-center justify-between gap-3 relative z-10">
               <div className="size-8 rounded-lg bg-surface-raised border border-border flex items-center justify-center shrink-0">
-                {variantIcon(variant, icon)}
+                {toneIcon(tone, icon)}
               </div>
 
               <div className="flex-1 min-w-0 pr-1">

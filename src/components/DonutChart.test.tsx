@@ -21,7 +21,7 @@ const strokes = (container: HTMLElement) =>
 
 describe('DonutChart', () => {
   it('compares four segments in the compare colours, the rest one segment in grey', () => {
-    const { container } = render(<DonutChart ariaLabel="Orders by channel" data={CHANNELS} animated={false} />)
+    const { container } = render(<DonutChart aria-label="Orders by channel" data={CHANNELS} animated={false} />)
 
     expect(strokes(container)).toEqual([
       'var(--chart-compare-1)',
@@ -35,7 +35,7 @@ describe('DonutChart', () => {
   })
 
   it('gives screen readers every segment as a table, those grouped included', async () => {
-    const { container } = render(<DonutChart ariaLabel="Orders by channel" data={CHANNELS} animated={false} />)
+    const { container } = render(<DonutChart aria-label="Orders by channel" data={CHANNELS} animated={false} />)
     const table = screen.getByRole('table', { name: 'Orders by channel' })
     expect(within(table).getAllByRole('row')).toHaveLength(CHANNELS.length + 1)
     expect(within(table).getByRole('row', { name: 'Post 30 4%' })).toBeInTheDocument()
@@ -44,7 +44,7 @@ describe('DonutChart', () => {
 
   it('draws its segments for the eye and the pointer, read once as the table and the legend, the keyboard in the legend', async () => {
     const user = userEvent.setup()
-    const { container } = render(<DonutChart ariaLabel="Orders by channel" data={CHANNELS} animated={false} />)
+    const { container } = render(<DonutChart aria-label="Orders by channel" data={CHANNELS} animated={false} />)
 
     // The picture is one image, named; its segments are no names of their own.
     expect(screen.getByRole('img', { name: 'Orders by channel' })).toBeInTheDocument()
@@ -68,7 +68,7 @@ describe('DonutChart', () => {
 
   it('is read as a gauge without its legend', async () => {
     const { container } = render(
-      <DonutChart ariaLabel="Seats taken" variant="semi" showLegend={false} animated={false} data={[{ label: 'Taken', value: 46 }, { label: 'Free', value: 4 }]} />,
+      <DonutChart aria-label="Seats taken" variant="semi" showLegend={false} animated={false} data={[{ label: 'Taken', value: 46 }, { label: 'Free', value: 4 }]} />,
     )
     expect(screen.getByRole('img', { name: 'Seats taken' })).toBeInTheDocument()
     await expectAccessible(container)

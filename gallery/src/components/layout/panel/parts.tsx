@@ -6,7 +6,7 @@ export default function PanelParts() {
       <Panel title="Latest orders" description="The five sent last." action={<Button size="sm" variant="outline">View all</Button>}>
         <p className="text-sm text-muted-foreground">A panel with a title, a description and an action.</p>
       </Panel>
-      <Panel title="Delivery" action={<TextLink to="/components/layout" variant="quiet">All of the layout</TextLink>}>
+      <Panel title="Delivery" action={<TextLink href="/components/layout" variant="quiet">All of the layout</TextLink>}>
         <p className="text-sm text-muted-foreground">A title alone, its way further a quiet link.</p>
       </Panel>
       <Panel className="md:col-span-2">

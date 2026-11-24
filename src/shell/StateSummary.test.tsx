@@ -24,6 +24,7 @@ const SIGN_IN: StateItem = {
 const RESTART: StateItem = { id: 'restart', tone: 'warning', icon: <RotateCw />, label: 'Restart needed', href: '/services' }
 const SERVICES: StateItem = { id: 'services', tone: 'ok', label: 'All services up', href: '/services' }
 const POLLING: StateItem = { id: 'live', tone: 'neutral', label: 'Polling', detail: 'The page refreshes on a timer.' }
+const VERSION: StateItem = { id: 'version', tone: 'info', label: 'A new version is out', detail: 'It is used from the next page opened.' }
 
 function Address() {
   return <output aria-label="address">{useLocation().pathname}</output>
@@ -56,6 +57,15 @@ describe('the gravity of states', () => {
     expect(stateSentence([SIGN_IN, RESTART, { ...RESTART, id: 'deploy' }], 'All good')).toBe('1 to fix, 2 to watch')
     expect(stateSentence([SERVICES, POLLING], 'All good')).toBe('Polling')
     expect(stateSentence([SERVICES], 'All good')).toBe('All good')
+  })
+
+  it('puts info between good news and a neutral state: quiet, said before a neutral one', () => {
+    expect(gravestTone([SERVICES, POLLING, VERSION])).toBe('info')
+    expect(gravestTone([VERSION, { ...RESTART, tone: 'success' }])).toBe('success')
+    expect(byGravity([SERVICES, POLLING, VERSION, RESTART]).map((item) => item.id)).toEqual(['restart', 'version', 'live', 'services'])
+    expect(stateSentence([SERVICES, POLLING, VERSION], 'All good')).toBe('A new version is out')
+    expect(stateSentence([VERSION, RESTART], 'All good')).toBe('Restart needed')
+    expect(stateSentence([VERSION, RESTART, SIGN_IN], 'All good')).toBe('1 to fix, 1 to watch')
   })
 })
 
@@ -93,6 +103,23 @@ describe('the summary of states', () => {
     expect(button.className).not.toContain('text-warning')
   })
 
+  it('says an info quietly too, in its words before a neutral state’s, its dot in its own tone', async () => {
+    renderSummary([SERVICES, POLLING, VERSION])
+    const button = screen.getByRole('button', { name: 'State: A new version is out' })
+    expect(button).toHaveTextContent('A new version is out')
+    expect(button).toHaveClass('text-muted-foreground')
+    expect(button.querySelector('.rounded-full.bg-info')).not.toBeNull()
+
+    await userEvent.click(button)
+    const panel = await screen.findByRole('dialog', { name: 'State' })
+    // None stands out: all three are listed quietly, the gravest first.
+    expect(within(panel).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'A new version is outIt is used from the next page opened.',
+      'PollingThe page refreshes on a timer.',
+      'All services up',
+    ])
+  })
+
   it('follows a state to its page and closes', async () => {
     renderSummary([RESTART, SERVICES])
     await userEvent.click(screen.getByRole('button', { name: 'State: Restart needed' }))
@@ -106,7 +133,7 @@ describe('the summary of states', () => {
       <MemoryRouter initialEntries={['/']}>
         <Routes>
           <Route element={<RouterRoot />}>
-            <Route path="*" element={<StateSummary items={[SERVICES]} footer={<TextLink to="/services">Every service</TextLink>} />} />
+            <Route path="*" element={<StateSummary items={[SERVICES]} footer={<TextLink href="/services">Every service</TextLink>} />} />
           </Route>
         </Routes>
         <Address />

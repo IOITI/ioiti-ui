@@ -30,7 +30,7 @@ function Preview() {
         <Select options={[{ value: 'open', label: 'Open' }, { value: 'done', label: 'Done' }]} defaultValue="open" />
       </Field>
       <Field label="Country" htmlFor="country">
-        <Combobox id="country" options={COUNTRIES} value={country} onValueChange={setCountry} placeholder="Choose a country" className="w-full" />
+        <Combobox id="country" options={COUNTRIES} value={country} onChange={setCountry} placeholder="Choose a country" className="w-full" />
       </Field>
       <Field label="Note" className="sm:col-span-2">
         <Textarea rows={3} placeholder="What the warehouse should know" />

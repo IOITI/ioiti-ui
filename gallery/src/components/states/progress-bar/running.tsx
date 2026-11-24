@@ -21,9 +21,9 @@ export default function ProgressBarRunning() {
         value={done ?? 0}
         max={FILES}
         valueText={done === FILES ? `All ${FILES} files` : `${done ?? 0} of ${FILES} files`}
-        tone={done === FILES ? 'positive' : 'neutral'}
+        tone={done === FILES ? 'success' : 'neutral'}
       />
-      <Button size="sm" variant="outline" className="justify-self-start" isLoading={running} loadingText="Importing" onClick={() => setDone(0)}>
+      <Button size="sm" variant="outline" className="justify-self-start" pending={running} loadingText="Importing" onClick={() => setDone(0)}>
         {done === FILES ? 'Import again' : 'Import'}
       </Button>
     </div>

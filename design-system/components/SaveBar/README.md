@@ -2,10 +2,10 @@
 
 The bar of unsaved changes, at the bottom of the page while there are any: what there is to save, Discard and Save, and why it cannot be saved yet.
 
-**You provide** `open` (there is something to save), `message` ("1 unsaved change"; `Unsaved changes` by default, in IoitiProvider's language as are Save and Discard), `onSave`, `onDiscard` (no Discard without it), `saving`, `saveDisabled` with `error` (why it cannot be saved, or why the last save failed); `saveLabel`, `discardLabel`, other actions as `children`, `label`.
+**You provide** `open` (there is something to save), `message` ("1 unsaved change"; `Unsaved changes` by default, in IoitiProvider's language as are Save and Discard), `onSave`, `onDiscard` (no Discard without it), `pending` while the save is on its way (formerly `saving`), `saveDisabled` with `error` (why it cannot be saved, or why the last save failed); `saveLabel`, `discardLabel`, other actions as `children`, `label`.
 
 ```tsx
-<SaveBar open={limit !== saved} message="1 unsaved change" saving={saving}
+<SaveBar open={limit !== saved} message="1 unsaved change" pending={saving}
   saveDisabled={limit === null} error={limit === null && 'The daily limit needs a value: an empty one cannot be saved.'}
   onDiscard={() => setLimit(saved)} onSave={save} />
 ```

@@ -1,7 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState); a former name said once, in
+// development (deprecated).
+import { useControllableState } from '../../lib/controllable.js';
+import { deprecated } from '../../lib/deprecated.js';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -22,7 +26,13 @@ export interface TabItem {
 
 export interface AnimatedTabsProps {
   tabs: TabItem[];
+  /** ioiti-ui: the id of the tab shown, held by the page (told of each change by `onChange`). */
+  value?: string;
+  /** ioiti-ui: the id of the tab shown first, the tabs holding it then; the first tab by default. */
+  defaultValue?: string;
+  /** @deprecated Use `defaultValue`. Removed in 1.0. */
   defaultTab?: string;
+  /** @deprecated Use `value`. Removed in 1.0. */
   activeTab?: string;
   onChange?: (tabId: string) => void;
   className?: string;
@@ -39,8 +49,10 @@ export interface AnimatedTabsProps {
 
 export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
   tabs,
+  value,
+  defaultValue,
   defaultTab,
-  activeTab: controlledActiveTab,
+  activeTab: formerValue,
   onChange,
   className,
   tabsContainerClassName,
@@ -52,23 +64,17 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
-  const [internalActiveTab, setInternalActiveTab] = useState<string>(defaultTab || tabs[0]?.id || '');
-  const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : internalActiveTab;
+  // ioiti-ui: `value` and `defaultValue`, as every control; `activeTab` and `defaultTab`, their former names, read where
+  // they alone are given. A default is the first tab shown only: EasyUI's showed it again whenever it changed.
+  if (formerValue !== undefined) deprecated('animated-tabs-active-tab', 'AnimatedTabs');
+  if (defaultTab !== undefined) deprecated('animated-tabs-default-tab', 'AnimatedTabs');
+  const [activeTab, handleTabClick] = useControllableState<string>(
+    value ?? formerValue,
+    (defaultValue ?? defaultTab) || tabs[0]?.id || '',
+    onChange
+  );
   const uniqueId = React.useId();
   const indicatorLayoutId = customLayoutId || `active-tab-indicator-${uniqueId}`;
-
-  React.useEffect(() => {
-    if (defaultTab && controlledActiveTab === undefined) {
-      setInternalActiveTab(defaultTab);
-    }
-  }, [defaultTab, controlledActiveTab]);
-
-  const handleTabClick = (tabId: string) => {
-    if (controlledActiveTab === undefined) {
-      setInternalActiveTab(tabId);
-    }
-    onChange?.(tabId);
-  };
 
   const currentTabObj = tabs.find((t) => t.id === activeTab);
   // ioiti-ui: `glass` is `pill` (EasyUI drew them alike): the glass material gives any surface its glass.

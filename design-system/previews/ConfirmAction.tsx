@@ -13,13 +13,13 @@ function Confirmations() {
     window.setTimeout(() => {
       setPending(false)
       close()
-      toast({ title: open === 'slide' ? 'Project deleted' : 'Imports paused', variant: 'success' })
+      toast({ title: open === 'slide' ? 'Project deleted' : 'Imports paused', tone: 'success' })
     }, 900)
   }
   return (
     <div className="flex flex-col items-start gap-3 p-5">
       <div className="flex flex-wrap items-center gap-3">
-        <Button variant="destructive" size="sm" leftIcon={<Trash2 />} onClick={() => setOpen('slide')}>
+        <Button variant="danger" size="sm" leftIcon={<Trash2 />} onClick={() => setOpen('slide')}>
           Delete the project
         </Button>
         <Button variant="outline" size="sm" onClick={() => setOpen('button')}>

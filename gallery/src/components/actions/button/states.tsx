@@ -10,10 +10,10 @@ export default function ButtonStates() {
   }
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Button leftIcon={<Save />} isLoading={saving} loadingText="Saving" onClick={save}>
+      <Button leftIcon={<Save />} pending={saving} loadingText="Saving" onClick={save}>
         Save
       </Button>
-      <Button variant="outline" isLoading loadingText="Sending">
+      <Button variant="outline" pending loadingText="Sending">
         Send
       </Button>
       <Button disabled>Disabled</Button>

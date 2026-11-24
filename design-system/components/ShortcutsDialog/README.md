@@ -2,7 +2,7 @@
 
 The list of the application's keyboard shortcuts, by group, on `?`: those registered with `useShortcut` where they mean something, while that part is on the page.
 
-**You provide** shortcuts with `useShortcut(keys, handler, { description, group, enabled, allowInInputs })`, `keys` being a combination (`mod+k`: ⌘K or Ctrl K) or a sequence (`g f`: G, then F). Inside `AppShell` the dialog is drawn for you (`shortcutsDialog={false}` for none); elsewhere `ShortcutsDialog` with `open` / `onOpenChange`, `title` (`Keyboard shortcuts`), `keys` (`?`; `null` when a button of yours opens it).
+**You provide** shortcuts with `useShortcut(keys, handler, { description, group, enabled, allowInInputs })`, `keys` being a combination (`mod+k`: ⌘K or Ctrl K) or a sequence (`g f`: G, then F). Inside `AppShell` the dialog is drawn for you (`shortcutsDialog={false}` for none); elsewhere `ShortcutsDialog` with `open` / `defaultOpen` and `onOpenChange`, `title` (`Keyboard shortcuts`), `keys` (`?`; `null` when a button of yours opens it).
 
 ```tsx
 useShortcut('g f', () => navigate('/forms'), { description: 'Go to the forms', group: 'Navigation' })

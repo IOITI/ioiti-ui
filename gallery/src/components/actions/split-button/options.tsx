@@ -8,11 +8,11 @@ export default function SplitButtonOptions() {
       label="Run again"
       icon={<Play className="size-3.5" />}
       size="sm"
-      onClick={() => toast({ title: 'Run started', variant: 'success' })}
+      onClick={() => toast({ title: 'Run started', tone: 'success' })}
       options={[
         { value: 'edit', label: 'Edit and run', description: 'Opens the form with these settings', href: '/components/forms' },
         { value: 'copy', label: 'Duplicate', description: 'Same settings, a new run', onSelect: () => toast({ title: 'Run duplicated' }) },
-        { value: 'delete', label: 'Delete', tone: 'danger', onSelect: () => toast({ title: 'Run deleted', variant: 'error' }) },
+        { value: 'delete', label: 'Delete', tone: 'danger', onSelect: () => toast({ title: 'Run deleted', tone: 'danger' }) },
       ]}
     />
   )

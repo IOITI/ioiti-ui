@@ -29,7 +29,7 @@ export function HomePage() {
         title="Dashboard"
         description="What needs attention today (example data)."
         actions={
-          <ButtonLink to="/items" variant="outline" size="sm" rightIcon={<ArrowRight className="size-3.5" />}>
+          <ButtonLink href="/items" variant="outline" size="sm" rightIcon={<ArrowRight className="size-3.5" />}>
             All items
           </ButtonLink>
         }
@@ -44,7 +44,7 @@ export function HomePage() {
         <KpiTile label="Sync" value={<StatusBadge status="ok" />} hint="Last run at 09:30" />
       </KpiGrid>
 
-      <Panel title="Latest items" description="The five changed last." dense>
+      <Panel title="Latest items" description="The five changed last." density="compact">
         <Table className="min-w-[36rem]" aria-label="Latest items">
           <TableHead>
             <TableRow>

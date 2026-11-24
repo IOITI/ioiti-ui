@@ -10,7 +10,7 @@ function Preview() {
         <Button variant="secondary">Secondary</Button>
         <Button variant="outline">Outline</Button>
         <Button variant="ghost">Ghost</Button>
-        <Button variant="destructive">Destructive</Button>
+        <Button variant="danger">Danger</Button>
         <Button variant="success">Success</Button>
         <Button variant="link">Link style</Button>
       </div>
@@ -19,7 +19,7 @@ function Preview() {
         <Button variant="outline" rightIcon={<RefreshCw />}>Refresh</Button>
         <Button size="lg">Large</Button>
         <Button size="icon" variant="outline" aria-label="Edit"><Pencil /></Button>
-        <Button isLoading loadingText="Saving">Save</Button>
+        <Button pending loadingText="Saving">Save</Button>
         <Button disabled>Disabled</Button>
       </div>
       <div className="flex flex-wrap items-center gap-3">

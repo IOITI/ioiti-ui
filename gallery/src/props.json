@@ -117,9 +117,14 @@
     "default": "true"
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "The grid's name; by default \"Activity heatmap.\" and its summary, in the provider's words."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -257,8 +262,14 @@
     "description": "What names a row, for its expand button (\"Open …\")."
    },
    {
+    "name": "loading",
+    "type": "boolean",
+    "description": "The records are on their way: rows to come in their place, said, and nothing counted yet."
+   },
+   {
     "name": "isLoading",
-    "type": "boolean"
+    "type": "boolean",
+    "deprecated": "Use `loading`. Removed in 1.0."
    },
    {
     "name": "error",
@@ -778,6 +789,16 @@
     "description": "Custom label for secondary browse action. ioiti-ui: \"or browse from your device\" in the provider's language by default."
    },
    {
+    "name": "density",
+    "type": "'regular' | 'compact'",
+    "values": [
+     "regular",
+     "compact"
+    ],
+    "default": "'regular'",
+    "description": "`compact`: the inline zone, for a form's column (EasyUI's `variant=\"compact\"`); the full-size one by default."
+   },
+   {
     "name": "variant",
     "type": "'standard' | 'compact'",
     "values": [
@@ -785,7 +806,7 @@
      "compact"
     ],
     "default": "'standard'",
-    "description": "Layout mode: standard full-size or compact inline"
+    "description": "Layout mode: standard full-size. ioiti-ui: `compact` is deprecated: use `density=\"compact\"`, removed in 1.0."
    },
    {
     "name": "disabled",
@@ -936,12 +957,24 @@
     "required": true
    },
    {
+    "name": "value",
+    "type": "string",
+    "description": "The id of the tab shown, held by the page (told of each change by `onChange`)."
+   },
+   {
+    "name": "defaultValue",
+    "type": "string",
+    "description": "The id of the tab shown first, the tabs holding it then; the first tab by default."
+   },
+   {
     "name": "defaultTab",
-    "type": "string"
+    "type": "string",
+    "deprecated": "Use `defaultValue`. Removed in 1.0."
    },
    {
     "name": "activeTab",
-    "type": "string"
+    "type": "string",
+    "deprecated": "Use `value`. Removed in 1.0."
    },
    {
     "name": "onChange",
@@ -1181,10 +1214,14 @@
     "description": "`danger`: it could not be taken, `detail` says why."
    },
    {
+    "name": "pending",
+    "type": "boolean",
+    "description": "While it is made ready (an upload): a spinner in place of its icon, said to screen readers."
+   },
+   {
     "name": "busy",
     "type": "boolean",
-    "default": "false",
-    "description": "While it is made ready (an upload): a spinner in place of its icon, said to screen readers."
+    "deprecated": "Use `pending`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -1372,6 +1409,7 @@
     "type": "BadgeTone",
     "values": [
      "neutral",
+     "info",
      "success",
      "warning",
      "danger"
@@ -1443,7 +1481,7 @@
     "description": "Grouped: bars side by side · stacked: bars on top of each other (changing it morphs)"
    },
    {
-    "name": "tone",
+    "name": "colorBy",
     "type": "\"series\" | \"sign\"",
     "values": [
      "series",
@@ -1451,6 +1489,15 @@
     ],
     "default": "\"series\"",
     "description": "`series` colours each series (one series in the series colour, things compared in the four compare colours, never recycled); `sign` colours each bar by its sign, a gain's colour up and a loss's down (daily gains and losses)."
+   },
+   {
+    "name": "tone",
+    "type": "\"series\" | \"sign\"",
+    "values": [
+     "series",
+     "sign"
+    ],
+    "deprecated": "Use `colorBy`. Removed in 1.0."
    },
    {
     "name": "height",
@@ -1505,9 +1552,14 @@
     "description": "Entrance animation (also disabled by prefers-reduced-motion)"
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Bar chart of Profit, Fees across 7 categories\" and \"Chart data\"."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -1595,6 +1647,11 @@
   "file": "src/components/ui/button.tsx",
   "props": [
    {
+    "name": "pending",
+    "type": "boolean",
+    "description": "An action under way, started by this button (a save, a send): its spinner and `loadingText` shown, and it cannot be pressed again meanwhile (`loading` is for content not there yet)."
+   },
+   {
     "name": "children",
     "type": "ReactNode",
     "description": "Button content"
@@ -1608,6 +1665,7 @@
      "secondary",
      "outline",
      "ghost",
+     "danger",
      "destructive",
      "success",
      "link",
@@ -1632,8 +1690,7 @@
    {
     "name": "isLoading",
     "type": "boolean",
-    "default": "false",
-    "description": "Loading state displaying an animated spinner"
+    "deprecated": "Use `pending`. Removed in 1.0."
    },
    {
     "name": "loadingText",
@@ -1671,10 +1728,14 @@
   "file": "src/components/ButtonLink.tsx",
   "props": [
    {
+    "name": "href",
+    "type": "string | null",
+    "description": "Where it leads. Nothing (`null`, or none given): a button that cannot be pressed, there being nowhere to go (no day before the first)."
+   },
+   {
     "name": "to",
-    "type": "string | null | undefined",
-    "required": true,
-    "description": "Where it leads. Nothing: a button that cannot be pressed, there being nowhere to go (no day before the first)."
+    "type": "string | null",
+    "deprecated": "Use `href`. Removed in 1.0."
    },
    {
     "name": "reloadDocument",
@@ -1691,6 +1752,7 @@
      "secondary",
      "outline",
      "ghost",
+     "danger",
      "destructive",
      "success",
      "link",
@@ -1709,6 +1771,12 @@
      "icon"
     ],
     "default": "'md'"
+   },
+   {
+    "name": "pending",
+    "type": "boolean",
+    "default": "false",
+    "description": "On its way, as a `Button`'s: the browser sent on to where it leads (an identity provider). A spinner in place of its icon, said busy, and a click does nothing meanwhile; it stays the link it is, which the browser follows."
    },
    {
     "name": "leftIcon",
@@ -2128,8 +2196,14 @@
     "default": "null"
    },
    {
+    "name": "onChange",
+    "type": "(value: string | null) => void",
+    "description": "Told of the value chosen, as every control of the package is (`onChange`)."
+   },
+   {
     "name": "onValueChange",
-    "type": "(value: string | null) => void"
+    "type": "(value: string | null) => void",
+    "deprecated": "Use `onChange`. Removed in 1.0."
    },
    {
     "name": "placeholder",
@@ -2201,7 +2275,18 @@
    {
     "name": "open",
     "type": "boolean",
-    "required": true
+    "description": "Open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`)."
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Open at first, the dialog holding it then (Cancel and Escape close it); closed by default."
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void",
+    "description": "Told of every change, whoever holds it: `false` when Cancel, Escape, its backdrop or its × closes it."
    },
    {
     "name": "title",
@@ -2273,7 +2358,7 @@
    {
     "name": "onClose",
     "type": "() => void",
-    "required": true
+    "description": "Told when Cancel, Escape, its backdrop or its × closes it (never while `pending`)."
    }
   ]
  },
@@ -2495,8 +2580,14 @@
     "description": "What names a row, for its expand button (\"Open …\")."
    },
    {
+    "name": "loading",
+    "type": "boolean",
+    "description": "The records are on their way: rows to come in their place, said, and nothing counted yet."
+   },
+   {
     "name": "isLoading",
-    "type": "boolean"
+    "type": "boolean",
+    "deprecated": "Use `loading`. Removed in 1.0."
    },
    {
     "name": "error",
@@ -3252,9 +3343,14 @@
     "default": "true"
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Donut chart. Total 750\" (\"Gauge chart…\" for a gauge) and \"Chart data\"."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -3292,6 +3388,18 @@
     "description": "Action archetype"
    },
    {
+    "name": "tone",
+    "type": "StatusTone",
+    "values": [
+     "neutral",
+     "info",
+     "success",
+     "warning",
+     "danger"
+    ],
+    "description": "Its tone, a StatusTone: `neutral`, `info`, `success`, `warning`, `danger`; without one, its `actionType`'s (`danger` to delete, `warning` to unlock, `info` to submit, `neutral` otherwise)."
+   },
+   {
     "name": "variant",
     "type": "DragConfirmVariant",
     "values": [
@@ -3301,7 +3409,7 @@
      "info",
      "success"
     ],
-    "description": "Visual variant tone override"
+    "deprecated": "Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`."
    },
    {
     "name": "size",
@@ -3387,11 +3495,19 @@
    },
    {
     "name": "open",
-    "type": "boolean"
+    "type": "boolean",
+    "description": "Open, held by the page (told of each change by `onOpenChange`)."
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Open at first, the menu holding it then; closed by default."
    },
    {
     "name": "onOpenChange",
-    "type": "(open: boolean) => void"
+    "type": "(open: boolean) => void",
+    "description": "Told of every change, whoever holds it."
    },
    {
     "name": "side",
@@ -3491,7 +3607,7 @@
      "5",
      "6"
     ],
-    "description": "The level of its heading, one under what holds it: 2 under the page's (3 when `compact`, under a panel's)."
+    "description": "The level of its heading, one under what holds it: 2 under the page's (3 when `density=\"compact\"`, under a panel's)."
    },
    {
     "name": "description",
@@ -3504,10 +3620,19 @@
     "description": "What to do about it: a `Button` for an action, a `ButtonLink` for a page, or a few."
    },
    {
+    "name": "density",
+    "type": "'regular' | 'compact'",
+    "values": [
+     "regular",
+     "compact"
+    ],
+    "default": "'regular'",
+    "description": "`compact`: smaller and closer, inside a `Panel` or across the columns of a table's body; its heading a level lower."
+   },
+   {
     "name": "compact",
     "type": "boolean",
-    "default": "false",
-    "description": "Smaller and closer: inside a `Panel`, or across the columns of a table's body."
+    "deprecated": "Use `density=\"compact\"`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -3758,9 +3883,14 @@
     "description": "Lines drawn in when they first show (not where motion is reduced)."
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Fan chart of Expected, Actual\" and \"Chart data\"."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -3931,9 +4061,14 @@
     "description": "The padding of its header, body and footer (`md`, EasyUI's)."
    },
    {
+    "name": "showCloseButton",
+    "type": "boolean",
+    "description": "Its close button (true), as every layer names it (`showCloseButton`)."
+   },
+   {
     "name": "showClose",
     "type": "boolean",
-    "default": "true"
+    "deprecated": "Use `showCloseButton`. Removed in 1.0."
    },
    {
     "name": "closePosition",
@@ -4107,9 +4242,14 @@
     "default": "true"
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Funnel with 4 stages from Visited to Paid\" and \"Funnel data\"."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -4572,7 +4712,8 @@
    },
    {
     "name": "tone",
-    "type": "undefined | 'warning' | 'negative'"
+    "type": "undefined | KpiTileTone",
+    "description": "`warning`, to watch; `danger`, to deal with (`negative`, its former name, until 1.0)."
    },
    {
     "name": "toneLabel",
@@ -4668,9 +4809,14 @@
     "description": "Lines drawn in when they first show (not where motion is reduced)."
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Line chart of Run 41, Run 42\" and \"Chart data\"."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -4771,9 +4917,14 @@
     "description": "Big current value + pause button above the chart (default true)"
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "Its name for a screen reader: \"Live chart of the last 60 s, currently 42\" by default, in its language."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "className",
@@ -4969,8 +5120,10 @@
     "type": "MeterTone",
     "values": [
      "neutral",
-     "positive",
+     "success",
      "warning",
+     "danger",
+     "positive",
      "negative"
     ],
     "default": "'neutral'"
@@ -5302,14 +5455,25 @@
     "description": "Optional handler to mark all as read."
    },
    {
+    "name": "open",
+    "type": "boolean",
+    "description": "Its panel open, held by the page (told of each change by `onOpenChange`)."
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Its panel open at first, the bell holding it then; closed by default."
+   },
+   {
     "name": "isOpen",
     "type": "boolean",
-    "description": "Controlled open state of notification drawer/panel."
+    "deprecated": "Use `open`. Removed in 1.0."
    },
    {
     "name": "onOpenChange",
-    "type": "(isOpen: boolean) => void",
-    "description": "Open state change handler."
+    "type": "(open: boolean) => void",
+    "description": "Open state change handler. ioiti-ui: told of every change, whoever holds it."
    },
    {
     "name": "showCount",
@@ -5472,6 +5636,12 @@
     "type": "string"
    },
    {
+    "name": "defaultValue",
+    "type": "string",
+    "default": "''",
+    "description": "The code it starts with, the boxes holding it then (`value` held by the page instead)."
+   },
+   {
     "name": "onChange",
     "type": "(value: string) => void"
    },
@@ -5616,10 +5786,19 @@
     "type": "string"
    },
    {
+    "name": "density",
+    "type": "'regular' | 'compact'",
+    "values": [
+     "regular",
+     "compact"
+    ],
+    "default": "'regular'",
+    "description": "`compact`: its body starts close under the header, for a list or a table whose first row is the content."
+   },
+   {
     "name": "dense",
     "type": "boolean",
-    "default": "false",
-    "description": "Its body starts close under the header: for a list or a table whose first row is the content."
+    "deprecated": "Use `density=\"compact\"`. Removed in 1.0."
    },
    {
     "name": "children",
@@ -5708,9 +5887,14 @@
   "file": "src/components/PeekLink.tsx",
   "props": [
    {
+    "name": "href",
+    "type": "string",
+    "description": "Where it leads, and the card's own link."
+   },
+   {
     "name": "to",
     "type": "string",
-    "required": true
+    "deprecated": "Use `href`. Removed in 1.0."
    },
    {
     "name": "content",
@@ -5819,12 +6003,23 @@
    {
     "name": "open",
     "type": "boolean",
-    "required": true
+    "description": "Open, held by the page (told of each change by `onOpenChange`, of its end by `onClose`)."
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Open at first, the tour holding it then (it ends itself); closed by default."
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean, details?: { reason: TourCloseReason }) => void",
+    "description": "Told of every change, whoever holds it, with why it ended (`details.reason`), as `onClose` is."
    },
    {
     "name": "onClose",
     "type": "(reason: TourCloseReason) => void",
-    "required": true
+    "description": "Told when it ends, and why: its last step done, skipped, or dismissed (Escape, a click beside it)."
    },
    {
     "name": "onStepChange",
@@ -5872,8 +6067,10 @@
     "type": "MeterTone",
     "values": [
      "neutral",
-     "positive",
+     "success",
      "warning",
+     "danger",
+     "positive",
      "negative"
     ],
     "default": "'neutral'"
@@ -5900,12 +6097,23 @@
    {
     "name": "value",
     "type": "string",
-    "required": true
+    "description": "The text typed, held by the page (told of each change by `onChange`)."
+   },
+   {
+    "name": "defaultValue",
+    "type": "string",
+    "default": "''",
+    "description": "The text it starts with, the composer holding it then: emptied once it is sent."
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string) => void",
+    "description": "Told of the text at each change, whoever holds it."
    },
    {
     "name": "onValueChange",
     "type": "(value: string) => void",
-    "required": true
+    "deprecated": "Use `onChange`. Removed in 1.0."
    },
    {
     "name": "onSubmit",
@@ -5916,12 +6124,17 @@
    {
     "name": "onStop",
     "type": "() => void",
-    "description": "While `busy`: the request under way stopped. Without it, nothing can be sent until it ends."
+    "description": "While `pending`: the request under way stopped. Without it, nothing can be sent until it ends."
+   },
+   {
+    "name": "pending",
+    "type": "boolean",
+    "description": "A request sent and not answered yet: nothing more can be sent meanwhile; `onStop` stops it."
    },
    {
     "name": "busy",
     "type": "boolean",
-    "default": "false"
+    "deprecated": "Use `pending`. Removed in 1.0."
    },
    {
     "name": "disabled",
@@ -6159,9 +6372,14 @@
     "description": "What it sets, shown above it: \"Risk per trade\"."
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "Its name for a screen reader, where the label is not text."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "min",
@@ -6678,10 +6896,14 @@
     "description": "Gives up the changes; no Discard button without it."
    },
    {
+    "name": "pending",
+    "type": "boolean",
+    "description": "The save is on its way: Save says so, and neither Save nor Discard can be pressed meanwhile."
+   },
+   {
     "name": "saving",
     "type": "boolean",
-    "default": "false",
-    "description": "The save is on its way."
+    "deprecated": "Use `pending`. Removed in 1.0."
    },
    {
     "name": "saveDisabled",
@@ -6936,12 +7158,23 @@
    {
     "name": "open",
     "type": "boolean",
-    "required": true
+    "description": "Open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`)."
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Open at first, the dialog holding it then (it closes itself); closed by default."
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void",
+    "description": "Told of every change, whoever holds it: `false` when Escape, its backdrop or its × closes it."
    },
    {
     "name": "onClose",
     "type": "() => void",
-    "required": true
+    "description": "Told when Escape, its backdrop or its × closes it."
    },
    {
     "name": "title",
@@ -6961,10 +7194,14 @@
     "description": "Footer area (typically action buttons)"
    },
    {
+    "name": "showCloseButton",
+    "type": "boolean",
+    "description": "Its close (×) button, in the top-right (true), as every layer names it."
+   },
+   {
     "name": "hideCloseButton",
     "type": "boolean",
-    "default": "false",
-    "description": "Hide the close (X) button in the top-right"
+    "deprecated": "Use `showCloseButton`. Removed in 1.0. The other way round: `hideCloseButton` is `showCloseButton={false}`."
    },
    {
     "name": "aria-label",
@@ -7007,11 +7244,19 @@
   "props": [
    {
     "name": "open",
-    "type": "boolean"
+    "type": "boolean",
+    "description": "Open, held by the page (told of each change by `onOpenChange`)."
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Open at first, the dialog holding it then; closed by default."
    },
    {
     "name": "onOpenChange",
-    "type": "(open: boolean) => void"
+    "type": "(open: boolean) => void",
+    "description": "Told of every change, whoever holds it: its keys and Escape open and close it."
    },
    {
     "name": "title",
@@ -7228,6 +7473,7 @@
      "secondary",
      "outline",
      "ghost",
+     "danger",
      "destructive",
      "success",
      "link",
@@ -7335,9 +7581,14 @@
     "description": "What it sets, shown above it: \"Risk per trade\"."
    },
    {
-    "name": "ariaLabel",
+    "name": "aria-label",
     "type": "string",
     "description": "Its name for a screen reader, where the label is not text."
+   },
+   {
+    "name": "ariaLabel",
+    "type": "string",
+    "deprecated": "Use `aria-label`. Removed in 1.0."
    },
    {
     "name": "min",
@@ -7471,9 +7722,24 @@
     "default": "false"
    },
    {
+    "name": "value",
+    "type": "string[]",
+    "description": "The ids of the items open, held by the page (told of each change by `onChange`)."
+   },
+   {
+    "name": "defaultValue",
+    "type": "string[]",
+    "description": "The ids of the items open at first, the accordion holding them then; none by default."
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string[]) => void",
+    "description": "Told of the ids of the items open, at each opening and closing."
+   },
+   {
     "name": "defaultOpen",
     "type": "string[]",
-    "default": "[]"
+    "deprecated": "Use `defaultValue`. Removed in 1.0."
    },
    {
     "name": "headingLevel",
@@ -7514,7 +7780,7 @@
    },
    {
     "name": "tone",
-    "type": "'auto' | Tone",
+    "type": "'auto' | SignTone",
     "values": [
      "auto",
      "positive",
@@ -7522,7 +7788,7 @@
      "neutral"
     ],
     "default": "'auto'",
-    "description": "Its colour: `auto` says the direction (a line by its last value against its first, each bar by its sign), a tone says one for all, `neutral` is the series colour (the accent's, where the look has one). Where down is good (a delay), give the tone."
+    "description": "Its colour: `auto` says the direction (a line by its last value against its first, each bar by its sign), a tone (a SignTone) says one for all, `neutral` is the series colour (the accent's, where the look has one). Where down is good (a delay), give the tone."
    },
    {
     "name": "width",
@@ -7926,10 +8192,14 @@
   "file": "src/shell/StateChip.tsx",
   "props": [
    {
+    "name": "href",
+    "type": "string",
+    "description": "The page where it is dealt with."
+   },
+   {
     "name": "to",
     "type": "string",
-    "required": true,
-    "description": "The page where it is dealt with."
+    "deprecated": "Use `href`. Removed in 1.0."
    },
    {
     "name": "tone",
@@ -7978,7 +8248,7 @@
    {
     "name": "okLabel",
     "type": "string",
-    "description": "What it says while nothing stands out and nothing is neutral; the provider's language's by default (\"All good\")."
+    "description": "What it says while nothing stands out and nothing is said quietly (`info`, `neutral`); the provider's language's by default (\"All good\")."
    },
    {
     "name": "footer",
@@ -8397,10 +8667,14 @@
   "file": "src/components/TextLink.tsx",
   "props": [
    {
+    "name": "href",
+    "type": "string",
+    "description": "Where it leads."
+   },
+   {
     "name": "to",
     "type": "string",
-    "required": true,
-    "description": "Where it leads."
+    "deprecated": "Use `href`. Removed in 1.0."
    },
    {
     "name": "reloadDocument",
@@ -8478,10 +8752,14 @@
     "description": "Asked for fresh data: on Refresh, on each new range, and on the timer where there is one."
    },
    {
+    "name": "loading",
+    "type": "boolean",
+    "description": "Data is on its way: Refresh shows it."
+   },
+   {
     "name": "isLoading",
     "type": "boolean",
-    "default": "false",
-    "description": "Data is on its way: Refresh shows it."
+    "deprecated": "Use `loading`. Removed in 1.0."
    },
    {
     "name": "commonlyUsed",
@@ -8585,6 +8863,18 @@
     "description": "Duration in milliseconds before automatic dismissal"
    },
    {
+    "name": "tone",
+    "type": "StatusTone",
+    "values": [
+     "neutral",
+     "info",
+     "success",
+     "warning",
+     "danger"
+    ],
+    "description": "What was done, a StatusTone (its icon): `neutral` by default (a bin: a removal), `info`, `success`, `warning`; `danger`, read out at once."
+   },
+   {
     "name": "variant",
     "type": "UndoToastVariant",
     "values": [
@@ -8594,8 +8884,7 @@
      "error",
      "info"
     ],
-    "default": "'default'",
-    "description": "Toast variant visual tone"
+    "deprecated": "Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`."
    },
    {
     "name": "position",
@@ -8730,6 +9019,18 @@
     "default": "4000"
    },
    {
+    "name": "tone",
+    "type": "StatusTone",
+    "values": [
+     "neutral",
+     "info",
+     "success",
+     "warning",
+     "danger"
+    ],
+    "description": "What it says, a StatusTone (its icon): `neutral` by default, `info`, `success`, `warning`; `danger` for what went wrong, read out at once."
+   },
+   {
     "name": "variant",
     "type": "VelocityToastVariant",
     "values": [
@@ -8739,7 +9040,7 @@
      "error",
      "info"
     ],
-    "default": "'default'"
+    "deprecated": "Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`."
    },
    {
     "name": "position",

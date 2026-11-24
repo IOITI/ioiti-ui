@@ -16,7 +16,7 @@ const figures: CategoryInfo = {
       examples: [
         { id: 'dashboard', title: 'The figures of a page', description: 'Four across from 1280 px, two on a phone. The lead tile takes two columns, its chart beside the figure; what the changes are compared with is said once, above the row.' },
         { id: 'change', title: 'A change and what it means', description: 'Signed, an arrow its way, in the tone of what it means: down is good news for a cost or a delay (goodWhen="down"). changeFormat writes another unit than a percentage.' },
-        { id: 'attention', title: 'A tile that needs attention', description: 'Faintly tinted in its tone, warning or negative, and saying why in a word or two (toneLabel): never the colour alone.' },
+        { id: 'attention', title: 'A tile that needs attention', description: 'Faintly tinted in its tone, warning or danger, and saying why in a word or two (toneLabel): never the colour alone.' },
         { id: 'limits', title: 'Against a limit', description: 'No change to show: what the figure is out of, or since when, in its hint; a Meter for a ratio against a limit.' },
         { id: 'columns', title: 'Three across', description: 'columns: the tiles side by side on a wide screen (2 to 6), two on a phone whatever is asked.' },
       ],
@@ -49,7 +49,7 @@ const figures: CategoryInfo = {
       names: ['Meter'],
       keywords: ['gauge', 'quota', 'usage', 'limit', 'ratio'],
       examples: [
-        { id: 'tones', title: 'Its tones', description: 'neutral (the accent’s colour where one is chosen), positive, warning, negative: the state of the figure, its track a faint step of the same colour. The figure is written beside it.' },
+        { id: 'tones', title: 'Its tones', description: 'neutral (the accent’s colour where one is chosen), success, warning, danger: the state of the figure, its track a faint step of the same colour. The figure is written beside it.' },
         { id: 'in-a-tile', title: 'In a tile', description: 'Under a KpiTile’s figure, its scale under it: what the two ends stand for.' },
         { id: 'changing', title: 'A ratio that changes', description: 'A new ratio slides to its place (at once where motion is reduced); its tone follows thresholds the page knows.' },
       ],

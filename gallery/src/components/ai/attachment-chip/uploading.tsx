@@ -30,7 +30,7 @@ export default function AttachmentChipUploading() {
               label={file.name}
               detail={file.ready ? '240 kB' : 'Uploading…'}
               icon={<FileImage />}
-              busy={!file.ready}
+              pending={!file.ready}
               onRemove={() => setFiles((was) => was.filter((other) => other.id !== file.id))}
             />
           ))}

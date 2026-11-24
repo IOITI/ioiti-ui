@@ -3,6 +3,8 @@
 import React, { forwardRef, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, AlertCircle, Eye, EyeOff } from 'lucide-react';
+// ioiti-ui: a choice and a switch held by their caller or by themselves, as every control (useControllableState).
+import { useControllableState } from '../../lib/controllable.js';
 import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -460,18 +462,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
 }) => {
-  const [selectedValue, setSelectedValue] = React.useState(defaultValue || '');
-  const isControlled = value !== undefined;
-  const current = isControlled ? value : selectedValue;
-
-  const handleSelect = (val: string) => {
-    if (!isControlled) {
-      setSelectedValue(val);
-    }
-    if (onChange) {
-      onChange(val);
-    }
-  };
+  const [current, handleSelect] = useControllableState(value, defaultValue || '', onChange);
 
   return (
     // ioiti-ui: named, as a group of choices must be (EasyUI's could not be): by its label, or by what it points to.
@@ -628,12 +619,10 @@ export const Switch: React.FC<SwitchProps> = ({
   'aria-invalid': ariaInvalid,
   ref,
 }) => {
-  const [isOn, setIsOn] = React.useState(defaultChecked);
+  const [current, setCurrent] = useControllableState(checked, defaultChecked, onChange);
   // ioiti-ui: named by its label and described by its description, as StretchSwitch: a screen reader said only
   // "switch, on".
   const id = useId();
-  const isControlled = checked !== undefined;
-  const current = isControlled ? checked : isOn;
   // ioiti-ui: named and described from outside too (`aria-*`, a Field or a FormItem around it), its id from a
   // FormItem, whose FormLabel then names it; it could take none of them.
   const control = useFieldControl({
@@ -644,13 +633,7 @@ export const Switch: React.FC<SwitchProps> = ({
 
   const handleToggle = () => {
     if (disabled) return;
-    const next = !current;
-    if (!isControlled) {
-      setIsOn(next);
-    }
-    if (onChange) {
-      onChange(next);
-    }
+    setCurrent(!current);
   };
 
   return (

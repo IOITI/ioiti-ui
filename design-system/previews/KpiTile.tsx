@@ -9,7 +9,7 @@ createRoot(document.getElementById('root')!).render(
       </KpiTile>
       <KpiTile label="Orders" value="38" change={4.2} />
       <KpiTile label="Median delivery" value="2.4 days" change={-6.1} goodWhen="down" />
-      <KpiTile label="Refunds" value="7" change={40} goodWhen="down" tone="negative" toneLabel="Above usual" />
+      <KpiTile label="Refunds" value="7" change={40} goodWhen="down" tone="danger" toneLabel="Above usual" />
       <KpiTile label="Storage" value="91%" hint="of 50 GB" tone="warning" toneLabel="Near the limit">
         <Meter ratio={0.91} tone="warning" label="Storage used" scale={['0', '50 GB']} />
       </KpiTile>

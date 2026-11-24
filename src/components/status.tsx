@@ -3,16 +3,15 @@ import type { ReactNode, RefObject } from 'react'
 
 import { toneOf } from '../lib/format.js'
 import type { HealthStatus } from '../lib/health.js'
-import type { Tone } from '../lib/format.js'
+import type { SignTone, StatusTone } from '../lib/tones.js'
 import { cn } from '../lib/utils.js'
 import { useFormat, useMessages } from './locale-context.js'
 import { Alert, AlertDescription, AlertTitle } from './ui/alert.js'
 import { AnimatedNumber } from './ui/animated-number.js'
 import { Badge } from './ui/badge.js'
-import type { BadgeTone } from './ui/badge.js'
 import { Skeleton } from './ui/skeleton.js'
 
-const HEALTH_TONE: Record<HealthStatus, BadgeTone> = {
+const HEALTH_TONE: Record<HealthStatus, StatusTone> = {
   ok: 'success',
   warning: 'warning',
   down: 'danger',
@@ -42,7 +41,7 @@ export function StatusBadge({ status, label }: { status: HealthStatus; label?: s
   )
 }
 
-const TONE_TEXT: Record<Tone, string> = {
+const TONE_TEXT: Record<SignTone, string> = {
   positive: 'text-positive',
   negative: 'text-negative',
   neutral: 'text-foreground/80',

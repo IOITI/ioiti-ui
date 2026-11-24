@@ -34,8 +34,8 @@ const drawnBy = (link: HTMLElement) => link.getAttribute('data-link') ?? 'a'
 
 // Each component that draws a link, as it shows one without being touched.
 const LINKS: { name: string; element: ReactElement; link: string }[] = [
-  { name: 'ButtonLink', element: <ButtonLink to="/orders/new">New order</ButtonLink>, link: 'New order' },
-  { name: 'TextLink', element: <TextLink to="/terms">the terms</TextLink>, link: 'the terms' },
+  { name: 'ButtonLink', element: <ButtonLink href="/orders/new">New order</ButtonLink>, link: 'New order' },
+  { name: 'TextLink', element: <TextLink href="/terms">the terms</TextLink>, link: 'the terms' },
   { name: 'Sidebar', element: <Sidebar sections={[{ items: [{ id: 'orders', label: 'Orders', href: '/orders' }] }]} activeId="" />, link: 'Orders' },
   { name: 'AnimatedTabs', element: <AnimatedTabs tabs={[{ id: 'open', label: 'Open', href: '?status=open' }, { id: 'all', label: 'All', href: '?status=all' }]} />, link: 'All' },
   { name: 'Breadcrumb', element: <Breadcrumb items={[{ label: 'Library', href: '/library' }, { label: 'Here' }]} />, link: 'Library' },
@@ -60,7 +60,7 @@ const LINKS: { name: string; element: ReactElement; link: string }[] = [
     name: 'NotificationBell',
     element: (
       <NotificationBell
-        isOpen
+        open
         notifications={[{ id: '1', message: 'Export ready', timestamp: new Date(), read: false, href: '/exports/1' }]}
         onMarkAsRead={() => {}}
       />
@@ -105,10 +105,10 @@ describe('a component that draws a link', () => {
     const address = '/api/v1/auth/oidc/gitea/login?next=/w/main'
     withApp(
       <>
-        <ButtonLink to={address} reloadDocument>
+        <ButtonLink href={address} reloadDocument>
           Sign in with Gitea
         </ButtonLink>
-        <TextLink to="/api/v1/auth/logout" reloadDocument>
+        <TextLink href="/api/v1/auth/logout" reloadDocument>
           Sign out
         </TextLink>
       </>,
@@ -127,13 +127,13 @@ describe('a component that draws a link', () => {
   it('looks the same drawn plain, and is a button that cannot be pressed with nowhere to go', () => {
     withApp(
       <>
-        <ButtonLink to="/orders" variant="outline" size="sm">
+        <ButtonLink href="/orders" variant="outline" size="sm">
           Orders
         </ButtonLink>
-        <ButtonLink to="/api/v1/exports/orders.csv" reloadDocument variant="outline" size="sm">
+        <ButtonLink href="/api/v1/exports/orders.csv" reloadDocument variant="outline" size="sm">
           Orders as CSV
         </ButtonLink>
-        <ButtonLink to={null} reloadDocument>
+        <ButtonLink href={null} reloadDocument>
           Nowhere
         </ButtonLink>
       </>,

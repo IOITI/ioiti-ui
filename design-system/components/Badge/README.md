@@ -2,7 +2,7 @@
 
 A short state beside what it describes: soft, solid or outline, in a tone; a dot for what is live.
 
-**You provide** one or two words as `children`; `tone` (`neutral` · `success` · `warning` · `danger`), `variant` (`soft` · `solid` · `outline`), `dot`.
+**You provide** one or two words as `children`; `tone` (a `StatusTone`: `neutral` · `info` · `success` · `warning` · `danger`), `variant` (`soft` · `solid` · `outline`), `dot`.
 
 ```tsx
 <Badge tone="success">Paid</Badge>

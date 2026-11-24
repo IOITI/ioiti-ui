@@ -29,7 +29,7 @@ export default function VelocityToastPositions() {
         position={position}
         title="Label printed"
         description={`At the ${position} of the window.`}
-        variant="success"
+        tone="success"
       />
     </div>
   )

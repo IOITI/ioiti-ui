@@ -11,6 +11,77 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- `docs/conventions.md`, a page of the gallery's foundations (Conventions): what a prop is called, so that an
+  application can guess it. A value is `value`, `defaultValue` and `onChange`; what opens, `open`, `defaultOpen` and
+  `onOpenChange`; content not there yet `loading`, an action under way `pending`; `aria-*` as ARIA writes them; `href`;
+  `showCloseButton`; `density="compact"`; the heights; the two vocabularies of tones.
+- `StatusTone` (`neutral`, `info`, `success`, `warning`, `danger`: a state, a status, the weight of a message or an
+  action) and `SignTone` (`positive`, `negative`, `neutral`: which way a figure goes), the package's two vocabularies of
+  tones, exported as types.
+- The new names of what is deprecated below, each beside its old one: `onChange`, `value` and `defaultValue`, `open`,
+  `aria-label`, `loading`, `pending`, `showCloseButton`, `href`, `density="compact"`, a meter's `success` and `danger`,
+  the toasts' and `DragToConfirm`'s `tone`, `Button`'s `danger`, `BarChart`'s `colorBy`.
+- State held by the page or by the component, as every control and every layer: `SmoothAccordion`'s `value` and
+  `onChange` (the ids of the items open); `PromptComposer`'s `defaultValue` (its own text, `value` then optional);
+  `OTPInput`'s `defaultValue`; `defaultOpen` on `NotificationBell`, `DropdownMenu` and `ShortcutsDialog`; `defaultOpen`
+  and `onOpenChange` on `SettleModal`, `ConfirmAction` and `ProductTour`, whose `open` and `onClose` are then optional
+  (ProductTour's `onOpenChange` tells why it ended, `{ reason }`).
+- `ButtonLink`'s `pending`: a link that started an action under way, a spinner in place of its icon, followed no more
+  meanwhile.
+- `info`, a tone of `Badge` (drawn as Alert's) and of a state (`StateTone`: `StateSummary` ranks it between neutral and
+  success, and says it once opened, as a neutral one).
+- A deprecated name or value given says so once in development, with what replaces it; a production build keeps none of
+  it (`check:package` holds it). The gallery's props tables mark a deprecated prop.
+
+### Changed
+
+- `AnimatedTabs`: a default (`defaultValue`) is the tab shown first only. EasyUI's showed `defaultTab` again whenever it
+  changed.
+- `PromptComposer`, holding its own text (`defaultValue`, no `value`), empties it once sent and tells `onChange('')`.
+- `OTPInput`, held by the page, shows its `value` as it is drawn, where an effect copied it a render later.
+- Every component that holds a value or an open state does it through one hook (`useControllableState`): one turned
+  from held by the page to held by itself starts again from its default.
+- `ButtonLink`, `TextLink`, `PeekLink` and `StateChip` take `href` or `to`, neither of them required until 1.0, which
+  requires `href` again.
+- `BadgeTone` and `AlertTone` are `StatusTone`; `StateTone` is `StatusTone` or `ok`.
+
+### Deprecated
+
+Each old name keeps working until 1.0, which removes it, and says so once in development, with what replaces it
+(`docs/conventions.md`; the list: `src/lib/deprecations.ts`).
+
+- **State**: `Combobox`'s and `PromptComposer`'s `onValueChange` (`onChange`), `AnimatedTabs`' `activeTab` and
+  `defaultTab` (`value`, `defaultValue`), `SmoothAccordion`'s `defaultOpen` (`defaultValue`), `NotificationBell`'s
+  `isOpen` (`open`).
+- **Names**: `ariaLabel` (`aria-label`: `Slider`, `RangeSlider`, `LineChart`, `FanChart`, `BarChart`, `DonutChart`,
+  `FunnelChart`, `ActivityHeatmap`, `LiveLineChart`); `isLoading` (`loading`: `DataTable`, `AdvancedDataTable`,
+  `TimeRangePicker`; `pending`: `Button`); `SaveBar`'s `saving` and the `busy` of `PromptComposer` and `AttachmentChip`
+  (`pending`); `SettleModal`'s `hideCloseButton` (`showCloseButton={false}`) and `FlysheetContent`'s `showClose`
+  (`showCloseButton`); `to` (`href`: `ButtonLink`, `TextLink`, `PeekLink`, `StateChip`); `Panel`'s `dense`,
+  `EmptyState`'s `compact` and `AnimatedFileUpload`'s `variant="compact"` (`density="compact"`).
+- **Tones**: a meter's `positive` and `negative` (`success`, `danger`: `ProgressBar`, `BarList`, `Meter`, `Slider`'s
+  levels, a chart's references), `KpiTile`'s and the sidebar's badges' `negative` (`danger`), the toasts' `variant`
+  (`tone`, `default` being `neutral` and `error` `danger`) and `DragToConfirm`'s (`tone`), `Button`'s `destructive`
+  (`danger`), `BarChart`'s `tone` (`colorBy`), the type `Tone` (`SignTone`), and the types `VelocityToastVariant`,
+  `UndoToastVariant` and `DragConfirmVariant` (`StatusTone`).
+
+### Fixed
+
+- `NotificationBell`: given `onOpenChange` without `isOpen`, its panel never opened (the callback took the place of its
+  own state). The bell holds it now, and tells `onOpenChange`.
+- `DragToConfirm`: `success` is drawn in the positive tone on its way too, its fill and its icon, where it looked as the
+  default until confirmed.
+
+### Upgrading
+
+- An application changes nothing for now: every old name works, and says in development what replaces it. Before 1.0,
+  it gives the new names (`docs/conventions.md`).
+- An exhaustive `Record` over `BadgeTone` or `StateTone` takes an `info` entry.
+- A `PromptComposer` holding its own text finds it emptied once sent; one given `value` is as it was.
+- An `AnimatedTabs` that changed its `defaultTab` to show another tab is given `value` instead.
+
 ## [0.29.0] - 2026-11-24
 
 ### Added

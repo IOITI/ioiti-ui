@@ -35,7 +35,7 @@ export default function QueryStateEmpty() {
         onChange={setPhase}
         options={(['loading', 'failed', 'empty', 'loaded'] as const).map((each) => ({ value: each, label: each }))}
       />
-      <Panel title="Deliveries" description="The last three days." dense>
+      <Panel title="Deliveries" description="The last three days." density="compact">
         <QueryState
           isPending={phase === 'loading'}
           error={phase === 'failed' ? new Error('The carrier’s service did not answer.') : null}
@@ -50,7 +50,7 @@ export default function QueryStateEmpty() {
         >
           {/* Loaded with nothing in it: the page says so, QueryState does not. */}
           {rows.length === 0 ? (
-            <EmptyState compact icon={<Truck />} title="No delivery in the last three days" description="Deliveries appear here as soon as they leave the warehouse." />
+            <EmptyState density="compact" icon={<Truck />} title="No delivery in the last three days" description="Deliveries appear here as soon as they leave the warehouse." />
           ) : (
             <Table aria-label="Deliveries">
               <TableHead>

@@ -28,11 +28,11 @@ function Preview() {
     <LinkProvider component={Link} navigate={(to) => setWent(String(to))}>
       <div className="flex flex-col items-start gap-3 p-5">
         <div className="flex flex-wrap items-center gap-3">
-          <ButtonLink to="/components/forms">Go to the forms</ButtonLink>
-          <ButtonLink to="/components/tables" variant="outline" size="sm">
+          <ButtonLink href="/components/forms">Go to the forms</ButtonLink>
+          <ButtonLink href="/components/tables" variant="outline" size="sm">
             Data display
           </ButtonLink>
-          <ButtonLink to={null} variant="outline" size="sm">
+          <ButtonLink href={null} variant="outline" size="sm">
             No day before the first
           </ButtonLink>
         </div>

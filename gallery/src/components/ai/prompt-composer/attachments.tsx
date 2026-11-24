@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 export default function PromptComposerAttachments() {
   const [value, setValue] = useState('')
-  const [busy, setBusy] = useState(false)
+  const [pending, setPending] = useState(false)
   const [sent, setSent] = useState<string | null>(null)
   // What the request goes with: a file dropped on the frame or pasted into the field joins them.
   const [attached, setAttached] = useState<string[]>(['October.csv'])
@@ -14,7 +14,7 @@ export default function PromptComposerAttachments() {
       <PromptComposer
         label="Ask the assistant"
         value={value}
-        onValueChange={setValue}
+        onChange={setValue}
         attachments={
           attached.length > 0
             ? attached.map((name) => (
@@ -31,12 +31,12 @@ export default function PromptComposerAttachments() {
         onFiles={(files) => add(files.map((file) => file.name))}
         onSubmit={(text) => {
           setSent([text, ...attached].join(' · '))
-          setBusy(true)
+          setPending(true)
           setValue('')
-          window.setTimeout(() => setBusy(false), 2500)
+          window.setTimeout(() => setPending(false), 2500)
         }}
-        onStop={() => setBusy(false)}
-        busy={busy}
+        onStop={() => setPending(false)}
+        pending={pending}
         maxLength={2000}
         footer="about 2 cents a question"
         controls={

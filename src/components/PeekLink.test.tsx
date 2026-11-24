@@ -21,7 +21,7 @@ function renderLink() {
             path: '/',
             element: (
               <>
-                <PeekLink to="/invoices/2026-0042" content={() => <p>Due on 30 Oct</p>}>
+                <PeekLink href="/invoices/2026-0042" content={() => <p>Due on 30 Oct</p>}>
                   Invoice 2026-0042
                 </PeekLink>
                 <Address />

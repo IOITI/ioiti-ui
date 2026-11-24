@@ -6,6 +6,10 @@ import { ChevronRight, Check, Trash2, Lock, Unlock, Archive, ArrowRight } from '
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { TONE_LINE, TONE_SOFT, TONE_SOLID, TONE_TEXT, type Tone } from '../../lib/recipes.js';
+// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md); its former `variant` said once
+// in development.
+import { deprecated } from '../../lib/deprecated.js';
+import type { StatusTone } from '../../lib/tones.js';
 // ioiti-ui: its words in the provider's language, its percentage in its locale.
 import { useFormat, useMessages } from '../locale-context.js';
 
@@ -17,6 +21,10 @@ export type DragConfirmActionType =
   | 'unlock'
   | 'continue';
 
+/**
+ * @deprecated Use `StatusTone`, which `tone` takes. Removed in 1.0. ioiti-ui: the values of the former `variant`, read as
+ * a tone's (`default` as `neutral`).
+ */
 export type DragConfirmVariant =
   | 'default'
   | 'danger'
@@ -33,7 +41,12 @@ export interface DragToConfirmProps {
   confirmedLabel?: string;
   /** Action archetype */
   actionType?: DragConfirmActionType;
-  /** Visual variant tone override */
+  /**
+   * ioiti-ui: its tone, a StatusTone: `neutral`, `info`, `success`, `warning`, `danger`; without one, its `actionType`'s
+   * (`danger` to delete, `warning` to unlock, `info` to submit, `neutral` otherwise).
+   */
+  tone?: StatusTone;
+  /** @deprecated Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`. */
   variant?: DragConfirmVariant;
   /** Size variant */
   size?: DragConfirmSize;
@@ -92,6 +105,8 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   label: givenLabel,
   confirmedLabel: givenConfirmedLabel,
   actionType = 'confirm',
+  // ioiti-ui: its tone, and its former variant (read below).
+  tone: givenTone,
   variant,
   size = 'md',
   icon,
@@ -124,11 +139,14 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   const currentSize = SIZE_CONFIG[size] || SIZE_CONFIG.md;
 
   // Resolve active theme tone archetype
-  const resolvedTone = variant || (
+  // ioiti-ui: a StatusTone, the one given, else the former `variant` (`default` read as `neutral`; said once in
+  // development), else the action's.
+  if (variant !== undefined) deprecated('drag-to-confirm-variant', 'DragToConfirm');
+  const resolvedTone: StatusTone = givenTone ?? (variant === 'default' ? 'neutral' : variant) ?? (
     actionType === 'delete' ? 'danger' :
     actionType === 'unlock' ? 'warning' :
     actionType === 'submit' ? 'info' :
-    'default'
+    'neutral'
   );
 
   const calculateMaxDrag = useCallback(() => {
@@ -241,8 +259,8 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   };
 
   // Archetype color profiles tailored for balanced light & dark appearance.
-  // ioiti-ui: the design's tones (recipes.ts): danger the negative, warning and info their own, a confirmation the
-  // positive once done; on its way, a neutral fill.
+  // ioiti-ui: the design's tones (recipes.ts): danger the negative, warning and info their own, success the positive;
+  // neutral, a neutral fill on its way and the positive once done.
   const toneOf = (each: Exclude<Tone, 'neutral'>, iconColor: string) => ({
     fill: cn(TONE_SOFT[each], 'border-r', TONE_LINE[each]),
     confirmedTrack: cn(TONE_SOFT[each], TONE_LINE[each]),
@@ -258,6 +276,9 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
         return toneOf('warning', TONE_TEXT.warning);
       case 'info':
         return toneOf('info', TONE_TEXT.info);
+      // ioiti-ui: success in the positive tone on its way too, its fill and its icon (EasyUI's drew it as the default).
+      case 'success':
+        return toneOf('positive', TONE_TEXT.positive);
       default:
         return { ...toneOf('positive', 'text-text-secondary'), fill: 'bg-border border-r border-border-hover' };
     }

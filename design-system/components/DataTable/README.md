@@ -2,7 +2,7 @@
 
 Records to search, sort, filter and open, a page at a time: whole as `AdvancedDataTable`, or composed from its parts (`DataTableToolbar`, `DataTableFilters`, `DataTableContent`, `DataTablePagination`) for a page that puts its toolbar or its paging elsewhere.
 
-**You provide** `data`, `columns` (`ColumnDef`: `id`, `header`, `accessorKey` or `accessorFn`, `cell`, `sortable`, `filterable` with `filterOptions`, `filterDisplay` `auto` · `list` · `toggle`, `align`, `defaultHidden`), `getRowId`; `defaultPageSize`; `title` and `searchPlaceholder` (on `AdvancedDataTable` or `DataTableToolbar`); `renderSubComponent` with `rowLabel` for a row that opens; `selectable` (on by default) and `selectionBasket` (`{ noun, actions }`); `state` / `onStateChange` to keep the search, filters, sort and page in the address; `isLoading`, `error`, `emptyTitle`, `emptyDescription`.
+**You provide** `data`, `columns` (`ColumnDef`: `id`, `header`, `accessorKey` or `accessorFn`, `cell`, `sortable`, `filterable` with `filterOptions`, `filterDisplay` `auto` · `list` · `toggle`, `align`, `defaultHidden`), `getRowId`; `defaultPageSize`; `title` and `searchPlaceholder` (on `AdvancedDataTable` or `DataTableToolbar`); `renderSubComponent` with `rowLabel` for a row that opens; `selectable` (on by default) and `selectionBasket` (`{ noun, actions }`); `state` / `onStateChange` to keep the search, filters, sort and page in the address; `loading` (formerly `isLoading`), `error`, `emptyTitle`, `emptyDescription`.
 
 ```tsx
 <AdvancedDataTable title="Orders" data={orders} columns={COLUMNS} getRowId={(o) => o.id} defaultPageSize={5}

@@ -16,12 +16,12 @@ export default function TableEmpty() {
         <TableRow>
           <TableCell colSpan={4}>
             <EmptyState
-              compact
+              density="compact"
               icon={<FileText />}
               title="No unpaid invoice"
               description="Every invoice of the last 90 days is paid."
               actions={
-                <ButtonLink to="/components/tables/data-table" size="sm" variant="outline">
+                <ButtonLink href="/components/tables/data-table" size="sm" variant="outline">
                   All invoices
                 </ButtonLink>
               }

@@ -87,6 +87,21 @@ describe('keyboard shortcuts', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
 
+  it('opens at first with defaultOpen, then holds itself, onOpenChange told', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    render(
+      <IoitiProvider>
+        <Page go={() => {}} search={() => {}} />
+        <ShortcutsDialog defaultOpen onOpenChange={changed} />
+      </IoitiProvider>,
+    )
+    expect(await screen.findByRole('dialog', { name: 'Keyboard shortcuts' })).toBeInTheDocument()
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(changed).toHaveBeenLastCalledWith(false)
+  })
+
   it('lists once the same keys registered twice for the same thing (a second sidebar)', async () => {
     const user = userEvent.setup()
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {})

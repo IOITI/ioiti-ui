@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 createRoot(document.getElementById('root')!).render(
   <div className="grid w-full gap-8 p-5 md:grid-cols-2">
     <DonutChart
-      ariaLabel="Orders by channel"
+      aria-label="Orders by channel"
       centerLabel="Orders"
       data={[
         { label: 'Shop', value: 560 },
@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')!).render(
       ]}
     />
     <DonutChart
-      ariaLabel="Storage used"
+      aria-label="Storage used"
       variant="semi"
       centerLabel="Used"
       showLegend={false}

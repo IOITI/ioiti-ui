@@ -16,11 +16,11 @@ export default function AnimatedTabsVariants() {
       </div>
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground">pill</p>
-        <AnimatedTabs variant="pill" label="Period" renderContent={false} tabs={PERIODS} defaultTab="week" />
+        <AnimatedTabs variant="pill" label="Period" renderContent={false} tabs={PERIODS} defaultValue="week" />
       </div>
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground">glass</p>
-        <AnimatedTabs variant="glass" label="Period" renderContent={false} tabs={PERIODS} defaultTab="month" />
+        <AnimatedTabs variant="glass" label="Period" renderContent={false} tabs={PERIODS} defaultValue="month" />
       </div>
     </div>
   )

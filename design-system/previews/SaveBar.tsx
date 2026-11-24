@@ -18,7 +18,7 @@ function Unsaved() {
       <SaveBar
         open={dirty}
         message="1 unsaved change"
-        saving={saving}
+        pending={saving}
         saveDisabled={limit === null}
         error={limit === null && 'The daily limit needs a value: an empty one cannot be saved.'}
         onDiscard={() => setLimit(saved)}
@@ -27,7 +27,7 @@ function Unsaved() {
           window.setTimeout(() => {
             setSaved(limit ?? 0)
             setSaving(false)
-            toast({ title: 'Saved', variant: 'success' })
+            toast({ title: 'Saved', tone: 'success' })
           }, 700)
         }}
       />

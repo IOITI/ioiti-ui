@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { useControllableState } from '../lib/controllable.js'
 import { formatTimeRange, formatTimeRangeEnd, parseDateMath, relativeEnd, TIME_UNITS } from '../lib/date-math.js'
 import type { TimeRange, TimeRangeWordsOptions, TimeUnit } from '../lib/date-math.js'
+import { deprecated } from '../lib/deprecated.js'
 import { fieldBorder } from '../lib/field-border.js'
 import type { WeekDay } from '../lib/locale.js'
 import { PRESSABLE } from '../lib/recipes.js'
@@ -470,6 +471,8 @@ interface TimeRangePickerProps {
   /** Asked for fresh data: on Refresh, on each new range, and on the timer where there is one. */
   onRefresh?: (range: TimeRange) => void
   /** Data is on its way: Refresh shows it. */
+  loading?: boolean
+  /** @deprecated Use `loading`. Removed in 1.0. */
   isLoading?: boolean
   /**
    * The ranges offered at once, in place of the usual ones: today, this week, the last 15 and 30 minutes, hour, 24 hours,
@@ -500,7 +503,8 @@ export function TimeRangePicker({
   defaultValue = { from: 'now-15m', to: 'now' },
   onChange,
   onRefresh,
-  isLoading = false,
+  loading: givenLoading,
+  isLoading,
   commonlyUsed,
   refresh,
   onRefreshChange,
@@ -508,6 +512,9 @@ export function TimeRangePicker({
   weekStartsOn,
   className,
 }: TimeRangePickerProps) {
+  // Its former name read as today's, said once in development.
+  if (isLoading !== undefined) deprecated('is-loading', 'TimeRangePicker')
+  const loading = givenLoading ?? isLoading ?? false
   // The provider's locale, week, clock and words, where the props give none.
   const provider = useLocale()
   const words = useMessages().timeRange
@@ -640,7 +647,7 @@ export function TimeRangePicker({
         <Button
           size="md"
           variant="outline"
-          isLoading={isLoading}
+          pending={loading}
           loadingText={words.refreshing}
           onClick={() => onRefresh?.(applied)}
           leftIcon={<RefreshCw className="size-4" />}

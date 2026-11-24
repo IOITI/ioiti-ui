@@ -16,7 +16,7 @@ const navigation: CategoryInfo = {
       examples: [
         { id: 'views', title: 'Views of one thing', description: 'A tablist and its panel, named by the tab shown: one stop of the keyboard, whose arrows, Home and End move and choose. A badge counts what a view holds.' },
         { id: 'variants', title: 'Variants', description: 'default for a page’s views; pill, rounded, for a short choice over a chart or a list (glass is drawn as the pill). The background slides to the tab chosen.' },
-        { id: 'controlled', title: 'Held by the page', description: 'The page holds the tab shown (activeTab, onChange): a button elsewhere can change it, and the page reads it. An icon before a name says what kind of view it is.' },
+        { id: 'controlled', title: 'Held by the page', description: 'The page holds the tab shown (value, onChange): a button elsewhere can change it, and the page reads it. An icon before a name says what kind of view it is.' },
         { id: 'links', title: 'Tabs with an address', description: 'A view the address names (?view=) is a link: a plain click shows it in place, ⌘ or Ctrl opens it in another tab, which reads its view from the address.' },
         { id: 'narrow', title: 'More tabs than room', description: 'Where they do not all fit (a phone, a side panel), the row scrolls sideways in itself, each name on one line; the tab cut at its end says there is more.' },
       ],

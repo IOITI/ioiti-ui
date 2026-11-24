@@ -17,7 +17,7 @@ const SECTIONS: SidebarSection[] = [
         href: '#/orders',
         children: [
           { id: 'open', label: 'Open', href: '#/orders', badge: 12 },
-          { id: 'returns', label: 'Returns', href: '#/orders?tab=returns', badge: '2 late', badgeTone: 'negative' },
+          { id: 'returns', label: 'Returns', href: '#/orders?tab=returns', badge: '2 late', badgeTone: 'danger' },
           { id: 'archived', label: 'Archived', href: '#/orders?tab=archived' },
         ],
       },

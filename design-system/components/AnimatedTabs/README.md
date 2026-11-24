@@ -2,7 +2,7 @@
 
 Views of one thing as tabs: one stop of the keyboard, whose arrows, Home and End move and choose; the background slides to the tab chosen.
 
-**You provide** `label`, `tabs` (`[{ id, label, badge?, content?, href? }]`), `value` / `onChange` or the tabs' own state; `renderContent` to draw the chosen tab's panel; `variant="pill"`.
+**You provide** `label`, `tabs` (`[{ id, label, badge?, content?, href? }]`), `value` / `onChange`, or `defaultValue` (the tab shown first) and the tabs' own state (formerly `activeTab` and `defaultTab`); `renderContent` to draw the chosen tab's panel; `variant="pill"`.
 
 ```tsx
 <AnimatedTabs label="Orders by state" renderContent

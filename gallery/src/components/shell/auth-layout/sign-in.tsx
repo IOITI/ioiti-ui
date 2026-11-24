@@ -34,7 +34,7 @@ export default function AuthLayoutSignIn() {
         footer={
           <div className="flex flex-col items-start gap-2">
             <p>Need an account? Ask an administrator.</p>
-            <ButtonLink to="/patterns/sign-in" variant="link" rightIcon={<ArrowRight />}>
+            <ButtonLink href="/patterns/sign-in" variant="link" rightIcon={<ArrowRight />}>
               The whole page
             </ButtonLink>
           </div>
@@ -61,7 +61,7 @@ export default function AuthLayoutSignIn() {
               />
             </FormControl>
           </FormItem>
-          <Button type="submit" fullWidth isLoading={sending} loadingText="Signing in" disabled={sending || !username || !password}>
+          <Button type="submit" fullWidth pending={sending} loadingText="Signing in" disabled={sending || !username || !password}>
             Sign in
           </Button>
         </Form>

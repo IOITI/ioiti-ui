@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useEffect } from 'react'
 import type { ComponentProps } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -72,8 +72,8 @@ describe('ToastProvider', () => {
     renderProvider()
 
     act(() => {
-      show({ title: 'Export requested', variant: 'success' })
-      show({ title: 'Export ready', variant: 'success' })
+      show({ title: 'Export requested', tone: 'success' })
+      show({ title: 'Export ready', tone: 'success' })
     })
 
     expect(screen.getByText('Export requested')).toBeInTheDocument()
@@ -108,10 +108,10 @@ describe('ToastProvider', () => {
     expect(screen.getByText('Export ready')).toBeInTheDocument()
   })
 
-  it('keeps an error on screen longer', async () => {
+  it('keeps what went wrong (danger) on screen longer', async () => {
     renderProvider()
 
-    act(() => show({ title: 'The mail server does not answer', variant: 'error' }))
+    act(() => show({ title: 'The mail server does not answer', tone: 'danger' }))
 
     await advance(6000)
     expect(screen.getByText('The mail server does not answer')).toBeInTheDocument()
@@ -126,7 +126,7 @@ describe('ToastProvider', () => {
       </LinkProvider>,
     )
 
-    act(() => show({ title: 'Deploy failed', variant: 'error', action: { label: 'Open the job', href: '/ops/jobs/7' } }))
+    act(() => show({ title: 'Deploy failed', tone: 'danger', action: { label: 'Open the job', href: '/ops/jobs/7' } }))
 
     const link = screen.getByRole('link', { name: 'Open the job' })
     expect(link).toHaveAttribute('href', '/ops/jobs/7')
@@ -194,6 +194,59 @@ describe('ToastProvider', () => {
     expect(screen.getAllByRole('status')).toHaveLength(1)
     expect(screen.getByRole('status')).toHaveTextContent('Export requested')
     expect(screen.getByRole('alert')).toBeEmptyDOMElement()
+  })
+
+  it('says what went wrong (danger) at once, in the region that alerts', async () => {
+    renderProvider()
+    act(() => show({ title: 'Could not send the invoice', tone: 'danger' }))
+    await advance(0)
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not send the invoice')
+    expect(screen.getByRole('status')).toBeEmptyDOMElement()
+  })
+})
+
+describe("a toast's tone, and its former variant", () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  // First: a deprecated name is said once in a run, whatever said it before.
+  it('is drawn by its tone, the icon its own, nothing said of a name deprecated', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const icon = (frame: HTMLElement) => frame.querySelector('.size-8 > svg')
+    const { rerender } = render(<VelocityToast open title="Could not print the labels" tone="danger" />)
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
+    expect(icon(screen.getByRole('alert'))).toHaveClass('text-negative')
+    rerender(<VelocityToast open title="Labels printed" tone="success" />)
+    expect(icon(screen.getByRole('status'))).toHaveClass('text-positive')
+    rerender(<VelocityToast open title="Draft saved" />)
+    expect(icon(screen.getByRole('status'))).toHaveClass('text-muted-foreground')
+    renderProvider()
+    act(() => show({ title: 'Saved', tone: 'success' }))
+    expect(warn).not.toHaveBeenCalled()
+  })
+
+  it("reads useToast's variant as its tone (error as danger), and says once in development that it is deprecated", async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    renderProvider()
+    act(() => show({ title: 'The mail server does not answer', variant: 'error' }))
+    await waitFor(() => expect(screen.getAllByRole('alert').at(-1)).toHaveTextContent('The mail server does not answer'))
+    act(() => show({ title: 'Sent anyway', variant: 'default' }))
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(String(warn.mock.calls[0][0])).toMatch(/^ioiti-ui: a name or a value the package deprecated/)
+    expect(String(warn.mock.calls[0][0])).toContain("(useToast's variant: tone, its values too: default is neutral, error is danger)")
+  })
+
+  it("reads VelocityToast's variant as its tone, the tone given over it, and says so once", () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { rerender } = render(<VelocityToast open title="Could not print the labels" variant="error" />)
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
+    rerender(<VelocityToast open title="Could not print the labels" variant="default" />)
+    expect(screen.getByRole('status')).toHaveTextContent('Could not print the labels')
+    rerender(<VelocityToast open title="Could not print the labels" variant="default" tone="danger" />)
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(String(warn.mock.calls[0][0])).toContain("(VelocityToast's variant: tone, its values too: default is neutral, error is danger)")
   })
 })
 
