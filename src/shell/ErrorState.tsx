@@ -7,6 +7,7 @@ import { Button } from '../components/ui/button.js'
 import { errorDetails, errorKind } from '../lib/errors.js'
 import type { ErrorKind } from '../lib/errors.js'
 import { TONE_TEXT } from '../lib/recipes.js'
+import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
 import type { Crumb } from './navigation.js'
 import { TabTitleContext, usePageName, useTabTitle } from './page-trail-context.js'
@@ -156,6 +157,9 @@ function ErrorView({
       again()
     })
   const details = process.env.NODE_ENV !== 'production' && error !== undefined ? errorDetails(error) : ''
+  // A stack longer than its box: a stop of the keyboard, which scrolls it.
+  const detailsText = useRef<HTMLPreElement>(null)
+  const detailsRegion = useScrollRegion(detailsText, { label: 'Details', key: details })
 
   return (
     <div
@@ -181,10 +185,10 @@ function ErrorView({
       >
         {title}
       </Heading>
-      <p className={cn('text-pretty text-muted-foreground', page ? 'max-w-md text-sm' : 'max-w-sm text-xs')}>{description ?? (retry ? words.retry : words.wait)}</p>
-      {(retry || way) && (
+      <p className={cn('text-pretty text-muted-foreground', page ? 'max-w-md text-sm' : 'max-w-sm text-xs')}>{description ?? (again ? words.retry : words.wait)}</p>
+      {(again || way) && (
         <div className={cn('flex flex-wrap items-center justify-center gap-2', page ? 'mt-4' : 'mt-3')}>
-          {retry && (
+          {again && (
             <Button
               size={page ? 'md' : 'sm'}
               variant={way ? 'primary' : 'outline'}
@@ -196,7 +200,7 @@ function ErrorView({
             </Button>
           )}
           {way && (
-            <ButtonLink to={way.href} variant={retry ? 'outline' : 'primary'} size={page ? 'md' : 'sm'} leftIcon={<Home className="size-4" />}>
+            <ButtonLink to={way.href} variant={again ? 'outline' : 'primary'} size={page ? 'md' : 'sm'} leftIcon={<Home className="size-4" />}>
               {way.label}
             </ButtonLink>
           )}
@@ -206,7 +210,11 @@ function ErrorView({
       {details && (
         <details className={cn('w-full max-w-2xl text-left', page ? 'mt-6' : 'mt-3')}>
           <summary className="cursor-pointer text-xs text-muted-foreground">Details</summary>
-          <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-border bg-surface-raised p-3 font-mono text-[13px] text-foreground">
+          <pre
+            ref={detailsText}
+            {...detailsRegion}
+            className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-border bg-surface-raised p-3 font-mono text-[13px] text-foreground"
+          >
             {details}
           </pre>
         </details>

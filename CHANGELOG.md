@@ -11,6 +11,55 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- **The gallery in real browsers** (`npm run e2e`, Playwright, `e2e/`): every page loads and says nothing wrong, no
+  error in its console, no request that fails or goes to another origin; axe reads each page with its stylesheets, in
+  light and dark (a text's contrast, a region that scrolls, a control's words in its name); the keyboard's journeys
+  (the skip link, ⌘K's search, the selects, a menu and its sub-menu, a date picker's days, the sliders, a real drag of
+  `DragToConfirm`, a dialog, a sheet and a phone's drawer, a hint, a table's lists); motion, and what reduced motion
+  keeps still. CI runs them in Chromium, and a set in Firefox and WebKit (`npm run e2e:smoke`), the browsers the
+  README names.
+- **What the design looks like, held to the pixel** (`npm run e2e:visual`): the first example of every family in light
+  and dark, and five pages (Themes, Colours, a dashboard, the sign-in, the page not found) in three looks (neutral,
+  violet under glass, bloom), compared on Linux by CI, which uploads a picture that moved, to look at.
+
+### Changed
+
+- **What an application bundles grows by 0.5 kB gzipped** (the template 187.5 kB, React and the rest with it): what
+  makes a frame that scrolls a stop of the keyboard.
+
+### Fixed
+
+- **`Sidebar`'s Collapse button is named by its own words** (WCAG 2.5.3, label in name): "Collapse sidebar" still, its
+  keys (⌘B) drawn for the eye and heard as its shortcut; a name written over its words left out the keys it shows.
+- **`AnimatedFileUpload`'s drop zone is named by the words it shows**, its size limit too ("Drop files here or browse
+  from your device (up to 25 MB)"): a name written over them left the limit out.
+- **`StateSummary` is named with the words it shows** (WCAG 2.5.3): where several states stand out, the gravest one's
+  words, then how many of each tone ("State: Payments down (1 to fix, 1 to watch)"); it said how many alone, and a
+  person speaking to the computer could not say the words they saw.
+- **A disabled `Switch` or `StretchSwitch` keeps its description readable**: its label and its control are at half
+  strength, its description, which says why, whole; at half strength with the rest, it was at 2:1.
+- **What scrolls and holds no control is reached by the keyboard** (`Table`, the page of `AppShell`, the panels of
+  `ResizablePanels`, `FlysheetBody`, `ErrorState`'s details, `AIResponse`'s tables, `AIAgentActivity`'s code,
+  `RecoveryLedger`'s changes): while it holds more than it shows, its frame is a stop of the keyboard, whose arrows
+  scroll it, a region named by what it holds (a table's frame as the table is); what fits is no stop, nor a frame that
+  holds a link, a button or a field, which Tab reaches. Nothing there took the focus, and the keyboard could not
+  scroll it (WCAG 2.1.1). `CodeBlock`, such a stop already, is named by its label when it is more than words too (it
+  was "Code" then).
+- **`CodeEditor` and `DiffEditor` say their text takes the focus** (`tabindex="0"`), a read-only side too: it did,
+  which a checker counting tab indexes (axe) did not see in a scroller of long lines.
+
+### Upgrading
+
+An application changes nothing. Its tests may:
+
+- find `StateSummary`'s button, where several states stand out, by the gravest one's words
+  (`{ name: /^State: Payments down/ }`), its counts after them;
+- find `AnimatedFileUpload`'s drop zone by the words it shows (`{ name: /^Drop files here/ }`), its limit after them;
+- meet one stop more in a real browser where a frame scrolls, a `Table`'s, a `region` named as the table (jsdom lays
+  nothing out, so nothing scrolls there).
+
 ## [0.26.0] - 2026-11-24
 
 ### Added

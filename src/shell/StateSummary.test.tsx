@@ -67,7 +67,7 @@ describe('the summary of states', () => {
 
   it('shows the gravest state in its words, and how many more', async () => {
     renderSummary([RESTART, SERVICES, SIGN_IN])
-    const button = screen.getByRole('button', { name: 'State: 1 to fix, 1 to watch' })
+    const button = screen.getByRole('button', { name: 'State: Sign in again (1 to fix, 1 to watch)' })
     expect(button).toHaveTextContent('Sign in again')
     expect(button).toHaveTextContent('+1')
     expect(button.className).toContain('text-negative')

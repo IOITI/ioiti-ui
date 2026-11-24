@@ -613,6 +613,18 @@ otherwise).
   pushing the page aside is a region beside it, which it says nothing of; the content tells the trigger.
 - `loader` (0.26.0): `delay`, the milliseconds before it is drawn (`300` while a page's code or data arrives): a wait
   shorter than that shows nothing, where a spinner would flash.
+- `sidebar` (0.27.0): its Collapse button is named by the word it shows and what it folds ("Collapse sidebar", the second
+  word for a screen reader only), its keys (⌘B) drawn for the eye and heard as its shortcut (`aria-keyshortcuts`);
+  folded, "Expand sidebar". A name written over its words left out the keys it shows (WCAG 2.5.3, label in name).
+- `animated-file-upload` (0.27.0): its drop zone is named by the words it shows, its size limit too ("Drop files here or
+  browse from your device (up to 25 MB)"): a name written over them, its title and subtitle, left the limit out.
+- `form`, `stretch-switch` (0.27.0): disabled, a switch's label and its control are at half strength, its description
+  whole: it says why it is disabled, and was 2:1 dimmed with the rest.
+- `flysheet`, `ai-response`, `ai-agent-activity`, `recovery-ledger` (0.27.0): what scrolls in them and holds no control
+  (a sheet's body, an answer's table, a code snippet, an entry's diff) is a stop of the keyboard while it scrolls, its
+  arrows scrolling it, a region named by what it holds (the sheet's title, or "Content"; "Table"; the snippet's
+  language; "Changes"): nothing in it took the focus, and the keyboard could not scroll it (WCAG 2.1.1). What fits is no
+  stop (`useScrollRegion`, `src/lib/scroll-region.ts`).
 
 ## ioiti-ui's own changes
 

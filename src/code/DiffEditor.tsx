@@ -113,7 +113,10 @@ export function DiffEditor({
       editorTheme,
       wrapped ? EditorView.lineWrapping : [],
       compartment.of([]),
-      EditorView.contentAttributes.of({ 'aria-label': accessible }),
+      // Each side's text is a stop of the keyboard, read-only or not: from it, the arrows move through the text and
+      // scroll it. Editable text takes the focus by itself; a tab index says so to what counts only tab indexes (axe,
+      // which took the scroller of a long line for a region the keyboard cannot reach).
+      EditorView.contentAttributes.of({ 'aria-label': accessible, tabindex: '0' }),
     ]
     const editable: Extension = [
       history(),

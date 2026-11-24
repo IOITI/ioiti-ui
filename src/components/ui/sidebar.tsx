@@ -827,7 +827,10 @@ function Panel({
                   setTip({ label: "Expand", keys: keysText(TOGGLE_KEYS), x: r.right + 10, y: r.top + r.height / 2 });
                 }}
                 onMouseLeave={() => setTip(null)}
-                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                // ioiti-ui: open, named by the word it shows and what it folds ("Collapse sidebar"), its keys drawn for the eye
+                // and heard as its shortcut (WCAG 2.5.3, label in name: a name given over the words shown left out its keys);
+                // folded, by what it does, its words hidden.
+                aria-label={collapsed ? "Expand sidebar" : undefined}
                 aria-keyshortcuts={ariaKeyShortcuts(TOGGLE_KEYS)}
                 // ioiti-ui: the design's focus ring alone (design.css), not one of its own beside it.
                 className="flex h-9 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-sm text-muted-foreground outline-none transition-colors hover:bg-surface-hover hover:text-foreground"
@@ -841,10 +844,15 @@ function Panel({
                   transition={motionTransitions.easeFast}
                   className="flex-1 whitespace-nowrap text-left"
                 >
-                  Collapse
+                  Collapse <span className="sr-only">sidebar</span>
                 </motion.span>
-                {/* ioiti-ui: the keys as this computer writes them (⌘B, Ctrl B). */}
-                {!collapsed && <Kbd keys={TOGGLE_KEYS} className="shrink-0" />}
+                {/* ioiti-ui: the keys as this computer writes them (⌘B, Ctrl B), drawn for the eye: a screen reader hears
+                    them as its shortcut (aria-keyshortcuts), not in its name. */}
+                {!collapsed && (
+                  <span aria-hidden className="shrink-0">
+                    <Kbd keys={TOGGLE_KEYS} />
+                  </span>
+                )}
               </button>
             )}
           </div>

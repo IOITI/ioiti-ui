@@ -1,8 +1,9 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useId, useMemo, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 
 import { highlightCode, splitLines } from '../lib/highlight.js'
 import type { CodeLanguage, CodeToken, CodeTokenKind } from '../lib/highlight.js'
+import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
 import { CopyButton } from './CopyButton.js'
 
@@ -72,26 +73,19 @@ export function CodeBlock({
   const numbered = lineNumbers !== false
   const marked = new Set(highlightLines)
   const scroll: CSSProperties | undefined = maxHeight === undefined ? undefined : { maxHeight }
-  // Code that overflows is a region the keyboard can scroll; code that fits is no stop for it.
+  // Code that overflows is a region the keyboard can scroll, named by its label; code that fits is no stop for it.
   const pre = useRef<HTMLPreElement>(null)
-  const [scrolls, setScrolls] = useState(false)
-  useLayoutEffect(() => {
-    const element = pre.current
-    if (!element) return
-    const measure = () => setScrolls(element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight)
-    measure()
-    if (typeof ResizeObserver === 'undefined') return
-    const observer = new ResizeObserver(measure)
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [code, wrap, maxHeight])
+  const labelId = useId()
+  const region = useScrollRegion(pre, label ? { labelledBy: labelId } : { label: 'Code' })
   const copy = copyable && <CopyButton value={code} label="Copy the code" size="sm" />
 
   return (
     <figure className={cn('relative min-w-0 overflow-hidden rounded-xl border border-border bg-surface', className)}>
       {label && (
         <figcaption className="flex items-center justify-between gap-3 border-b border-border py-1 pl-3 pr-1.5 text-xs text-text-secondary">
-          <span className="truncate">{label}</span>
+          <span id={labelId} className="truncate">
+            {label}
+          </span>
           {copy}
         </figcaption>
       )}
@@ -104,9 +98,7 @@ export function CodeBlock({
       )}
       <pre
         ref={pre}
-        tabIndex={scrolls ? 0 : undefined}
-        role={scrolls ? 'region' : undefined}
-        aria-label={scrolls ? (typeof label === 'string' ? label : 'Code') : undefined}
+        {...region}
         style={scroll}
         className={cn(
           'overflow-auto py-3 font-mono text-[13px] leading-5 text-foreground',

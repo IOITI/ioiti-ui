@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useDragControls, type PanInfo } from "framer-m
 import { X } from "lucide-react";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { CLOSE_MD, SCRIM } from "../../lib/recipes.js";
+import { useScrollRegion } from "../../lib/scroll-region.js";
 import { cn } from "../../lib/utils.js";
 
 /*
@@ -818,9 +819,14 @@ export function FlysheetBody({ className, onScroll, ref, ...props }: React.Compo
   React.useLayoutEffect(() => {
     if (body.current) fadeUnderHeader(body.current);
   }, []);
+  // ioiti-ui: taller than the sheet and holding no control (a record's details), a stop of the keyboard, which scrolls
+  // it, named as the sheet is (src/lib/scroll-region.ts).
+  const sheet = React.useContext(SheetContext);
+  const region = useScrollRegion(body, sheet?.hasTitle ? { labelledBy: sheet.titleId } : { label: "Content" });
   return (
     <div
       ref={body}
+      {...region}
       className={cn(
         "flex-1 overflow-y-auto",
         "data-[scrolled]:[mask-image:linear-gradient(to_bottom,transparent,#000_var(--flysheet-fade))]",

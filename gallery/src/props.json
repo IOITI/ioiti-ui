@@ -7957,7 +7957,7 @@
     "name": "label",
     "type": "string",
     "default": "'State'",
-    "description": "Its name: the button's, before what it says (\"State: 1 to fix\"), and the panel's."
+    "description": "Its name: the button's, before what it says (\"State: Payments down\"), and the panel's."
    },
    {
     "name": "okLabel",

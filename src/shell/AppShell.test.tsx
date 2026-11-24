@@ -498,6 +498,51 @@ describe('scrolling', () => {
     expect(screen.getByRole('main').scrollTop).toBe(0)
   })
 
+  describe('a page taller than its frame', () => {
+    // jsdom lays nothing out: the page's frame shows 600 px of a page 2,000 px tall.
+    beforeEach(() => {
+      vi.spyOn(Element.prototype, 'clientHeight', 'get').mockImplementation(function (this: Element) {
+        return this.tagName === 'MAIN' ? 600 : 0
+      })
+      vi.spyOn(Element.prototype, 'scrollHeight', 'get').mockImplementation(function (this: Element) {
+        return this.tagName === 'MAIN' ? 2000 : 0
+      })
+    })
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it('is reached through its controls, and is a stop of the keyboard itself where it holds none', async () => {
+      const user = userEvent.setup()
+      renderShell({ path: '/library/assets/blue-logo' })
+      await screen.findByRole('heading', { name: 'Blue logo' })
+      expect(screen.getByRole('main')).not.toHaveAttribute('tabindex')
+
+      // Another page, another frame: a heading alone, which the keyboard scrolls from the frame itself.
+      await user.click(screen.getByRole('link', { name: 'To the orders' }))
+      await screen.findByRole('heading', { name: 'Orders' })
+      const main = screen.getByRole('main')
+      expect(main).toHaveAttribute('tabindex', '0')
+      // A landmark already: no region, no name of its own.
+      expect(main).not.toHaveAttribute('role')
+      expect(main).not.toHaveAttribute('aria-label')
+    })
+
+    it('keeps its stop once the skip link has given it the focus and the focus has gone on', async () => {
+      const user = userEvent.setup()
+      renderShell()
+      const main = await screen.findByRole('main')
+      expect(main).toHaveAttribute('tabindex', '0')
+
+      await user.tab()
+      await user.keyboard('{Enter}')
+      expect(main).toHaveFocus()
+      await user.tab()
+      expect(main).not.toHaveFocus()
+      expect(main).toHaveAttribute('tabindex', '0')
+    })
+  })
+
   it('never slides a page sideways: what stands beyond its edges is cut', async () => {
     renderShell()
 

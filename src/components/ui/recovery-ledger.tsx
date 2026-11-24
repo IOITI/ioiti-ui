@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useId, useState } from 'react';
+import React, { useId, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RotateCcw, ChevronDown, User, Clock, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { PRESSABLE, SECTION } from '../../lib/recipes.js';
+import { useScrollRegion } from '../../lib/scroll-region.js';
 
 export interface LedgerEntry {
   id: string;
@@ -51,6 +52,22 @@ export interface RecoveryLedgerProps {
   variant?: 'timeline' | 'compact';
   /** Custom CSS class names. */
   className?: string;
+}
+
+// ioiti-ui: a diff wider than its box, holding no control: a stop of the keyboard, which scrolls it
+// (src/lib/scroll-region.ts).
+function DiffFrame({ children }: { children: string }) {
+  const frame = useRef<HTMLDivElement>(null);
+  const region = useScrollRegion(frame, { label: 'Changes' });
+  return (
+    <div
+      ref={frame}
+      {...region}
+      className="p-2 rounded-lg bg-surface-raised border border-border/60 font-mono text-xs text-text-secondary leading-relaxed overflow-x-auto"
+    >
+      <pre>{children}</pre>
+    </div>
+  );
 }
 
 export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
@@ -267,9 +284,7 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                         className="mt-3 pt-2.5 border-t border-border/40 overflow-hidden"
                       >
                         {entry.details.diff && (
-                          <div className="p-2 rounded-lg bg-surface-raised border border-border/60 font-mono text-xs text-text-secondary leading-relaxed overflow-x-auto">
-                            <pre>{entry.details.diff}</pre>
-                          </div>
+                          <DiffFrame>{entry.details.diff}</DiffFrame>
                         )}
                         {entry.details.preview && (
                           <p className="text-xs text-muted-foreground mt-2">

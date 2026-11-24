@@ -16,6 +16,7 @@ import { formatSpan } from "../../lib/format.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { useNow } from "../../lib/now.js";
 import { PRESSABLE, SECTION } from "../../lib/recipes.js";
+import { useScrollRegion } from "../../lib/scroll-region.js";
 import { cn, copyToClipboard } from "../../lib/utils.js";
 import { CodeBlock } from "../CodeBlock.js";
 import { Hint } from "../Hint.js";
@@ -344,6 +345,18 @@ function renderInline(text: string): React.ReactNode[] {
   return nodes;
 }
 
+// ioiti-ui: a table's frame, positioned, so that what it scrolls (its words for screen readers too) stays in it; wider
+// than the answer and holding no control, a stop of the keyboard, which scrolls it (src/lib/scroll-region.ts).
+function TableFrame({ children }: { children: React.ReactNode }) {
+  const frame = useRef<HTMLDivElement>(null);
+  const region = useScrollRegion(frame, { label: "Table" });
+  return (
+    <div ref={frame} {...region} className="relative overflow-x-auto rounded-xl border border-border/60">
+      {children}
+    </div>
+  );
+}
+
 function Caret() {
   const reduce = useReducedMotionConfig();
   return (
@@ -655,8 +668,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
             return wrap(<hr className="border-border" />);
           case "table":
             return wrap(
-              // ioiti-ui: positioned, so that what it scrolls (its words for screen readers too) stays in it.
-              <div className="relative overflow-x-auto rounded-xl border border-border/60">
+              <TableFrame>
                 <table className="w-full min-w-[320px] border-collapse text-left text-sm">
                   <thead>
                     <tr className={`${wash} text-xs font-medium ${muted}`}>
@@ -675,7 +687,7 @@ export const AIResponseContent: React.FC<AIResponseContentProps> = ({ className 
                     ))}
                   </tbody>
                 </table>
-              </div>,
+              </TableFrame>,
             );
         }
       })}

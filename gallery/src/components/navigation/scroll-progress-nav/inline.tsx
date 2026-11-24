@@ -13,7 +13,14 @@ export default function ScrollProgressNavInline() {
   return (
     <div className="space-y-3">
       <ScrollProgressNav label="The setup guide" mode="inline" containerRef={frame} sections={PARTS} />
-      <div ref={frame} className="h-64 overflow-y-auto rounded-xl border border-border/70 px-4 pb-4">
+      {/* A frame that scrolls and holds no control is a stop of the keyboard, named: its arrows scroll it. */}
+      <div
+        ref={frame}
+        tabIndex={0}
+        role="region"
+        aria-label="The steps of the setup"
+        className="h-64 overflow-y-auto rounded-xl border border-border/70 px-4 pb-4"
+      >
         {PARTS.map((part, index) => (
           <section key={part.id} id={part.id} className="scroll-mt-3 pt-4 pb-2 last:min-h-44">
             <h3 className="text-sm font-semibold">

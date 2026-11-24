@@ -378,7 +378,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
         tabIndex={disabled ? -1 : 0}
         role="button"
         aria-disabled={disabled}
-        aria-label={`${dropTitle}, ${dropSubtitle}`}
+        // ioiti-ui: named by the words it shows, its limit included (WCAG 2.5.3, label in name): a name given over them,
+        // its title and subtitle, left out the size.
         animate={{
           scale: isDragOver ? 1.01 : 1,
         }}

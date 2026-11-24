@@ -263,6 +263,7 @@ write their own style sheet when they appear. They draw no mark as a `data:` ima
 
 The browsers Tailwind CSS 4 is made for, and later: **Safari 16.4**, **Chrome and Edge 111**, **Firefox 128**. A
 browser without view transitions changes a page and a look at once instead of in a cross-fade; nothing else differs.
+CI loads every page of the gallery in Chromium, and a set of them in Firefox and WebKit, at every change.
 
 ## Node
 
@@ -291,6 +292,7 @@ npm test                 # Vitest and Testing Library, jsdom
 npm run build            # dist/
 npm run build:gallery    # the gallery on dist/
 npm run check:package    # the package as a release packs it, installed into the template, built, read and weighed
+npm run e2e              # the gallery built, in Chromium: every page, axe with CSS, the keyboard, motion
 npm run dev              # dist/ kept built, for an application on a file: link
 ```
 

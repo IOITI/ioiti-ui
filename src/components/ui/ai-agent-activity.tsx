@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, createContext, useContext, useId } from 'react';
+import React, { useState, createContext, useContext, useId, useRef } from 'react';
 // ioiti-ui: useReducedMotionConfig for what MotionConfig does not reduce (a height, a caret's blink).
 import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import {
@@ -14,6 +14,7 @@ import { useControllableState } from '../../lib/controllable.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { cn } from '../../lib/utils.js';
 import { SECTION } from '../../lib/recipes.js';
+import { useScrollRegion } from '../../lib/scroll-region.js';
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -351,9 +352,7 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
                   <div className="text-xs font-medium text-muted-foreground">
                     {activity.details.language || 'Code'}
                   </div>
-                  <pre className="p-2.5 sm:p-3 rounded-lg bg-surface-raised/50 dark:bg-surface-raised/20 border border-border/40 text-foreground text-xs leading-relaxed overflow-x-auto select-text font-mono">
-                    <code>{activity.details.codeSnippet}</code>
-                  </pre>
+                  <CodeSnippet label={activity.details.language || 'Code'}>{activity.details.codeSnippet}</CodeSnippet>
                 </div>
               )}
 
@@ -392,6 +391,22 @@ export const AgentActivityItem: React.FC<AgentActivityItemProps> = ({
     </div>
   );
 };
+
+// ioiti-ui: code wider than its box, holding no control: a stop of the keyboard, which scrolls it, named by its language
+// (src/lib/scroll-region.ts).
+function CodeSnippet({ label, children }: { label: string; children: React.ReactNode }) {
+  const frame = useRef<HTMLPreElement>(null);
+  const region = useScrollRegion(frame, { label });
+  return (
+    <pre
+      ref={frame}
+      {...region}
+      className="p-2.5 sm:p-3 rounded-lg bg-surface-raised/50 dark:bg-surface-raised/20 border border-border/40 text-foreground text-xs leading-relaxed overflow-x-auto select-text font-mono"
+    >
+      <code>{children}</code>
+    </pre>
+  );
+}
 
 // ioiti-ui: the caret at the end of a note still being written, still where motion is reduced (as AIResponse's).
 function NoteCaret() {

@@ -19,9 +19,12 @@ npm test                 # Vitest and Testing Library, in jsdom
 npm run build            # dist/
 npm run build:gallery    # the gallery on dist/
 npm run check:package    # the package packed, installed into the template, built, read and weighed
+npm run e2e              # the gallery built, in Chromium: every page, axe with CSS, the keyboard, motion
 ```
 
-All of it passes before a pull request is reviewed; CI runs it again, on Node 24 and on Node 22.12.
+All of it passes before a pull request is reviewed; CI runs it again, on Node 24 and on Node 22.12, the browser suite in
+Firefox and WebKit too, and compares the gallery's screenshots on Linux (a picture that moved is a diff to look at;
+a new one, a baseline to commit from CI's `visual-baselines`).
 
 ## A change
 

@@ -1,6 +1,7 @@
 import { Children, isValidElement, useId, useLayoutEffect, useRef, useState } from 'react'
-import type { KeyboardEvent, PointerEvent, ReactElement, ReactNode } from 'react'
+import type { CSSProperties, KeyboardEvent, PointerEvent, ReactElement, ReactNode } from 'react'
 
+import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
 
 interface ResizablePanelProps {
@@ -162,14 +163,15 @@ export function ResizablePanels({ direction = 'horizontal', onSizesChange, stack
           const index = nth(at)
           const panel = item.props as ResizablePanelProps
           return (
-            <div
+            <Pane
               key={item.key ?? `panel-${index}`}
               id={`${id}-${index}`}
-              className={cn('min-h-0 min-w-0 overflow-auto', folded[index] !== undefined && 'invisible', panel.className)}
+              label={panel.label}
+              className={cn(folded[index] !== undefined && 'invisible', panel.className)}
               style={stacked ? undefined : { flex: `${sizes[index]} 1 0px` }}
             >
               {panel.children}
-            </div>
+            </Pane>
           )
         }
         if (item.type === ResizableHandle) {
@@ -215,6 +217,20 @@ export function ResizablePanels({ direction = 'horizontal', onSizesChange, stack
         }
         return item
       })}
+    </div>
+  )
+}
+
+/**
+ * A panel's frame, what it holds scrolling in it: while that is more than it shows and holds no control (a page of
+ * text, a table of figures), a stop of the keyboard, a region named as the panel is.
+ */
+function Pane({ id, label, className, style, children }: { id: string; label?: string; className?: string; style?: CSSProperties; children?: ReactNode }) {
+  const frame = useRef<HTMLDivElement>(null)
+  const region = useScrollRegion(frame, { label: label ?? 'Panel' })
+  return (
+    <div ref={frame} id={id} {...region} className={cn('min-h-0 min-w-0 overflow-auto', className)} style={style}>
+      {children}
     </div>
   )
 }

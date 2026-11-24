@@ -108,7 +108,8 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
     <div
       className={cn(
         'flex items-center justify-between gap-4 select-none',
-        disabled && 'opacity-50 cursor-not-allowed',
+        // ioiti-ui: disabled, its label and its control at half strength, its description whole: it says why (it was 2:1).
+        disabled && 'cursor-not-allowed',
         className
       )}
     >
@@ -122,7 +123,7 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
           }}
         >
           {label && (
-            <div id={`${id}-label`} className="text-sm font-medium text-foreground leading-tight">{label}</div>
+            <div id={`${id}-label`} className={cn('text-sm font-medium text-foreground leading-tight', disabled && 'opacity-50')}>{label}</div>
           )}
           {description && (
             <div id={`${id}-description`} className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
@@ -155,7 +156,7 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
             ? // ioiti-ui: on, in the accent under a theme that has one (accent:), its thumb on it.
               'bg-primary border-primary accent:bg-brand accent:border-brand'
             : 'bg-surface-raised border-border',
-          disabled && 'cursor-not-allowed'
+          disabled && 'cursor-not-allowed opacity-50'
         )}
         style={{ paddingInline: TRACK_PADDING }}
       >

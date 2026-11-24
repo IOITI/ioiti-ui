@@ -49,7 +49,9 @@ export default function PromptComposerAttachments() {
             <Button size="sm" variant="ghost" rightIcon={<ChevronDown className="size-3.5" />}>
               high
             </Button>
-            <Button size="sm" variant="ghost" leftIcon={<Gauge className="size-3.5" />} aria-label="Context: 12,200 tokens">
+            {/* Named by the figures it shows (WCAG 2.5.3, label in name), what they are said before them. */}
+            <Button size="sm" variant="ghost" leftIcon={<Gauge className="size-3.5" />}>
+              <span className="sr-only">Context used: </span>
               <span className="tabular-nums">12.2k · 1%</span>
             </Button>
           </>

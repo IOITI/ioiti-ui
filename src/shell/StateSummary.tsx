@@ -22,7 +22,7 @@ const PILL: Record<StateTone, string> = {
 interface StateSummaryProps {
   /** The states, each while it applies; the quiet ones too (all is well, a fallback), said once it is opened. */
   items: StateItem[]
-  /** Its name: the button's, before what it says ("State: 1 to fix"), and the panel's. */
+  /** Its name: the button's, before what it says ("State: Payments down"), and the panel's. */
   label?: string
   /** What it says while nothing stands out and nothing is neutral. */
   okLabel?: string
@@ -44,7 +44,11 @@ export function StateSummary({ items, label = 'State', okLabel = 'All good', foo
   const quiet = ordered.filter((item) => !standsOut(item.tone))
   const lead = out[0]
   const neutral = quiet.find((item) => item.tone === 'neutral')
+  // What it is named holds the words it shows (WCAG 2.5.3, label in name): the gravest state's, then how many of each
+  // tone where several stand out ("State: Payments down (1 to fix, 1 to watch)"). What it shows is for the eye: its count,
+  // and under 1280px no words (a name given over them would hold none of them at one width or the other).
   const sentence = stateSentence(items, okLabel)
+  const said = lead && out.length > 1 ? `${lead.label} (${sentence})` : sentence
 
   return (
     <Popover
@@ -54,7 +58,6 @@ export function StateSummary({ items, label = 'State', okLabel = 'All good', foo
       trigger={
         <button
           type="button"
-          aria-label={`${label}: ${sentence}`}
           className={cn(
             PRESSABLE,
             'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-xs font-medium transition-[background-color,color,scale] focus-ring xl:px-2.5 [&_svg]:size-3.5 [&_svg]:shrink-0',
@@ -62,13 +65,16 @@ export function StateSummary({ items, label = 'State', okLabel = 'All good', foo
             className,
           )}
         >
+          <span className="sr-only">{`${label}: ${said}`}</span>
           {lead ? (
             <>
               {lead.icon ?? <Dot tone={lead.tone} />}
               {/* Its words from 1280px: the trail before it, and the bar's end after it, take the room under that. */}
-              <span className="hidden max-w-48 truncate xl:inline">{lead.label}</span>
+              <span aria-hidden className="hidden max-w-48 truncate xl:inline">
+                {lead.label}
+              </span>
               {out.length > 1 && (
-                <span className="tabular-nums">
+                <span aria-hidden className="tabular-nums">
                   <span className="hidden xl:inline">+{out.length - 1}</span>
                   <span className="xl:hidden">{out.length}</span>
                 </span>
@@ -77,7 +83,9 @@ export function StateSummary({ items, label = 'State', okLabel = 'All good', foo
           ) : (
             <>
               <Dot tone={tone} />
-              <span className="hidden sm:inline">{neutral?.label ?? okLabel}</span>
+              <span aria-hidden className="hidden sm:inline">
+                {neutral?.label ?? okLabel}
+              </span>
             </>
           )}
         </button>

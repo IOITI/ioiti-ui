@@ -1,6 +1,7 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useRef } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
 
+import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
 
 /**
@@ -24,12 +25,16 @@ interface TableProps extends ComponentProps<'table'> {
  * frame when the screen is narrower than it (give it a `min-w-[40rem]` then). The frame holds all it
  * scrolls, the text of its cells for screen readers too (`sr-only`, placed absolutely): out of a frame
  * that is not positioned, that text stood beyond the page, which then scrolled sideways onto nothing.
+ * While it scrolls and its cells hold no control, the frame is a stop of the keyboard, a region named
+ * as the table is.
  */
 const TABLE = { regular: 'w-full text-left text-sm', compact: 'w-full text-left text-xs', dense: 'w-full whitespace-nowrap text-sm' }
 
 export function Table({ density = 'regular', wrapperClassName, className, children, ...props }: TableProps) {
+  const frame = useRef<HTMLDivElement>(null)
+  const region = useScrollRegion(frame, { label: props['aria-label'] ?? 'Table', labelledBy: props['aria-labelledby'] })
   return (
-    <div className={cn('relative min-w-0 overflow-x-auto', wrapperClassName)}>
+    <div ref={frame} {...region} className={cn('relative min-w-0 overflow-x-auto', wrapperClassName)}>
       <table
         className={cn(TABLE[density], className)}
         {...props}

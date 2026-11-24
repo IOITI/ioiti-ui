@@ -10,3 +10,5 @@ templates/app/dist/
 .claude/launch.json
 .claude/settings.local.json
 design-system/out/
+/playwright-report
+/test-results

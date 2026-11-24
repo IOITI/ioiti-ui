@@ -1,6 +1,7 @@
 // Renders each card of design-system/out as the artifact's page does (tokens.css from tokens.json, the fonts,
 // bundle.css, React, the bundle, data-theme on <html>), in both themes, and reports errors and empty cards.
-// Screenshots go to design-system/out/check/. Needs Playwright and its Chromium (not a dependency of the package).
+// Screenshots go to design-system/out/check/. Takes the Playwright of the package's own tests (e2e/), and its Chromium
+// (npx playwright install chromium).
 //
 //   node design-system/check.mjs [Card…] [--theme=light|dark] [--accent=violet|indigo|blue|bloom|lagoon|aurora|dusk|golden] [--material=glass]
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -15,7 +16,7 @@ let chromium
 try {
   ;({ chromium } = createRequire(join(DS, '../package.json'))('playwright'))
 } catch {
-  console.error('Playwright is not installed here: npx playwright install chromium, with playwright installed, or check the page itself.')
+  console.error('Playwright is not installed here: npm install (the tests of the package bring it), then npx playwright install chromium.')
   process.exit(1)
 }
 mkdirSync(H, { recursive: true })

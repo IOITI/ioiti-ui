@@ -13,7 +13,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
 | `src/shell/` | the application shell, the trail, the 404, the sign-in frame |
-| `src/lib/` | helpers (`cn`, formats, theme, CSV, dates, date maths, keys, the clock), the placing of a layer (`anchor.ts`), the charts' scales and colours, EasyUI's chart helpers |
+| `src/lib/` | helpers (`cn`, formats, theme, CSV, dates, date maths, keys, the clock), the placing of a layer (`anchor.ts`), a frame that scrolls (`scroll-region.ts`), the charts' scales and colours, EasyUI's chart helpers |
 | `src/react-router/` | the adapter for React Router, the only code that imports it |
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
 | `gallery/` | an application made with the package: a page per component, in both themes (`gallery/src/components/<category>/`: its `category.ts`, then a folder per component of one file per example, whose code the page shows; `gallery/src/catalogue/` draws them, with each component's guidelines and props) |
@@ -23,6 +23,7 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
 | `test/size-budget.json` | what an application bundles, gzipped, which `check:package` holds it to |
 | `test/a11y.ts` | axe in the tests (`expectAccessible`), shared by the package's tests and the gallery's |
+| `e2e/` | the gallery in real browsers (Playwright): its pages, axe with the stylesheets, the keyboard, motion, its screenshots (`e2e/__screenshots__`, made by CI) |
 
 ## Commands
 
@@ -34,6 +35,8 @@ npm run gallery                    # http://localhost:5180, on src/
 npm run props                      # gallery/src/props.json, after a change of a component's props (lint checks it)
 npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 npm run check:package -- --update-budget   # test/size-budget.json, after a change that weighs more on purpose
+npm run e2e                        # the gallery built, in Chromium: pages, axe with CSS, the keyboard, motion
+E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's dev server), a port of its own
 ```
 
 ## Rules
@@ -86,6 +89,9 @@ npm run check:package -- --update-budget   # test/size-budget.json, after a chan
 - **A layer placed beside its trigger** (a popover, a menu, a list) is placed by `src/lib/anchor.ts`
   (`useAnchoredLayer`): in `document.body`, following its trigger, its Escape and Tab its own inside a dialog.
   No new placement written by hand.
+- **What scrolls and holds no control** (a table's frame, code, a sheet's body, a page of text) is a stop of the
+  keyboard while it scrolls, a region named by what it holds: `useScrollRegion` (`src/lib/scroll-region.ts`), never a
+  tab index measured by hand. What fits is no stop, nor a frame that holds a control, which Tab reaches.
 - **One recipe per role** (`src/lib/recipes.ts`): a section or a card (`SECTION`), what floats, a tooltip, a dialog, a toast, a menu's row, the scrim,
   the close buttons, a disabled or pressed control, the tones. A component names the design's tokens by role
   (`design-system/guide/README.md`, Colour) and these recipes, never a colour (hex, `rgba()`, a palette's step, white or
@@ -149,6 +155,21 @@ npm run check:package -- --update-budget   # test/size-budget.json, after a chan
   test holds its open states to it too. Shared helpers live in the root `test/`, which the gallery may import.
   Under fake timers, framer-motion draws on the window's real frames, taken when it loads, and reads the faked
   clock: an animation starts on one of its frames and moves as the clock is advanced (`ToastProvider.test.tsx`).
+- **What jsdom cannot hold, a real browser does** (`e2e/`, Playwright, on the gallery built): every page loads and
+  says nothing wrong (`e2e/fixtures.ts` fails a test on a console error, an uncaught error, a failed request, a request
+  to another origin; the pages whose examples fail on purpose let React's words for them through), axe with the
+  stylesheets in light and dark (contrast, a region that scrolls, a label in a name), the keyboard's journeys (focus
+  through portals, a real drag), motion and reduced motion. Firefox and WebKit run what is tagged `@smoke` (CI).
+  Behaviour that needs layout, CSS or a real focus belongs there, not in a jsdom test.
+- **A control that shows words is named by them** (WCAG 2.5.3): axe's label in name reads every word on screen, an
+  `aria-hidden` one too (a key's `Kbd`, a count), against a name written over them (`aria-label`, `aria-labelledby`),
+  what is in brackets left out. Where a screen reader needs more than it shows, the words are the control's own, the
+  rest `sr-only` beside them ("Collapse" and "sidebar", `ui/sidebar.tsx`), what is for the eye alone `aria-hidden`.
+- **The screenshots are made on Linux only** (`e2e/visual.spec.ts`, Playwright's image): CI's `visual` job writes a
+  picture that has no baseline and uploads it (`visual-baselines`, to look at and commit into `e2e/__screenshots__`),
+  and fails on a picture that moved (`visual-diffs`). A Mac draws other pixels: `E2E_SNAPSHOTS=<a folder>` keeps a set
+  of its own there, to see a change draw the same twice. An example that moves on its own or reads the time is not
+  pictured (`LIVE`); the clock stands still and Math.random is seeded for the others.
 - jsdom has no view transitions: pages and looks change at once there. `src/test/viewTransition.ts` stands in
   for `document.startViewTransition` (a change of look), not for React's `ViewTransition`, whose pictures jsdom
   cannot animate.

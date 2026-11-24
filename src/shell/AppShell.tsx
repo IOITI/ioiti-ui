@@ -9,6 +9,7 @@ import { ShortcutsDialog } from '../components/ShortcutsDialog.js'
 import { ThemeToggle } from '../components/ThemeToggle.js'
 import { Sidebar, SidebarTrigger, useSidebar } from '../components/ui/sidebar.js'
 import { isPlainClick } from '../lib/links.js'
+import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
 import { menuEntry, sidebarSections } from './navigation.js'
 import type { Menu } from './navigation.js'
@@ -157,15 +158,21 @@ function Shell<S extends string>({
   const current = menuEntry(menu, pathname, search)
   const sections = useMemo(() => sidebarSections(menu), [menu])
 
-  // Past the menu to the page: the page takes the focus for as long as it keeps it, without the address
-  // taking its fragment (a change of the address a router's guard would have to judge).
+  // A page that scrolls holding no control (a page of text, of figures) is a stop of the keyboard itself, its arrows
+  // scrolling it; one that holds a control is reached through it (scroll-region.ts). Each page's frame is its own.
+  const pageStop = useScrollRegion(main, { region: false, key: page })
+
+  // Past the menu to the page: the page takes the focus for as long as it keeps it (a stop already, it keeps its
+  // tab index), without the address taking its fragment (a change of the address a router's guard would have to judge).
   const mainId = useId()
   const skip = (event: MouseEvent<HTMLAnchorElement>) => {
     const page = main.current
     if (!isPlainClick(event) || !page) return
     event.preventDefault()
-    page.tabIndex = -1
-    page.addEventListener('blur', () => page.removeAttribute('tabindex'), { once: true })
+    if (!page.hasAttribute('tabindex')) {
+      page.tabIndex = -1
+      page.addEventListener('blur', () => page.getAttribute('tabindex') === '-1' && page.removeAttribute('tabindex'), { once: true })
+    }
     page.focus()
   }
 
@@ -216,7 +223,7 @@ function Shell<S extends string>({
             against the page would otherwise make the window itself scroll, onto nothing. The
             transition takes it whole, cut to what it shows. */}
         <ViewTransition key={page} name={frameName} default="none" enter="ioiti-page" exit="ioiti-page" share="ioiti-page">
-          <main ref={main} id={mainId} aria-busy={pending || undefined} className="relative flex-1 overflow-y-auto">
+          <main ref={main} id={mainId} {...pageStop} aria-busy={pending || undefined} className="relative flex-1 overflow-y-auto">
             {/* The page never scrolls sideways: what is wider than the screen scrolls in a frame of its
                 own (Table), and what would still stand beyond the page (text for screen readers placed
                 out of a frame) is cut at its edge, where on a phone the page slid sideways onto nothing.

@@ -70,8 +70,10 @@ const readOnlyExtension = (readOnly: boolean): Extension => EditorState.readOnly
 const wrapExtension = (wrap: boolean): Extension => (wrap ? EditorView.lineWrapping : [])
 const gutterExtension = (numbered: boolean): Extension => (numbered ? [lineNumberGutter(), highlightActiveLineGutter()] : [])
 const placeholderExtension = (text: string | undefined): Extension => (text ? placeholderText(text) : [])
+// The text is a stop of the keyboard, read-only or not, from which the arrows scroll it: editable text takes the focus by
+// itself; a tab index says so to what counts only tab indexes (axe, which took a scroller for one the keyboard cannot reach).
 const attributesExtension = (label: string, readOnly: boolean): Extension =>
-  EditorView.contentAttributes.of({ 'aria-label': label, ...(readOnly ? { 'aria-readonly': 'true' } : {}) })
+  EditorView.contentAttributes.of({ 'aria-label': label, tabindex: '0', ...(readOnly ? { 'aria-readonly': 'true' } : {}) })
 
 /**
  * Code to edit: a configuration, a rule, a document (CodeMirror). In the design's code colours and surface,

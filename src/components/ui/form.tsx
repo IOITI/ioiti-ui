@@ -650,7 +650,8 @@ export const Switch: React.FC<SwitchProps> = ({
   };
 
   return (
-    <div className={cn('flex items-center justify-between gap-4 select-none', disabled && 'opacity-50 cursor-not-allowed', className)}>
+    // ioiti-ui: disabled, its label and its control at half strength, its description whole: it says why (it was 2:1).
+    <div className={cn('flex items-center justify-between gap-4 select-none', disabled && 'cursor-not-allowed', className)}>
       {(label || description) && (
         <div
           className="text-left cursor-pointer"
@@ -661,7 +662,7 @@ export const Switch: React.FC<SwitchProps> = ({
           }}
         >
           {label && (
-            <div id={`${id}-label`} className="text-sm font-medium text-foreground leading-tight">
+            <div id={`${id}-label`} className={cn('text-sm font-medium text-foreground leading-tight', disabled && 'opacity-50')}>
               {label}
             </div>
           )}
@@ -691,7 +692,7 @@ export const Switch: React.FC<SwitchProps> = ({
           current
             ? 'bg-primary border-primary accent:bg-brand accent:border-brand'
             : 'bg-surface border-border',
-          disabled && 'cursor-not-allowed'
+          disabled && 'cursor-not-allowed opacity-50'
         )}
       >
         <motion.span

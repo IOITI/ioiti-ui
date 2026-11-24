@@ -54,6 +54,63 @@ jobs:
       - run: npm run build
       - run: npm run check:package
 
+  # The gallery in real browsers (e2e/): every page loads and logs nothing wrong, axe with the stylesheets in light and
+  # dark, the keyboard's journeys, motion and reduced motion; in Firefox and WebKit, the pages and journeys @smoke.
+  browser:
+    name: The gallery in Chromium, Firefox and WebKit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run e2e
+      - run: npm run e2e:smoke
+      - name: The report, to see what failed
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 14
+
+  # The screenshots (e2e/visual.spec.ts), in Playwright's Linux image, as the baselines were made: a picture that moved
+  # fails, its diff uploaded. A picture without a baseline yet is written and uploaded (visual-baselines), to commit
+  # into e2e/__screenshots__ once looked at.
+  visual:
+    name: The gallery's screenshots, on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run e2e:visual
+      - name: The pictures written, without a baseline yet
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: visual-baselines
+          path: e2e/__screenshots__
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: The pictures that moved, and their diffs
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: visual-diffs
+          path: test-results
+          retention-days: 14
+
   # What an application installs with ioiti-ui (its dependencies, not the tools that build it), against npm's advisories.
   # Apart from the checks: an advisory published tomorrow says so here without holding the gallery back.
   audit:
@@ -71,7 +128,7 @@ jobs:
   # Pages publishes what this workflow gives it: Settings > Pages > Source is GitHub Actions.
   gallery:
     name: The gallery, built under the site's path
-    needs: [checks, node-22]
+    needs: [checks, node-22, browser, visual]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 20
