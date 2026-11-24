@@ -11,6 +11,8 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-11-24
+
 ### Added
 
 - **`SettleModal`'s `aria-label` and `aria-labelledby`**, for a dialog without a `title`: a dialog with no name at all
@@ -1251,7 +1253,8 @@ tokens and the same shell, in both themes (`docs/fidelity.md`).
 - **`ioiti-ui/vite`**: `ioiti()`, the pre-paint script in the pages, no font as a `data:` URI, one React.
 - **The gallery** (`npm run gallery`) and **the starter template** (`templates/app`).
 
-[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.24.0...main
+[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.25.0...main
+[0.25.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.25.0
 [0.24.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.24.0
 [0.23.2]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.23.2
 [0.23.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.23.1
