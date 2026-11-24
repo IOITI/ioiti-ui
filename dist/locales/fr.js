@@ -1,0 +1,10 @@
+import { chart } from './fr/chart.js';
+import { clock } from './fr/clock.js';
+import { date } from './fr/date.js';
+import { format } from './fr/format.js';
+import { heatmap } from './fr/heatmap.js';
+import { ledger } from './fr/ledger.js';
+import { log } from './fr/log.js';
+import { numberInput } from './fr/numberInput.js';
+import { timeRange } from './fr/timeRange.js';
+export const fr = { format, date, heatmap, timeRange, chart, clock, ledger, log, numberInput };
