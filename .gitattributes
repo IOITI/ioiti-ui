@@ -1,12 +1,13 @@
 # LF everywhere, whatever system the repository is checked out on.
 * text=auto eol=lf
 
-# Images, never converted nor diffed as text: the grains beside the stylesheets.
+# Images, never converted nor diffed as text: the grains beside the stylesheets, the gallery's screenshots.
 *.png binary
 
 # Written by scripts, folded in GitHub's diffs and left out of its languages: the props tables (npm run props), the
-# lockfile, the snapshots, and dist/ (in release commits only).
+# lockfile, the snapshots, the screenshots (made by CI), and dist/ (in release commits only).
 gallery/src/props.json linguist-generated=true
+e2e/__screenshots__/** linguist-generated=true
 package-lock.json linguist-generated=true
 **/__snapshots__/*.snap linguist-generated=true
 dist/** linguist-generated=true
