@@ -1,9 +1,15 @@
 // A range of time written as people mean it, which stays true as time goes by: "the last 15 minutes" is
 // `{ from: 'now-15m', to: 'now' }`, "today" `{ from: 'now/d', to: 'now/d' }`. Each end is `now`, `now` moved
 // (`now-15m`, `now+1h`) and rounded to a unit (`now-1d/d`: yesterday's start, or its end for the range's
-// end), or a moment written out (an ISO string). Read and rounded in the browser's time zone.
+// end), or a moment written out (an ISO string). Read and rounded in the browser's time zone; said in a locale's words
+// (a catalogue's `timeRange`, English's by default).
 
 import type { DateRange } from '../components/ui/calendar.js'
+import { en } from '../locales/en.js'
+import type { Messages } from '../locales/en.js'
+import { DEFAULT_LOCALE } from './locale.js'
+import type { HourCycle, WeekDay } from './locale.js'
+import { kitFor } from './messages.js'
 
 export interface TimeRange {
   from: string
@@ -13,21 +19,6 @@ export interface TimeRange {
 export type TimeUnit = 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'y'
 
 export const TIME_UNITS: TimeUnit[] = ['s', 'm', 'h', 'd', 'w', 'M', 'y']
-
-const NAMES: Record<TimeUnit, [string, string]> = {
-  s: ['second', 'seconds'],
-  m: ['minute', 'minutes'],
-  h: ['hour', 'hours'],
-  d: ['day', 'days'],
-  w: ['week', 'weeks'],
-  M: ['month', 'months'],
-  y: ['year', 'years'],
-}
-
-/** A unit's name for a count: "1 minute", "15 minutes". */
-export function unitName(unit: TimeUnit, count: number): string {
-  return NAMES[unit][count === 1 ? 0 : 1]
-}
 
 function shift(date: Date, count: number, unit: TimeUnit): Date {
   const out = new Date(date)
@@ -42,7 +33,7 @@ function shift(date: Date, count: number, unit: TimeUnit): Date {
 }
 
 /** The start of the unit a moment is in, or its end (the last millisecond before the next). */
-function round(date: Date, unit: TimeUnit, up: boolean, weekStartsOn: number): Date {
+function round(date: Date, unit: TimeUnit, up: boolean, weekStartsOn: WeekDay): Date {
   const out = new Date(date)
   if (unit === 's') out.setMilliseconds(0)
   else if (unit === 'm') out.setSeconds(0, 0)
@@ -61,8 +52,8 @@ export interface DateMathOptions {
   now?: number
   /** The end of a range: rounded up to the unit's end (`now/d` is the day's last moment). */
   roundUp?: boolean
-  /** The day weeks start on: 1 for Monday (the default), 0 for Sunday. */
-  weekStartsOn?: number
+  /** The day weeks start on (0 Sunday, 1 Monday … 6 Saturday), for a week rounded (`now/w`): Monday by default. */
+  weekStartsOn?: WeekDay
 }
 
 const STEP = /^([+-])(\d+)([smhdwMy])|^\/([smhdwMy])/
@@ -110,44 +101,97 @@ export function relativeEnd(text: string): RelativeEnd | null {
   return { past: match[1] === '-', count: Number(match[2]), unit: match[3] as TimeUnit, round: (match[4] as TimeUnit) || undefined }
 }
 
-const NAMED: Record<string, string> = {
-  'now/d now/d': 'Today',
-  'now-1d/d now-1d/d': 'Yesterday',
-  'now/d now': 'Today so far',
-  'now/w now/w': 'This week',
-  'now/w now': 'This week so far',
-  'now-1w/w now-1w/w': 'Last week',
-  'now/M now/M': 'This month',
-  'now/M now': 'This month so far',
-  'now-1M/M now-1M/M': 'Last month',
-  'now/y now/y': 'This year',
-  'now/y now': 'This year so far',
+/** How a range or an end is said: in which words, and with which clock and week. */
+export interface TimeRangeWordsOptions {
+  /**
+   * The words: a catalogue's (`fr.timeRange`, an application's), or a provider's as `useMessages().timeRange` gives them,
+   * bound to its locale. English's by default.
+   */
+  words?: Messages['timeRange']
+  /** The clock of a moment written out, 24 hours (`h23`) or 12 (`h12`): the locale's by default. */
+  hourCycle?: HourCycle
+  /** The day weeks start on, for an end written out as the moment it stands for (`now/w`): Monday by default. */
+  weekStartsOn?: WeekDay
+  /** The time now, in milliseconds, for an end written out as the moment it stands for. */
+  now?: number
 }
 
-function endInWords(text: string, locale: string): string {
-  if (text.trim() === 'now') return 'now'
+export interface TimeRangeEndOptions extends TimeRangeWordsOptions {
+  /** The end of a range: a moment rounded up to its unit's end, as `resolveTimeRange` reads it (`now/d`: 23:59). */
+  roundUp?: boolean
+}
+
+/**
+ * An end of a range in words: "now", "15 minutes ago", "2 days ago, to the day", or else the moment it stands for,
+ * "27 Oct 2026, 09:30" (`now/d` too: an end alone names no range); what cannot be read, as it is written.
+ */
+export function formatTimeRangeEnd(text: string, locale: string = DEFAULT_LOCALE, options: TimeRangeEndOptions = {}): string {
+  const { words = en.timeRange, hourCycle, weekStartsOn, now, roundUp } = options
+  // A word bound to a locale (`useMessages()`'s) takes its value alone, and leaves the kit given here.
+  const kit = kitFor(locale)
+  if (text.trim() === 'now') return words.now
   const relative = relativeEnd(text)
   if (relative) {
-    const span = `${relative.count} ${unitName(relative.unit, relative.count)}`
-    const moved = relative.past ? `${span} ago` : `in ${span}`
-    return relative.round ? `${moved}, to the ${NAMES[relative.round][0]}` : moved
+    const span = { count: relative.count, unit: relative.unit }
+    const moved = relative.past ? words.ago(span, kit) : words.later(span, kit)
+    return relative.round ? words.rounded({ moved, unit: relative.round }) : moved
   }
-  const date = parseDateMath(text)
+  const date = parseDateMath(text, { now, roundUp, weekStartsOn })
   if (!date) return text
-  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date)
+  const moment: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle }
+  return new Intl.DateTimeFormat(locale, moment).format(date)
 }
 
-/** A range in words: "Last 15 minutes", "Today", or its two ends, "27 Oct 2026, 09:30 → now". */
-export function formatTimeRange(range: TimeRange, locale = 'en-GB'): string {
-  const named = NAMED[`${range.from.trim()} ${range.to.trim()}`]
-  if (named) return named
-  if (range.to.trim() === 'now') {
-    const relative = relativeEnd(range.from)
-    if (relative?.past && !relative.round) return `Last ${relative.count} ${unitName(relative.unit, relative.count)}`
+type NamedRange =
+  | 'today'
+  | 'yesterday'
+  | 'todaySoFar'
+  | 'thisWeek'
+  | 'thisWeekSoFar'
+  | 'lastWeek'
+  | 'thisMonth'
+  | 'thisMonthSoFar'
+  | 'lastMonth'
+  | 'thisYear'
+  | 'thisYearSoFar'
+
+// The ranges with a name of their own, by their two ends.
+const NAMED = new Map<string, NamedRange>([
+  ['now/d now/d', 'today'],
+  ['now-1d/d now-1d/d', 'yesterday'],
+  ['now/d now', 'todaySoFar'],
+  ['now/w now/w', 'thisWeek'],
+  ['now/w now', 'thisWeekSoFar'],
+  ['now-1w/w now-1w/w', 'lastWeek'],
+  ['now/M now/M', 'thisMonth'],
+  ['now/M now', 'thisMonthSoFar'],
+  ['now-1M/M now-1M/M', 'lastMonth'],
+  ['now/y now/y', 'thisYear'],
+  ['now/y now', 'thisYearSoFar'],
+])
+
+/**
+ * A range in words: "Last 15 minutes", "Today", or its two ends, "27 Oct 2026, 09:30 → now". In English, its moments as
+ * Britain writes them, by default; in another language with its words (`formatTimeRange(range, 'fr-FR', { words:
+ * fr.timeRange })`, or a component's `useMessages().timeRange` with `useLocale()`'s locale, clock and week).
+ */
+export function formatTimeRange(range: TimeRange, locale: string = DEFAULT_LOCALE, options: TimeRangeWordsOptions = {}): string {
+  const { words = en.timeRange } = options
+  const kit = kitFor(locale)
+  const from = range.from.trim()
+  const to = range.to.trim()
+  const named = NAMED.get(`${from} ${to}`)
+  if (named) return words[named]
+  if (to === 'now') {
+    const relative = relativeEnd(from)
+    if (relative?.past && !relative.round) return words.lastSpan({ count: relative.count, unit: relative.unit }, kit)
   }
-  if (range.from.trim() === 'now') {
-    const relative = relativeEnd(range.to)
-    if (relative && !relative.past && !relative.round) return `Next ${relative.count} ${unitName(relative.unit, relative.count)}`
+  if (from === 'now') {
+    const relative = relativeEnd(to)
+    if (relative && !relative.past && !relative.round) return words.nextSpan({ count: relative.count, unit: relative.unit }, kit)
   }
-  return `${endInWords(range.from, locale)} → ${endInWords(range.to, locale)}`
+  return words.ends({
+    from: formatTimeRangeEnd(range.from, locale, { ...options, roundUp: false }),
+    to: formatTimeRangeEnd(range.to, locale, { ...options, roundUp: true }),
+  })
 }

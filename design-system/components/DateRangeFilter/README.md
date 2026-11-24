@@ -11,5 +11,5 @@ The range of days a page is filtered by: the ranges people ask for first, as but
 ```
 
 - The range shown is the one button filled (`primary`, the accent's `brand` with one), pressed for a screen reader; the others are outline.
-- Any other range is chosen on a `DateRangePicker` after the buttons ("Custom range" while empty): weeks start on Monday, days are written as en-GB writes them.
+- Any other range is chosen on a `DateRangePicker` after the buttons ("Custom range" while empty): weeks start on the locale's day and days are written as it writes them, IoitiProvider's (Monday and 14 Oct 2026 in en-GB, the default).
 - `lastDays(30)` gives a range to start from, `ALL_TIME` the open one, `rangeParams(range)` the `from` / `to` days for an API.

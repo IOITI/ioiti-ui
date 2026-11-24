@@ -5,12 +5,13 @@ import type { KeyboardEvent, PointerEvent } from 'react'
 import { AXIS_COLOUR, GRID_COLOUR, MUTED_COLOUR, seriesColours } from '../lib/chart-colours.js'
 import { detailsText } from '../lib/chart-details.js'
 import type { ChartDetail } from '../lib/chart-details.js'
-import { Tooltip, defaultFormat, defaultTick, useDismissOutside, useElementWidth } from '../lib/chart-primitives.js'
+import { Tooltip, useChartFormat, useDismissOutside, useElementWidth } from '../lib/chart-primitives.js'
 import { niceDomain, niceStep } from '../lib/chart-scale.js'
 import { monotonePath } from '../lib/dashboard-chart-utils.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { cn } from '../lib/utils.js'
 import { ChartLegend } from './ChartLegend.js'
+import { useMessages } from './locale-context.js'
 import { METER_COLOUR } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 
@@ -60,19 +61,28 @@ export interface FanChartProps {
   /** Zero kept on the value axis, or the axis fitted to the values. */
   zero?: boolean
   height?: number
+  /** A value in the tooltip and the table: as the interface's locale writes it by default, to a tenth ("1,234.5"). */
   formatValue?: (value: number) => string
+  /** A tick of the value axis: compact in the interface's locale by default ("1.2k"). */
   formatTick?: (value: number) => string
-  /** A place on the x axis in words: "Trade 12". */
+  /** A place on the x axis in words: "Trade 12"; its number as the interface's locale writes it by default. */
   formatX?: (x: number) => string
   /** A place on the x axis on its ticks: "12"; `formatX` otherwise. */
   formatXTick?: (x: number) => string
-  /** What the x axis counts, under it: "Trades". */
+  /**
+   * What the x axis counts, under it: "Trades"; the head of the table's first column too ("Place", in the interface's
+   * language, otherwise).
+   */
   xLabel?: string
   /** More to say of a place, in the tooltip and the table. */
   details?: (point: FanPoint, index: number) => ChartDetail[]
   showLegend?: boolean
   /** Lines drawn in when they first show (not where motion is reduced). */
   animated?: boolean
+  /**
+   * Its name for a screen reader, and its table's caption. By default, in the interface's language, "Fan chart of
+   * Expected, Actual" and "Chart data".
+   */
   ariaLabel?: string
   className?: string
 }
@@ -153,9 +163,9 @@ export function FanChart({
   markers = [],
   zero = false,
   height = 260,
-  formatValue = defaultFormat,
-  formatTick = defaultTick,
-  formatX = (value: number) => defaultFormat(value),
+  formatValue: givenFormatValue,
+  formatTick: givenFormatTick,
+  formatX: givenFormatX,
   formatXTick,
   xLabel,
   details,
@@ -166,6 +176,12 @@ export function FanChart({
 }: FanChartProps) {
   const reduce = useReducedMotionConfig()
   const draw = animated && !reduce
+  // Its numbers and words in the interface's locale and language, where the application gives none of its own.
+  const chartFormat = useChartFormat()
+  const formatValue = givenFormatValue ?? chartFormat.format
+  const formatTick = givenFormatTick ?? chartFormat.tick
+  const formatX = givenFormatX ?? chartFormat.format
+  const words = useMessages().chart
   const [rootRef, width] = useElementWidth<HTMLDivElement>(640)
   const wrapRef = useRef<HTMLDivElement>(null)
   const [hidden, setHidden] = useState<string[]>([])
@@ -182,7 +198,7 @@ export function FanChart({
   const places = data.map((point) => point.x)
   const n = data.length
 
-  if (n === 0) return <p className="py-10 text-center text-sm text-muted-foreground">No data</p>
+  if (n === 0) return <p className="py-10 text-center text-sm text-muted-foreground">{words.noData}</p>
 
   const keys = [...shownLines.map((line) => line.key), ...shownBands.flatMap((band) => [band.lower, band.upper])]
   const values = keys.flatMap((key) => data.map((point) => valueOf(point, key))).filter((value): value is number => value !== null)
@@ -253,7 +269,7 @@ export function FanChart({
   const bandText = (point: FanPoint, band: FanBand) => {
     const low = valueOf(point, band.lower)
     const high = valueOf(point, band.upper)
-    return low === null || high === null ? '—' : `${formatValue(low)} to ${formatValue(high)}`
+    return low === null || high === null ? '—' : words.bandRange({ low: formatValue(low), high: formatValue(high) })
   }
 
   return (
@@ -264,7 +280,7 @@ export function FanChart({
           width={width}
           height={height}
           role="img"
-          aria-label={ariaLabel ?? `Fan chart of ${lines.map((line) => line.label).join(', ')}`}
+          aria-label={ariaLabel ?? words.fanChartName(lines.map((line) => line.label))}
           tabIndex={0}
           onKeyDown={onKeyDown}
           onBlur={() => setActive(null)}
@@ -429,7 +445,7 @@ export function FanChart({
 
       {showLegend && legendItems.length > 1 && (
         <ChartLegend
-          label="Series"
+          label={words.seriesLegend}
           className="mt-3"
           items={legendItems.map((item) => ({ label: item.label, color: item.color, shape: item.shape, shown: !hidden.includes(item.id) }))}
           onToggle={toggle}
@@ -439,10 +455,10 @@ export function FanChart({
       {/* The table in a box of its own: a table is never narrower than its rows (see LineChart). */}
       <div className="sr-only">
         <table>
-          <caption>{ariaLabel ?? 'Chart data'}</caption>
+          <caption>{ariaLabel ?? words.tableCaption}</caption>
           <thead>
             <tr>
-              <th scope="col">{xLabel ?? 'Place'}</th>
+              <th scope="col">{xLabel ?? words.placeColumn}</th>
               {lines.map((line) => (
                 <th key={line.key} scope="col">
                   {line.label}
@@ -453,7 +469,7 @@ export function FanChart({
                   {band.label}
                 </th>
               ))}
-              {details && <th scope="col">Details</th>}
+              {details && <th scope="col">{words.detailsColumn}</th>}
             </tr>
           </thead>
           <tbody>

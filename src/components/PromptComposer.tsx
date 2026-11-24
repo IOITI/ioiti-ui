@@ -5,6 +5,7 @@ import { ArrowUp, Square } from 'lucide-react'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
+import { useFormat } from './locale-context.js'
 
 interface PromptSuggestion {
   /** What the chip says. */
@@ -37,6 +38,7 @@ interface PromptComposerProps {
    * whole; where they do not all fit beside the send button (a phone), they wrap onto another line.
    */
   controls?: ReactNode
+  /** The most characters it sends: its count under the field ("1,204 / 2,000", in the provider's locale), past it in the loss tone. */
   maxLength?: number
   minRows?: number
   /** Longer, the field scrolls. */
@@ -93,6 +95,7 @@ export function PromptComposer({
   className,
 }: PromptComposerProps) {
   const id = useId()
+  const { formatNumber } = useFormat()
   const field = useRef<HTMLTextAreaElement>(null)
   // A drag of files over the frame: entered and left once for each element under it, so counted.
   const [dragged, setDragged] = useState(0)
@@ -243,7 +246,7 @@ export function PromptComposer({
             <div className="min-w-0 max-w-full truncate text-xs text-muted-foreground">
               {maxLength !== undefined && (
                 <span className={cn('tabular-nums', over && 'text-negative')}>
-                  {value.length.toLocaleString()} / {maxLength.toLocaleString()}
+                  {formatNumber(value.length)} / {formatNumber(maxLength)}
                   {footer ? ' · ' : ''}
                 </span>
               )}

@@ -1,13 +1,110 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
+import { fr } from '../locales/fr.js'
 import { Field } from './Field.js'
+import { IoitiProvider } from './IoitiProvider.js'
+import type { MessagesOverride } from './locale-context.js'
+import { Calendar } from './ui/calendar.js'
 import { Combobox } from './ui/combobox.js'
 import { DatePicker, DateRangePicker } from './ui/date-picker.js'
 
 const NOV = new Date(2026, 10, 14)
+const NOV_20 = new Date(2026, 10, 20)
+
+/** An application's own words, given over English's. */
+const OWN_WORDS: MessagesOverride = { date: { previousMonth: 'Back a month', pickerDialog: 'Pick the day', datePlaceholder: 'When?' } }
+
+/** A day of the calendar shown, by the date it says (data-date: year-month-day, unpadded). */
+const day = (iso: string) => document.querySelector<HTMLElement>(`[data-date="${iso}"]`)!
+/** The column of its week a day is in, 0 for the first day of the week. */
+function columnOf(iso: string) {
+  const cell = day(iso).closest('[role="gridcell"]')!
+  return [...cell.parentElement!.children].indexOf(cell)
+}
+/** The heads of the days of the week, in their order. */
+const heads = () => document.querySelector('div[aria-hidden="true"]')?.textContent
+/** A day's name, as a locale writes it in full. */
+const fullDate = (date: Date, locale: string) => new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(date)
+
+describe('a calendar', () => {
+  it('speaks English as Britain writes it outside a provider: its weeks start on Monday', () => {
+    render(<Calendar defaultMonth={NOV} />)
+    expect(screen.getByRole('grid')).toHaveAccessibleName('November 2026')
+    expect(screen.getByRole('button', { name: 'Previous month' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Next month' })).toBeInTheDocument()
+    expect(heads()).toBe('MTWTFSS')
+    // 1 Nov 2026, a Sunday, ends its week.
+    expect(columnOf('2026-11-1')).toBe(6)
+    expect(day('2026-11-14')).toHaveAccessibleName(fullDate(NOV, 'en-GB'))
+  })
+
+  it('starts its weeks on the provider’s day, Sunday in the United States: its heads, its grid, Home and End agree', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider locale="en-US">
+        <Calendar defaultMonth={NOV} />
+      </IoitiProvider>,
+    )
+    expect(heads()).toBe('SMTWTFS')
+    expect(columnOf('2026-11-1')).toBe(0)
+    expect(day('2026-11-14')).toHaveAccessibleName(fullDate(NOV, 'en-US'))
+    // Saturday 14 Nov: its week runs from Sunday the 8th to Saturday the 14th.
+    await user.click(day('2026-11-14'))
+    await user.keyboard('{Home}')
+    expect(day('2026-11-8')).toHaveFocus()
+    await user.keyboard('{End}')
+    expect(day('2026-11-14')).toHaveFocus()
+  })
+
+  it('goes to the Monday and the Sunday of a week that starts on Monday', async () => {
+    const user = userEvent.setup()
+    render(<Calendar defaultMonth={NOV} />)
+    await user.click(day('2026-11-14'))
+    await user.keyboard('{Home}')
+    expect(day('2026-11-9')).toHaveFocus()
+    await user.keyboard('{End}')
+    expect(day('2026-11-15')).toHaveFocus()
+  })
+
+  it('speaks French with a French provider: its month, its days, its buttons, its weeks from Monday', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <Calendar defaultMonth={NOV} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('grid')).toHaveAccessibleName('novembre 2026')
+    expect(screen.getByRole('button', { name: 'Mois précédent' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Mois suivant' })).toBeInTheDocument()
+    expect(heads()).toBe('LMMJVSD')
+    expect(columnOf('2026-11-1')).toBe(6)
+    expect(day('2026-11-14')).toHaveAccessibleName('samedi 14 novembre 2026')
+  })
+
+  it('keeps its own locale and first day over the provider’s, its words the provider’s', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <Calendar defaultMonth={NOV} locale="en-GB" weekStartsOn={0} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('grid')).toHaveAccessibleName('November 2026')
+    expect(heads()).toBe('SMTWTFS')
+    expect(columnOf('2026-11-1')).toBe(0)
+    expect(screen.getByRole('button', { name: 'Mois précédent' })).toBeInTheDocument()
+  })
+
+  it('says an application’s own words, English’s for the others', () => {
+    render(
+      <IoitiProvider messages={OWN_WORDS}>
+        <Calendar defaultMonth={NOV} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Back a month' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Next month' })).toBeInTheDocument()
+  })
+})
 
 describe('a date picker', () => {
   it('is named and described by a Field around it, and marked by its error', () => {
@@ -55,6 +152,78 @@ describe('a date picker', () => {
     await user.keyboard('{Escape}')
     await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Choose date' })).not.toBeInTheDocument())
     expect(screen.getByRole('button', { name: 'Delivery' })).toHaveFocus()
+  })
+
+  it('writes its day, its range and its placeholders as en-GB does outside a provider', () => {
+    render(
+      <>
+        <DatePicker aria-label="Due" defaultValue={NOV} />
+        <DatePicker aria-label="Paid" />
+        <DateRangePicker aria-label="Period" defaultValue={{ from: NOV, to: NOV_20 }} />
+        <DateRangePicker aria-label="From" defaultValue={{ from: NOV, to: null }} />
+        <DateRangePicker aria-label="Range" />
+      </>,
+    )
+    expect(screen.getByRole('button', { name: 'Due' })).toHaveTextContent('14 Nov 2026')
+    expect(screen.getByRole('button', { name: 'Paid' })).toHaveTextContent('Pick a date')
+    expect(screen.getByRole('button', { name: 'Period' })).toHaveTextContent('14 Nov 2026 – 20 Nov 2026')
+    expect(screen.getByRole('button', { name: 'From' })).toHaveTextContent('14 Nov 2026 – …')
+    expect(screen.getByRole('button', { name: 'Range' })).toHaveTextContent('Pick a range')
+  })
+
+  it('speaks French with a French provider: its days, its ranges, its placeholders, its calendar', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <DatePicker aria-label="Échéance" defaultValue={NOV} />
+        <DatePicker aria-label="Payée le" />
+        <DateRangePicker aria-label="Période" defaultValue={{ from: NOV, to: NOV_20 }} />
+        <DateRangePicker aria-label="À partir du" defaultValue={{ from: NOV, to: null }} />
+        <DateRangePicker aria-label="Plage" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Échéance' })).toHaveTextContent('14 nov. 2026')
+    expect(screen.getByRole('button', { name: 'Payée le' })).toHaveTextContent('Sélectionner une date')
+    expect(screen.getByRole('button', { name: 'Période' })).toHaveTextContent('14 nov. 2026 – 20 nov. 2026')
+    expect(screen.getByRole('button', { name: 'À partir du' })).toHaveTextContent('14 nov. 2026 – …')
+    expect(screen.getByRole('button', { name: 'Plage' })).toHaveTextContent('Sélectionner une période')
+
+    await user.click(screen.getByRole('button', { name: 'Échéance' }))
+    const calendar = await screen.findByRole('dialog', { name: 'Choisir une date' })
+    expect(within(calendar).getByRole('grid')).toHaveAccessibleName('novembre 2026')
+    expect(within(calendar).getByRole('button', { name: 'Mois précédent' })).toBeInTheDocument()
+    expect(heads()).toBe('LMMJVSD')
+    expect(day('2026-11-14')).toHaveAccessibleName('samedi 14 novembre 2026')
+    await expectAccessible(document.body)
+  })
+
+  it('writes its day as Americans do in the United States, its calendar’s weeks from Sunday', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider locale="en-US">
+        <DatePicker aria-label="Due" defaultValue={NOV} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Due' })).toHaveTextContent('Nov 14, 2026')
+    await user.click(screen.getByRole('button', { name: 'Due' }))
+    await screen.findByRole('dialog', { name: 'Choose date' })
+    expect(heads()).toBe('SMTWTFS')
+    expect(columnOf('2026-11-1')).toBe(0)
+  })
+
+  it('says an application’s own words, its own placeholder first', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider messages={OWN_WORDS}>
+        <DatePicker />
+        <DatePicker placeholder="Not paid yet" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'When?' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Not paid yet' }))
+    const calendar = await screen.findByRole('dialog', { name: 'Pick the day' })
+    expect(within(calendar).getByRole('button', { name: 'Back a month' })).toBeInTheDocument()
+    expect(within(calendar).getByRole('button', { name: 'Next month' })).toBeInTheDocument()
   })
 })
 

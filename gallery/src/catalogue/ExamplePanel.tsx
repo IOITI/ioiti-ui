@@ -1,6 +1,7 @@
 import { CodeBlock, Disclosure, Panel } from 'ioiti-ui'
 import type { ReactNode } from 'react'
 
+import { LANGUAGES, useGalleryLanguage } from '../language-context'
 import { RouterApart } from './RouterApart'
 import type { Example, ExampleInfo } from './types'
 
@@ -20,9 +21,12 @@ interface ExamplePanelProps {
 
 /** An example at work, and the file it is (folded under "Code"), which an application can start from. */
 export function ExamplePanel({ info, example, title, description, action, code = true, id }: ExamplePanelProps) {
+  // The example speaks the components' language, which a screen reader reads with its rules; the page around, English.
+  const { language } = useGalleryLanguage()
+  const lang = language === 'en' ? undefined : LANGUAGES[language].lang
   return (
     <Panel id={id ?? info.id} title={title ?? info.title} description={description ?? info.description} action={action} className="scroll-mt-20">
-      <div data-example={info.id} className="min-w-0">
+      <div data-example={info.id} lang={lang} className="min-w-0">
         {!example ? (
           <p className="text-sm text-negative">No file for this example.</p>
         ) : info.ownRouter ? (

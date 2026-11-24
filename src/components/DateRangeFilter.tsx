@@ -1,6 +1,7 @@
 import { Button } from './ui/button.js'
 import type { DateRange } from './ui/calendar.js'
 import { DateRangePicker } from './ui/date-picker.js'
+import { useMessages } from './locale-context.js'
 import { ALL_TIME, lastDays, rangeParams } from '../lib/dateRange.js'
 
 /** A range offered at once: the last so many days (ending on `today`), or a range of its own. */
@@ -10,18 +11,15 @@ export interface DateRangePreset {
   range?: DateRange
 }
 
-const PRESETS: DateRangePreset[] = [
-  { label: '7 days', days: 7 },
-  { label: '30 days', days: 30 },
-  { label: '90 days', days: 90 },
-]
+/** The days of the presets offered by default, each named in the provider's words ("7 days": `date.lastDays`). */
+const PRESET_DAYS = [7, 30, 90]
 
 interface DateRangeFilterProps {
   value: DateRange
   onChange: (range: DateRange) => void
-  /** The ranges offered first; the last 7, 30 and 90 days by default. */
+  /** The ranges offered first; the last 7, 30 and 90 days by default ("7 days", in the provider's words). */
   presets?: DateRangePreset[]
-  /** An "All time" button, after the presets. */
+  /** An "All time" button, after the presets (in the provider's words). */
   allTime?: boolean
   /** The day the presets of days end on: today by default, the last day there is data for otherwise. */
   today?: Date
@@ -30,16 +28,21 @@ interface DateRangeFilterProps {
   maxDate?: Date
 }
 
-/** Presets first (the ranges people actually ask for), the calendar for anything else. */
+/**
+ * Presets first (the ranges people actually ask for), the calendar for anything else: in the provider's words, its
+ * locale and its first day of the week (IoitiProvider).
+ */
 export function DateRangeFilter({
   value,
   onChange,
-  presets = PRESETS,
+  presets,
   allTime = true,
   today,
   minDate,
   maxDate,
 }: DateRangeFilterProps) {
+  const words = useMessages().date
+  const offered = presets ?? PRESET_DAYS.map((days) => ({ label: words.lastDays(days), days }))
   const isAllTime = !value.from && !value.to
   const current = rangeParams(value)
   const rangeOf = (preset: DateRangePreset): DateRange => preset.range ?? lastDays(preset.days ?? 1, today)
@@ -49,7 +52,7 @@ export function DateRangeFilter({
   }
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {presets.map((preset) => (
+      {offered.map((preset) => (
         <Button
           key={preset.label}
           // Filled: the one cue that says which range the page shows.
@@ -63,16 +66,14 @@ export function DateRangeFilter({
       ))}
       {allTime && (
         <Button variant={isAllTime ? 'primary' : 'outline'} size="sm" aria-pressed={isAllTime} onClick={() => onChange(ALL_TIME)}>
-          All time
+          {words.allTime}
         </Button>
       )}
       <DateRangePicker
         value={value}
         onChange={onChange}
-        placeholder="Custom range"
+        placeholder={words.customRange}
         align="end"
-        locale="en-GB"
-        weekStartsOn={1}
         minDate={minDate}
         maxDate={maxDate}
       />

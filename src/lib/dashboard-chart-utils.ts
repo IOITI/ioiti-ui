@@ -5,7 +5,39 @@
  * dependency for StatCard, FunnelChart and LiveLineChart.
  */
 
-export const pctText = (x: number) => `${Math.abs(x) >= 10 ? Math.round(x) : x.toFixed(1)}%`;
+import { DEFAULT_LOCALE } from "./locale.js";
+
+// ioiti-ui: a number written by Intl, its minus a true one (Intl writes a hyphen), where the locale puts it.
+export const withTrueMinus = (format: Intl.NumberFormat, n: number) =>
+  format
+    .formatToParts(n)
+    .map((part) => (part.type === "minusSign" ? "−" : part.value))
+    .join("");
+
+// ioiti-ui: percentages as a locale writes them (its decimal point, its space before the sign: "12 %" in French), not
+// grouped, as EasyUI's never were; made once per locale and number of decimals.
+const percents = new Map<string, Intl.NumberFormat>();
+function percentText(points: number, digits: number, locale: string) {
+  const key = `${locale}|${digits}`;
+  let format = percents.get(key);
+  if (!format) {
+    format = new Intl.NumberFormat(locale, { style: "percent", minimumFractionDigits: digits, maximumFractionDigits: digits, useGrouping: false });
+    percents.set(key, format);
+  }
+  return withTrueMinus(format, points / 100);
+}
+
+// ioiti-ui: in a locale (IoitiProvider's, given by a component; British English's by default), a true minus. Rounded as
+// EasyUI rounded it (Math.round, toFixed) before Intl writes it: Intl rounds a value's shortest decimal ("6.4" for
+// 6.35, whose toFixed is "6.3"). Its size rounded, a loss written as the gain of its size with a minus ("−59%" for
+// −58.5, which Math.round alone makes −58).
+export const pctText = (x: number, locale: string = DEFAULT_LOCALE) =>
+  Math.abs(x) >= 10
+    ? percentText(Math.sign(x) * Math.round(Math.abs(x)), 0, locale)
+    : percentText(Number(x.toFixed(1)), 1, locale);
+
+// ioiti-ui: a share of a whole (0.04) to the unit, "4%", as DonutChart writes it; in a locale too.
+export const shareText = (fraction: number, locale: string = DEFAULT_LOCALE) => percentText(Math.round(fraction * 100), 0, locale);
 
 /** A value sampled at a timestamp (UTC ms) */
 export interface TimestampedPoint {

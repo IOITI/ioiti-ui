@@ -17,10 +17,10 @@ import {
   Code
 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
-import { formatBytes } from '../../lib/format.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
+import { useFormat } from '../locale-context.js';
 
 export type FileUploadStatus = 'queued' | 'uploading' | 'processing' | 'complete' | 'error';
 
@@ -85,9 +85,6 @@ export interface AnimatedFileUploadProps {
   className?: string;
 }
 
-// ioiti-ui: sizes written as the package writes them everywhere (formatBytes: kB of 1000 bytes), not KB of 1024.
-const formatFileSize = (bytes: number): string => formatBytes(bytes);
-
 const getFileIcon = (fileName: string, mimeType: string) => {
   const ext = fileName.split('.').pop()?.toLowerCase() || '';
   if (mimeType.startsWith('image/') || ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif'].includes(ext)) {
@@ -135,6 +132,11 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
+  // ioiti-ui: sizes written as the package writes them everywhere (formatBytes: kB of 1000 bytes), not KB of 1024, and
+  // a progress as a percentage, both as the provider's locale writes them ("2.0 kB", "42%"; "2,0 ko", "42 %" in French).
+  const { formatBytes: formatFileSize, formatPercent } = useFormat();
+  const formatProgress = (progress: number) =>
+    formatPercent(progress, false, Math.min(20, String(progress).split('.')[1]?.length ?? 0));
   const [isDragOver, setIsDragOver] = useState(false);
   const [files, setFiles] = useState<UploadFileItem[]>(initialFiles || []);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -265,7 +267,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
         }
       });
     },
-    [disabled, arrange, maxSize, multiple, maxFiles, onFilesSelected, onUploadComplete, uploadHandler, simulateUpload, sequential]
+    // ioiti-ui: the locale's sizes (formatFileSize) too.
+    [disabled, arrange, maxSize, multiple, maxFiles, onFilesSelected, onUploadComplete, uploadHandler, simulateUpload, sequential, formatFileSize]
   );
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -520,7 +523,8 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
                             </span>
                           ) : (
                             <span className="text-muted-foreground font-mono text-xs tabular-nums">
-                              {workingLabel ?? `Uploading ${file.progress}%`}
+                              {/* ioiti-ui: its percentage as the locale writes one (formatProgress). */}
+                              {workingLabel ?? `Uploading ${formatProgress(file.progress)}`}
                             </span>
                           )}
                         </div>

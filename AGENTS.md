@@ -13,12 +13,13 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/components/ui/` | EasyUI's components, changed (`docs/easyui-changes.md`) |
 | `src/components/` | the blocks of pages, the providers and their contexts, the recipe components |
 | `src/shell/` | the application shell, the trail, the 404, the sign-in frame |
-| `src/lib/` | helpers (`cn`, formats, theme, CSV, dates, date maths, keys, the clock), the placing of a layer (`anchor.ts`), a frame that scrolls (`scroll-region.ts`), the charts' scales and colours, EasyUI's chart helpers |
+| `src/lib/` | helpers (`cn`, formats, theme, CSV, dates, date maths, keys, the clock), a locale's week, clock and numbers (`locale.ts`), the catalogue's kit (`messages.ts`), the placing of a layer (`anchor.ts`), a frame that scrolls (`scroll-region.ts`), the charts' scales and colours, EasyUI's chart helpers |
+| `src/locales/` | the words the package says: English's catalogue (`en.ts`, a file per namespace in `en/`), the one every language is typed after, and French's (`fr.ts`, `fr/`); the entries `ioiti-ui/locales/en` and `ioiti-ui/locales/fr` |
 | `src/react-router/` | the adapter for React Router, the only code that imports it |
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
 | `gallery/` | an application made with the package: a page per component, in both themes (`gallery/src/components/<category>/`: its `category.ts`, then a folder per component of one file per example, whose code the page shows; `gallery/src/catalogue/` draws them, with each component's guidelines and props) |
 | `templates/app/` | the starter template an application is copied from |
-| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), the import codemod, the golden reference, the grains, the props (`props.mjs`) |
+| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), the words still written in components (`check-strings.mjs`, its list `strings-baseline.json`), the import codemod, the golden reference, the grains, the props (`props.mjs`) |
 | `design-system/` | the claude.ai Design System artifact's files (`design-system/README.md`); `components/<Name>/README.md` are also the gallery's guidelines |
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
 | `test/size-budget.json` | what an application bundles, gzipped, which `check:package` holds it to |
@@ -33,6 +34,7 @@ Node 24: `source ~/.nvm/nvm.sh && nvm use 24` first (the default Node of this Ma
 npm run lint && npm run typecheck && npm test && npm run build && npm run build:gallery && npm run check:package
 npm run gallery                    # http://localhost:5180, on src/
 npm run props                      # gallery/src/props.json, after a change of a component's props (lint checks it)
+node scripts/check-strings.mjs --update   # the list of words still written in components, once some went to the catalogue
 npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 npm run check:package -- --update-budget   # test/size-budget.json, after a change that weighs more on purpose
 npm run e2e                        # the gallery built, in Chromium: pages, axe with CSS, the keyboard, motion
@@ -113,6 +115,16 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   page shown (`#part`) is a plain `<a>`, never a route: the browser scrolls what holds it and keeps the query
   (`RouterLink` draws it so).
 - **A `Hint`, never a `title`**, for what a control means (the theme button's `title` is the original's).
+- **A word the package says comes from its catalogue** (`src/locales/en/<namespace>.ts`, French in `src/locales/fr/`):
+  a component says it with `useMessages()`, never written in its code; `check-strings` holds the words still written to
+  its list, which only shrinks (`// i18n-exempt: <why>` for what is no word to translate). A word added in English is
+  added in French in the same change (`src/locales/locales.test.ts`). A word that takes values is a function of one value
+  and the locale's kit (its plurals, numbers, lists), never a sentence built around a word. A component's own prop wins.
+- **Formats follow the locale**: a component writes a number, an amount, a percentage or a moment with `useFormat()`
+  (or Intl with `useLocale().locale`), never by hand ("12%", `toFixed`) nor in a fixed locale (but where a text is
+  computed, not shown: said there), and starts its weeks on `useLocale().weekStartsOn`, any day (`WeekDay`). The
+  functions exported alone (`formatMoney`…) write English (en-GB), for what is outside React. A moment keeps its data's
+  time zone: the locale changes how it is written, never which it is.
 - **A page that fails shows what went wrong in its place, the shell kept**: AppShell's boundary (`ErrorBoundary`, an
   `ErrorState` of a page), `RouterErrorPage` on the router's routes; an error is told to the application once
   (`reportOnce`, `src/components/error-context.ts`: IoitiProvider's `onError`), its kind read by `src/lib/errors.ts`.
@@ -148,6 +160,9 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
 ## Testing quirks
 
 - Vitest runs in jsdom, with `src/test/setup.ts`; framer-motion is not mocked: wait for exits (`waitFor`).
+- **A component in another language** is rendered in `<IoitiProvider locale="fr-FR" messages={fr}>` (`fr` from
+  `src/locales/fr.ts`); Intl is Node's, as complete as a browser's. French writes no-break spaces (U+00A0 before `€` and
+  `%`, U+202F between thousands): a test writes them (`'1\u202f234,50\u00a0€'`), or reads the text with them made spaces.
 - **axe holds what a test draws** (`expectAccessible` of `test/a11y.ts`, WCAG 2.2 A and AA): every page of the gallery
   (its test, split in four files that run side by side) and every layer its examples open
   (`gallery/src/open-states.test.tsx`). Off in jsdom, which reads no CSS and lays nothing out: contrast (held by

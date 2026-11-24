@@ -17,6 +17,12 @@
       ],
       "ioiti-ui/code": [
         "../src/code/index.ts"
+      ],
+      "ioiti-ui/locales/en": [
+        "../src/locales/en.ts"
+      ],
+      "ioiti-ui/locales/fr": [
+        "../src/locales/fr.ts"
       ]
     },
     "resolveJsonModule": true

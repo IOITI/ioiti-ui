@@ -4,6 +4,7 @@ import { memo, useEffect, useId, useMemo, useState, type PointerEvent, type Reac
 import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { SECTION } from '../../lib/recipes.js';
+import { useLocale, useMessages } from '../locale-context.js';
 
 
 // ioiti-ui: the cities are the caller's, each with its IANA zone; EasyUI's list of 32 (five countries, no Paris), its
@@ -17,15 +18,15 @@ export interface AirportMatrixCity {
 export interface AirportMatrixClockProps {
   /** ioiti-ui: one to five cities, each with its IANA time zone. */
   cities: AirportMatrixCity[];
-  /** 24-hour airport-board time by default. */
+  /** ioiti-ui: 24 hours or 12; the provider's clock by default (IoitiProvider's: 24 hours in en-GB and fr-FR, 12 in en-US). */
   format?: '12h' | '24h';
   /** Include seconds in each city time. */
   showSeconds?: boolean;
   /** Refresh cadence in milliseconds. Defaults to one second. */
   updateInterval?: number;
-  /** ioiti-ui: the board's heading (EasyUI's "WORLD CLOCK"); null for none. */
+  /** ioiti-ui: the board's heading ("World clock" by default, in the provider's words: `clock.title`); null for none. */
   title?: string | null;
-  /** ioiti-ui: the board's last line, in the caller's words (EasyUI's "N CITIES / IANA TIME ZONES"). */
+  /** ioiti-ui: the board's last line, in the caller's words ("3 cities / IANA time zones" by default, in the provider's). */
   footer?: ReactNode;
   /** ioiti-ui: 'sm', a board for the side of a page's header (EasyUI's characters are up to 20 px wide). */
   size?: 'md' | 'sm';
@@ -70,21 +71,35 @@ const INACTIVE_DOT_PATH = createDotPath(null);
 const GLYPH_PATHS = Object.fromEntries(Object.keys(GLYPHS).map((char) => [char, createDotPath(char)])) as Record<string, string>;
 
 
-function formatCityTime(date: Date, timeZone: string, format: '12h' | '24h', showSeconds: boolean) {
-  const formatter = new Intl.DateTimeFormat(format === '24h' ? 'en-GB' : 'en-US', {
+// ioiti-ui: the time in the locale given, the provider's (EasyUI's was en-GB's for 24 hours, en-US's for 12): a screen
+// reader's line as the locale writes it, the board's in what its characters draw (Latin digits, ':', the period in
+// capitals).
+function formatCityTime(date: Date, timeZone: string, format: '12h' | '24h', showSeconds: boolean, locale: string) {
+  const options: Intl.DateTimeFormatOptions = {
     timeZone,
     hour: '2-digit',
     minute: '2-digit',
     ...(showSeconds ? { second: '2-digit' as const } : {}),
     ...(format === '24h' ? { hourCycle: 'h23' as const } : { hour12: true }),
-  });
-  const parts = formatter.formatToParts(date);
+  };
+  const accessible = new Intl.DateTimeFormat(locale, options).format(date);
+  const parts = new Intl.DateTimeFormat(locale, { ...options, numberingSystem: 'latn' }).formatToParts(date);
   const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value ?? '';
   const hour = part('hour').padStart(2, '0');
   const minute = part('minute');
   const second = showSeconds ? `:${part('second')}` : '';
-  const period = format === '12h' ? part('dayPeriod').toUpperCase() : '';
-  return { matrix: `${hour}:${minute}${second}${period ? ` ${period}` : ''}`, accessible: `${hour}:${minute}${second}${period ? ` ${period}` : ''}` };
+  const period = format === '12h' ? boardPeriod(part('dayPeriod'), date, timeZone) : '';
+  return { matrix: `${hour}:${minute}${second}${period ? ` ${period}` : ''}`, accessible };
+}
+
+// ioiti-ui: the period as the board draws it: the locale's letters in capitals ("PM"; "p. m." is "PM", Finnish "ip." "IP"),
+// or AM and PM where the locale writes it in a script the board has no characters for (午後). The hour is read in en-GB,
+// a number computed, never shown.
+function boardPeriod(written: string, date: Date, timeZone: string) {
+  const letters = written.normalize('NFD').toUpperCase().replace(/[^A-Z]/g, '');
+  if (letters) return letters;
+  const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', hourCycle: 'h23' }).format(date));
+  return hour < 12 ? 'AM' : 'PM';
 }
 
 const MatrixGlyph = memo(function MatrixGlyph({ char, size }: { char: string; size: 'md' | 'sm' }) {
@@ -125,7 +140,8 @@ const MatrixText = memo(function MatrixText({ text, reduceMotion, rebuildId, siz
       aria-hidden="true"
       className={`inline-flex min-w-0 items-center gap-[clamp(0.5px,0.2vw,2px)] text-current ${className}`}
     >
-      {Array.from(text.toUpperCase()).map((char, index) => (
+      {/* ioiti-ui: a letter with an accent drawn as the letter (Montréal, Zürich): the board has no accents, and drew a blank. */}
+      {Array.from(text.normalize('NFD').replace(/\p{M}/gu, '').toUpperCase()).map((char, index) => (
         <MatrixCharacter key={index} char={GLYPHS[char] ? char : ' '} index={index} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
       ))}
     </span>
@@ -144,6 +160,7 @@ const AirportMatrixClockRow = memo(function AirportMatrixClockRow({
   reduceMotion: boolean;
   size: 'md' | 'sm';
 }) {
+  const words = useMessages().clock;
   const [rebuildId, setRebuildId] = useState(0);
   const handlePointerEnter = (event: PointerEvent<HTMLLIElement>) => {
     if (!reduceMotion && event.pointerType !== 'touch') setRebuildId((current) => current + 1);
@@ -154,8 +171,8 @@ const AirportMatrixClockRow = memo(function AirportMatrixClockRow({
       onPointerEnter={handlePointerEnter}
       className={`grid items-center gap-2 ${size === 'sm' ? 'grid-cols-[auto_minmax(0,1fr)] gap-3 px-3 py-1.5' : 'grid-cols-[minmax(84px,0.8fr)_minmax(0,1.2fr)] px-3 py-2 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.2fr)] sm:px-5 sm:py-2.5'} ${rowIndex < rowCount - 1 ? 'border-b border-border/40' : ''}`}
     >
-      {/* ioiti-ui: what a screen reader reads of the row, a text: its time and its city. */}
-      <span className="sr-only">{`${row.time.accessible}, ${row.name}`}</span>
+      {/* ioiti-ui: what a screen reader reads of the row, a text: its time and its city, in the provider's words. */}
+      <span className="sr-only">{words.row({ time: row.time.accessible, city: row.name })}</span>
       <div className="min-w-0 text-foreground">
         <MatrixText text={row.time.matrix} reduceMotion={reduceMotion} rebuildId={rebuildId} size={size} />
       </div>
@@ -168,14 +185,19 @@ const AirportMatrixClockRow = memo(function AirportMatrixClockRow({
 
 export function AirportMatrixClock({
   cities,
-  format = '24h',
+  format,
   showSeconds = false,
   updateInterval = 1000,
-  title = 'World clock',
+  title,
   footer,
   size = 'md',
   className = '',
 }: AirportMatrixClockProps) {
+  // ioiti-ui: the provider's locale, clock and words where the props give none (null keeps the board without a title).
+  const { locale, hourCycle } = useLocale();
+  const words = useMessages().clock;
+  const clock = format ?? (hourCycle === 'h12' ? '12h' : '24h');
+  const heading = title === undefined ? words.title : title;
   const reduceMotion = useReducedMotionConfig() ?? false;
   const [now, setNow] = useState(() => Date.now());
   const selectedCities = useMemo(() => cities.slice(0, 5), [cities]);
@@ -187,24 +209,24 @@ export function AirportMatrixClock({
   }, [updateInterval]);
 
   const rows = useMemo(() => selectedCities.map((city) => (
-    { ...city, time: formatCityTime(new Date(now), city.timeZone, format, showSeconds) }
-  )), [selectedCities, now, format, showSeconds]);
+    { ...city, time: formatCityTime(new Date(now), city.timeZone, clock, showSeconds, locale) }
+  )), [selectedCities, now, clock, showSeconds, locale]);
 
   // ioiti-ui: the region named by its title (or "World times" without one): each row says its time and its city
   // itself, which the region's name said again.
   const titleId = useId();
   return (
     <section
-      aria-labelledby={title ? titleId : undefined}
-      aria-label={title ? undefined : 'World times'}
+      aria-labelledby={heading ? titleId : undefined}
+      aria-label={heading ? undefined : words.name}
       className={`relative ${size === 'sm' ? 'w-fit' : 'w-full max-w-3xl'} overflow-hidden ${SECTION} text-foreground [--amc-grid:color-mix(in_srgb,var(--foreground)_1%,transparent)] glass-card ${className}`}
       style={{ backgroundImage: 'linear-gradient(var(--amc-grid) 1px, transparent 1px), linear-gradient(90deg, var(--amc-grid) 1px, transparent 1px)', backgroundSize: '22px 22px' }}
     >
       <div>
         {/* ioiti-ui: its heading and its last line in sentence case, as every label (EasyUI's were capitals, spaced). */}
-        {title && (
+        {heading && (
           <header className={`flex items-center justify-between border-b border-border/70 ${size === 'sm' ? 'px-3 py-1.5' : 'px-4 py-3 sm:px-6'}`}>
-            <p id={titleId} className="text-xs font-medium text-muted-foreground">{title}</p>
+            <p id={titleId} className="text-xs font-medium text-muted-foreground">{heading}</p>
           </header>
         )}
         <ul className="m-0 list-none p-0">
@@ -214,9 +236,10 @@ export function AirportMatrixClock({
         </ul>
         {/* ioiti-ui: a light value in front of EasyUI's dark-only footer colours. */}
         <footer className={`border-t border-border/70 text-xs text-muted-foreground ${size === 'sm' ? 'px-3 py-1.5' : 'px-3 py-2 sm:px-5'}`}>
+          {/* ioiti-ui: in the provider's words, the count of cities agreeing with it ("1 city"). */}
           {footer ?? (
             <>
-              {rows.length} cities <span className="px-1.5 opacity-50">/</span> IANA time zones
+              {words.cities(rows.length)} <span className="px-1.5 opacity-50">/</span> {words.timeZones}
             </>
           )}
         </footer>

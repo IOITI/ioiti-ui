@@ -20,14 +20,17 @@ import {
 import {
   clamp,
   cx,
-  defaultFormat,
+  // ioiti-ui: the numbers and percentages in the interface's locale.
+  useChartFormat,
   useDismissOutside,
   useElementWidth,
 } from "../../lib/chart-primitives.js";
-import { monotonePath, pctText } from "../../lib/dashboard-chart-utils.js";
+import { monotonePath } from "../../lib/dashboard-chart-utils.js";
 import { AXIS_COLOUR } from "../../lib/chart-colours.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { SECTION, TONE_SOFT } from "../../lib/recipes.js";
+// ioiti-ui: the words in the interface's language.
+import { useMessages } from "../locale-context.js";
 
 /* -------------------------------------------------------------------------- */
 /*  StatCard / StatGrid                                                       */
@@ -50,8 +53,12 @@ export interface StatCardProps {
   delta?: number;
   /** Which direction is good news. Use "down" for churn, latency, costs */
   goodWhen?: "up" | "down";
-  /** Text under the number, e.g. "vs last 30 days" */
+  /**
+   * Text under the number, e.g. "vs last 30 days" (ioiti-ui: by default "vs previous period", in the interface's
+   * language)
+   */
   period?: string;
+  /** ioiti-ui: the figure and the line's points: as the interface's locale writes them by default ("1,234.5"). */
   format?: (n: number) => string;
   /** ioiti-ui: a class for the headline by the value shown (a profit green, a loss red), the scrubbed point's too. */
   toneOf?: (n: number) => string | undefined;
@@ -73,8 +80,8 @@ export function StatCard({
   previous,
   delta,
   goodWhen = "up",
-  period = "vs previous period",
-  format = defaultFormat,
+  period: givenPeriod,
+  format: givenFormat,
   toneOf,
   // ioiti-ui: the design's series colour, which the pages always gave it (EasyUI's was an indigo).
   color = "var(--chart-series)",
@@ -83,6 +90,13 @@ export function StatCard({
 }: StatCardProps) {
   const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
+  // ioiti-ui: the numbers, percentages and words in the interface's locale and language, where the application gives
+  // none of its own.
+  const chartFormat = useChartFormat();
+  const words = useMessages().chart;
+  const format = givenFormat ?? chartFormat.format;
+  const period = givenPeriod ?? words.previousPeriod;
+  const pctText = chartFormat.percent;
   const uid = useId().replace(/:/g, "");
   const [boxRef, width] = useElementWidth<HTMLDivElement>(220);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -164,7 +178,9 @@ export function StatCard({
     e.preventDefault();
   };
 
-  const sub = active === null ? period : (trendLabels?.[active] ?? `Point ${active + 1}`);
+  // ioiti-ui: a point without a name of its own named in the interface's language, here and below.
+  const pointName = (i: number) => trendLabels?.[i] ?? words.trendPoint(i + 1);
+  const sub = active === null ? period : pointName(active);
   const tone = toneOf?.(active === null ? value : trend[active]);
 
   return (
@@ -172,10 +188,16 @@ export function StatCard({
       ref={cardRef}
       tabIndex={0}
       role="group"
+      // ioiti-ui: in the interface's language.
       aria-label={
         hasDelta
-          ? `${label}: ${format(value)}, ${change > 0 ? "up" : change < 0 ? "down" : "unchanged"} ${pctText(Math.abs(change))}`
-          : `${label}: ${format(value)}`
+          ? words.statCardName({
+              name: label,
+              value: format(value),
+              direction: change > 0 ? "up" : change < 0 ? "down" : "flat",
+              change: pctText(Math.abs(change)),
+            })
+          : words.namedValue({ name: label, value: format(value) })
       }
       onPointerMove={move}
       onPointerDown={move}
@@ -222,7 +244,8 @@ export function StatCard({
             width={width}
             height={H}
             role="img"
-            aria-label={`${label} trend from ${format(trend[0])} to ${format(trend[n - 1])}`}
+            // ioiti-ui: in the interface's language.
+            aria-label={words.trendName({ name: label, first: format(trend[0]), last: format(trend[n - 1]) })}
             className="block overflow-visible"
           >
             <defs>
@@ -273,7 +296,7 @@ export function StatCard({
         )}
       </div>
       <p className="sr-only" role="status" aria-live="polite">
-        {active !== null ? `${trendLabels?.[active] ?? `Point ${active + 1}`}: ${format(trend[active])}` : ""}
+        {active !== null ? words.namedValue({ name: pointName(active), value: format(trend[active]) }) : ""}
       </p>
     </div>
   );

@@ -11,6 +11,10 @@ import {
 } from "react";
 import { motion, useReducedMotionConfig, useSpring, type SpringOptions } from "framer-motion";
 
+// ioiti-ui: the interface's locale (IoitiProvider's), which a chart writes its numbers in.
+import { useLocale } from "../components/locale-context.js";
+import { pctText, shareText, withTrueMinus } from "./dashboard-chart-utils.js";
+import { DEFAULT_LOCALE } from "./locale.js";
 import { motionTransitions } from "./motion-tokens.js";
 import { TOOLTIP } from "./recipes.js";
 
@@ -24,12 +28,47 @@ import { TOOLTIP } from "./recipes.js";
 export const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
 export const cx = (...a: (string | false | null | undefined)[]) => a.filter(Boolean).join(" ");
 
-const compactFmt = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
-export const fullFmt = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
-// ioiti-ui: a true minus, as the package's formats write it (Intl writes a hyphen).
-const trueMinus = (text: string) => text.replace(/^-/, "−");
-export const defaultFormat = (n: number) => trueMinus(fullFmt.format(n));
-export const defaultTick = (n: number) => trueMinus(compactFmt.format(n));
+// ioiti-ui: a chart's numbers as a locale writes them (IoitiProvider's, through useChartFormat): its separators, its
+// compact units ("1.2k" in British English, "1,2 k" in French), a true minus where Intl writes a hyphen. EasyUI's were
+// American English's ("1.2K").
+export interface ChartFormat {
+  /** A value in full, to a tenth at most: "1,234.5". */
+  format: (n: number) => string;
+  /** A tick of a value axis, compact: "1.2k". */
+  tick: (n: number) => string;
+  /** A share given in points, to the unit from 10 up and to a tenth under: "12%", "2.5%". */
+  percent: (points: number) => string;
+  /** A share of a whole given as a fraction (0.04), to the unit: "4%". */
+  share: (fraction: number) => string;
+}
+
+const chartFormats = new Map<string, ChartFormat>();
+
+/** ioiti-ui: the charts' formats in a locale, made once for it; British English's by default. */
+export function chartFormatFor(locale: string = DEFAULT_LOCALE): ChartFormat {
+  const known = chartFormats.get(locale);
+  if (known) return known;
+  const full = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+  const compact = new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 });
+  const made: ChartFormat = {
+    format: (n) => withTrueMinus(full, n),
+    tick: (n) => withTrueMinus(compact, n),
+    percent: (points) => pctText(points, locale),
+    share: (fraction) => shareText(fraction, locale),
+  };
+  chartFormats.set(locale, made);
+  return made;
+}
+
+/** ioiti-ui: the charts' formats in the interface's locale: IoitiProvider's, British English's outside one. */
+export function useChartFormat(): ChartFormat {
+  return chartFormatFor(useLocale().locale);
+}
+
+// ioiti-ui: British English's, for what writes a chart's number outside a component (a chart takes useChartFormat's).
+export const fullFmt = new Intl.NumberFormat(DEFAULT_LOCALE, { maximumFractionDigits: 1 });
+export const defaultFormat = (n: number) => chartFormatFor().format(n);
+export const defaultTick = (n: number) => chartFormatFor().tick(n);
 
 // ioiti-ui: the design's muted text, 4.5:1 on every surface of every look (neutral-500 was 3.6:1 on the dark card).
 export const muted = "text-muted-foreground";

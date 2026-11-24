@@ -1,4 +1,6 @@
 // The scales of the charts: a value axis that may go below zero, and a time axis in a time zone.
+import { DEFAULT_LOCALE } from './locale.js'
+import type { HourCycle } from './locale.js'
 
 /** A "nice" step (1, 2, 2.5 or 5 times a power of ten) near `raw`. */
 export function niceStep(raw: number): number {
@@ -78,6 +80,8 @@ const INTERVALS: { every: number; unit: TimeUnit }[] = [
 
 /** How far a time zone is ahead of UTC at an instant, in milliseconds. */
 export function zoneOffset(at: number, timeZone: string): number {
+  // American English whatever the interface's locale: the parts are read as numbers, never shown, and its digits are
+  // those Number() reads (another locale's may not be).
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone,
     hourCycle: 'h23',
@@ -112,15 +116,24 @@ export function timeTicks(from: number, to: number, count: number, timeZone = 'U
   return { ticks, unit: chosen.unit }
 }
 
-/** A time of the axis, as its unit reads it: "09:30", "07 Oct" (a day as `formatDay` writes it), "Oct 2026". */
-export function formatTimeTick(at: number, unit: TimeUnit, timeZone = 'UTC'): string {
+/**
+ * A time of the axis, as its unit reads it in a locale, on its clock: "09:30", "07 Oct" (a day as `formatDay` writes
+ * it), "Oct 2026". British English on 24 hours by default, as the axis always read.
+ */
+export function formatTimeTick(
+  at: number,
+  unit: TimeUnit,
+  timeZone = 'UTC',
+  locale: string = DEFAULT_LOCALE,
+  hourCycle: HourCycle = 'h23',
+): string {
   const options: Intl.DateTimeFormatOptions =
     unit === 'second'
-      ? { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }
+      ? { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle }
       : unit === 'minute' || unit === 'hour'
-        ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
+        ? { hour: '2-digit', minute: '2-digit', hourCycle }
         : unit === 'day'
           ? { day: '2-digit', month: 'short' }
           : { month: 'short', year: 'numeric' }
-  return new Intl.DateTimeFormat('en-GB', { timeZone, ...options }).format(new Date(at))
+  return new Intl.DateTimeFormat(locale, { timeZone, ...options }).format(new Date(at))
 }

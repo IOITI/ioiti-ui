@@ -15,14 +15,14 @@ interface KpiTileBaseProps {
   /** One line of context under the figure (the limit, the period...). */
   hint?: ReactNode
   /**
-   * The figure's change, signed and in the tone of what it means: a percentage by default (`2.5` is
-   * "+2.5%"), what `changeFormat` writes otherwise. What it is compared with is said once, by KpiGrid's
-   * `period`, or by `hint`.
+   * The figure's change, signed and in the tone of what it means: a percentage by default, as the provider's locale
+   * writes one (`2.5` is "+2.5%"; "+2,5 %" in French), what `changeFormat` writes otherwise. What it is compared with
+   * is said once, by KpiGrid's `period`, or by `hint`.
    */
   change?: number
   /** Which way is good news: `down` for a cost, a latency, a churn. Up by default. */
   goodWhen?: GoodWhen
-  /** Writes the change, signed (`(n) => formatMoney(n, 'EUR', true)`). */
+  /** Writes the change, signed (`(n) => formatMoney(n, 'EUR', true)`, `useFormat()`'s for the provider's locale). */
   changeFormat?: (change: number) => string
   /** The tile that leads a row: two columns wide, its chart beside the figure from a tablet up. */
   lead?: boolean

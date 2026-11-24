@@ -7,6 +7,7 @@ import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { useScrollRegion } from '../../lib/scroll-region.js';
+import { useLocale, useMessages } from '../locale-context.js';
 
 export interface LedgerEntry {
   id: string;
@@ -40,13 +41,13 @@ export interface RecoveryLedgerProps {
   expandedId?: string | null;
   /** ioiti-ui: called with the entry opened, or null once it is closed. */
   onExpandedChange?: (id: string | null) => void;
-  /** ioiti-ui: the header's title. */
+  /** ioiti-ui: the header's title; the provider's language's by default ("Recovery ledger"). */
   title?: string;
-  /** ioiti-ui: beside the title. */
+  /** ioiti-ui: beside the title; how many entries there are by default ("12 snapshots", counted in the provider's language). */
   countLabel?: string;
-  /** ioiti-ui: the text of the restore button. */
+  /** ioiti-ui: the text of the restore button; the provider's language's by default ("Revert"). */
   restoreLabel?: string;
-  /** ioiti-ui: the badge of the current entry. */
+  /** ioiti-ui: the badge of the current entry; the provider's language's by default ("Current head"). */
   currentLabel?: string;
   /** Visual presentation mode. Default is 'timeline'. */
   variant?: 'timeline' | 'compact';
@@ -58,7 +59,9 @@ export interface RecoveryLedgerProps {
 // (src/lib/scroll-region.ts).
 function DiffFrame({ children }: { children: string }) {
   const frame = useRef<HTMLDivElement>(null);
-  const region = useScrollRegion(frame, { label: 'Changes' });
+  // ioiti-ui: named in the provider's language.
+  const label = useMessages().ledger.changes;
+  const region = useScrollRegion(frame, { label });
   return (
     <div
       ref={frame}
@@ -77,13 +80,19 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
   onSelect,
   expandedId: controlledExpandedId,
   onExpandedChange,
-  title = 'Recovery ledger',
+  title: givenTitle,
   countLabel,
-  restoreLabel = 'Revert',
-  currentLabel = 'Current head',
+  restoreLabel: givenRestoreLabel,
+  currentLabel: givenCurrentLabel,
   variant = 'timeline',
   className,
 }) => {
+  // ioiti-ui: its words in the provider's language, the ones given over them; a date in its locale, on its clock.
+  const words = useMessages().ledger;
+  const { locale, hourCycle } = useLocale();
+  const title = givenTitle ?? words.title;
+  const restoreLabel = givenRestoreLabel ?? words.restore;
+  const currentLabel = givenCurrentLabel ?? words.current;
   const [internalExpandedId, setInternalExpandedId] = useState<string | null>(null);
   const [restoringId, setRestoringId] = useState<string | null>(null);
   const baseId = useId();
@@ -122,7 +131,7 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
           <Clock aria-hidden="true" className="size-4 text-muted-foreground" />
           <h3 className="text-sm font-semibold text-foreground">{title}</h3>
           <span className="text-[11px] font-mono tabular-nums text-muted-foreground bg-surface px-2 py-0.5 rounded-full border border-border">
-            {countLabel ?? `${entries.length} snapshots`}
+            {countLabel ?? words.count(entries.length)}
           </span>
         </div>
       </div>
@@ -150,7 +159,7 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                 ? null
                 : typeof entry.timestamp === 'string'
                 ? entry.timestamp
-                : entry.timestamp.toLocaleString();
+                : entry.timestamp.toLocaleString(locale, { hourCycle });
 
             const summary = (
               <>
@@ -247,8 +256,8 @@ export const RecoveryLedger: React.FC<RecoveryLedgerProps> = ({
                             'relative z-10 px-2.5 py-1 rounded-md text-xs font-medium bg-surface text-text-secondary border border-border hover:bg-primary hover:text-primary-foreground transition-colors flex items-center gap-1',
                             PRESSABLE
                           )}
-                          // ioiti-ui: named by the entry's action (its id is a file's name).
-                          aria-label={`${restoreLabel}: ${entry.action}`}
+                          // ioiti-ui: named by the entry's action (its id is a file's name), in the provider's language.
+                          aria-label={words.restoreEntry({ restore: restoreLabel, action: entry.action })}
                         >
                           {isRestoring ? (
                             <Loader2 aria-hidden="true" className="size-3 animate-spin" />

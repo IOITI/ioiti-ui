@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { formatMoney } from '../lib/format.js'
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { KpiGrid, KpiTile } from './KpiTile.js'
 
 describe('a tile with its change', () => {
@@ -78,5 +80,31 @@ describe('a row of tiles with its period', () => {
     render(<KpiGrid>tiles</KpiGrid>)
     expect(screen.queryByRole('group')).toBeNull()
     expect(screen.getByText('tiles')).toHaveClass('grid')
+  })
+})
+
+describe('a tile\'s change in a locale', () => {
+  it('is written as the locale writes a percentage, and said in its words', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <KpiTile label="Chiffre d’affaires" value="12 400 €" change={2.5} />
+        <KpiTile label="Erreurs" value="0,3 %" change={-1.24} goodWhen="down" />
+        <KpiTile label="Commandes" value="38" change={0} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('+2,5 %').parentElement).toHaveClass('text-positive')
+    expect(screen.getByText('en hausse de 2,5 %')).toHaveClass('sr-only')
+    expect(screen.getByText('−1,2 %').parentElement).toHaveClass('text-positive')
+    expect(screen.getByText('en baisse de 1,2 %')).toBeInTheDocument()
+    expect(screen.getByText('stable')).toBeInTheDocument()
+  })
+
+  it('is said in an application\'s own words, given over English\'s, its figure as it asks', () => {
+    render(
+      <IoitiProvider messages={{ numberInput: { changeDown: (figure: string) => `fell by ${figure}` } }}>
+        <KpiTile label="Profit" value="€1,025.00" change={-12} changeFormat={(n) => formatMoney(n, 'EUR', true)} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('fell by €12.00')).toHaveClass('sr-only')
   })
 })

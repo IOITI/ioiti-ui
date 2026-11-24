@@ -45,6 +45,17 @@ describe('a time axis', () => {
     expect(formatTimeTick(Date.UTC(2026, 9, 27, 12), 'day', 'Europe/Paris')).toBe('27 Oct')
   })
 
+  it('writes a time in the locale and on the clock given, British English on 24 hours by default', () => {
+    // Intl puts a narrow no-break space before "PM", and none between a French month and its point.
+    const spaced = (text: string) => text.replace(/\s/g, ' ')
+    const at = Date.UTC(2026, 9, 7, 21, 30)
+    expect(formatTimeTick(at, 'hour')).toBe('21:30')
+    expect(spaced(formatTimeTick(at, 'minute', 'UTC', 'en-US', 'h12'))).toBe('09:30 PM')
+    expect(formatTimeTick(at, 'second', 'UTC', 'fr-FR', 'h23')).toBe('21:30:00')
+    expect(formatTimeTick(at, 'day', 'UTC', 'fr-FR')).toBe('07 oct.')
+    expect(formatTimeTick(at, 'month', 'UTC', 'fr-FR')).toBe('oct. 2026')
+  })
+
   it('ticks at midnight for days', () => {
     const from = Date.UTC(2026, 9, 1, 13)
     const to = Date.UTC(2026, 9, 20)

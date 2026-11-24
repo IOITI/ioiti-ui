@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
+import { fr } from '../locales/fr.js'
 import { ConfirmAction } from './ConfirmAction.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { DragToConfirm } from './ui/drag-to-confirm.js'
 
 /** The dialog opened from a table's row: a right-aligned cell that does not wrap. */
@@ -257,5 +259,19 @@ describe('the slide (DragToConfirm)', () => {
     expect(disabled).toHaveAttribute('aria-disabled', 'true')
     expect(disabled).toHaveAttribute('tabindex', '-1')
     await expectAccessible(container)
+  })
+
+  it('says how far its thumb is as the locale writes a percentage', async () => {
+    track()
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <DragToConfirm label="Glisser pour envoyer" confirmedLabel="Envoyé" />
+      </IoitiProvider>,
+    )
+    const thumb = screen.getByRole('slider', { name: 'Glisser pour envoyer' })
+    expect(thumb).toHaveAttribute('aria-valuetext', '0\u00a0%')
+    await drag(user, thumb, 80, false)
+    await waitFor(() => expect(thumb).toHaveAttribute('aria-valuetext', '40\u00a0%'))
   })
 })

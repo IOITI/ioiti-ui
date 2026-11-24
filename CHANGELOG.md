@@ -11,10 +11,80 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- **The package speaks the application's language** (`IoitiProvider`'s `locale`, `messages`, `weekStartsOn` and
+  `hourCycle`): a locale (a BCP 47 tag; `en-GB` by default, as the package always wrote) writes the numbers, amounts,
+  percentages, dates and clock, and starts the weeks; a catalogue (`messages`) says the words, by namespace (the dates',
+  the time ranges', the charts', the numbers' and a few more in this version; every component's in 0.29.0), an
+  application's own words given over a language's. `weekStartsOn` and `hourCycle` say otherwise than the locale. A
+  locale Intl does not know, and a page whose `<html lang>` names another language, are said in development.
+- **French**: `ioiti-ui/locales/fr`, every word of the catalogue in French, an entry of its own, which an application
+  that does not import it never bundles (`check:package` holds it); `ioiti-ui/locales/en`, English's.
+- **`useFormat()`**, the formats in the provider's locale and words, by the names the package exports them in English
+  (`formatMoney`, `formatDateTime`…); **`useLocale()`**, its locale, first day of the week and clock; **`useMessages()`**,
+  the package's words for an application's own components; **`formattersFor(locale, options)`**, a locale's formats
+  outside React; **`mergeMessages(base, …overrides)`**, an application's words over a language's;
+  **`parseLocaleNumber(text, locale)`**, a number typed, read as the locale writes it and as people type it. Their
+  types: `Formatters`, `FormatOptions`, `Messages`, `MessagesOverride`, `BoundMessages`, `MessageKit`, `PluralForms`,
+  `LocaleState`, `WeekDay`, `HourCycle`.
+- **`formatTimeRange`'s third parameter** (`{ words, hourCycle, weekStartsOn, now }`): a range's name in another
+  language, clock and week; and the type `TimeUnit`.
+- **The gallery in French**, at the language choice of its top bar (its components and their formats; its own pages
+  stay English), and a page that says how: Foundations, Languages and formats.
+- **The words still written in components are listed** (`scripts/check-strings.mjs`, in `npm run lint`): a word written
+  anew in a component fails, the list (`scripts/strings-baseline.json`) only shrinks, to nothing in 0.29.0.
+
+### Changed
+
+- **A week starts on the locale's day**, Monday in en-GB, the default: `Calendar`, `DatePicker`, `DateRangePicker` and
+  `ActivityHeatmap` started on Sunday, `DateRangeFilter` and `TimeRangePicker` on Monday whatever the locale. Their
+  `weekStartsOn` (`weekStart`), and `resolveTimeRange`'s, take any day: a `WeekDay`, `0` Sunday to `6` Saturday (it was
+  `0 | 1`, or a `number`).
+- **Dates are written in the locale where the browser's was**: `Calendar`, `DatePicker` and `DateRangePicker` without
+  `locale`, `RecoveryLedger`'s `Date`s, `PromptComposer`'s counts; `ActivityHeatmap`'s days and months, which were
+  en-GB's in every locale.
+- **The charts write their numbers as the locale does**, en-GB's by default where they wrote en-US's: a compact tick is
+  "1.2k", "3.4m", "1.5bn" (it was "1.2K", "3.4M", "1.5B") on `LineChart`, `FanChart`, `BarChart`, `LiveLineChart` and
+  `AnimatedNumber`'s `compact`.
+- **`NumberInput` reads what is typed as the locale writes numbers**, and as people type them: "1,500" is 1500 in English
+  (it read 1.5), "1,234.5" is 1234.5 (it was no number), a true minus typed is a minus; "1,5" is still 1.5. It shows the
+  value back in the locale ("1234,5" in French).
+- **`AirportMatrixClock`'s `format` is the provider's clock by default** (12 hours in en-US), and its 12-hour time is
+  written as the locale writes it ("07:47 pm" in en-GB, where it was en-US's "PM").
+- **`formatMoney`, `formatMoneyCompact` and `formatPercent` write a value that rounds to zero without a sign**, as
+  `formatNumber` does ("€0.00", where they wrote "−€0.00"), their sign where the locale puts it, and round as Intl does.
+- **A count of a thousand or more is grouped** as the locale writes numbers: "Last 1,500 minutes", "1,000 categories".
+- **What an application bundles grows by 4.4 kB gzipped** (the template 191.9 kB, React and the rest with it): English's
+  words and a locale's formats. French, where it is imported, 3.3 kB more.
+
 ### Fixed
 
+- **A count of one is said in the singular**: `ActivityHeatmap`'s "1 contribution" and "in the last week",
+  `RecoveryLedger`'s "1 snapshot", `AirportMatrixClock`'s "1 city", `BarChart`'s "across 1 category", `FunnelChart`'s
+  "1 stage" (they said "1 contributions", "1 weeks"…).
+- **`FunnelChart` signs a loss once**: a stage larger than the one before it read "−-5.0%", a funnel losing nothing
+  "−0.0%".
+- **`TimeRangePicker`'s end that names itself shows its moment** (`now/d` showed the raw text), `formatTimeRange` writes
+  a day's end at its last minute ("23:59", where `resolveTimeRange` ends it; it said "00:00"), its recent ranges are in
+  its locale (en-GB's whatever it was given), and its weeks are rounded on the day its calendar starts them.
+- **`ActivityHeatmap`'s negative numbers have a true minus** (a hyphen); **`AnimatedFileUpload`** shows "—" for a
+  progress that is no number ("NaN%"); **`AnimatedNumber`** writes "∞" ("Infinity") and a number of 21 digits in full.
+- **`AirportMatrixClock`'s board draws a letter with an accent as its letter** (Montréal, Zürich): it drew a blank.
 - **The screenshots of the gallery's pages leave its version out** (`e2e/visual.spec.ts`, masked): a release changes
   it, which failed them on `main` from 0.27.0's, and held the gallery's publication back.
+
+### Upgrading
+
+An application that speaks English changes nothing, but to keep its calendars' weeks on Sunday: `weekStartsOn={0}` on
+`IoitiProvider` (or on a calendar). `resolveTimeRange`'s `weekStartsOn` is a `WeekDay`: a `number` given to it is typed
+`as WeekDay`. To speak French: `import { fr } from 'ioiti-ui/locales/fr'`, `<IoitiProvider locale="fr-FR" messages={fr}>`
+and `<html lang="fr">`; its own components take `useFormat()` where they imported `formatMoney` and its kin. Its tests
+may:
+
+- find a calendar's weeks starting on Monday, a chart's compact ticks in en-GB ("1.2k");
+- type "1,500" into a `NumberInput` for 1500;
+- read a count of one in the singular, a 12-hour `AirportMatrixClock` in en-GB's "pm", a `now/d` end at "23:59".
 
 ## [0.27.0] - 2026-11-24
 

@@ -5,16 +5,15 @@ import { motion, useReducedMotionConfig } from "framer-motion";
 import {
   clamp,
   cx,
-  defaultFormat,
-  defaultTick,
   muted,
   Tooltip,
+  // ioiti-ui: the numbers and percentages in the interface's locale.
+  useChartFormat,
   useDismissOutside,
   useElementWidth,
 } from "../../lib/chart-primitives.js";
 import {
   buildFrame,
-  pctText,
   valueAt,
   visibleExtent,
   type TimestampedPoint,
@@ -23,6 +22,8 @@ import {
 import { AXIS_COLOUR, GRID_COLOUR } from "../../lib/chart-colours.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { PRESSABLE, TONE_MARK } from "../../lib/recipes.js";
+// ioiti-ui: the words in the interface's language, and its formats.
+import { useFormat, useMessages } from "../locale-context.js";
 
 export { buildFrame, valueAt, visibleExtent } from "../../lib/dashboard-chart-utils.js";
 
@@ -50,8 +51,12 @@ export interface LiveLineChartProps {
   height?: number;
   color?: string;
   unit?: string;
+  /** ioiti-ui: a reading: as the interface's locale writes it by default, to a tenth at most ("1,234.5"). */
   formatValue?: (n: number) => string;
-  /** ioiti-ui: the y-axis labels (EasyUI's compact numbers), short enough for the left margin. */
+  /**
+   * ioiti-ui: the y-axis labels (EasyUI's compact numbers, in the interface's locale by default: "1.2k"), short enough
+   * for the left margin.
+   */
   formatTick?: (n: number) => string;
   /**
    * ioiti-ui: the change over the window as the readout says it (latest minus the value at the window's start), in
@@ -62,22 +67,31 @@ export interface LiveLineChartProps {
   domain?: [number, number];
   /** Big current value + pause button above the chart (default true) */
   showReadout?: boolean;
+  /** ioiti-ui: its name for a screen reader: "Live chart of the last 60 s, currently 42" by default, in its language. */
   ariaLabel?: string;
   className?: string;
 }
 
 const LIVE_M = { l: 46, t: 8, r: 12, b: 22 };
 
-// ioiti-ui: lengths of time in words, minutes from two of them ("15 min", "7.5 min", "40 s"): the axis of a window of
-// fifteen minutes read "−900s".
-function spanText(seconds: number): string {
-  return seconds >= 120 ? `${Number((seconds / 60).toFixed(1))} min` : `${seconds} s`;
+// ioiti-ui: the units of the interface's language (its catalogue's `format`: "min", "s").
+interface Units {
+  minutes: string;
+  seconds: string;
 }
 
-function agoText(seconds: number): string {
-  if (seconds < 60) return `${seconds.toFixed(1)} s`;
+// ioiti-ui: lengths of time in words, minutes from two of them ("15 min", "7.5 min", "40 s"): the axis of a window of
+// fifteen minutes read "−900s". In the interface's locale and language: its numbers (`number`), its units.
+function spanText(seconds: number, units: Units, number: (n: number) => string): string {
+  return seconds >= 120 ? `${number(Number((seconds / 60).toFixed(1)))} ${units.minutes}` : `${number(seconds)} ${units.seconds}`;
+}
+
+// ioiti-ui: in the interface's locale and language too, its seconds rounded by toFixed before its locale writes them
+// to a tenth (`tenth`: Intl would round 29.65 up).
+function agoText(seconds: number, units: Units, tenth: (n: number) => string): string {
+  if (seconds < 60) return `${tenth(Number(seconds.toFixed(1)))} ${units.seconds}`;
   const minutes = Math.floor(seconds / 60);
-  return `${minutes} min ${String(Math.round(seconds % 60)).padStart(2, "0")} s`;
+  return `${minutes} ${units.minutes} ${String(Math.round(seconds % 60)).padStart(2, "0")} ${units.seconds}`;
 }
 
 export function LiveLineChart({
@@ -89,8 +103,8 @@ export function LiveLineChart({
   // ioiti-ui: the design's series colour, which the pages always gave it (EasyUI's was an indigo).
   color = "var(--chart-series)",
   unit = "",
-  formatValue = defaultFormat,
-  formatTick = defaultTick,
+  formatValue: givenFormatValue,
+  formatTick: givenFormatTick,
   formatChange,
   initialPoints,
   domain,
@@ -99,6 +113,16 @@ export function LiveLineChart({
   className = "",
 }: LiveLineChartProps) {
   const reduce = useReducedMotionConfig();
+  // ioiti-ui: the numbers, percentages, units and words in the interface's locale and language, where the application
+  // gives none of its own.
+  const chartFormat = useChartFormat();
+  const formatValue = givenFormatValue ?? chartFormat.format;
+  const formatTick = givenFormatTick ?? chartFormat.tick;
+  const pctText = chartFormat.percent;
+  const { formatNumber } = useFormat();
+  const messages = useMessages();
+  const words = messages.chart;
+  const span = (seconds: number) => spanText(seconds, messages.format, chartFormat.format);
   const uid = useId().replace(/:/g, "");
   const [rootRef, width] = useElementWidth<HTMLDivElement>(640);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -369,7 +393,8 @@ export function LiveLineChart({
                   <span className={change > 0 ? "text-positive" : change < 0 ? "text-negative" : undefined}>
                     {change > 0 ? "▲" : change < 0 ? "▼" : ""} {formatChange(change)}
                   </span>{" "}
-                  over the last {spanText(winS)}
+                  {/* ioiti-ui: the interface's language. */}
+                  {words.liveWindow(span(winS))}
                 </p>
               )
             ) : (
@@ -378,7 +403,7 @@ export function LiveLineChart({
                   <span className={delta >= 0 ? "text-positive" : "text-negative"}>
                     {delta >= 0 ? "▲" : "▼"} {pctText(Math.abs(delta))}
                   </span>{" "}
-                  over the last {spanText(winS)}
+                  {words.liveWindow(span(winS))}
                 </p>
               )
             )}
@@ -387,7 +412,8 @@ export function LiveLineChart({
             type="button"
             onClick={() => setManualPause((p) => !p)}
             aria-pressed={manualPause}
-            aria-label={manualPause ? "Resume live updates" : "Pause live updates"}
+            // ioiti-ui: in the interface's language, as what the button says.
+            aria-label={manualPause ? words.resumeLive : words.pauseLive}
             // ioiti-ui: the global focus ring (EasyUI's `focus` hid it behind its own).
             className={`inline-flex h-8 items-center gap-2 rounded-full bg-foreground/5 pl-3 pr-3.5 text-sm font-medium text-text-secondary transition-[background-color,transform] duration-150 [@media(hover:hover)]:hover:bg-foreground/10 ${PRESSABLE}`}
           >
@@ -395,7 +421,7 @@ export function LiveLineChart({
               {!paused && !reduce && <span className="absolute inset-0 animate-ping rounded-full bg-positive/70" />}
               <span className={cx("relative size-2 rounded-full", paused ? TONE_MARK.warning : TONE_MARK.positive)} />
             </span>
-            {paused ? "Paused" : "Live"}
+            {paused ? words.paused : words.live}
           </button>
         </div>
       )}
@@ -406,7 +432,8 @@ export function LiveLineChart({
           width={width}
           height={height}
           role="img"
-          aria-label={ariaLabel ?? `Live chart of the last ${spanText(winS)}${latest !== null ? `, currently ${formatValue(latest)} ${unit}` : ""}`}
+          // ioiti-ui: in the interface's language.
+          aria-label={ariaLabel ?? words.liveChartName({ span: span(winS), value: latest === null ? undefined : formatValue(latest), unit })}
           className="block touch-pan-y overflow-visible"
         >
           <defs>
@@ -445,7 +472,8 @@ export function LiveLineChart({
               textAnchor={i === 0 ? "start" : i === 2 ? "end" : "middle"}
               className="fill-muted-foreground text-[11px] tabular-nums"
             >
-              {i === 2 ? "now" : `−${spanText(Math.round(winS * (1 - p)))}`}
+              {/* ioiti-ui: the interface's language. */}
+              {i === 2 ? words.now : words.beforeNow(span(Math.round(winS * (1 - p))))}
             </text>
           ))}
 
@@ -492,13 +520,17 @@ export function LiveLineChart({
                 {formatValue(scrub.v)}
                 {unit && <span className="ml-1 font-normal text-muted-foreground">{unit}</span>}
               </p>
-              <p className="mt-0.5 tabular-nums text-muted-foreground">{scrub.ago < 0.5 ? "now" : `${agoText(scrub.ago)} ago`}</p>
+              {/* ioiti-ui: the interface's language (its catalogue's `format.past`: "4.5 s ago"). */}
+              <p className="mt-0.5 tabular-nums text-muted-foreground">
+                {scrub.ago < 0.5 ? words.now : messages.format.past(agoText(scrub.ago, messages.format, (n) => formatNumber(n, 1)))}
+              </p>
             </>
           )}
         </Tooltip>
       </div>
       <p className="sr-only" role="status" aria-live="polite">
-        {paused ? "Live updates paused" : ""}
+        {/* ioiti-ui: the interface's language. */}
+        {paused ? words.livePausedStatus : ""}
       </p>
     </div>
   );

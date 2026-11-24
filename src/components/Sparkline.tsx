@@ -2,9 +2,10 @@ import { useId } from 'react'
 
 import { NEGATIVE_COLOUR, POSITIVE_COLOUR, SERIES_COLOUR } from '../lib/chart-colours.js'
 import { monotonePath } from '../lib/dashboard-chart-utils.js'
-import { formatNumber, toneOf } from '../lib/format.js'
+import { toneOf } from '../lib/format.js'
 import type { Tone } from '../lib/format.js'
 import { cn } from '../lib/utils.js'
+import { useFormat, useMessages } from './locale-context.js'
 
 /** Its size where it fits; narrower where it does not (a tile on a phone), its height with it: never past its box. */
 const FIT = 'block h-auto max-w-full'
@@ -24,6 +25,7 @@ interface SparklineProps {
   height?: number
   /** What it shows ("Orders per day"): a screen reader hears it before its first, last, highest and lowest values. */
   label?: string
+  /** A value as a screen reader hears it: as the interface's locale writes it by default, whole or to two decimals. */
   format?: (value: number) => string
   className?: string
 }
@@ -41,10 +43,14 @@ export function Sparkline({
   width = 96,
   height = 24,
   label,
-  format = (value) => formatNumber(value, Number.isInteger(value) ? 0 : 2),
+  format: givenFormat,
   className,
 }: SparklineProps) {
   const gradient = useId()
+  // Its values and words in the interface's locale and language.
+  const { formatNumber } = useFormat()
+  const words = useMessages().chart
+  const format = givenFormat ?? ((value: number) => formatNumber(value, Number.isInteger(value) ? 0 : 2))
   const finite = values.filter((value) => Number.isFinite(value))
   if (finite.length === 0) return null
 
@@ -52,8 +58,8 @@ export function Sparkline({
   const last = finite[finite.length - 1]
   const high = Math.max(...finite)
   const low = Math.min(...finite)
-  const summary = `from ${format(first)} to ${format(last)}, high ${format(high)}, low ${format(low)}`
-  const name = label ? `${label}: ${summary}` : summary
+  const summary = words.sparklineSummary({ first: format(first), last: format(last), high: format(high), low: format(low) })
+  const name = label ? words.namedValue({ name: label, value: summary }) : summary
   const pad = 2
 
   if (variant === 'bars') {

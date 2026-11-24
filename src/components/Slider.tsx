@@ -2,8 +2,8 @@ import { useId } from 'react'
 import type { ChangeEvent, ReactNode } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
-import { formatNumber } from '../lib/format.js'
 import { cn } from '../lib/utils.js'
+import { useFormat, useMessages } from './locale-context.js'
 import { METER_FILL } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 import { NumberInput } from './NumberInput.js'
@@ -27,7 +27,7 @@ interface SliderBase {
   min?: number
   max?: number
   step?: number
-  /** The value in words: "2.5%", "45 min". */
+  /** The value in words: "2.5%", "45 min". The provider's number by default, to the step's decimals. */
   format?: (value: number) => string
   /** Marks under the track: at every step (`true`), at the values given, or with their labels. */
   ticks?: boolean | number[] | SliderTick[]
@@ -121,6 +121,12 @@ function Track({
   )
 }
 
+/** The value in words: the format given, or the provider's number to the step's decimals ("2.5" for a step of 0.5). */
+function useValueFormat(format: ((value: number) => string) | undefined, step: number): (value: number) => string {
+  const { formatNumber } = useFormat()
+  return format ?? ((number) => formatNumber(number, step < 1 ? (String(step).split('.')[1]?.length ?? 0) : 0))
+}
+
 function Header({ id, label, said }: { id: string; label: ReactNode; said: string }) {
   return (
     <div className="mb-1 flex items-baseline justify-between gap-3 text-xs">
@@ -148,13 +154,14 @@ export function Slider({
   min = 0,
   max = 100,
   step = 1,
-  format = (number) => formatNumber(number, step < 1 ? String(step).split('.')[1]?.length ?? 0 : 0),
+  format: given,
   ticks,
   levels = [],
   showInput = false,
   disabled = false,
   className,
 }: SliderProps) {
+  const format = useValueFormat(given, step)
   const [current, setCurrent] = useControllableState(value, defaultValue ?? min, onChange)
   const id = useId()
   const at = ((current - min) / (max - min || 1)) * 100
@@ -207,20 +214,22 @@ export function RangeSlider({
   min = 0,
   max = 100,
   step = 1,
-  format = (number) => formatNumber(number, step < 1 ? String(step).split('.')[1]?.length ?? 0 : 0),
+  format: given,
   ticks,
   levels = [],
   disabled = false,
   className,
 }: RangeSliderProps) {
+  const format = useValueFormat(given, step)
+  const words = useMessages().numberInput
   const [current, setCurrent] = useControllableState<[number, number]>(value, defaultValue ?? [min, max], onChange)
   const id = useId()
   const [low, high] = current
   const at = (number: number) => ((number - min) / (max - min || 1)) * 100
-  const name = ariaLabel ?? (typeof label === 'string' ? label : 'Range')
+  const name = ariaLabel ?? (typeof label === 'string' ? label : words.rangeName)
   return (
     <div className={cn('w-full', disabled && 'opacity-50', className)}>
-      <Header id={id} label={label} said={`${format(low)} – ${format(high)}`} />
+      <Header id={id} label={label} said={words.rangeValue({ from: format(low), to: format(high) })} />
       <Track from={at(low)} to={at(high)} levels={levels} ticks={tickList(ticks, min, max, step)} min={min} max={max}>
         {/* Two inputs over each other, each taking the pointer on its thumb only. */}
         <input
@@ -230,7 +239,7 @@ export function RangeSlider({
           step={step}
           value={low}
           disabled={disabled}
-          aria-label={`${name}, from`}
+          aria-label={words.rangeFrom(name)}
           aria-valuetext={format(low)}
           onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrent([Math.min(Number(event.target.value), high), high])}
           // At the top of the scale, the lower thumb is the one that can still move: it is above the other.
@@ -243,7 +252,7 @@ export function RangeSlider({
           step={step}
           value={high}
           disabled={disabled}
-          aria-label={`${name}, to`}
+          aria-label={words.rangeTo(name)}
           aria-valuetext={format(high)}
           onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrent([low, Math.max(Number(event.target.value), low)])}
           className={cn(RANGE, 'pointer-events-none z-10')}

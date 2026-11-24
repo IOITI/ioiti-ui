@@ -52,7 +52,10 @@ a new one, a baseline to commit from CI's `visual-baselines`).
    examples at least, which import `ioiti-ui` as an application does.
 4. **Its guidelines**, `design-system/components/<Name>/README.md`: what the gallery shows beside its examples.
 5. **Its props**, `npm run props` (lint fails while `gallery/src/props.json` differs from the types).
-6. **Its tests** beside it, by role and by keyboard; and a look at it in both themes, with an accent and with glass.
+6. **Its words**, in the catalogue: a namespace in `src/locales/en/` and its French in `src/locales/fr/`, said with
+   `useMessages()`; its numbers and moments with `useFormat()`. None written in its code (`npm run lint`).
+7. **Its tests** beside it, by role and by keyboard, and in French; and a look at it in both themes, with an accent and
+   with glass, and in French (the gallery's language picker).
 
 A component taken from EasyUI goes in `src/components/ui/`, each change marked `// ioiti-ui:` and listed in
 `docs/easyui-changes.md`.

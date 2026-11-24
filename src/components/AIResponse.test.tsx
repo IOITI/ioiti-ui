@@ -2,6 +2,8 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import type { AnchorHTMLAttributes } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { LinkProvider } from './LinkProvider.js'
 import { AIResponse, AIResponseContent, AIResponseThinking, safeHref } from './ui/ai-response.js'
 
@@ -175,6 +177,24 @@ describe('AIResponseThinking', () => {
       vi.advanceTimersByTime(60_000)
     })
     expect(screen.getByText('7 min 12 s')).toBeInTheDocument()
+  })
+
+  it('says for how long in the locale given, in its words or the application\'s', () => {
+    vi.useFakeTimers({ now: Date.parse('2026-10-30T16:40:00Z') })
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AIResponseThinking label="Réflexion" since="2026-10-30T15:33:48Z" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('1 h 06 min')).toBeInTheDocument()
+    unmount()
+
+    render(
+      <IoitiProvider messages={{ format: { minutes: 'mins' } }}>
+        <AIResponseThinking label="Thinking" since="2026-10-30T16:33:48Z" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('6 mins 12 s')).toBeInTheDocument()
   })
 
   it('keeps its skeleton and its word without anything said of what it does', () => {

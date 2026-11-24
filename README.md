@@ -226,6 +226,28 @@ everywhere (`always`) or nowhere (`never`). A layer an application fixes over it
 its container: a change of page would cover it otherwise while it plays. It names the layer only then, as a
 view-transition name at rest would take the blur of its glass away.
 
+## Languages and formats
+
+English as Britain writes it by default (`en-GB`); French beside it, an entry of its own that an application speaking
+English never bundles:
+
+```tsx
+import { IoitiProvider } from 'ioiti-ui'
+import { fr } from 'ioiti-ui/locales/fr'
+
+// index.html: <html lang="fr">
+<IoitiProvider locale="fr-FR" messages={fr}>
+```
+
+- **The locale writes**: numbers, amounts and percentages (separators, the sign's place, the space before %), dates
+  and months, the clock (24 or 12 hours), and the day the calendars' weeks start on. `weekStartsOn` and `hourCycle`
+  on the provider say otherwise.
+- **The catalogue speaks**: the package's words, by namespace. An application gives some of its own over a language's
+  (`mergeMessages(fr, { date: { … } })`), and a component's own prop (a `placeholder`, a `title`) wins over both.
+- **An application's own components** take the same: `useFormat()` (the formats the package exports, in English, by
+  name: `formatMoney`, `formatDateTime`…, in the provider's locale), `useLocale()`, `useMessages()`, and
+  `parseLocaleNumber` for a number typed.
+
 ## The rules of the design
 
 - **Two values for every colour.** A class that names a colour has its dark value beside it

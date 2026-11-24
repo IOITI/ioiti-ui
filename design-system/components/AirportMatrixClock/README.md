@@ -2,7 +2,7 @@
 
 The time of a few cities, as a departures board of dot-matrix characters; small, two of them fit beside a page's title.
 
-**You provide** `cities` (one to five, `[{ id, name, timeZone }]`, an IANA zone each); `title` (`null` for none); `footer` in the page's words; `size` (`md` · `sm`); `format` (`24h` · `12h`), `showSeconds`, `updateInterval` (1000ms by default).
+**You provide** `cities` (one to five, `[{ id, name, timeZone }]`, an IANA zone each); `title` (`null` for none); `footer` in the page's words; `size` (`md` · `sm`); `format` (`24h` · `12h`; IoitiProvider's clock by default), `showSeconds`, `updateInterval` (1000ms by default).
 
 ```tsx
 <PageHeader title="Dashboard" actions={

@@ -1,6 +1,8 @@
 import { act, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { LiveValue } from './LiveValue.js'
 
 describe('LiveValue', () => {
@@ -49,5 +51,16 @@ describe('LiveValue', () => {
     const figure = screen.getByText('42.00')
     expect(figure).not.toHaveClass('text-positive')
     expect(figure).not.toHaveClass('text-negative')
+  })
+})
+
+describe('LiveValue in a locale', () => {
+  it('writes its figure as the locale writes a number', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <LiveValue value={18_120.5} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('18 120,50').textContent).toBe('18\u202f120,50')
   })
 })

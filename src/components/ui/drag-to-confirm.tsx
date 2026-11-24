@@ -6,6 +6,7 @@ import { ChevronRight, Check, Trash2, Lock, Unlock, Archive, ArrowRight } from '
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { TONE_LINE, TONE_SOFT, TONE_SOLID, TONE_TEXT, type Tone } from '../../lib/recipes.js';
+import { useFormat } from '../locale-context.js';
 
 export type DragConfirmActionType =
   | 'delete'
@@ -111,6 +112,8 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const shouldReduceMotion = useReducedMotionConfig();
+  // ioiti-ui: its percentage as the provider's locale writes one ("40%"; "40 %" in French).
+  const { formatPercent } = useFormat();
   const x = useMotionValue(0);
 
   const currentSize = SIZE_CONFIG[size] || SIZE_CONFIG.md;
@@ -169,7 +172,7 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   // read once per render, and stood still through a drag.
   const valueAt = (at: number) =>
     isConfirmed ? 100 : Math.min(100, Math.max(0, Math.round((at / (dragMax || 1)) * 10) * 10));
-  const valueText = (value: number) => (isConfirmed ? confirmedLabel : `${value}%`);
+  const valueText = (value: number) => (isConfirmed ? confirmedLabel : formatPercent(value, false, 0));
   useMotionValueEvent(x, 'change', (at) => {
     const thumb = thumbRef.current;
     const value = valueAt(at);

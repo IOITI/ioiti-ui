@@ -9,6 +9,7 @@ import { cn } from '../lib/utils.js'
 import { CopyButton } from './CopyButton.js'
 import { FieldContext } from './field-context.js'
 import { IconButton } from './IconButton.js'
+import { useMessages } from './locale-context.js'
 import { Input } from './ui/form.js'
 
 /** A line's height unwrapped: text-[13px] on leading-5. */
@@ -47,7 +48,7 @@ interface LogViewerProps {
   height?: number | string
   /** The name of the file "Download" saves. */
   downloadName?: string
-  /** Shown while nothing is logged. */
+  /** Shown while nothing is logged: "Nothing logged yet." in the provider's language by default. */
   emptyText?: ReactNode
   className?: string
 }
@@ -69,9 +70,10 @@ export function LogViewer({
   defaultWrap = false,
   height = 384,
   downloadName = 'log.txt',
-  emptyText = 'Nothing logged yet.',
+  emptyText,
   className,
 }: LogViewerProps) {
+  const words = useMessages().log
   const all = useMemo(() => lines ?? splitLog(text ?? ''), [lines, text])
   const cut = Math.max(0, all.length - Math.max(1, maxLines))
   const shown = useMemo(() => (cut ? all.slice(cut) : all), [all, cut])
@@ -214,8 +216,8 @@ export function LogViewer({
         <div className="w-48 max-w-full">
           <FieldContext.Provider value={null}>
             <Input
-              aria-label={`Search ${label}`}
-              placeholder="Search"
+              aria-label={words.search(label)}
+              placeholder={words.searchPlaceholder}
               leftIcon={<Search className="size-3.5" />}
               value={query}
               className="h-8"
@@ -229,25 +231,24 @@ export function LogViewer({
           </FieldContext.Provider>
         </div>
         <span role="status" className="min-w-14 text-center text-xs tabular-nums text-muted-foreground">
-          {query.trim() ? (found.length ? `${Math.min(current, found.length - 1) + 1} of ${found.length}` : 'No match') : ''}
+          {query.trim() ? (found.length ? words.matchPosition({ index: Math.min(current, found.length - 1) + 1, count: found.length }) : words.noMatch) : ''}
         </span>
-        <IconButton label="Previous match" hint="Previous match (Shift+Enter)" icon={<ChevronUp />} disabled={!found.length} onClick={() => go(-1)} className={cn('size-8', DISABLED)} />
-        <IconButton label="Next match" hint="Next match (Enter)" icon={<ChevronDown />} disabled={!found.length} onClick={() => go(1)} className={cn('size-8', DISABLED)} />
+        {/* The keys as they are written today, whatever the language: naming them in its words is to come. */}
+        <IconButton label={words.previousMatch} hint={words.previousMatchHint('Shift+Enter')} icon={<ChevronUp />} disabled={!found.length} onClick={() => go(-1)} className={cn('size-8', DISABLED)} />
+        <IconButton label={words.nextMatch} hint={words.nextMatchHint('Enter')} icon={<ChevronDown />} disabled={!found.length} onClick={() => go(1)} className={cn('size-8', DISABLED)} />
         <IconButton
-          label="Wrap long lines"
-          hint={wrap ? 'Long lines wrapped' : 'Long lines scroll sideways'}
+          label={words.wrap}
+          hint={wrap ? words.wrapped : words.unwrapped}
           icon={<WrapText />}
           aria-pressed={wrap}
           onClick={() => setWrap((was) => !was)}
           className={cn('size-8', wrap && 'bg-surface-hover text-foreground')}
         />
-        <CopyButton value={() => shown.join('\n')} label="Copy the log" size="sm" />
-        <IconButton label="Download the log" hint={`Download as ${downloadName}`} icon={<Download />} onClick={download} disabled={!shown.length} className={cn('size-8', DISABLED)} />
+        <CopyButton value={() => shown.join('\n')} label={words.copy} size="sm" />
+        <IconButton label={words.download} hint={words.downloadAs(downloadName)} icon={<Download />} onClick={download} disabled={!shown.length} className={cn('size-8', DISABLED)} />
       </div>
       {dropped > 0 && (
-        <p className="border-b border-border px-3 py-1 text-xs text-muted-foreground">
-          {dropped.toLocaleString('en')} earlier {dropped === 1 ? 'line' : 'lines'} dropped
-        </p>
+        <p className="border-b border-border px-3 py-1 text-xs text-muted-foreground">{words.dropped(dropped)}</p>
       )}
       <div
         ref={scroller}
@@ -260,7 +261,7 @@ export function LogViewer({
         className="overflow-auto font-mono text-[13px] leading-5 text-foreground"
       >
         {shown.length === 0 ? (
-          <p className="p-4 font-sans text-sm text-muted-foreground">{emptyText}</p>
+          <p className="p-4 font-sans text-sm text-muted-foreground">{emptyText ?? words.empty}</p>
         ) : (
           <div style={width} className="py-1.5">
             <div aria-hidden style={{ height: before }} />
@@ -317,7 +318,7 @@ export function LogViewer({
           className={cn('absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-sm font-medium text-foreground shadow-subtle transition hover:bg-surface-hover focus-ring', PRESSABLE)}
         >
           <ArrowDownToLine className="size-3.5" aria-hidden />
-          Jump to the end
+          {words.jumpToEnd}
         </button>
       )}
     </section>

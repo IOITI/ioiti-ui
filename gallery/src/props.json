@@ -27,8 +27,7 @@
    {
     "name": "rowLabels",
     "type": "string[]",
-    "default": "[\"Mon\", \"Tue\", \"Wed\", \"Thu\", \"Fri\", \"Sat\", \"Sun\"]",
-    "description": "Hours mode row names (default Mon…Sun). ioiti-ui: as many rows as names."
+    "description": "Hours mode row names (default Mon…Sun). ioiti-ui: as many rows as names; by default the days Monday first, as the provider's locale names them."
    },
    {
     "name": "hours",
@@ -59,13 +58,17 @@
    },
    {
     "name": "weekStart",
-    "type": "0 | 1",
+    "type": "WeekDay",
     "values": [
      "0",
-     "1"
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
     ],
-    "default": "0",
-    "description": "0 = Sunday, 1 = Monday"
+    "description": "0 = Sunday, 1 = Monday. ioiti-ui: any day (… 6 = Saturday); by default the provider's first day of the week (IoitiProvider: Monday in en-GB), not Sunday."
    },
    {
     "name": "color",
@@ -80,8 +83,7 @@
    {
     "name": "unit",
     "type": "string",
-    "default": "\"contributions\"",
-    "description": "Plural noun used in the tooltip / summary"
+    "description": "Plural noun used in the tooltip / summary. ioiti-ui: written after each number as given; by default the provider's word, which counts (\"1 contribution\", \"12 contributions\": `heatmap.unit`)."
    },
    {
     "name": "format",
@@ -101,8 +103,7 @@
    {
     "name": "legend",
     "type": "[string, string]",
-    "default": "[\"Less\", \"More\"]",
-    "description": "The two ends of the legend (default Less, More)."
+    "description": "The two ends of the legend (default Less, More, in the provider's words)."
    },
    {
     "name": "minCell",
@@ -117,7 +118,8 @@
    },
    {
     "name": "ariaLabel",
-    "type": "string"
+    "type": "string",
+    "description": "The grid's name; by default \"Activity heatmap.\" and its summary, in the provider's words."
    },
    {
     "name": "className",
@@ -635,8 +637,7 @@
      "12h",
      "24h"
     ],
-    "default": "'24h'",
-    "description": "24-hour airport-board time by default."
+    "description": "24 hours or 12; the provider's clock by default (IoitiProvider's: 24 hours in en-GB and fr-FR, 12 in en-US)."
    },
    {
     "name": "showSeconds",
@@ -653,13 +654,12 @@
    {
     "name": "title",
     "type": "string | null",
-    "default": "'World clock'",
-    "description": "The board's heading (EasyUI's \"WORLD CLOCK\"); null for none."
+    "description": "The board's heading (\"World clock\" by default, in the provider's words: `clock.title`); null for none."
    },
    {
     "name": "footer",
     "type": "ReactNode",
-    "description": "The board's last line, in the caller's words (EasyUI's \"N CITIES / IANA TIME ZONES\")."
+    "description": "The board's last line, in the caller's words (\"3 cities / IANA time zones\" by default, in the provider's)."
    },
    {
     "name": "size",
@@ -920,7 +920,7 @@
     "name": "compact",
     "type": "boolean",
     "default": "false",
-    "description": "Compact notation (e.g. 1.2M, 45K)"
+    "description": "Compact notation (ioiti-ui: as the interface's locale writes it, e.g. 1.2m, 45k in British English)"
    },
    {
     "name": "className",
@@ -1465,12 +1465,12 @@
    {
     "name": "formatValue",
     "type": "(n: number) => string",
-    "default": "defaultFormat"
+    "description": "A value in the tooltip and the table: as the interface's locale writes it by default (\"1,234.5\")."
    },
    {
     "name": "formatTick",
     "type": "(n: number) => string",
-    "default": "defaultTick"
+    "description": "A tick of the value axis: compact in the interface's locale by default (\"1.2k\")."
    },
    {
     "name": "formatTitle",
@@ -1511,7 +1511,8 @@
    },
    {
     "name": "ariaLabel",
-    "type": "string"
+    "type": "string",
+    "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Bar chart of Profit, Fees across 7 categories\" and \"Chart data\"."
    },
    {
     "name": "className",
@@ -1542,7 +1543,7 @@
    {
     "name": "format",
     "type": "(value: number) => string",
-    "default": "(value) => formatNumber(value)"
+    "description": "Writes each figure: the provider's number by default (\"1,284\"; \"1 284\" in French)."
    },
    {
     "name": "className",
@@ -1778,16 +1779,22 @@
    },
    {
     "name": "weekStartsOn",
-    "type": "0 | 1",
+    "type": "WeekDay",
     "values": [
      "0",
-     "1"
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
     ],
-    "default": "0"
+    "description": "The day the weeks start on (0 Sunday, 1 Monday … 6 Saturday): IoitiProvider's by default, its locale's (Monday in en-GB)."
    },
    {
     "name": "locale",
-    "type": "string"
+    "type": "string",
+    "description": "The locale its month and days are written in (a picker's button too): IoitiProvider's by default (en-GB outside one)."
    },
    {
     "name": "className",
@@ -2605,7 +2612,7 @@
    {
     "name": "placeholder",
     "type": "string",
-    "default": "\"Pick a date\""
+    "description": "What its button says while no day is chosen: \"Pick a date\" by default, in the provider's words (`date.datePlaceholder`)."
    },
    {
     "name": "align",
@@ -2650,15 +2657,22 @@
    },
    {
     "name": "weekStartsOn",
-    "type": "0 | 1",
+    "type": "WeekDay",
     "values": [
      "0",
-     "1"
-    ]
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
+    ],
+    "description": "The day the weeks start on (0 Sunday, 1 Monday … 6 Saturday): IoitiProvider's by default, its locale's (Monday in en-GB)."
    },
    {
     "name": "locale",
-    "type": "string"
+    "type": "string",
+    "description": "The locale its month and days are written in (a picker's button too): IoitiProvider's by default (en-GB outside one)."
    },
    {
     "name": "id",
@@ -2709,14 +2723,13 @@
    {
     "name": "presets",
     "type": "DateRangePreset[]",
-    "default": "PRESETS",
-    "description": "The ranges offered first; the last 7, 30 and 90 days by default."
+    "description": "The ranges offered first; the last 7, 30 and 90 days by default (\"7 days\", in the provider's words)."
    },
    {
     "name": "allTime",
     "type": "boolean",
     "default": "true",
-    "description": "An \"All time\" button, after the presets."
+    "description": "An \"All time\" button, after the presets (in the provider's words)."
    },
    {
     "name": "today",
@@ -2754,7 +2767,7 @@
    {
     "name": "placeholder",
     "type": "string",
-    "default": "\"Pick a range\""
+    "description": "What its button says while no range is chosen: \"Pick a range\" by default, in the provider's words (`date.rangePlaceholder`)."
    },
    {
     "name": "align",
@@ -2799,15 +2812,22 @@
    },
    {
     "name": "weekStartsOn",
-    "type": "0 | 1",
+    "type": "WeekDay",
     "values": [
      "0",
-     "1"
-    ]
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
+    ],
+    "description": "The day the weeks start on (0 Sunday, 1 Monday … 6 Saturday): IoitiProvider's by default, its locale's (Monday in en-GB)."
    },
    {
     "name": "locale",
-    "type": "string"
+    "type": "string",
+    "description": "The locale its month and days are written in (a picker's button too): IoitiProvider's by default (en-GB outside one)."
    },
    {
     "name": "id",
@@ -3220,19 +3240,17 @@
    {
     "name": "centerLabel",
     "type": "string",
-    "default": "\"Total\"",
-    "description": "Text above the total in the centre"
+    "description": "Text above the total in the centre (ioiti-ui: \"Total\" in the interface's language by default)"
    },
    {
     "name": "otherLabel",
     "type": "string",
-    "default": "\"Other\"",
-    "description": "The name of the segment the fifth and those after it make together: the design compares four colours, never recycled (a segment given its own `color` keeps it, and nothing is grouped then)."
+    "description": "The name of the segment the fifth and those after it make together: the design compares four colours, never recycled (a segment given its own `color` keeps it, and nothing is grouped then). \"Other\" in the interface's language by default."
    },
    {
     "name": "formatValue",
     "type": "(n: number) => string",
-    "default": "defaultFormat"
+    "description": "A value, its total's too: as the interface's locale writes it by default, to a tenth (\"1,234.5\")."
    },
    {
     "name": "showLegend",
@@ -3246,7 +3264,8 @@
    },
    {
     "name": "ariaLabel",
-    "type": "string"
+    "type": "string",
+    "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Donut chart. Total 750\" (\"Gauge chart…\" for a gauge) and \"Chart data\"."
    },
    {
     "name": "className",
@@ -3713,18 +3732,17 @@
    {
     "name": "formatValue",
     "type": "(value: number) => string",
-    "default": "defaultFormat"
+    "description": "A value in the tooltip and the table: as the interface's locale writes it by default, to a tenth (\"1,234.5\")."
    },
    {
     "name": "formatTick",
     "type": "(value: number) => string",
-    "default": "defaultTick"
+    "description": "A tick of the value axis: compact in the interface's locale by default (\"1.2k\")."
    },
    {
     "name": "formatX",
     "type": "(x: number) => string",
-    "default": "(value: number) => defaultFormat(value)",
-    "description": "A place on the x axis in words: \"Trade 12\"."
+    "description": "A place on the x axis in words: \"Trade 12\"; its number as the interface's locale writes it by default."
    },
    {
     "name": "formatXTick",
@@ -3734,7 +3752,7 @@
    {
     "name": "xLabel",
     "type": "string",
-    "description": "What the x axis counts, under it: \"Trades\"."
+    "description": "What the x axis counts, under it: \"Trades\"; the head of the table's first column too (\"Place\", in the interface's language, otherwise)."
    },
    {
     "name": "details",
@@ -3754,7 +3772,8 @@
    },
    {
     "name": "ariaLabel",
-    "type": "string"
+    "type": "string",
+    "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Fan chart of Expected, Actual\" and \"Chart data\"."
    },
    {
     "name": "className",
@@ -4087,7 +4106,7 @@
    {
     "name": "formatValue",
     "type": "(n: number) => string",
-    "default": "defaultFormat"
+    "description": "A stage's value: as the interface's locale writes it by default, to a tenth at most (\"1,234.5\")."
    },
    {
     "name": "showSummary",
@@ -4102,7 +4121,8 @@
    },
    {
     "name": "ariaLabel",
-    "type": "string"
+    "type": "string",
+    "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Funnel with 4 stages from Visited to Paid\" and \"Funnel data\"."
    },
    {
     "name": "className",
@@ -4112,20 +4132,17 @@
    {
     "name": "summaryLabel",
     "type": "string",
-    "default": "\"overall conversion\"",
-    "description": "What the last stage is of the first, beside its share (\"of the visits ended in a purchase\")."
+    "description": "What the last stage is of the first, beside its share (\"of the visits ended in a purchase\"); \"overall conversion\" in the interface's language by default."
    },
    {
     "name": "noun",
     "type": "string",
-    "default": "\"Users\"",
-    "description": "What is counted, in the tooltip and the table (\"Visits\"; EasyUI's \"Users\")."
+    "description": "What is counted, in the tooltip and the table (\"Visits\"; EasyUI's \"Users\", in the interface's language, by default)."
    },
    {
     "name": "emptyText",
     "type": "string",
-    "default": "\"No data\"",
-    "description": "Said in place of the chart when there is no stage."
+    "description": "Said in place of the chart when there is no stage; \"No data\" in the interface's language by default."
    }
   ]
  },
@@ -4381,6 +4398,40 @@
     "description": "Told of every error a page shows instead of itself: one AppShell's boundary caught, or an ErrorBoundary, or the router's error page (RouterErrorPage). Its place to report it: the application's error tracker, its server's log. Once per error, with where it was caught (`source`) and, from a boundary, the components it was thrown in."
    },
    {
+    "name": "locale",
+    "type": "string",
+    "default": "DEFAULT_LOCALE",
+    "description": "The locale the interface speaks and writes in (BCP 47: \"en-GB\", \"fr-FR\", \"en-US\"): how its numbers, amounts and dates are written, the day its calendars' weeks start on, its clock. `en-GB` by default. The words are the catalogue's (`messages`): give both."
+   },
+   {
+    "name": "messages",
+    "type": "MessagesOverride",
+    "description": "The package's words: a language's catalogue (`fr` from `ioiti-ui/locales/fr`), or some words of an application's own (`{ date: { today: 'Now' } }`), given over English's. A constant, not an object written in the render."
+   },
+   {
+    "name": "weekStartsOn",
+    "type": "WeekDay",
+    "values": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
+    ],
+    "description": "The day the calendars' weeks start on (0 Sunday, 1 Monday): the locale's by default."
+   },
+   {
+    "name": "hourCycle",
+    "type": "HourCycle",
+    "values": [
+     "h23",
+     "h12"
+    ],
+    "description": "A clock of 24 hours (\"h23\") or 12 (\"h12\"): the locale's by default."
+   },
+   {
     "name": "children",
     "type": "ReactNode",
     "required": true
@@ -4501,7 +4552,7 @@
    {
     "name": "change",
     "type": "number",
-    "description": "The figure's change, signed and in the tone of what it means: a percentage by default (`2.5` is \"+2.5%\"), what `changeFormat` writes otherwise. What it is compared with is said once, by KpiGrid's `period`, or by `hint`."
+    "description": "The figure's change, signed and in the tone of what it means: a percentage by default, as the provider's locale writes one (`2.5` is \"+2.5%\"; \"+2,5 %\" in French), what `changeFormat` writes otherwise. What it is compared with is said once, by KpiGrid's `period`, or by `hint`."
    },
    {
     "name": "goodWhen",
@@ -4515,7 +4566,7 @@
    {
     "name": "changeFormat",
     "type": "(change: number) => string",
-    "description": "Writes the change, signed (`(n) => formatMoney(n, 'EUR', true)`)."
+    "description": "Writes the change, signed (`(n) => formatMoney(n, 'EUR', true)`, `useFormat()`'s for the provider's locale)."
    },
    {
     "name": "lead",
@@ -4595,17 +4646,17 @@
    {
     "name": "formatValue",
     "type": "(value: number) => string",
-    "default": "defaultFormat"
+    "description": "A value in the tooltip and the table: as the interface's locale writes it by default, to a tenth (\"1,234.5\")."
    },
    {
     "name": "formatTick",
     "type": "(value: number) => string",
-    "default": "defaultTick"
+    "description": "A tick of the value axis: compact in the interface's locale by default (\"1.2k\")."
    },
    {
     "name": "formatTime",
     "type": "(t: number) => string",
-    "description": "The moment at the top of the tooltip."
+    "description": "The moment at the top of the tooltip and in the table: by default its day and time as the interface's locale writes them, on its clock (\"07 Oct 2026, 09:30\"), its day alone on an axis of days or months."
    },
    {
     "name": "details",
@@ -4631,7 +4682,8 @@
    },
    {
     "name": "ariaLabel",
-    "type": "string"
+    "type": "string",
+    "description": "Its name for a screen reader, and its table's caption. By default, in the interface's language, \"Line chart of Run 41, Run 42\" and \"Chart data\"."
    },
    {
     "name": "className",
@@ -4709,13 +4761,12 @@
    {
     "name": "formatValue",
     "type": "(n: number) => string",
-    "default": "defaultFormat"
+    "description": "A reading: as the interface's locale writes it by default, to a tenth at most (\"1,234.5\")."
    },
    {
     "name": "formatTick",
     "type": "(n: number) => string",
-    "default": "defaultTick",
-    "description": "The y-axis labels (EasyUI's compact numbers), short enough for the left margin."
+    "description": "The y-axis labels (EasyUI's compact numbers, in the interface's locale by default: \"1.2k\"), short enough for the left margin."
    },
    {
     "name": "formatChange",
@@ -4734,7 +4785,8 @@
    },
    {
     "name": "ariaLabel",
-    "type": "string"
+    "type": "string",
+    "description": "Its name for a screen reader: \"Live chart of the last 60 s, currently 42\" by default, in its language."
    },
    {
     "name": "className",
@@ -4756,7 +4808,7 @@
    {
     "name": "format",
     "type": "(value: number) => string",
-    "default": "(number) => formatNumber(number, Number.isInteger(number) ? 0 : 2)"
+    "description": "Writes the figure: the provider's number by default, to two decimals unless it is whole (\"18,120.50\")."
    },
    {
     "name": "stale",
@@ -4899,8 +4951,7 @@
    {
     "name": "emptyText",
     "type": "ReactNode",
-    "default": "'Nothing logged yet.'",
-    "description": "Shown while nothing is logged."
+    "description": "Shown while nothing is logged: \"Nothing logged yet.\" in the provider's language by default."
    },
    {
     "name": "className",
@@ -5363,7 +5414,7 @@
    {
     "name": "precision",
     "type": "number",
-    "description": "The digits after the point it shows once it leaves the field."
+    "description": "The digits after the decimal separator it shows once it leaves the field."
    },
    {
     "name": "prefix",
@@ -5830,7 +5881,7 @@
    {
     "name": "valueText",
     "type": "string",
-    "description": "The progress in words, said beside the bar and to a screen reader: \"42 of 120 files\". The percentage otherwise."
+    "description": "The progress in words, said beside the bar and to a screen reader: \"42 of 120 files\". The percentage otherwise, as the provider's locale writes one (\"42%\"; \"42 %\" in French)."
    },
    {
     "name": "tone",
@@ -5931,7 +5982,8 @@
    },
    {
     "name": "maxLength",
-    "type": "number"
+    "type": "number",
+    "description": "The most characters it sends: its count under the field (\"1,204 / 2,000\", in the provider's locale), past it in the loss tone."
    },
    {
     "name": "minRows",
@@ -6145,8 +6197,7 @@
    {
     "name": "format",
     "type": "(value: number) => string",
-    "default": "(number) => formatNumber(number, step < 1 ? String(step).split('.')[1]?.length ?? 0 : 0)",
-    "description": "The value in words: \"2.5%\", \"45 min\"."
+    "description": "The value in words: \"2.5%\", \"45 min\". The provider's number by default, to the step's decimals."
    },
    {
     "name": "ticks",
@@ -6208,25 +6259,22 @@
    {
     "name": "title",
     "type": "string",
-    "default": "'Recovery ledger'",
-    "description": "The header's title."
+    "description": "The header's title; the provider's language's by default (\"Recovery ledger\")."
    },
    {
     "name": "countLabel",
     "type": "string",
-    "description": "Beside the title."
+    "description": "Beside the title; how many entries there are by default (\"12 snapshots\", counted in the provider's language)."
    },
    {
     "name": "restoreLabel",
     "type": "string",
-    "default": "'Revert'",
-    "description": "The text of the restore button."
+    "description": "The text of the restore button; the provider's language's by default (\"Revert\")."
    },
    {
     "name": "currentLabel",
     "type": "string",
-    "default": "'Current head'",
-    "description": "The badge of the current entry."
+    "description": "The badge of the current entry; the provider's language's by default (\"Current head\")."
    },
    {
     "name": "variant",
@@ -7333,8 +7381,7 @@
    {
     "name": "format",
     "type": "(value: number) => string",
-    "default": "(number) => formatNumber(number, step < 1 ? String(step).split('.')[1]?.length ?? 0 : 0)",
-    "description": "The value in words: \"2.5%\", \"45 min\"."
+    "description": "The value in words: \"2.5%\", \"45 min\". The provider's number by default, to the step's decimals."
    },
    {
     "name": "ticks",
@@ -7522,7 +7569,7 @@
    {
     "name": "format",
     "type": "(value: number) => string",
-    "default": "(value) => formatNumber(value, Number.isInteger(value) ? 0 : 2)"
+    "description": "A value as a screen reader hears it: as the interface's locale writes it by default, whole or to two decimals."
    },
    {
     "name": "className",
@@ -7874,13 +7921,12 @@
    {
     "name": "period",
     "type": "string",
-    "default": "\"vs previous period\"",
-    "description": "Text under the number, e.g. \"vs last 30 days\""
+    "description": "Text under the number, e.g. \"vs last 30 days\" (ioiti-ui: by default \"vs previous period\", in the interface's language)"
    },
    {
     "name": "format",
     "type": "(n: number) => string",
-    "default": "defaultFormat"
+    "description": "The figure and the line's points: as the interface's locale writes them by default (\"1,234.5\")."
    },
    {
     "name": "toneOf",
@@ -8471,8 +8517,7 @@
    {
     "name": "commonlyUsed",
     "type": "CommonRange[]",
-    "default": "COMMONLY_USED",
-    "description": "The ranges offered at once, in place of the usual ones."
+    "description": "The ranges offered at once, in place of the usual ones: today, this week, the last 15 and 30 minutes, hour, 24 hours, 7, 30 and 90 days, and year, each named as `formatTimeRange` names it, in the provider's words."
    },
    {
     "name": "refresh",
@@ -8486,16 +8531,21 @@
    {
     "name": "locale",
     "type": "string",
-    "default": "'en-GB'"
+    "description": "The locale its moments and its calendar are written in: the provider's by default (IoitiProvider's; en-GB outside one)."
    },
    {
     "name": "weekStartsOn",
-    "type": "0 | 1",
+    "type": "WeekDay",
     "values": [
      "0",
-     "1"
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
     ],
-    "default": "1"
+    "description": "The day its weeks start on (0 Sunday, 1 Monday … 6 Saturday): its calendar's first column, and the start of a week a range is rounded to (`now/w`). The provider's by default (its locale's: Monday in en-GB, Sunday in en-US)."
    },
    {
     "name": "className",

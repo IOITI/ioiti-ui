@@ -1,9 +1,9 @@
 import { useId } from 'react'
 import type { ReactNode } from 'react'
 
-import { formatNumber } from '../lib/format.js'
 import { cn } from '../lib/utils.js'
 import { useLinkComponent } from './link-context.js'
+import { useFormat } from './locale-context.js'
 import { METER_FILL, METER_TRACK } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 
@@ -13,7 +13,10 @@ interface ProgressBarProps {
   /** Done so far, out of `max`. None for work whose length is not known: the bar then says it is working. */
   value?: number
   max?: number
-  /** The progress in words, said beside the bar and to a screen reader: "42 of 120 files". The percentage otherwise. */
+  /**
+   * The progress in words, said beside the bar and to a screen reader: "42 of 120 files". The percentage otherwise, as
+   * the provider's locale writes one ("42%"; "42 %" in French).
+   */
   valueText?: string
   tone?: MeterTone
   size?: 'sm' | 'md'
@@ -26,9 +29,10 @@ interface ProgressBarProps {
  */
 export function ProgressBar({ label, value, max = 100, valueText, tone = 'neutral', size = 'md', className }: ProgressBarProps) {
   const id = useId()
+  const { formatPercent } = useFormat()
   const known = value !== undefined && Number.isFinite(value)
   const ratio = known ? Math.min(Math.max(value / max, 0), 1) : 0
-  const said = known ? (valueText ?? `${Math.round(ratio * 100)}%`) : valueText
+  const said = known ? (valueText ?? formatPercent(Math.round(ratio * 100), false, 0)) : valueText
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <div className="flex items-baseline justify-between gap-3 text-xs">
@@ -78,6 +82,7 @@ interface BarListProps {
   label?: string
   /** The value of a full bar; the largest value otherwise. */
   max?: number
+  /** Writes each figure: the provider's number by default ("1,284"; "1 284" in French). */
   format?: (value: number) => string
   className?: string
 }
@@ -86,8 +91,10 @@ interface BarListProps {
  * Things ranked by a figure, each a row of its label, a bar and the figure: the reasons orders were
  * returned, the pages most visited. For values over categories read against an axis, `BarChart`.
  */
-export function BarList({ items, label, max, format = (value) => formatNumber(value), className }: BarListProps) {
+export function BarList({ items, label, max, format, className }: BarListProps) {
   const Link = useLinkComponent()
+  const { formatNumber } = useFormat()
+  const write = format ?? ((value: number) => formatNumber(value))
   const full = max ?? Math.max(1, ...items.map((item) => item.value))
   return (
     <ul aria-label={label} className={cn('flex flex-col gap-2.5', className)}>
@@ -106,7 +113,7 @@ export function BarList({ items, label, max, format = (value) => formatNumber(va
                 item.label
               )}
             </span>
-            <span className="text-right tabular-nums text-foreground">{format(item.value)}</span>
+            <span className="text-right tabular-nums text-foreground">{write(item.value)}</span>
             <span aria-hidden className={cn('col-span-2 h-1.5 overflow-hidden rounded-full', METER_TRACK[item.tone ?? 'neutral'])}>
               <span
                 className={cn(

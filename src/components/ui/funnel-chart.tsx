@@ -5,13 +5,15 @@ import { motion, useReducedMotionConfig } from "framer-motion";
 import {
   clamp,
   cx,
-  defaultFormat,
   Tooltip,
+  // ioiti-ui: the numbers and percentages in the interface's locale.
+  useChartFormat,
   useDismissOutside,
   useElementWidth,
 } from "../../lib/chart-primitives.js";
-import { pctText } from "../../lib/dashboard-chart-utils.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+// ioiti-ui: the words in the interface's language.
+import { useMessages } from "../locale-context.js";
 
 /* -------------------------------------------------------------------------- */
 /*  FunnelChart                                                               */
@@ -30,17 +32,28 @@ export interface FunnelStage {
 
 export interface FunnelChartProps {
   stages: FunnelStage[];
+  /** ioiti-ui: a stage's value: as the interface's locale writes it by default, to a tenth at most ("1,234.5"). */
   formatValue?: (n: number) => string;
   /** Overall conversion + biggest drop-off line above the chart (default true) */
   showSummary?: boolean;
   animated?: boolean;
+  /**
+   * ioiti-ui: its name for a screen reader, and its table's caption. By default, in the interface's language, "Funnel
+   * with 4 stages from Visited to Paid" and "Funnel data".
+   */
   ariaLabel?: string;
   className?: string;
-  /** ioiti-ui: what the last stage is of the first, beside its share ("of the visits ended in a purchase"). */
+  /**
+   * ioiti-ui: what the last stage is of the first, beside its share ("of the visits ended in a purchase"); "overall
+   * conversion" in the interface's language by default.
+   */
   summaryLabel?: string;
-  /** ioiti-ui: what is counted, in the tooltip and the table ("Visits"; EasyUI's "Users"). */
+  /**
+   * ioiti-ui: what is counted, in the tooltip and the table ("Visits"; EasyUI's "Users", in the interface's language, by
+   * default).
+   */
   noun?: string;
-  /** ioiti-ui: said in place of the chart when there is no stage. */
+  /** ioiti-ui: said in place of the chart when there is no stage; "No data" in the interface's language by default. */
   emptyText?: string;
 }
 
@@ -54,17 +67,26 @@ const RAMP = 5;
 
 export function FunnelChart({
   stages,
-  formatValue = defaultFormat,
+  formatValue: givenFormatValue,
   showSummary = true,
   animated = true,
   ariaLabel,
   className = "",
-  summaryLabel = "overall conversion",
-  noun = "Users",
-  emptyText = "No data",
+  summaryLabel: givenSummaryLabel,
+  noun: givenNoun,
+  emptyText: givenEmptyText,
 }: FunnelChartProps) {
   const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
+  // ioiti-ui: the numbers, percentages and words in the interface's locale and language, where the application gives
+  // none of its own.
+  const chartFormat = useChartFormat();
+  const words = useMessages().chart;
+  const formatValue = givenFormatValue ?? chartFormat.format;
+  const pctText = chartFormat.percent;
+  const summaryLabel = givenSummaryLabel ?? words.conversionSummary;
+  const noun = givenNoun ?? words.funnelCounted;
+  const emptyText = givenEmptyText ?? words.noData;
   const [rootRef, width] = useElementWidth<HTMLDivElement>(480);
   const [active, setActive] = useState<number | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -118,11 +140,12 @@ export function FunnelChart({
             <span className="text-[22px] font-semibold tracking-[-0.03em] tabular-nums">{pctText(summary.conv)}</span>{" "}
             <span className={MUTED}>{summaryLabel}</span>
           </p>
-          {/* ioiti-ui: the loss named by the caller, in the negative colour of theme.css (rose-500 is 3.7:1 on white). */}
+          {/* ioiti-ui: the loss named by the caller, in the negative colour of theme.css (rose-500 is 3.7:1 on white);
+              the words of the interface's language, the share signed as its locale writes it. */}
           <p className={`text-xs ${MUTED}`}>
-            Biggest drop:{" "}
+            {words.biggestDrop}{" "}
             {stages[summary.worst].dropLabel ?? `${stages[summary.worst].label} → ${stages[summary.worst + 1].label}`}{" "}
-            <span className="tabular-nums text-negative">−{pctText(summary.dropPct)}</span>
+            <span className="tabular-nums text-negative">{pctText(-summary.dropPct)}</span>
           </p>
         </div>
       )}
@@ -132,7 +155,8 @@ export function FunnelChart({
           width={width}
           height={H}
           role="img"
-          aria-label={ariaLabel ?? `Funnel with ${n} stages from ${stages[0].label} to ${stages[n - 1].label}`}
+          // ioiti-ui: the interface's language, its stages counted as it counts them ("1 stage").
+          aria-label={ariaLabel ?? words.funnelChartName({ count: n, first: stages[0].label, last: stages[n - 1].label })}
           tabIndex={0}
           onKeyDown={onKey}
           onBlur={() => setActive(null)}
@@ -210,8 +234,9 @@ export function FunnelChart({
                   dominantBaseline="central"
                   className={cx("text-[11px] tabular-nums", hot ? "fill-negative" : "fill-muted-foreground")}
                 >
-                  {/* ioiti-ui: nothing lost is "0%", not "−0.0%". */}
-                  {drop(i) === 0 ? "0%" : `−${pctText(drop(i))}`}
+                  {/* ioiti-ui: nothing lost is "0%", not "−0.0%"; a loss signed as the interface's locale writes
+                      it. */}
+                  {drop(i) === 0 ? chartFormat.share(0) : pctText(-drop(i))}
                 </text>
               </motion.g>
             );
@@ -245,14 +270,17 @@ export function FunnelChart({
                 <span className="tabular-nums text-foreground">{formatValue(cur.value)}</span>
               </p>
               <p className="flex justify-between gap-4">
-                <span className={MUTED}>Of the first</span>
+                {/* ioiti-ui: the interface's language, here and below. */}
+                <span className={MUTED}>{words.shareOfFirstStage}</span>
                 <span className="tabular-nums text-foreground">{pctText(pct(active))}</span>
               </p>
               {active < n - 1 && (
                 <p className="mt-1.5 flex justify-between gap-4 border-t border-border pt-1.5">
-                  <span className={MUTED}>{cur.dropLabel ?? "Lost next"}</span>
+                  <span className={MUTED}>{cur.dropLabel ?? words.lossToNextStage}</span>
                   <span className="tabular-nums text-negative">
-                    {drop(active) === 0 ? "none" : `−${formatValue(cur.value - stages[active + 1].value)} (${pctText(drop(active))})`}
+                    {/* ioiti-ui: the amount lost as the application's format writes it, after a true minus: a
+                        format of its own may write none. */}
+                    {drop(active) === 0 ? words.noLoss : `−${formatValue(cur.value - stages[active + 1].value)} (${pctText(drop(active))})`}
                   </span>
                 </p>
               )}
@@ -265,12 +293,13 @@ export function FunnelChart({
           wide (sr-only) stood as wide as its text, beyond the page, which then scrolled sideways onto nothing. */}
       <div className="sr-only">
         <table>
-          <caption>{ariaLabel ?? "Funnel data"}</caption>
+          {/* ioiti-ui: its caption and heads in the interface's language. */}
+          <caption>{ariaLabel ?? words.funnelTableCaption}</caption>
           <thead>
             <tr>
-              <th scope="col">Stage</th>
+              <th scope="col">{words.stageColumn}</th>
               <th scope="col">{noun}</th>
-              <th scope="col">% of first stage</th>
+              <th scope="col">{words.firstStageShareColumn}</th>
             </tr>
           </thead>
           <tbody>

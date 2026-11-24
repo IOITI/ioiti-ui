@@ -10,4 +10,4 @@ A number to type, or to change with the arrow keys (ten at a time with Shift) an
 </Field>
 ```
 
-- What is typed stays until the field is left; a comma or a point marks the decimals; it keeps to its bounds.
+- What is typed stays until the field is left, read as the locale writes numbers and as people type them ("1 234,5" and "1234.5" in French; "1,500" is 1500 in English, "1,5" 1.5); it is shown again in the locale ("1234,5" in French), and keeps to its bounds.

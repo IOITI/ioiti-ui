@@ -1,13 +1,16 @@
 import { CalendarClock, ChevronDown, Pause, Play, RefreshCw } from 'lucide-react'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
-import { formatTimeRange, parseDateMath, relativeEnd, TIME_UNITS, unitName } from '../lib/date-math.js'
-import type { TimeRange, TimeUnit } from '../lib/date-math.js'
+import { formatTimeRange, formatTimeRangeEnd, parseDateMath, relativeEnd, TIME_UNITS } from '../lib/date-math.js'
+import type { TimeRange, TimeRangeWordsOptions, TimeUnit } from '../lib/date-math.js'
 import { fieldBorder } from '../lib/field-border.js'
+import type { WeekDay } from '../lib/locale.js'
 import { PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
+import { useLocale, useMessages } from './locale-context.js'
+import type { BoundMessages } from './locale-context.js'
 import { NumberInput } from './NumberInput.js'
 import { Popover } from './Popover.js'
 import { SegmentedControl } from './SegmentedControl.js'
@@ -22,20 +25,28 @@ export interface CommonRange {
   range: TimeRange
 }
 
-const COMMONLY_USED: CommonRange[] = [
-  { label: 'Today', range: { from: 'now/d', to: 'now/d' } },
-  { label: 'This week', range: { from: 'now/w', to: 'now/w' } },
-  { label: 'Last 15 minutes', range: { from: 'now-15m', to: 'now' } },
-  { label: 'Last 30 minutes', range: { from: 'now-30m', to: 'now' } },
-  { label: 'Last 1 hour', range: { from: 'now-1h', to: 'now' } },
-  { label: 'Last 24 hours', range: { from: 'now-24h', to: 'now' } },
-  { label: 'Last 7 days', range: { from: 'now-7d', to: 'now' } },
-  { label: 'Last 30 days', range: { from: 'now-30d', to: 'now' } },
-  { label: 'Last 90 days', range: { from: 'now-90d', to: 'now' } },
-  { label: 'Last 1 year', range: { from: 'now-1y', to: 'now' } },
+// The ranges commonly used by default, each named as formatTimeRange names it ("Today", "Last 15 minutes"): the list and
+// the button say a range in the same words.
+const COMMON_RANGES: TimeRange[] = [
+  { from: 'now/d', to: 'now/d' },
+  { from: 'now/w', to: 'now/w' },
+  { from: 'now-15m', to: 'now' },
+  { from: 'now-30m', to: 'now' },
+  { from: 'now-1h', to: 'now' },
+  { from: 'now-24h', to: 'now' },
+  { from: 'now-7d', to: 'now' },
+  { from: 'now-30d', to: 'now' },
+  { from: 'now-90d', to: 'now' },
+  { from: 'now-1y', to: 'now' },
 ]
 
-const UNIT_OPTIONS = TIME_UNITS.map((unit) => ({ value: unit, label: unitName(unit, 2) }))
+/** The words of the picker, in the provider's language. */
+type Words = BoundMessages['timeRange']
+
+/** A list of units, each named for the count beside it (`count ?? 1`, what is applied while the field is empty). */
+function unitOptions<U extends TimeUnit>(words: Words, count: number | null, units: readonly U[]) {
+  return units.map((unit) => ({ value: unit, label: words.unitOption({ count: count ?? 1, unit }) }))
+}
 
 const SECTION = 'mb-1.5 text-xs font-medium text-text-secondary'
 
@@ -49,13 +60,12 @@ export interface RefreshSettings {
   paused: boolean
 }
 
-const REFRESH_UNITS: { value: 's' | 'm' | 'h'; label: string; ms: number }[] = [
-  { value: 's', label: 'seconds', ms: 1000 },
-  { value: 'm', label: 'minutes', ms: 60_000 },
-  { value: 'h', label: 'hours', ms: 3_600_000 },
+const REFRESH_UNITS: { value: 's' | 'm' | 'h'; ms: number }[] = [
+  { value: 's', ms: 1000 },
+  { value: 'm', ms: 60_000 },
+  { value: 'h', ms: 3_600_000 },
 ]
 
-/** The interval in its largest whole unit: 90 s is 90 seconds, 120 s two minutes. */
 /**
  * What a popover of the picker holds: its own fields, never the field of a Field or a FormItem the picker is in (its
  * id, what describes it): its Selects would take them, twice over.
@@ -64,16 +74,16 @@ function OwnFields({ children }: { children: ReactNode }) {
   return <FieldContext.Provider value={null}>{children}</FieldContext.Provider>
 }
 
+/** The interval in its largest whole unit: 90 s is 90 seconds, 120 s two minutes. */
 function inUnits(interval: number): { count: number; unit: 's' | 'm' | 'h' } {
   const unit = [...REFRESH_UNITS].reverse().find((each) => interval >= each.ms && interval % each.ms === 0) ?? REFRESH_UNITS[0]
   return { count: Math.max(1, Math.round(interval / unit.ms)), unit: unit.value }
 }
 
-/** "Every 30 s", "Every 5 min", or "Off". */
-function refreshInWords({ interval, paused }: RefreshSettings): string {
-  if (paused || interval <= 0) return 'Off'
-  const { count, unit } = inUnits(interval)
-  return `Every ${count} ${unit === 's' ? 's' : unit === 'm' ? 'min' : 'h'}`
+/** "Every 30 s", "Every 5 min", or "Off", in the words given. */
+function refreshInWords({ interval, paused }: RefreshSettings, words: Words): string {
+  if (paused || interval <= 0) return words.refreshOff
+  return words.refreshEvery(inUnits(interval))
 }
 
 /** Calls `refresh` every interval while not paused, and not while the page's tab is hidden. */
@@ -106,15 +116,16 @@ function RefreshEvery({ settings, onChange }: { settings: RefreshSettings; onCha
   const { count, unit } = inUnits(settings.interval || 60_000)
   const ms = (each: 's' | 'm' | 'h') => REFRESH_UNITS.find((option) => option.value === each)?.ms ?? 1000
   const id = useId()
+  const words = useMessages().timeRange
   return (
     <section aria-labelledby={id}>
       <h3 id={id} className={SECTION}>
-        Refresh every
+        {words.refreshInterval}
       </h3>
       <div className="flex items-center gap-2">
         <div className="w-20">
           <NumberInput
-            label="Refresh every"
+            label={words.refreshInterval}
             value={count}
             min={1}
             integer
@@ -124,9 +135,9 @@ function RefreshEvery({ settings, onChange }: { settings: RefreshSettings; onCha
         </div>
         <div className="w-28">
           <Select
-            aria-label="Unit of the refresh"
+            aria-label={words.refreshUnit}
             value={unit}
-            options={REFRESH_UNITS.map(({ value, label }) => ({ value, label }))}
+            options={unitOptions(words, count, REFRESH_UNITS.map((each) => each.value))}
             onChange={(event) => onChange({ ...settings, interval: count * ms(event.target.value as 's' | 'm' | 'h') })}
           />
         </div>
@@ -136,7 +147,7 @@ function RefreshEvery({ settings, onChange }: { settings: RefreshSettings; onCha
           leftIcon={settings.paused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
           onClick={() => onChange({ interval: settings.interval || count * ms(unit), paused: !settings.paused })}
         >
-          {settings.paused ? 'Start' : 'Stop'}
+          {settings.paused ? words.startRefresh : words.stopRefresh}
         </Button>
       </div>
     </section>
@@ -158,10 +169,11 @@ interface AutoRefreshProps {
  */
 export function AutoRefresh({ value, onChange, onRefresh, className }: AutoRefreshProps) {
   useRefreshTimer(value, onRefresh)
+  const words = useMessages().timeRange
   const on = !value.paused && value.interval > 0
   return (
     <Popover
-      label="Refresh"
+      label={words.autoRefresh}
       align="end"
       trigger={
         <Button
@@ -170,7 +182,7 @@ export function AutoRefresh({ value, onChange, onRefresh, className }: AutoRefre
           className={className}
           leftIcon={<RefreshCw className={cn('size-3.5', on && 'motion-safe:animate-spin [animation-duration:3s]')} />}
         >
-          {refreshInWords(value)}
+          {refreshInWords(value, words)}
         </Button>
       }
     >
@@ -189,22 +201,19 @@ const pad = (number: number) => String(number).padStart(2, '0')
 const localIso = (date: Date) =>
   `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`
 
-/** An end of the range as it is shown on its button: "15 minutes ago", "now", "27 Oct 2026, 09:30". */
-function endInWords(text: string, locale: string): string {
-  const words = formatTimeRange({ from: text, to: text }, locale)
-  return words.includes(' → ') ? words.split(' → ')[0] : text
-}
-
 function QuickSelect({
   apply,
   commonlyUsed,
   recentlyUsed,
+  nameOf,
   refresh,
   onRefreshChange,
 }: {
   apply: (range: TimeRange) => void
   commonlyUsed: CommonRange[]
   recentlyUsed: TimeRange[]
+  /** A range in the picker's words, its locale, its clock and its week. */
+  nameOf: (range: TimeRange) => string
   refresh?: RefreshSettings
   onRefreshChange?: (settings: RefreshSettings) => void
 }) {
@@ -214,39 +223,45 @@ function QuickSelect({
   const quickId = useId()
   const commonId = useId()
   const recentId = useId()
+  const words = useMessages().timeRange
   const span = `${count ?? 1}${unit}`
   return (
     <div className="flex w-[22rem] max-w-[calc(100vw-2rem)] flex-col gap-4">
       <section aria-labelledby={quickId}>
         <h3 id={quickId} className={SECTION}>
-          Quick select
+          {words.quickSelect}
         </h3>
         <div className="flex items-center gap-2">
           <div className="w-24">
             <Select
-              aria-label="Before or after now"
+              aria-label={words.beforeOrAfterNow}
               value={past ? 'last' : 'next'}
               options={[
-                { value: 'last', label: 'Last' },
-                { value: 'next', label: 'Next' },
+                { value: 'last', label: words.lastOption },
+                { value: 'next', label: words.nextOption },
               ]}
               onChange={(event) => setPast(event.target.value === 'last')}
             />
           </div>
           <div className="w-16">
-            <NumberInput label="How many" value={count} onChange={setCount} min={1} integer steppers={false} />
+            <NumberInput label={words.howMany} value={count} onChange={setCount} min={1} integer steppers={false} />
           </div>
           <div className="w-28">
-            <Select aria-label="Unit" value={unit} options={UNIT_OPTIONS} onChange={(event) => setUnit(event.target.value as TimeUnit)} />
+            <Select
+              aria-label={words.unit}
+              value={unit}
+              options={unitOptions(words, count, TIME_UNITS)}
+              onChange={(event) => setUnit(event.target.value as TimeUnit)}
+            />
           </div>
           <Button size="sm" onClick={() => apply(past ? { from: `now-${span}`, to: 'now' } : { from: 'now', to: `now+${span}` })}>
-            Apply
+            {words.apply}
           </Button>
         </div>
       </section>
       <section aria-labelledby={commonId}>
         <h3 id={commonId} className={SECTION}>
-          Commonly used
+          {words.commonlyUsed}
         </h3>
         <ul className="grid grid-cols-2 gap-x-3 gap-y-0.5">
           {commonlyUsed.map((common) => (
@@ -265,7 +280,7 @@ function QuickSelect({
       {recentlyUsed.length > 0 && (
         <section aria-labelledby={recentId}>
           <h3 id={recentId} className={SECTION}>
-            Recently used
+            {words.recentlyUsed}
           </h3>
           <ul className="flex flex-col gap-0.5">
             {recentlyUsed.map((range) => (
@@ -275,7 +290,7 @@ function QuickSelect({
                   onClick={() => apply(range)}
                   className="w-full cursor-pointer rounded-md px-1.5 py-1 text-left text-sm text-foreground transition-colors hover:bg-surface-hover"
                 >
-                  {formatTimeRange(range)}
+                  {nameOf(range)}
                 </button>
               </li>
             ))}
@@ -290,13 +305,26 @@ function QuickSelect({
 type EndMode = 'absolute' | 'relative' | 'now'
 
 /** One end of the range: a moment on the calendar, a time from now, or now. */
-function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 'start' | 'end'; value: string; onChange: (text: string) => void; locale: string; weekStartsOn: 0 | 1 }) {
+function EndEditor({
+  which,
+  value,
+  onChange,
+  locale,
+  weekStartsOn,
+}: {
+  which: 'start' | 'end'
+  value: string
+  onChange: (text: string) => void
+  locale: string
+  weekStartsOn: WeekDay
+}) {
+  const words = useMessages().timeRange
   const relative = relativeEnd(value)
   const [mode, setMode] = useState<EndMode>(value.trim() === 'now' ? 'now' : relative ? 'relative' : 'absolute')
   const panel = useId()
   // Now, as it was when the panel opened: what the end moves from.
   const [opened] = useState(() => Date.now())
-  const date = parseDateMath(value, { now: opened, roundUp: which === 'end' }) ?? new Date(opened)
+  const date = parseDateMath(value, { now: opened, roundUp: which === 'end', weekStartsOn }) ?? new Date(opened)
   const [count, setCount] = useState<number | null>(relative?.count ?? 15)
   const [unit, setUnit] = useState<TimeUnit>(relative?.unit ?? 'm')
   const [past, setPast] = useState(relative?.past ?? true)
@@ -312,9 +340,9 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
   // Each tab says which panel it shows (aria-controls), and each panel is named by its tab's words, which carry an id
   // (SegmentedControl gives its tabs none).
   const labelledBy = (each: EndMode) => `${panel}-${each}-tab`
-  const tab = (each: EndMode, words: string) => ({
+  const tab = (each: EndMode, name: string) => ({
     value: each,
-    label: <span id={labelledBy(each)}>{words}</span>,
+    label: <span id={labelledBy(each)}>{name}</span>,
     panelId: `${panel}-${each}`,
   })
 
@@ -322,7 +350,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
     <div className="flex w-[19rem] max-w-[calc(100vw-2rem)] flex-col gap-3">
       <SegmentedControl
         role="tablist"
-        label={which === 'start' ? 'The start' : 'The end'}
+        label={which === 'start' ? words.startTabs : words.endTabs}
         size="sm"
         fullWidth
         value={mode}
@@ -332,7 +360,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
           else if (next === 'relative') onChange(relativeText({}))
           else onChange(localIso(date))
         }}
-        options={[tab('absolute', 'Absolute'), tab('relative', 'Relative'), tab('now', 'Now')]}
+        options={[tab('absolute', words.absolute), tab('relative', words.relative), tab('now', words.nowTab)]}
       />
       {mode === 'absolute' && (
         <div id={`${panel}-absolute`} role="tabpanel" aria-labelledby={labelledBy('absolute')} className="flex flex-col gap-2">
@@ -349,7 +377,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
             }}
           />
           <label className="flex items-center justify-between gap-3 text-xs text-text-secondary">
-            Time
+            {words.time}
             <input
               type="time"
               value={time}
@@ -371,7 +399,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
           <div className="flex items-center gap-2">
             <div className="w-16">
               <NumberInput
-                label="How many"
+                label={words.howMany}
                 value={count}
                 min={0}
                 integer
@@ -384,9 +412,9 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
             </div>
             <div className="w-28">
               <Select
-                aria-label="Unit"
+                aria-label={words.unit}
                 value={unit}
-                options={UNIT_OPTIONS}
+                options={unitOptions(words, count, TIME_UNITS)}
                 onChange={(event) => {
                   const next = event.target.value as TimeUnit
                   setUnit(next)
@@ -396,11 +424,11 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
             </div>
             <div className="w-28">
               <Select
-                aria-label="Before or after now"
+                aria-label={words.beforeOrAfterNow}
                 value={past ? 'ago' : 'later'}
                 options={[
-                  { value: 'ago', label: 'ago' },
-                  { value: 'later', label: 'from now' },
+                  { value: 'ago', label: words.agoOption },
+                  { value: 'later', label: words.fromNowOption },
                 ]}
                 onChange={(event) => {
                   const next = event.target.value === 'ago'
@@ -411,7 +439,7 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
             </div>
           </div>
           <DrawCheckbox
-            label={`Round to the ${unitName(unit, 1)}`}
+            label={words.roundTo(unit)}
             checked={roundToUnit}
             onChange={(event) => {
               const next = event.target.checked
@@ -423,9 +451,9 @@ function EndEditor({ which, value, onChange, locale, weekStartsOn }: { which: 's
       )}
       {mode === 'now' && (
         <div id={`${panel}-now`} role="tabpanel" aria-labelledby={labelledBy('now')} className="flex flex-col gap-2 text-sm text-muted-foreground">
-          <p>Now is the moment the range is read: each refresh moves it.</p>
+          <p>{words.nowExplained}</p>
           <Button size="sm" variant="outline" onClick={() => onChange('now')}>
-            Set the {which} to now
+            {which === 'start' ? words.setStartToNow : words.setEndToNow}
           </Button>
         </div>
       )}
@@ -443,13 +471,21 @@ interface TimeRangePickerProps {
   onRefresh?: (range: TimeRange) => void
   /** Data is on its way: Refresh shows it. */
   isLoading?: boolean
-  /** The ranges offered at once, in place of the usual ones. */
+  /**
+   * The ranges offered at once, in place of the usual ones: today, this week, the last 15 and 30 minutes, hour, 24 hours,
+   * 7, 30 and 90 days, and year, each named as `formatTimeRange` names it, in the provider's words.
+   */
   commonlyUsed?: CommonRange[]
   /** Refreshing on a timer: shown in the quick select when given with `onRefreshChange`. */
   refresh?: RefreshSettings
   onRefreshChange?: (settings: RefreshSettings) => void
+  /** The locale its moments and its calendar are written in: the provider's by default (IoitiProvider's; en-GB outside one). */
   locale?: string
-  weekStartsOn?: 0 | 1
+  /**
+   * The day its weeks start on (0 Sunday, 1 Monday … 6 Saturday): its calendar's first column, and the start of a week a
+   * range is rounded to (`now/w`). The provider's by default (its locale's: Monday in en-GB, Sunday in en-US).
+   */
+  weekStartsOn?: WeekDay
   className?: string
 }
 
@@ -465,13 +501,26 @@ export function TimeRangePicker({
   onChange,
   onRefresh,
   isLoading = false,
-  commonlyUsed = COMMONLY_USED,
+  commonlyUsed,
   refresh,
   onRefreshChange,
-  locale = 'en-GB',
-  weekStartsOn = 1,
+  locale,
+  weekStartsOn,
   className,
 }: TimeRangePickerProps) {
+  // The provider's locale, week, clock and words, where the props give none.
+  const provider = useLocale()
+  const words = useMessages().timeRange
+  const tag = locale ?? provider.locale
+  const firstDay = weekStartsOn ?? provider.weekStartsOn
+  const say = useMemo<TimeRangeWordsOptions>(
+    () => ({ words, hourCycle: provider.hourCycle, weekStartsOn: firstDay }),
+    [words, provider.hourCycle, firstDay],
+  )
+  const offered = useMemo(
+    () => commonlyUsed ?? COMMON_RANGES.map((range) => ({ label: formatTimeRange(range, tag, say), range })),
+    [commonlyUsed, tag, say],
+  )
   const [applied, setApplied] = useControllableState(value, defaultValue, onChange)
   const [draft, setDraft] = useState(applied)
   const [seen, setSeen] = useState(applied)
@@ -486,8 +535,8 @@ export function TimeRangePicker({
   useRefreshTimer(refresh ?? { interval: 0, paused: true }, () => onRefresh?.(applied))
 
   const changed = draft.from !== applied.from || draft.to !== applied.to
-  const start = parseDateMath(draft.from)
-  const end = parseDateMath(draft.to, { roundUp: true })
+  const start = parseDateMath(draft.from, { weekStartsOn: firstDay })
+  const end = parseDateMath(draft.to, { roundUp: true, weekStartsOn: firstDay })
   const invalid = !start || !end || start.getTime() > end.getTime()
 
   const apply = (range: TimeRange) => {
@@ -505,7 +554,7 @@ export function TimeRangePicker({
     const wrong = which === 'start' ? !start || invalid : !end || invalid
     return (
       <Popover
-        label={which === 'start' ? 'The start of the range' : 'The end of the range'}
+        label={which === 'start' ? words.startOfRange : words.endOfRange}
         trigger={
           <button
             type="button"
@@ -514,7 +563,7 @@ export function TimeRangePicker({
               wrong ? 'text-negative' : 'text-foreground',
             )}
           >
-            {endInWords(text, locale)}
+            {formatTimeRangeEnd(text, tag, { ...say, roundUp: which === 'end' })}
           </button>
         }
       >
@@ -522,8 +571,8 @@ export function TimeRangePicker({
           <EndEditor
             which={which}
             value={text}
-            locale={locale}
-            weekStartsOn={weekStartsOn}
+            locale={tag}
+            weekStartsOn={firstDay}
             onChange={(next) => setDraft((now) => (which === 'start' ? { ...now, from: next } : { ...now, to: next }))}
           />
         </OwnFields>
@@ -535,13 +584,13 @@ export function TimeRangePicker({
     <div className={cn('flex w-full min-w-0 items-center gap-2', className)}>
       <div className="flex h-10 min-w-0 flex-1 items-center gap-1 rounded-lg border border-border bg-surface px-1">
         <Popover
-          label="Quick select"
+          label={words.quickSelect}
           open={quickOpen}
           onOpenChange={setQuickOpen}
           trigger={
             <button
               type="button"
-              aria-label="Quick select"
+              aria-label={words.quickSelect}
               className={cn(
                 'inline-flex h-8 shrink-0 items-center gap-0.5 rounded-lg px-1.5 text-muted-foreground transition hover:bg-surface-hover hover:text-foreground [&>svg]:size-4',
                 PRESSABLE,
@@ -553,7 +602,14 @@ export function TimeRangePicker({
           }
         >
           <OwnFields>
-            <QuickSelect apply={apply} commonlyUsed={commonlyUsed} recentlyUsed={recent} refresh={refresh} onRefreshChange={onRefreshChange} />
+            <QuickSelect
+              apply={apply}
+              commonlyUsed={offered}
+              recentlyUsed={recent}
+              nameOf={(range) => formatTimeRange(range, tag, say)}
+              refresh={refresh}
+              onRefreshChange={onRefreshChange}
+            />
           </OwnFields>
         </Popover>
         <span aria-hidden className="h-5 w-px shrink-0 bg-border" />
@@ -561,7 +617,7 @@ export function TimeRangePicker({
           <div className="flex min-w-0 flex-1 items-center gap-1">
             {endButton('start')}
             <span aria-hidden className="text-xs text-muted-foreground">
-              →
+              {words.arrow}
             </span>
             {endButton('end')}
           </div>
@@ -571,25 +627,25 @@ export function TimeRangePicker({
             onClick={() => setDates(true)}
             className="h-8 min-w-0 flex-1 cursor-pointer truncate rounded-lg px-2 text-left text-sm text-foreground transition-colors hover:bg-surface-hover"
           >
-            {formatTimeRange(applied, locale)}
-            <span className="sr-only">: show its start and its end</span>
+            {formatTimeRange(applied, tag, say)}
+            <span className="sr-only">{words.showEnds}</span>
           </button>
         )}
       </div>
       {changed ? (
         <Button size="md" disabled={invalid} onClick={() => apply(draft)} leftIcon={<RefreshCw className="size-4" />}>
-          Update
+          {words.update}
         </Button>
       ) : (
         <Button
           size="md"
           variant="outline"
           isLoading={isLoading}
-          loadingText="Refreshing"
+          loadingText={words.refreshing}
           onClick={() => onRefresh?.(applied)}
           leftIcon={<RefreshCw className="size-4" />}
         >
-          Refresh
+          {words.refresh}
         </Button>
       )}
     </div>

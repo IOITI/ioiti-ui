@@ -4,6 +4,7 @@ import {
   BookOpen,
   ChartPie,
   Inbox,
+  Languages,
   LayoutDashboard,
   LayoutGrid,
   LogIn,
@@ -24,6 +25,7 @@ import { ChartColours } from './pages/ChartColours'
 import { Colours } from './pages/Colours'
 import { DashboardPattern } from './pages/DashboardPattern'
 import { GettingStarted } from './pages/GettingStarted'
+import { LanguagesAndFormats } from './pages/Languages'
 import { Motion } from './pages/Motion'
 import { NotFoundPattern } from './pages/NotFoundPattern'
 import { Shape } from './pages/Shape'
@@ -58,6 +60,7 @@ const FOUNDATIONS: GalleryPage[] = [
   { id: '/foundations/motion', path: '/foundations/motion', label: 'Motion', section: 'Foundations', icon: <Wind />, element: <Motion /> },
   { id: '/foundations/usable-by-all', path: '/foundations/usable-by-all', label: 'Usable by all', section: 'Foundations', icon: <Accessibility />, element: <UsableByAll /> },
   { id: '/foundations/chart-colours', path: '/foundations/chart-colours', label: 'Chart colours', section: 'Foundations', icon: <ChartPie />, element: <ChartColours /> },
+  { id: '/foundations/languages', path: '/foundations/languages', label: 'Languages and formats', section: 'Foundations', icon: <Languages />, element: <LanguagesAndFormats /> },
 ]
 
 /** Each category, its components under it. */

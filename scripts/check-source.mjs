@@ -186,7 +186,7 @@ for (const file of filesUnder(EXAMPLES)) {
   for (const match of readFileSync(join(root, file), 'utf8').matchAll(SPECIFIER)) {
     const specifier = match[2] ?? match[4] ?? match[6]
     const allowed =
-      /^(ioiti-ui|ioiti-ui\/react-router|ioiti-ui\/code|react|react-dom|lucide-react)$/.test(specifier) ||
+      /^(ioiti-ui|ioiti-ui\/react-router|ioiti-ui\/code|ioiti-ui\/locales\/(?:en|fr)|react|react-dom|lucide-react)$/.test(specifier) ||
       /^(\.\.\/)+samples\/[\w-]+$/.test(specifier) ||
       (router && specifier === 'react-router')
     if (!allowed) problems.push(`${file}: an example imports "${specifier}": the package's entries, react, lucide-react or the samples only`)

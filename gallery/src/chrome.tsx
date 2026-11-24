@@ -1,8 +1,10 @@
-import { IconButton, Kbd, LookPicker, SidebarFooterButton, SpotlightSearch, ThemeToggle, useTheme } from 'ioiti-ui'
-import { RotateCcw, Search } from 'lucide-react'
+import { DropdownMenu, IconButton, Kbd, LookPicker, SidebarFooterButton, SpotlightSearch, ThemeToggle, useTheme } from 'ioiti-ui'
+import { Languages, RotateCcw, Search } from 'lucide-react'
 import { useState } from 'react'
 
 import { FAMILIES, plainSummary } from './catalogue/catalogue'
+import { LANGUAGES, useGalleryLanguage } from './language-context'
+import type { GalleryLanguage } from './language-context'
 import { PAGES } from './routes'
 
 /**
@@ -53,6 +55,7 @@ export function GallerySearch() {
         icon={<Search />}
         onClick={() => setOpen(true)}
       />
+      <LanguagePicker />
       <LookPicker />
       <ThemeToggle />
       {/* Its ⌘K a shortcut of the application's (listed by ?, as its label), pressed in it closing it; the pages
@@ -68,6 +71,27 @@ export function GallerySearch() {
         items={ITEMS}
       />
     </>
+  )
+}
+
+/** The language of the components (and their formats): English or French. The gallery's own words stay English. */
+function LanguagePicker() {
+  const { language, setLanguage } = useGalleryLanguage()
+  return (
+    <DropdownMenu
+      label="Language of the components"
+      align="end"
+      trigger={<IconButton label="Language of the components" hint="Language of the components" icon={<Languages />} />}
+      items={[
+        {
+          type: 'radio',
+          label: 'Components in',
+          value: language,
+          onValueChange: (value) => setLanguage(value as GalleryLanguage),
+          options: (Object.keys(LANGUAGES) as GalleryLanguage[]).map((each) => ({ value: each, label: LANGUAGES[each].label })),
+        },
+      ]}
+    />
   )
 }
 

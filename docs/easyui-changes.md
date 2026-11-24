@@ -625,6 +625,60 @@ otherwise).
   arrows scrolling it, a region named by what it holds (the sheet's title, or "Content"; "Table"; the snippet's
   language; "Changes"): nothing in it took the focus, and the keyboard could not scroll it (WCAG 2.1.1). What fits is no
   stop (`useScrollRegion`, `src/lib/scroll-region.ts`).
+- `calendar` (0.28.0): in IoitiProvider's locale and words. Its weeks start on the provider's first day (any day,
+  `WeekDay`; Monday in en-GB), where EasyUI's started on Sunday; its month, the days of the week and each day's name are
+  in the provider's locale, where EasyUI's were the browser's; its buttons' names are the catalogue's
+  (`date.previousMonth`, `date.nextMonth`). Its `locale` and `weekStartsOn` still win.
+- `date-picker` (0.28.0): its day and its range are written in the provider's locale (EasyUI's, the browser's); its
+  placeholders, its calendar's name ("Choose date") and its range ("14 Nov 2026 – …") are the catalogue's (`date.*`).
+  `placeholder` and `locale` still win.
+- `activity-heatmap` (0.28.0): in the provider's locale, clock and words. Dates, months and days of the week as the
+  locale writes them (en-GB's, the days English written by hand); under 440 px the locale's narrow names (a first letter
+  made French "lun." into "l"); an hour's cell in the locale's clock; its numbers the locale's, to a tenth with a true
+  minus, no longer `chart-primitives`' `fullFmt` (en-US's, with a hyphen). Its weeks start on the provider's first day by
+  default (Sunday in EasyUI); `weekStart` takes any day (`WeekDay`), Monday, Wednesday and Friday named on their rows from
+  it. `unit` is by default a word that counts ("1 contribution"; EasyUI's "contributions" was always plural), and an
+  application's unit is written as given; a summary of one week or month says so ("in the last week"). Its legend,
+  summaries, best, worst and peak, its name and what a screen reader is told of a cell are the catalogue's
+  (`heatmap.*`), each value kept in its own span wherever a language puts it.
+- `recovery-ledger` (0.28.0): its words are the provider's language's (`ledger`: its title, its count, its restore button
+  and the name it gives it, its current entry's badge, the name of its diff), its own props given over them; its entries
+  counted ("1 snapshot", "12 snapshots": it said "1 snapshots"); a `Date` written in the provider's locale and on its
+  clock (it was the browser's).
+- `drag-to-confirm` (0.28.0): its `aria-valuetext` is the provider's locale's percentage ("40%"; "40 %" in French),
+  where it wrote "40%" in every language.
+- `ai-response` (0.28.0): the time `AIResponseThinking` has taken is written in the provider's locale and words
+  (`useFormat()`'s `formatSpan`).
+- `animated-file-upload` (0.28.0): sizes and a file's progress are written in the provider's locale ("2,0 ko", "42 %" in
+  French), the progress with the decimals it is given ("—" for none, where it wrote "NaN%"); its words stay English until
+  they come from the catalogue.
+- `airport-matrix-clock` (0.28.0): in IoitiProvider's locale and words: its heading, its name without one, its last line
+  ("1 city", counted) and a row as a screen reader reads it, from the catalogue (`clock`). A screen reader's line as the
+  locale writes it (EasyUI's was fixed to en-GB for 24 hours and en-US for 12), the board's in what its characters draw:
+  Latin digits, the period in capitals, AM or PM where the locale writes it in another script. `format` is the
+  provider's clock by default. A letter with an accent is drawn on the board as its letter (Montréal, Zürich): the board
+  has no accents, and drew a blank.
+- `chart-primitives` (0.28.0): the charts' numbers in the interface's locale (`useChartFormat`, IoitiProvider's;
+  `chartFormatFor(locale)` outside React): its separators, its compact units ("1.2k" in British English, "1,2 k" in
+  French, where EasyUI wrote American English's "1.2K"), its percentages, a true minus where Intl writes a hyphen.
+  `defaultFormat`, `defaultTick` and `fullFmt` stay, British English's.
+- `dashboard-chart-utils` (0.28.0): `pctText` takes the locale (British English's by default) and writes Intl's
+  percentage ("12 %" in French), a true minus, a loss the gain of its size with a minus; rounded by `Math.round` and
+  `toFixed` as before, Intl writing the digits only (it rounds a value's shortest decimal, 6.35 up to 6.4); `shareText`, a
+  share of a whole to the unit, and `withTrueMinus`, which the charts' formats share.
+- `bar-chart`, `donut-chart`, `funnel-chart`, `stat-card`, `live-line-chart` (0.28.0): their numbers in the interface's
+  locale where the application gives no format (`useChartFormat`), their percentages as it writes them (EasyUI wrote "%"
+  after `Math.round` or `toFixed` by hand), their words from the catalogue (`useMessages().chart`; the units and "ago" of
+  `format`): the names a screen reader hears, the tables' captions and heads, "No data", "Total", "Other", the funnel's
+  summary, the tile's change, the live chart's button, axis and window. The props that named a word by default
+  (`centerLabel`, `otherLabel`, `summaryLabel`, `noun`, `emptyText`, `period`) take the catalogue's; a count is said as
+  the language counts it ("across 1 category", "Funnel with 1 stage", where EasyUI said "1 categories", "1 stages").
+- `funnel-chart` (0.28.0): a loss is signed as the locale writes a negative share (its minus was written by hand before
+  the share: a stage larger than the one before it read "−-5.0%"); the amount lost in the tooltip keeps a true minus
+  before the application's own format, which may write none.
+- `animated-number` (0.28.0): written in the interface's locale through Intl's `formatToParts` (EasyUI put a comma every
+  three digits and a point), in Latin digits whatever the locale writes (only they roll), still rounded by `toFixed`;
+  compact as the locale writes it ("2.2m", EasyUI's American "2.2M").
 
 ## ioiti-ui's own changes
 

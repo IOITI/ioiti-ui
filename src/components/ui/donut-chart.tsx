@@ -13,15 +13,18 @@ import {
   Dot,
   clamp,
   cx,
-  defaultFormat,
   focus,
   muted,
+  // ioiti-ui: the numbers and shares in the interface's locale.
+  useChartFormat,
   useDismissOutside,
   useElementWidth,
 } from "../../lib/chart-primitives.js";
 // ioiti-ui: the design's colours for things compared, and its grey for the rest.
 import { MUTED_COLOUR, seriesColours } from "../../lib/chart-colours.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
+// ioiti-ui: the words in the interface's language.
+import { useMessages } from "../locale-context.js";
 
 export interface DonutDatum {
   label: string;
@@ -36,16 +39,22 @@ export interface DonutChartProps {
   /** Largest diameter in px (it shrinks to fit its container) */
   size?: number;
   thickness?: number;
-  /** Text above the total in the centre */
+  /** Text above the total in the centre (ioiti-ui: "Total" in the interface's language by default) */
   centerLabel?: string;
   /**
    * ioiti-ui: the name of the segment the fifth and those after it make together: the design compares four
-   * colours, never recycled (a segment given its own `color` keeps it, and nothing is grouped then).
+   * colours, never recycled (a segment given its own `color` keeps it, and nothing is grouped then). "Other" in the
+   * interface's language by default.
    */
   otherLabel?: string;
+  /** ioiti-ui: a value, its total's too: as the interface's locale writes it by default, to a tenth ("1,234.5"). */
   formatValue?: (n: number) => string;
   showLegend?: boolean;
   animated?: boolean;
+  /**
+   * ioiti-ui: its name for a screen reader, and its table's caption. By default, in the interface's language, "Donut
+   * chart. Total 750" ("Gauge chart…" for a gauge) and "Chart data".
+   */
   ariaLabel?: string;
   className?: string;
 }
@@ -151,9 +160,9 @@ export function DonutChart({
   variant = "donut",
   size = 240,
   thickness = 16,
-  centerLabel = "Total",
-  otherLabel = "Other",
-  formatValue = defaultFormat,
+  centerLabel: givenCenterLabel,
+  otherLabel: givenOtherLabel,
+  formatValue: givenFormatValue,
   showLegend = true,
   animated = true,
   ariaLabel,
@@ -162,6 +171,12 @@ export function DonutChart({
   // ioiti-ui: reduced as the system asks or IoitiProvider's reducedMotion says.
   const reduce = useReducedMotionConfig() ?? false;
   const anim = animated && !reduce;
+  // ioiti-ui: the numbers, shares and words in the interface's locale and language, where the application gives none.
+  const chartFormat = useChartFormat();
+  const words = useMessages().chart;
+  const formatValue = givenFormatValue ?? chartFormat.format;
+  const centerLabel = givenCenterLabel ?? words.total;
+  const otherLabel = givenOtherLabel ?? words.otherSegment;
   const [rootRef, rootW] = useElementWidth<HTMLDivElement>(560);
   const [hidden, setHidden] = useState<number[]>([]);
   const [active, setActive] = useState<number | null>(null);
@@ -205,7 +220,8 @@ export function DonutChart({
   const valueSize = clamp(D * 0.15, 22, 38);
   const allTotal = data.reduce((s, d) => s + Math.max(0, d.value), 0);
 
-  if (!data.length) return <p className={`py-10 text-center text-sm ${muted}`}>No data</p>;
+  // ioiti-ui: the words of the interface's language (the catalogue's `chart`), here and below.
+  if (!data.length) return <p className={`py-10 text-center text-sm ${muted}`}>{words.noData}</p>;
 
   return (
     // ioiti-ui: as wide as its container, never as what it drew (contain-inline-size, see useElementWidth).
@@ -215,7 +231,8 @@ export function DonutChart({
           width={D}
           height={H}
           role="img"
-          aria-label={ariaLabel ?? `${semi ? "Gauge" : "Donut"} chart. Total ${formatValue(total)}`}
+          // ioiti-ui: the interface's language.
+          aria-label={ariaLabel ?? (semi ? words.gaugeChartName(formatValue(total)) : words.donutChartName(formatValue(total)))}
           className="block overflow-visible"
         >
           {/* track */}
@@ -262,14 +279,16 @@ export function DonutChart({
               <p className="font-semibold leading-tight tracking-[-0.03em] tabular-nums text-foreground" style={{ fontSize: valueSize }}>
                 {act ? formatValue(act.value) : <CentreTotal value={total} format={formatValue} fromZero={anim} />}
               </p>
-              {act && <p className={`text-xs tabular-nums ${muted}`}>{Math.round(act.f * 100)}%</p>}
+              {/* ioiti-ui: its share as the interface's locale writes a percentage. */}
+              {act && <p className={`text-xs tabular-nums ${muted}`}>{chartFormat.share(act.f)}</p>}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
 
       {showLegend && (
-        <ul className={cx("w-full", side ? "max-w-[280px] flex-1" : "max-w-sm")} aria-label="Legend">
+        // ioiti-ui: named in the interface's language; each share as its locale writes a percentage.
+        <ul className={cx("w-full", side ? "max-w-[280px] flex-1" : "max-w-sm")} aria-label={words.legend}>
           {segs.map((sg, i) => (
             <li key={i}>
               <button
@@ -288,7 +307,7 @@ export function DonutChart({
                 </span>
                 <span className={cx("min-w-0 flex-1 truncate", sg.off ? "text-muted-foreground line-through" : "text-text-secondary")}>{sg.label}</span>
                 <span className={cx("tabular-nums", sg.off ? "text-muted-foreground" : "text-foreground")}>{formatValue(sg.value)}</span>
-                <span className={`w-9 text-right text-xs tabular-nums ${muted}`}>{sg.off ? "—" : `${Math.round(sg.f * 100)}%`}</span>
+                <span className={`w-9 text-right text-xs tabular-nums ${muted}`}>{sg.off ? "—" : chartFormat.share(sg.f)}</span>
               </button>
             </li>
           ))}
@@ -300,12 +319,13 @@ export function DonutChart({
           wide as its text, beyond the page, which then scrolled sideways onto nothing. */}
       <div className="sr-only">
         <table>
-          <caption>{ariaLabel ?? "Chart data"}</caption>
+          {/* ioiti-ui: its caption and heads in the interface's language, its shares in its locale. */}
+          <caption>{ariaLabel ?? words.tableCaption}</caption>
           <thead>
             <tr>
-              <th scope="col">Segment</th>
-              <th scope="col">Value</th>
-              <th scope="col">Share</th>
+              <th scope="col">{words.segmentColumn}</th>
+              <th scope="col">{words.valueColumn}</th>
+              <th scope="col">{words.shareColumn}</th>
             </tr>
           </thead>
           <tbody>
@@ -313,7 +333,7 @@ export function DonutChart({
               <tr key={i}>
                 <th scope="row">{d.label}</th>
                 <td>{formatValue(d.value)}</td>
-                <td>{allTotal > 0 ? `${Math.round((Math.max(0, d.value) / allTotal) * 100)}%` : "—"}</td>
+                <td>{allTotal > 0 ? chartFormat.share(Math.max(0, d.value) / allTotal) : "—"}</td>
               </tr>
             ))}
           </tbody>

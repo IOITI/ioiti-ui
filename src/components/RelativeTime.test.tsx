@@ -1,6 +1,8 @@
 import { act, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { RelativeTime } from './RelativeTime.js'
 
 describe('RelativeTime', () => {
@@ -87,5 +89,30 @@ describe('RelativeTime', () => {
   it('gives its full date to a screen reader', () => {
     render(<RelativeTime value={new Date('2026-10-27T11:00:00Z')} timeZone="Europe/Paris" />)
     expect(screen.getByText(/ago/)).toHaveTextContent('3 h 00 ago, 27 Oct, 12:00:00')
+  })
+
+  it('says it in the language and the locale given, kept true as time goes by', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <RelativeTime value="2026-10-27T13:59:50Z" timeZone="Europe/Paris" />
+        <RelativeTime value="2026-10-27T14:00:02Z" timeZone="Europe/Paris" />
+      </IoitiProvider>,
+    )
+    const time = screen.getByText(/^il y a/)
+    expect(time).toHaveTextContent('il y a 10 s, 27 oct., 14:59:50')
+    expect(screen.getByText(/^dans 2 s/)).toBeInTheDocument()
+    act(() => {
+      vi.advanceTimersByTime(5000)
+    })
+    expect(time).toHaveTextContent('il y a 15 s')
+  })
+
+  it('writes its full date on the clock given', () => {
+    render(
+      <IoitiProvider locale="en-GB" hourCycle="h12">
+        <RelativeTime value={new Date('2026-10-27T11:00:00Z')} timeZone="Europe/Paris" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText(/ago/)).toHaveTextContent(/^3 h 00 ago, 27 Oct, 12:00:00\spm$/)
   })
 })

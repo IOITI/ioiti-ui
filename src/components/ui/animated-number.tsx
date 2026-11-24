@@ -3,6 +3,8 @@
 import React, { useEffect } from 'react';
 import { motion, useReducedMotionConfig, useSpring, useTransform } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
+// ioiti-ui: the interface's locale, which the number is written in.
+import { useLocale } from '../locale-context.js';
 
 export interface AnimatedNumberProps {
   /** Numeric value to animate to */
@@ -24,7 +26,7 @@ export interface AnimatedNumberProps {
   mass?: number;
   /** Format as locale string (e.g. "1,250") */
   useGrouping?: boolean;
-  /** Compact notation (e.g. 1.2M, 45K) */
+  /** Compact notation (ioiti-ui: as the interface's locale writes it, e.g. 1.2m, 45k in British English) */
   compact?: boolean;
   /** Custom class name */
   className?: string;
@@ -90,27 +92,31 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   className,
 }) => {
   const reduce = useReducedMotionConfig();
+  // ioiti-ui: written in the interface's locale (IoitiProvider's), in Latin digits whatever it writes: only they roll.
+  const { locale } = useLocale();
   const formatNumber = (val: number): string => {
     if (compact) {
-      const formatter = new Intl.NumberFormat('en-US', {
+      const formatter = new Intl.NumberFormat(locale, {
         notation: 'compact',
         maximumFractionDigits: decimals,
         minimumFractionDigits: decimals,
+        numberingSystem: 'latn',
       });
       return formatter.format(val);
     }
 
-    const fixed = Math.abs(val).toFixed(decimals);
-    const [intPart, decPart] = fixed.split('.');
-
-    let formattedInt = intPart;
-    if (useGrouping) {
-      formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-
-    // ioiti-ui: a true minus, as the package's formats write it.
-    const sign = val < 0 ? '−' : '';
-    return decPart !== undefined ? `${sign}${formattedInt}.${decPart}` : `${sign}${formattedInt}`;
+    // ioiti-ui: the locale's separators (Intl's), where EasyUI wrote a comma every three digits and a point. Rounded by
+    // toFixed as before, which Intl would not do alike (it rounds 29.65 up); a true minus, as the package's formats
+    // write it, where the locale puts its sign.
+    return new Intl.NumberFormat(locale, {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+      useGrouping,
+      numberingSystem: 'latn',
+    })
+      .formatToParts(Number(val.toFixed(decimals)))
+      .map((part) => (part.type === 'minusSign' ? '−' : part.value))
+      .join('');
   };
 
   const formattedStr = text ?? formatNumber(value);

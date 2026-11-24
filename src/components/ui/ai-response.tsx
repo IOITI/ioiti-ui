@@ -12,7 +12,6 @@ import React, {
 // ioiti-ui: reduced motion as IoitiProvider says it too (useReducedMotionConfig), not the system's alone.
 import { AnimatePresence, motion, useReducedMotionConfig } from "framer-motion";
 import { ArrowUpRight, Check, ChevronDown, CircleAlert, Copy, RotateCcw, ThumbsDown, ThumbsUp, Wrench } from "lucide-react";
-import { formatSpan } from "../../lib/format.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { useNow } from "../../lib/now.js";
 import { PRESSABLE, SECTION } from "../../lib/recipes.js";
@@ -21,6 +20,7 @@ import { cn, copyToClipboard } from "../../lib/utils.js";
 import { CodeBlock } from "../CodeBlock.js";
 import { Hint } from "../Hint.js";
 import { useLinkComponent } from "../link-context.js";
+import { useFormat } from "../locale-context.js";
 import type { CodeLanguage } from "../../lib/highlight.js";
 
 /* -------------------------------------------------------------------------- */
@@ -497,6 +497,8 @@ function placeOf(shown: { index: number; text: string | null }, lines: string[])
  */
 export const AIResponseThinking: React.FC<AIResponseThinkingProps> = ({ label, lines = [], since, interval = 4, className }) => {
   const reduce = useReducedMotionConfig();
+  // ioiti-ui: the time it has taken as the provider's locale writes it, in its words.
+  const { formatSpan } = useFormat();
   const now = useNow(1000);
   const started = millisOf(since);
   const [shown, setShown] = useState<{ index: number; text: string | null }>({ index: 0, text: null });

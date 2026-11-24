@@ -2,6 +2,8 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { PromptComposer } from './PromptComposer.js'
 
 function Composer(props: Partial<Parameters<typeof PromptComposer>[0]> & { start?: string }) {
@@ -139,5 +141,20 @@ describe('PromptComposer with attachments', () => {
     // fireEvent says false when the default was prevented: the screenshot is not pasted as text.
     expect(pastedFiles).toBe(false)
     expect(pastedText).toBe(true)
+  })
+})
+
+describe('PromptComposer in a locale', () => {
+  it('counts what is typed as the locale writes numbers, not as the browser does', () => {
+    const { unmount } = render(<Composer start={'x'.repeat(1234)} maxLength={2000} />)
+    expect(screen.getByText('1,234 / 2,000')).toBeInTheDocument()
+    unmount()
+
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <Composer start={'x'.repeat(1234)} maxLength={2000} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('1 234 / 2 000').textContent).toBe('1\u202f234 / 2\u202f000')
   })
 })

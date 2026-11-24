@@ -1,0 +1,394 @@
+{
+  "about": "The words still written in the code (scripts/check-strings.mjs), until they come from the catalogue: a list that only shrinks.",
+  "words": {
+    "src/components/AttachmentChip.tsx": [
+      ", being made ready",
+      "Remove {…}"
+    ],
+    "src/components/Avatar.tsx": [
+      "People",
+      "{…} more: {…}"
+    ],
+    "src/components/ChangeList.tsx": [
+      "New",
+      "Removed",
+      "from",
+      "to"
+    ],
+    "src/components/ChartLegend.tsx": [
+      "Legend"
+    ],
+    "src/components/CodeBlock.tsx": [
+      "Copy the code"
+    ],
+    "src/components/ConfirmAction.tsx": [
+      "Cancel",
+      "Done",
+      "Working…"
+    ],
+    "src/components/CopyButton.tsx": [
+      "Copy"
+    ],
+    "src/components/CopyChip.tsx": [
+      "Copy",
+      "Copy {…}"
+    ],
+    "src/components/ExportButton.tsx": [
+      "Export CSV"
+    ],
+    "src/components/InlineEdit.tsx": [
+      ", edit the",
+      "Add a value",
+      "Cancel",
+      "Cancel",
+      "Save",
+      "Save"
+    ],
+    "src/components/Kbd.tsx": [
+      "then"
+    ],
+    "src/components/LiveValue.tsx": [
+      "stale"
+    ],
+    "src/components/LookPicker.tsx": [
+      "Accent",
+      "Accent and material",
+      "Accent and material",
+      "Material"
+    ],
+    "src/components/MultiSelect.tsx": [
+      "Add “{…}”",
+      "Choose…",
+      "Clear",
+      "Clear",
+      "Nothing matches",
+      "Remove {…}",
+      "at most: remove one to choose another."
+    ],
+    "src/components/PromptComposer.tsx": [
+      "Attached",
+      "Requests to start from",
+      "Send",
+      "Stop"
+    ],
+    "src/components/ResizablePanels.tsx": [
+      "Resize",
+      "Resize {…}"
+    ],
+    "src/components/SaveBar.tsx": [
+      "Discard",
+      "Save",
+      "Saving",
+      "Unsaved changes",
+      "Unsaved changes"
+    ],
+    "src/components/ShortcutsDialog.tsx": [
+      "Keyboard shortcuts",
+      "shows this list again."
+    ],
+    "src/components/SignInProviders.tsx": [
+      "Single sign-on"
+    ],
+    "src/components/UserMenu.tsx": [
+      "Account",
+      "Sign out"
+    ],
+    "src/components/status.tsx": [
+      "Could not load",
+      "Could not refresh: showing the last data received",
+      "stale"
+    ],
+    "src/components/ui/advanced-data-table.tsx": [
+      ", {…} of {…} chosen",
+      ", {…} options",
+      "1 row",
+      "Clear",
+      "Clear filters",
+      "Clear filters",
+      "Columns",
+      "Columns shown",
+      "Columns shown",
+      "Columns shown",
+      "Delete",
+      "Export",
+      "Failed to load data",
+      "Filter by {…}",
+      "Filters",
+      "First page",
+      "Last page",
+      "Loading the records",
+      "Loading…",
+      "Next page",
+      "No matching records found",
+      "No option matches.",
+      "Nothing matches the search or the filters.",
+      "Nothing to show",
+      "Previous page",
+      "Rows per page",
+      "Rows per page:",
+      "Search the options of {…}",
+      "Search…",
+      "Search…",
+      "Select all rows",
+      "Show as a table",
+      "Show as a table",
+      "Show as cards",
+      "Show as cards",
+      "Showing",
+      "item",
+      "of",
+      "records",
+      "s",
+      "selected",
+      "selected:",
+      "{…} rows"
+    ],
+    "src/components/ui/ai-agent-activity.tsx": [
+      "Activity",
+      "Answer",
+      "Asked",
+      "Code",
+      "Code",
+      "Collapse all",
+      "Expand all",
+      "No activity recorded",
+      "Not started",
+      "Notes",
+      "Running",
+      "{…} of {…} done"
+    ],
+    "src/components/ui/ai-response.tsx": [
+      "AI response",
+      "Assistant",
+      "Copied",
+      "Copy",
+      "Copy response",
+      "Couldn’t finish this response",
+      "Generating response",
+      "Good response",
+      "Good response",
+      "Link blocked for your safety",
+      "Link blocked for your safety",
+      "Poor response",
+      "Poor response",
+      "Ready when you are.",
+      "Regenerate",
+      "Regenerate response",
+      "Response copied",
+      "Sources",
+      "Stopped",
+      "Streaming",
+      "The connection dropped or the model timed out.",
+      "Thinking",
+      "Try again",
+      "Used",
+      "success",
+      "tool",
+      "tools"
+    ],
+    "src/components/ui/alert.tsx": [
+      "Dismiss"
+    ],
+    "src/components/ui/animated-file-upload.tsx": [
+      "(up to",
+      "Clear completed",
+      "Drop files here",
+      "Files (",
+      "Processing…",
+      "Ready",
+      "Remove {…}",
+      "Retry uploading {…}",
+      "Upload failed",
+      "Upload files",
+      "Uploading {…}",
+      "or browse from your device"
+    ],
+    "src/components/ui/badge.tsx": [
+      "Remove"
+    ],
+    "src/components/ui/breadcrumb.tsx": [
+      "Breadcrumb",
+      "Show hidden pages"
+    ],
+    "src/components/ui/combobox.tsx": [
+      "No results.",
+      "Search…",
+      "Select…"
+    ],
+    "src/components/ui/dependency-trace.tsx": [
+      "Dependency Relationship Graph",
+      "Hover or focus a node to trace what it calls and what calls it",
+      "connections",
+      "· called by {…}",
+      "· calls {…}"
+    ],
+    "src/components/ui/drag-to-confirm.tsx": [
+      "Confirmed ✓",
+      "Slide to confirm"
+    ],
+    "src/components/ui/dynamic-island.tsx": [
+      "Close {…}"
+    ],
+    "src/components/ui/flysheet.tsx": [
+      "Close",
+      "Resize",
+      "{…} px"
+    ],
+    "src/components/ui/form.tsx": [
+      "Hide password",
+      "Show password"
+    ],
+    "src/components/ui/interactive-timeline.tsx": [
+      "Copied",
+      "Copy the commit hash",
+      "Copy the commit hash {…}"
+    ],
+    "src/components/ui/loader.tsx": [
+      "Loading…"
+    ],
+    "src/components/ui/not-found.tsx": [
+      "A frosted glass folder covering the number 404",
+      "Error {…}",
+      "Error {…}: {…}",
+      "Helpful links",
+      "Maybe you were looking for",
+      "The requested page doesn't exist or may have moved.",
+      "This page took a wrong turn."
+    ],
+    "src/components/ui/notification-bell.tsx": [
+      "Close notifications",
+      "Loading the notifications",
+      "Mark as read",
+      "Mark notification as read",
+      "Mark them all as read",
+      "No notifications right now",
+      "Notifications",
+      "Notifications",
+      "Notifications",
+      "Read all",
+      "Try again",
+      "new",
+      "{…} unread notifications"
+    ],
+    "src/components/ui/otp-input.tsx": [
+      "Digit {…} of {…}"
+    ],
+    "src/components/ui/peek-card.tsx": [
+      "Open"
+    ],
+    "src/components/ui/product-tour.tsx": [
+      "Back",
+      "Done",
+      "Go to step {…}",
+      "Next",
+      "Skip",
+      "of"
+    ],
+    "src/components/ui/request-status.tsx": [
+      "Close",
+      "Copy {…} {…}"
+    ],
+    "src/components/ui/scroll-progress-nav.tsx": [
+      "Back to the top",
+      "Back to the top",
+      "Table of contents",
+      "Toggle section menu"
+    ],
+    "src/components/ui/selection-basket.tsx": [
+      "All ({…})",
+      "Bulk actions toolbar",
+      "Clear the selection",
+      "Clear the selection",
+      "Select none",
+      "{…} selected",
+      "{…} selected"
+    ],
+    "src/components/ui/settle-modal.tsx": [
+      "Close"
+    ],
+    "src/components/ui/sidebar.tsx": [
+      "Close navigation",
+      "Collapse",
+      "Expand sidebar",
+      "Main",
+      "Navigation",
+      "Open navigation",
+      "The pages under {…}",
+      "sidebar"
+    ],
+    "src/components/ui/skeleton.tsx": [
+      "Loading"
+    ],
+    "src/components/ui/smart-comparison.tsx": [
+      "Differences only",
+      "Feature and plan comparison",
+      "Feature matrix",
+      "Filter capabilities…",
+      "Get started",
+      "Info about {…}",
+      "No features match your current search or difference filters."
+    ],
+    "src/components/ui/spotlight-search.tsx": [
+      "Back",
+      "Back from {…}",
+      "Close",
+      "Esc",
+      "No results found for",
+      "Opens its list",
+      "Search",
+      "Search {…}",
+      "Search…",
+      "Spotlight Search",
+      "Try again",
+      "more: type to narrow them down."
+    ],
+    "src/components/ui/spring-select.tsx": [
+      "Select…"
+    ],
+    "src/components/ui/stepper.tsx": [
+      "(completed)",
+      "Progress"
+    ],
+    "src/components/ui/undo-toast.tsx": [
+      "Changes will be permanent in a few seconds",
+      "Close notification",
+      "Project archived",
+      "Restored successfully",
+      "Undo"
+    ],
+    "src/components/ui/velocity-toast.tsx": [
+      "Close notification"
+    ],
+    "src/shell/AppShell.tsx": [
+      "Skip to the page"
+    ],
+    "src/shell/ErrorState.tsx": [
+      "Details",
+      "Reload",
+      "Try again"
+    ],
+    "src/shell/NotFoundState.tsx": [
+      "The address does not match any page of this application.",
+      "There is no page here."
+    ],
+    "src/shell/PageTrail.tsx": [
+      "Breadcrumb"
+    ],
+    "src/shell/StateSummary.tsx": [
+      "All good",
+      "State"
+    ],
+    "src/react-router/RouterErrorPage.tsx": [
+      "Sign in to see this page",
+      "This page is not yours to see",
+      "Your account may not open it. Ask whoever runs the application for access, or sign in with another account.",
+      "Your session may have ended: sign in again to come back to it."
+    ],
+    "src/react-router/RouterLeaveGuard.tsx": [
+      "Leave",
+      "Leave without saving?",
+      "Stay",
+      "The changes on this page are not saved: leaving it loses them."
+    ]
+  }
+}

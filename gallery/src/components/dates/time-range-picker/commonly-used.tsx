@@ -1,4 +1,4 @@
-import { formatTimeRange, TimeRangePicker } from 'ioiti-ui'
+import { formatTimeRange, TimeRangePicker, useLocale, useMessages } from 'ioiti-ui'
 import type { CommonRange, TimeRange } from 'ioiti-ui'
 import { useState } from 'react'
 
@@ -14,11 +14,14 @@ const WAREHOUSE: CommonRange[] = [
 
 export default function TimeRangePickerCommonlyUsed() {
   const [range, setRange] = useState<TimeRange>({ from: 'now/d', to: 'now' })
+  // The range's name in the application's locale and words, as the picker says it.
+  const { locale, weekStartsOn, hourCycle } = useLocale()
+  const { timeRange: words } = useMessages()
   return (
     <div className="flex w-full max-w-2xl flex-col gap-3">
       <TimeRangePicker value={range} onChange={setRange} commonlyUsed={WAREHOUSE} />
       <p className="text-sm text-muted-foreground" aria-live="polite">
-        Parcels sent: {formatTimeRange(range)} <code className="font-mono text-xs">({range.from} → {range.to})</code>
+        Parcels sent: {formatTimeRange(range, locale, { words, weekStartsOn, hourCycle })} <code className="font-mono text-xs">({range.from} → {range.to})</code>
       </p>
     </div>
   )

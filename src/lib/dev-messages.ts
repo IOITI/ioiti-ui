@@ -5,6 +5,10 @@ export const DEV_MESSAGES = {
     'a dialog has neither a title nor an aria-label or aria-labelledby: a screen reader says "dialog" and nothing else. Give it a title, or name it.',
   'chart-series-beyond-four':
     'more series on one chart than the four the design compares: the fifth and those after it are grey unless given a colour.',
+  'locale-unknown':
+    "IoitiProvider's locale is no language tag Intl knows (BCP 47: en-GB, fr-FR): the interface speaks and writes en-GB.",
+  'locale-not-the-page':
+    "IoitiProvider's locale is not the language of the page (<html lang>): a screen reader reads its words with the rules of the language lang names. Give lang the locale.",
 } as const
 
 export type DevMessageId = keyof typeof DEV_MESSAGES

@@ -6,6 +6,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { PRESSABLE } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
+import type { WeekDay } from "../../lib/locale.js";
+import { useLocale, useMessages } from "../locale-context.js";
 
 function useControllableState<T>(
   value: T | undefined,
@@ -48,7 +50,12 @@ interface CalendarBase {
   minDate?: Date;
   maxDate?: Date;
   isDateDisabled?: (date: Date) => boolean;
-  weekStartsOn?: 0 | 1;
+  // ioiti-ui: any day a locale's weeks start on (0 Sunday … 6 Saturday), not only Sunday or Monday; by default the
+  // provider's (IoitiProvider), not Sunday.
+  /** The day the weeks start on (0 Sunday, 1 Monday … 6 Saturday): IoitiProvider's by default, its locale's (Monday in en-GB). */
+  weekStartsOn?: WeekDay;
+  // ioiti-ui: the provider's locale by default, not the browser's.
+  /** The locale its month and days are written in (a picker's button too): IoitiProvider's by default (en-GB outside one). */
   locale?: string;
   className?: string;
 }
@@ -86,7 +93,13 @@ const toRange = (v: Date | null | DateRange | undefined): DateRange | undefined 
   v === undefined ? undefined : v === null ? EMPTY : v instanceof Date ? { from: v, to: null } : v;
 
 export function Calendar(props: CalendarProps) {
-  const { defaultMonth, minDate, maxDate, isDateDisabled, weekStartsOn = 0, locale, className } = props;
+  const { defaultMonth, minDate, maxDate, isDateDisabled, className } = props;
+  // ioiti-ui: the provider's locale, first day of the week and words (IoitiProvider) where the props give none:
+  // EasyUI's weeks started on Sunday, its names were the browser's and its words English.
+  const preferred = useLocale();
+  const words = useMessages().date;
+  const locale = props.locale ?? preferred.locale;
+  const weekStartsOn = props.weekStartsOn ?? preferred.weekStartsOn;
   const isRange = props.mode === "range";
   const uid = React.useId();
 
@@ -185,7 +198,8 @@ export function Calendar(props: CalendarProps) {
     <div className={cn("w-fit select-none p-3", className)}>
       {/* header */}
       <div className="mb-2 flex h-8 items-center gap-1">
-        <NavButton label="Previous month" disabled={!canPrev} onClick={() => go(addMonths(view, -1), -1)}>
+        {/* ioiti-ui: its buttons named in the provider's words. */}
+        <NavButton label={words.previousMonth} disabled={!canPrev} onClick={() => go(addMonths(view, -1), -1)}>
           <ChevronLeft className="size-4" />
         </NavButton>
         <div className="relative h-5 flex-1 overflow-hidden text-center text-sm font-medium text-foreground">
@@ -205,7 +219,7 @@ export function Calendar(props: CalendarProps) {
             </motion.span>
           </AnimatePresence>
         </div>
-        <NavButton label="Next month" disabled={!canNext} onClick={() => go(addMonths(view, 1), 1)}>
+        <NavButton label={words.nextMonth} disabled={!canNext} onClick={() => go(addMonths(view, 1), 1)}>
           <ChevronRight className="size-4" />
         </NavButton>
       </div>

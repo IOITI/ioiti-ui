@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { SignedValue } from './status.js'
 
 describe('a signed value that rolls to each new value', () => {
@@ -36,5 +38,18 @@ describe('a signed value that rolls to each new value', () => {
     rerender(<SignedValue value={12.4} kind="money" animate stale staleLabel="not updated" />)
     expect(screen.getByText('+€12.40').parentElement).toHaveClass('text-muted-foreground')
     expect(screen.getByText('(not updated)', { exact: false })).toHaveClass('sr-only')
+  })
+})
+
+describe('a signed value in a locale', () => {
+  it('is written as the locale writes an amount and a percentage, its sign a true minus', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <SignedValue value={1234.5} kind="money" />
+        <SignedValue value={-3.5} kind="percent" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('+1 234,50 €').textContent).toBe('+1\u202f234,50\u00a0€')
+    expect(screen.getByText('−3,50 %')).toHaveClass('text-negative')
   })
 })

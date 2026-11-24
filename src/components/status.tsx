@@ -1,11 +1,12 @@
 import { Fragment, useLayoutEffect, useRef } from 'react'
 import type { ReactNode, RefObject } from 'react'
 
-import { formatMoney, formatPercent, toneOf } from '../lib/format.js'
+import { toneOf } from '../lib/format.js'
 import { HEALTH_STATUS_LABEL } from '../lib/health.js'
 import type { HealthStatus } from '../lib/health.js'
 import type { Tone } from '../lib/format.js'
 import { cn } from '../lib/utils.js'
+import { useFormat } from './locale-context.js'
 import { Alert, AlertDescription, AlertTitle } from './ui/alert.js'
 import { AnimatedNumber } from './ui/animated-number.js'
 import { Badge } from './ui/badge.js'
@@ -35,7 +36,10 @@ const TONE_TEXT: Record<Tone, string> = {
   neutral: 'text-foreground/80',
 }
 
-/** A gain or a loss, a change: signed, so the sign carries the meaning and the colour repeats it. */
+/**
+ * A gain or a loss, a change: signed, so the sign carries the meaning and the colour repeats it. Written as the
+ * provider's locale writes an amount or a percentage ("+€12.40"; "+12,40 €" in French).
+ */
 export function SignedValue({
   value,
   kind,
@@ -60,6 +64,7 @@ export function SignedValue({
   /** The word a screen reader hears for a stale figure. */
   staleLabel?: string
 }) {
+  const { formatMoney, formatPercent } = useFormat()
   const text = kind === 'money' ? formatMoney(value, currency ?? 'EUR', true) : formatPercent(value, true)
   const tone = stale ? 'text-muted-foreground' : TONE_TEXT[toneOf(value)]
   const said = stale && <span className="sr-only"> ({staleLabel})</span>

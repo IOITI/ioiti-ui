@@ -5,12 +5,13 @@ import type { KeyboardEvent, PointerEvent } from 'react'
 import { GRID_COLOUR, AXIS_COLOUR, seriesColours } from '../lib/chart-colours.js'
 import { detailsText } from '../lib/chart-details.js'
 import type { ChartDetail } from '../lib/chart-details.js'
-import { Tooltip, defaultFormat, defaultTick, useDismissOutside, useElementWidth } from '../lib/chart-primitives.js'
+import { Tooltip, useChartFormat, useDismissOutside, useElementWidth } from '../lib/chart-primitives.js'
 import { formatTimeTick, niceDomain, timeTicks } from '../lib/chart-scale.js'
 import { monotonePath } from '../lib/dashboard-chart-utils.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { cn } from '../lib/utils.js'
 import { ChartLegend } from './ChartLegend.js'
+import { useLocale, useMessages } from './locale-context.js'
 import { METER_COLOUR } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 
@@ -54,9 +55,14 @@ export interface LineChartProps {
   height?: number
   /** The time zone the times are read in. */
   timeZone?: string
+  /** A value in the tooltip and the table: as the interface's locale writes it by default, to a tenth ("1,234.5"). */
   formatValue?: (value: number) => string
+  /** A tick of the value axis: compact in the interface's locale by default ("1.2k"). */
   formatTick?: (value: number) => string
-  /** The moment at the top of the tooltip. */
+  /**
+   * The moment at the top of the tooltip and in the table: by default its day and time as the interface's locale writes
+   * them, on its clock ("07 Oct 2026, 09:30"), its day alone on an axis of days or months.
+   */
   formatTime?: (t: number) => string
   /** More to say of a moment, under its series' values in the tooltip and in the table: "That day +€12.40". */
   details?: (point: LinePoint, index: number) => ChartDetail[]
@@ -68,6 +74,10 @@ export interface LineChartProps {
   showLegend?: boolean
   /** Lines drawn in when they first show (not where motion is reduced). */
   animated?: boolean
+  /**
+   * Its name for a screen reader, and its table's caption. By default, in the interface's language, "Line chart of Run
+   * 41, Run 42" and "Chart data".
+   */
   ariaLabel?: string
   className?: string
 }
@@ -120,8 +130,8 @@ export function LineChart({
   zero = false,
   height = 240,
   timeZone = 'UTC',
-  formatValue = defaultFormat,
-  formatTick = defaultTick,
+  formatValue: givenFormatValue,
+  formatTick: givenFormatTick,
   formatTime,
   details,
   connectGaps = false,
@@ -133,6 +143,12 @@ export function LineChart({
   const reduce = useReducedMotionConfig()
   const draw = animated && !reduce
   const gradient = useId()
+  // Its numbers, moments and words in the interface's locale and language, where the application gives none of its own.
+  const chartFormat = useChartFormat()
+  const formatValue = givenFormatValue ?? chartFormat.format
+  const formatTick = givenFormatTick ?? chartFormat.tick
+  const { locale, hourCycle } = useLocale()
+  const words = useMessages().chart
   const [rootRef, width] = useElementWidth<HTMLDivElement>(640)
   const wrapRef = useRef<HTMLDivElement>(null)
   const [hidden, setHidden] = useState<string[]>([])
@@ -148,7 +164,7 @@ export function LineChart({
   const times = data.map((point) => toTime(point.t))
   const n = data.length
 
-  if (n === 0) return <p className="py-10 text-center text-sm text-muted-foreground">No data</p>
+  if (n === 0) return <p className="py-10 text-center text-sm text-muted-foreground">{words.noData}</p>
 
   const values = visible.flatMap((each) => data.map((point) => valueOf(point, each.key))).filter((value): value is number => value !== null)
   const limits = references.map((reference) => reference.value)
@@ -165,16 +181,17 @@ export function LineChart({
   const base = y(domain.min <= 0 && domain.max >= 0 ? 0 : domain.min)
   const axis = timeTicks(tMin, tMax, Math.max(2, Math.floor(iw / 90)), timeZone)
   const daily = axis.unit === 'day' || axis.unit === 'month'
-  // A moment as the design writes it elsewhere (formatDay, formatDateTime): "07 Oct 2026, 09:30".
+  // A moment as the design writes it elsewhere (formatDay, formatDateTime), in the locale and on its clock: "07 Oct
+  // 2026, 09:30".
   const timeText =
     formatTime ??
     ((t: number) =>
-      new Intl.DateTimeFormat('en-GB', {
+      new Intl.DateTimeFormat(locale, {
         timeZone,
         day: '2-digit',
         month: 'short',
         year: 'numeric',
-        ...(daily ? {} : { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }),
+        ...(daily ? {} : { hour: '2-digit', minute: '2-digit', hourCycle }),
       }).format(new Date(t)))
 
   const lines = visible.map((each) => {
@@ -228,7 +245,7 @@ export function LineChart({
           width={width}
           height={height}
           role="img"
-          aria-label={ariaLabel ?? `Line chart of ${series.map((each) => each.label).join(', ')}`}
+          aria-label={ariaLabel ?? words.lineChartName(series.map((each) => each.label))}
           tabIndex={0}
           onKeyDown={onKeyDown}
           onBlur={() => setActive(null)}
@@ -254,7 +271,7 @@ export function LineChart({
 
           {axis.ticks.map((tick) => (
             <text key={tick} x={x(tick)} y={height - 6} textAnchor="middle" className="fill-muted-foreground text-[11px] tabular-nums">
-              {formatTimeTick(tick, axis.unit, timeZone)}
+              {formatTimeTick(tick, axis.unit, timeZone, locale, hourCycle)}
             </text>
           ))}
 
@@ -388,7 +405,7 @@ export function LineChart({
 
       {showLegend && series.length > 1 && (
         <ChartLegend
-          label="Series"
+          label={words.seriesLegend}
           className="mt-3"
           items={series.map((each, index) => ({
             label: each.label,
@@ -404,16 +421,16 @@ export function LineChart({
           (sr-only) stood as wide as its text, beyond the page, which then scrolled sideways onto nothing. */}
       <div className="sr-only">
         <table>
-          <caption>{ariaLabel ?? 'Chart data'}</caption>
+          <caption>{ariaLabel ?? words.tableCaption}</caption>
           <thead>
             <tr>
-              <th scope="col">Time</th>
+              <th scope="col">{words.timeColumn}</th>
               {series.map((each) => (
                 <th key={each.key} scope="col">
                   {each.label}
                 </th>
               ))}
-              {details && <th scope="col">Details</th>}
+              {details && <th scope="col">{words.detailsColumn}</th>}
             </tr>
           </thead>
           <tbody>

@@ -1,4 +1,4 @@
-import { formatDateTime, resolveTimeRange, TimeRangePicker, useNow } from 'ioiti-ui'
+import { resolveTimeRange, TimeRangePicker, useFormat, useLocale, useNow } from 'ioiti-ui'
 import type { RefreshSettings, TimeRange } from 'ioiti-ui'
 import { useState } from 'react'
 
@@ -9,7 +9,10 @@ export default function TimeRangePickerRefreshed() {
   const [loads, setLoads] = useState(0)
   // The time now, read again each minute: what the range stands for at this moment.
   const now = useNow(60_000)
-  const { from, to } = resolveTimeRange(range, { now })
+  // Its weeks start on the application's first day, its moments written in its locale.
+  const { weekStartsOn } = useLocale()
+  const { formatDateTime } = useFormat()
+  const { from, to } = resolveTimeRange(range, { now, weekStartsOn })
   const at = (date: Date | null) => formatDateTime(date?.toISOString(), 'Europe/Paris', false, new Date(now))
 
   // Asked on Refresh, on each new range, and on the timer.

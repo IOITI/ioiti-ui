@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { blocksInSight, findInLog, logLevel, matchParts, splitLog } from '../lib/log.js'
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { LogViewer } from './LogViewer.js'
 
 const lineNumbers = (container: HTMLElement) => [...container.querySelectorAll('[data-line]')].map((line) => Number(line.getAttribute('data-line')))
@@ -132,5 +134,74 @@ describe('LogViewer', () => {
     act(() => rerender(<LogViewer label="Build log" lines={['first']} />))
     act(() => rerender(<LogViewer label="Build log" lines={['first', 'second']} />))
     expect(lineNumbers(container)).toEqual([1, 2])
+  })
+})
+
+describe('LogViewer in a language', () => {
+  it('says its words in the language given, its counts agreeing with them', async () => {
+    const user = userEvent.setup()
+    const lines = Array.from({ length: 30 }, (_, index) => (index === 27 || index === 29 ? `deploy ${index + 1}` : `step ${index + 1}`))
+    const { rerender } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <LogViewer label="Journal de compilation" lines={lines} maxLines={10} droppedLines={1_000} follow={false} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('1 020 lignes précédentes retirées').textContent).toBe('1\u202f020 lignes précédentes retirées')
+    const search = screen.getByRole('textbox', { name: 'Rechercher dans Journal de compilation' })
+    expect(search).toHaveAttribute('placeholder', 'Rechercher')
+    await user.type(search, 'deploy')
+    expect(screen.getByRole('status')).toHaveTextContent('1 sur 2')
+    expect(screen.getByRole('button', { name: 'Résultat suivant' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Résultat précédent' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Retour automatique à la ligne' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('button', { name: 'Télécharger le journal' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Aller à la fin' })).toBeInTheDocument()
+    await user.clear(search)
+    await user.type(search, 'nulle part')
+    expect(screen.getByRole('status')).toHaveTextContent('Aucun résultat')
+
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <LogViewer label="Journal de compilation" lines={lines.slice(0, 11)} maxLines={10} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('1 ligne précédente retirée')).toBeInTheDocument()
+
+    rerender(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <LogViewer label="Journal de compilation" lines={[]} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('Rien n’a encore été journalisé.')).toBeInTheDocument()
+  })
+
+  it('says its hints in the language given, its keys written as they are', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <LogViewer label="Journal" lines={['a long line']} downloadName="build.log" />
+      </IoitiProvider>,
+    )
+    await user.hover(screen.getByRole('button', { name: 'Télécharger le journal' }))
+    expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent('Télécharger sous le nom build.log')
+  })
+
+  it('takes an application\'s own words over English\'s, the others English still', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider messages={{ log: { noMatch: 'Nothing found', dropped: (count: number) => `${count} older lines not shown` } }}>
+        <LogViewer label="Build log" lines={['a', 'b', 'c']} maxLines={2} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByText('1 older lines not shown')).toBeInTheDocument()
+    await user.type(screen.getByRole('textbox', { name: 'Search Build log' }), 'nowhere')
+    expect(screen.getByRole('status')).toHaveTextContent('Nothing found')
+  })
+
+  it('says one line dropped in English, and counts more as English writes numbers', () => {
+    const { rerender } = render(<LogViewer label="Build log" lines={['a', 'b']} maxLines={1} />)
+    expect(screen.getByText('1 earlier line dropped')).toBeInTheDocument()
+    rerender(<LogViewer label="Build log" lines={['a', 'b']} maxLines={1} droppedLines={1_499} />)
+    expect(screen.getByText('1,500 earlier lines dropped')).toBeInTheDocument()
   })
 })

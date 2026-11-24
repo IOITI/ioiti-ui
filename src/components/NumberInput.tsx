@@ -4,10 +4,13 @@ import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
 import { fieldBorder, invalidOf } from '../lib/field-border.js'
+import { numberSymbolsOf, parseLocaleNumber } from '../lib/locale.js'
+import type { NumberSymbols } from '../lib/locale.js'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { useUnitPadding } from '../lib/unit-padding.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
+import { useLocale, useMessages } from './locale-context.js'
 
 interface NumberInputProps {
   /** The value; `null` (or `NaN`) for none, an empty field. */
@@ -21,7 +24,7 @@ interface NumberInputProps {
   step?: number
   /** Whole numbers only. */
   integer?: boolean
-  /** The digits after the point it shows once it leaves the field. */
+  /** The digits after the decimal separator it shows once it leaves the field. */
   precision?: number
   /** A unit before the value, or after it: "€", "ms", "days". */
   prefix?: ReactNode
@@ -45,18 +48,41 @@ interface NumberInputProps {
 
 const decimalsOf = (value: number) => (Number.isInteger(value) ? 0 : (String(value).split('.')[1]?.length ?? 0))
 
-/** What was typed, as a number: `null` for nothing, `NaN` for what is not one yet ("-", "1.2.3"). */
-function parse(text: string): number | null {
-  const clean = text.replace(/\s/g, '').replace(',', '.')
-  if (clean === '') return null
-  if (!/^-?\d*\.?\d*$/.test(clean) || clean === '-' || clean === '.' || clean === '-.') return Number.NaN
-  return Number(clean)
+/** The signs read as a minus (parseLocaleNumber's): a hyphen, a true minus, the dashes, a wide one. */
+const MINUS_SIGNS = ['-', '−', '‒', '–', '﹣', '－']
+
+/** What was typed, read as the locale writes a number: `null` for nothing, `NaN` for what is not one yet ("-", "1.2.3"). */
+function parse(text: string, locale: string): number | null {
+  if (text.trim() === '') return null
+  return parseLocaleNumber(text, locale)
+}
+
+/**
+ * A number as the field shows it: with the locale's decimal separator and minus, its digits never grouped (what is
+ * edited next is digits, as they are typed); to `precision` decimals where it is given, else all of its own.
+ */
+function write(value: number, symbols: NumberSymbols, precision: number | undefined): string {
+  const plain = precision === undefined ? String(value) : value.toFixed(precision)
+  return plain.replace(/^-/, symbols.minus).replace('.', symbols.decimal)
+}
+
+/**
+ * Whether a character is one a person may type: a digit, a space; a sign where the value may be negative; and where it
+ * may have decimals, a point, a comma and the locale's separators (an apostrophe either way where it groups with one).
+ */
+function typeable(symbols: NumberSymbols, integer: boolean, negative: boolean): (char: string) => boolean {
+  const signs = negative ? [...MINUS_SIGNS, symbols.minus] : []
+  const separators = integer ? [] : ['.', ',', symbols.decimal, symbols.group, ...(/['’]/.test(symbols.group) ? ["'", '’'] : [])]
+  const others = new Set([...signs, ...separators])
+  return (char) => /[\d\s]/.test(char) || others.has(char)
 }
 
 /**
  * A number to type, or to change with the arrow keys and the − and + buttons: a limit, a quantity, a delay
- * with its unit. What is typed stays as it is until it leaves the field ("1." on the way to "1.5"); a comma
- * or a point marks the decimals; it keeps to its minimum and maximum. A spin button to a screen reader.
+ * with its unit. What is typed is read as the provider's locale writes a number, and as people type one ("1 234,5" and
+ * "1234.5" in French; "1,500" is 1500 in English, "1,5" is 1.5), and stays as it is until it leaves the field ("1." on
+ * the way to "1.5"); it is then written in the locale's way, its decimal separator and no groups. It keeps to its
+ * minimum and maximum. A spin button to a screen reader.
  */
 export function NumberInput({
   value,
@@ -81,20 +107,24 @@ export function NumberInput({
   'aria-invalid': ariaInvalid,
 }: NumberInputProps) {
   const invalid = invalidOf(error, ariaInvalid)
+  const { locale } = useLocale()
+  const words = useMessages().numberInput
+  const symbols = numberSymbolsOf(locale)
   const [held, setCurrent] = useControllableState<number | null>(value, defaultValue, onChange)
   // NaN is none, as null: stepped from its minimum, or 0. Never equal to itself, it would be a new value at
   // every render, each asking for another.
   const current = Number.isNaN(held) ? null : held
   const digits = integer ? 0 : (precision ?? Math.max(decimalsOf(step), 0))
-  const toText = (number: number | null) => (number === null ? '' : precision === undefined ? String(number) : number.toFixed(precision))
+  const toText = (number: number | null) => (number === null ? '' : write(number, symbols, precision))
+  const read = (typed: string) => parse(typed, locale)
   const [text, setText] = useState(() => toText(current))
 
-  // A new value from outside (not the one being typed) is shown as it is. A value its caller refused leaves
-  // what is being typed alone.
-  const [seen, setSeen] = useState(current)
-  if (current !== seen) {
-    setSeen(current)
-    if (parse(text) !== current) setText(toText(current))
+  // A new value from outside (not the one being typed) is shown as it is, and the value is written again in the
+  // way of a new locale. A value its caller refused leaves what is being typed alone.
+  const [seen, setSeen] = useState({ value: current, locale })
+  if (current !== seen.value || locale !== seen.locale) {
+    setSeen({ value: current, locale })
+    if (read(text) !== current || (locale !== seen.locale && current !== null)) setText(toText(current))
   }
 
   const keep = (number: number) => {
@@ -110,16 +140,15 @@ export function NumberInput({
     set(keep((current ?? min ?? 0) + count * step))
   }
 
+  const allowed = typeable(symbols, integer, min === undefined || min < 0)
   const onInput = (event: ChangeEvent<HTMLInputElement>) => {
-    const negative = min === undefined || min < 0
-    const allowed = integer ? (negative ? /[^\d\s-]/g : /[^\d\s]/g) : negative ? /[^\d\s.,-]/g : /[^\d\s.,]/g
-    const typed = event.target.value.replace(allowed, '')
+    const typed = [...event.target.value].filter(allowed).join('')
     setText(typed)
-    const number = parse(typed)
+    const number = read(typed)
     if (number === null || !Number.isNaN(number)) setCurrent(number)
   }
   const onBlur = () => {
-    const number = parse(text)
+    const number = read(text)
     if (number === null) set(null)
     else if (Number.isNaN(number)) setText(toText(current))
     else set(keep(number))
@@ -192,10 +221,10 @@ export function NumberInput({
           )}
           {steppers &&
             ([
-              ['Decrease', <Minus key="minus" />, -1, atMin],
-              ['Increase', <Plus key="plus" />, 1, atMax],
-            ] as const).map(([what, icon, by, end]) => (
-              <Hint key={what} content={what}>
+              ['minus', words.decrease, <Minus key="minus" />, -1, atMin],
+              ['plus', words.increase, <Plus key="plus" />, 1, atMax],
+            ] as const).map(([key, what, icon, by, end]) => (
+              <Hint key={key} content={what}>
                 <button
                   type="button"
                   // The arrow keys do it from the field: no stop of the keyboard of its own, nor a second control to hear.

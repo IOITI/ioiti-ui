@@ -14,9 +14,9 @@ import {
   Tooltip,
   clamp,
   cx,
-  defaultFormat,
-  defaultTick,
   muted,
+  // ioiti-ui: the numbers in the interface's locale.
+  useChartFormat,
   useDismissOutside,
   useElementWidth,
 } from "../../lib/chart-primitives.js";
@@ -35,6 +35,8 @@ import { detailsText, type ChartDetail } from "../../lib/chart-details.js";
 import { niceDomain } from "../../lib/chart-scale.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { ChartLegend } from "../ChartLegend.js";
+// ioiti-ui: the words in the interface's language.
+import { useMessages } from "../locale-context.js";
 
 export interface BarSeries {
   key: string;
@@ -56,7 +58,9 @@ export interface BarChartProps {
    */
   tone?: "series" | "sign";
   height?: number;
+  /** ioiti-ui: a value in the tooltip and the table: as the interface's locale writes it by default ("1,234.5"). */
   formatValue?: (n: number) => string;
+  /** ioiti-ui: a tick of the value axis: compact in the interface's locale by default ("1.2k"). */
   formatTick?: (n: number) => string;
   /** ioiti-ui: a category's heading in the tooltip and its row in the table ("12 Oct 2026" where the axis says "12 Oct"). */
   formatTitle?: (datum: BarDatum, index: number) => string;
@@ -74,6 +78,10 @@ export interface BarChartProps {
   showLegend?: boolean;
   /** Entrance animation (also disabled by prefers-reduced-motion) */
   animated?: boolean;
+  /**
+   * ioiti-ui: its name for a screen reader, and its table's caption. By default, in the interface's language, "Bar
+   * chart of Profit, Fees across 7 categories" and "Chart data".
+   */
   ariaLabel?: string;
   className?: string;
 }
@@ -109,8 +117,8 @@ export function BarChart({
   variant = "grouped",
   tone = "series",
   height = 260,
-  formatValue = defaultFormat,
-  formatTick = defaultTick,
+  formatValue: givenFormatValue,
+  formatTick: givenFormatTick,
   formatTitle,
   details,
   tickAt,
@@ -124,6 +132,11 @@ export function BarChart({
   // ioiti-ui: reduced as the system asks or IoitiProvider's reducedMotion says.
   const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
+  // ioiti-ui: the numbers and words in the interface's locale and language, where the application gives none.
+  const chartFormat = useChartFormat();
+  const formatValue = givenFormatValue ?? chartFormat.format;
+  const formatTick = givenFormatTick ?? chartFormat.tick;
+  const words = useMessages().chart;
   const [rootRef, width] = useElementWidth<HTMLDivElement>(640);
   const [hidden, setHidden] = useState<string[]>([]);
   const [active, setActive] = useState<number | null>(null);
@@ -247,7 +260,8 @@ export function BarChart({
   const toggle = (key: string) =>
     setHidden((h) => (h.includes(key) ? h.filter((x) => x !== key) : visible.length > 1 ? [...h, key] : h));
 
-  if (!n) return <p className={`py-10 text-center text-sm ${muted}`}>No data</p>;
+  // ioiti-ui: the words of the interface's language (the catalogue's `chart`), here and below.
+  if (!n) return <p className={`py-10 text-center text-sm ${muted}`}>{words.noData}</p>;
 
   const tr = (i: number, si: number) =>
     reduce
@@ -264,7 +278,8 @@ export function BarChart({
           width={width}
           height={height}
           role="img"
-          aria-label={ariaLabel ?? `Bar chart of ${series.map((s) => s.label).join(", ")} across ${n} categories`}
+          // ioiti-ui: its categories counted as the language counts them ("1 category").
+          aria-label={ariaLabel ?? words.barChartName({ series: series.map((s) => s.label), count: n })}
           tabIndex={0}
           onKeyDown={onKey}
           onBlur={() => setActive(null)}
@@ -391,7 +406,8 @@ export function BarChart({
               </ul>
               {stacked && visible.length > 1 && (
                 <p className="mt-1.5 flex justify-between gap-4 border-t border-border pt-1.5">
-                  <span className="text-muted-foreground">Total</span>
+                  {/* ioiti-ui: the interface's language. */}
+                  <span className="text-muted-foreground">{words.total}</span>
                   <span className="tabular-nums text-foreground">
                     {formatValue(visible.reduce((s, x) => s + val(data[active], x.key), 0))}
                   </span>
@@ -416,7 +432,8 @@ export function BarChart({
       {/* ioiti-ui: the package's legend, its swatches as the bars are drawn, each a toggle. */}
       {showLegend && series.length > 1 && (
         <ChartLegend
-          label="Series"
+          // ioiti-ui: the interface's language.
+          label={words.seriesLegend}
           className="mt-3"
           items={series.map((s, i) => ({ label: s.label, color: colors[i], shown: !hidden.includes(s.key) }))}
           onToggle={(i) => toggle(series[i].key)}
@@ -427,14 +444,15 @@ export function BarChart({
           wide (sr-only) stood as wide as its text, beyond the page, which then scrolled sideways onto nothing. */}
       <div className="sr-only">
         <table>
-          <caption>{ariaLabel ?? "Chart data"}</caption>
+          {/* ioiti-ui: its caption and heads in the interface's language. */}
+          <caption>{ariaLabel ?? words.tableCaption}</caption>
           <thead>
             <tr>
-              <th scope="col">Category</th>
+              <th scope="col">{words.categoryColumn}</th>
               {series.map((s) => (
                 <th key={s.key} scope="col">{s.label}</th>
               ))}
-              {details && <th scope="col">Details</th>}
+              {details && <th scope="col">{words.detailsColumn}</th>}
             </tr>
           </thead>
           <tbody>

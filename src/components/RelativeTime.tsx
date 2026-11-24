@@ -1,7 +1,7 @@
-import { formatDateTime, formatRelative } from '../lib/format.js'
 import { nowOf, useNow } from '../lib/now.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
+import { useFormat } from './locale-context.js'
 
 const SECOND = 1000
 const MINUTE = 60_000
@@ -43,9 +43,11 @@ interface RelativeTimeProps {
 
 /**
  * A moment said from now ("3 min ago", "in 2 h"), kept true as time goes by, its full date in a hint and
- * for a screen reader. Every time on a page shares one clock for each precision (useNow).
+ * for a screen reader: in the provider's language and locale ("il y a 3 min"). Every time on a page shares one clock
+ * for each precision (useNow).
  */
 export function RelativeTime({ value, timeZone, past = false, className }: RelativeTimeProps) {
+  const { formatDateTime, formatRelative } = useFormat()
   const time = value instanceof Date ? value.getTime() : typeof value === 'number' ? value : Date.parse(value)
   const iso = Number.isNaN(time) ? '' : new Date(time).toISOString()
   // Said again as often as its age asks: a time a minute old needs no second.

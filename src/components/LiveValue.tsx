@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 
-import { formatNumber } from '../lib/format.js'
 import { cn } from '../lib/utils.js'
+import { useFormat } from './locale-context.js'
 
 interface LiveValueProps {
   /** The figure now; `null` (or `NaN`) while there is none. */
   value: number | null
+  /** Writes the figure: the provider's number by default, to two decimals unless it is whole ("18,120.50"). */
   format?: (value: number) => string
   /** The figure is old: what sends it stopped. It is muted, and a screen reader hears that it is stale. */
   stale?: boolean
@@ -29,13 +30,15 @@ const FADE = 500
  */
 export function LiveValue({
   value: given,
-  format = (number) => formatNumber(number, Number.isInteger(number) ? 0 : 2),
+  format,
   stale = false,
   flash = true,
   invert = false,
   staleLabel = 'stale',
   className,
 }: LiveValueProps) {
+  const { formatNumber } = useFormat()
+  const write = format ?? ((number: number) => formatNumber(number, Number.isInteger(number) ? 0 : 2))
   // NaN is no figure, as null: never equal to itself, it would be a new figure at every render, each asking
   // for another.
   const value = Number.isNaN(given) ? null : given
@@ -75,7 +78,7 @@ export function LiveValue({
         className,
       )}
     >
-      {value === null ? '—' : format(value)}
+      {value === null ? '—' : write(value)}
       {stale && <span className="sr-only"> ({staleLabel})</span>}
     </span>
   )

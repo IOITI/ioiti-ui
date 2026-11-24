@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { RangeSlider, Slider } from './Slider.js'
 
 describe('Slider', () => {
@@ -47,5 +49,39 @@ describe('RangeSlider', () => {
     fireEvent.change(to, { target: { value: '60' } })
     expect(changed).toHaveBeenLastCalledWith([80, 80])
     expect(to).toHaveAttribute('aria-valuetext', '80 €')
+  })
+})
+
+describe('a slider in a locale', () => {
+  it('writes its value as the locale writes a number, to its step\'s decimals', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <Slider label="Risque par position" defaultValue={1.5} min={0} max={5} step={0.5} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('slider', { name: 'Risque par position' })).toHaveAttribute('aria-valuetext', '1,5')
+    expect(screen.getByText('1,5')).toBeInTheDocument()
+  })
+
+  it('names the ends of a range, and writes it, in the language given', () => {
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <RangeSlider label="Prix" defaultValue={[1200, 8000]} max={10_000} step={100} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('slider', { name: 'Prix, de' })).toHaveAttribute('aria-valuetext', '1\u202f200')
+    expect(screen.getByRole('slider', { name: 'Prix, à' })).toHaveAttribute('aria-valuetext', '8\u202f000')
+    // Found with its spaces made plain (as the DOM Testing Library reads text), written with French's narrow ones.
+    expect(screen.getByText('1 200 – 8 000').textContent).toBe('1\u202f200 – 8\u202f000')
+  })
+
+  it('takes an application\'s own words over English\'s', () => {
+    render(
+      <IoitiProvider messages={{ numberInput: { rangeFrom: (label: string) => `${label}, lowest`, rangeName: 'Hours' } }}>
+        <RangeSlider label={<span>Hours</span>} defaultValue={[9, 17]} max={24} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('slider', { name: 'Hours, lowest' })).toBeInTheDocument()
+    expect(screen.getByRole('slider', { name: 'Hours, to' })).toBeInTheDocument()
   })
 })

@@ -100,6 +100,10 @@ const FILES = [
   'dist/react-router/index.d.ts',
   'dist/code/index.js',
   'dist/code/index.d.ts',
+  'dist/locales/en.js',
+  'dist/locales/en.d.ts',
+  'dist/locales/fr.js',
+  'dist/locales/fr.d.ts',
 ]
 
 // What is weighed: one component alone (tree-shaking holds: it bundles what it uses, not the package), then each
@@ -110,6 +114,7 @@ const WEIGHED = {
   'ioiti-ui, whole': "export * from 'ioiti-ui'",
   'ioiti-ui/react-router, whole': "export * from 'ioiti-ui/react-router'",
   'ioiti-ui/code, whole (its languages included)': "export * from 'ioiti-ui/code'",
+  'ioiti-ui/locales/fr, whole': "export * from 'ioiti-ui/locales/fr'",
 }
 const PEERS = /^(?:react|react-dom|framer-motion|react-router)(?:\/|$)|^@(?:codemirror|lezer)\//
 const BUDGET = join(root, 'test/size-budget.json')
@@ -245,8 +250,16 @@ try {
   }
   check(differing.length === 0, `the CSS has the ${golden.blocks.length} blocks of the reference design, as they are (${golden.source})`)
 
-  run('node', ['--input-type=module', '-e', "await import('ioiti-ui'); await import('ioiti-ui/react-router'); await import('ioiti-ui/vite')"], app)
-  check(true, 'Node imports ioiti-ui, ioiti-ui/react-router and ioiti-ui/vite')
+  run(
+    'node',
+    [
+      '--input-type=module',
+      '-e',
+      "await import('ioiti-ui'); await import('ioiti-ui/react-router'); await import('ioiti-ui/vite'); await import('ioiti-ui/locales/en'); await import('ioiti-ui/locales/fr')",
+    ],
+    app,
+  )
+  check(true, 'Node imports ioiti-ui, ioiti-ui/react-router, ioiti-ui/vite and the languages (ioiti-ui/locales/en, /fr)')
 
   // What an application bundles, gzipped, held to its budget: one component alone, each entry whole, the template.
   const measured = {}
@@ -263,6 +276,10 @@ try {
     Object.values(DEV_MESSAGES).some((message) => developed.includes(message.slice(0, 40))),
     'a development build keeps them (SettleModal says a dialog without a name): the check above reads the right words',
   )
+  // A language is bundled by an application that imports it, never by one that speaks English: the template's JavaScript
+  // has none of French's words, which the French entry bundled alone has.
+  const { code: french } = await bundled(app, work, "export { fr } from 'ioiti-ui/locales/fr'")
+  check(french.includes('il y a') && !js.includes('il y a'), 'French stays out of an application that does not import ioiti-ui/locales/fr')
   const gzippedAssets = (suffix) => assets.filter((name) => name.endsWith(suffix)).reduce((sum, name) => sum + gzipSync(readFileSync(join(dist, 'assets', name))).length, 0)
   measured['the template: its JavaScript'] = gzippedAssets('.js')
   measured['the template: its CSS'] = gzippedAssets('.css')

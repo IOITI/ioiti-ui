@@ -40,15 +40,21 @@ export {
   formatSpan,
   formatTime,
   formatWait,
+  formattersFor,
   toIsoDay,
   toneOf,
 } from './lib/format.js'
-export type { Tone } from './lib/format.js'
+export type { FormatOptions, Formatters, Tone } from './lib/format.js'
+export { parseLocaleNumber } from './lib/locale.js'
+export type { HourCycle, WeekDay } from './lib/locale.js'
+export { mergeMessages } from './lib/messages.js'
+export type { MessageKit, PluralForms } from './lib/messages.js'
+export type { Messages } from './locales/en.js'
 export { downloadCsv, toCsv } from './lib/csv.js'
 export type { CsvColumn } from './lib/csv.js'
 export { ALL_TIME, lastDays, rangeParams } from './lib/dateRange.js'
 export { formatTimeRange, resolveTimeRange } from './lib/date-math.js'
-export type { TimeRange } from './lib/date-math.js'
+export type { TimeRange, TimeUnit } from './lib/date-math.js'
 export { useNow } from './lib/now.js'
 export type { Check, CheckState } from './lib/checks.js'
 export { HEALTH_STATUS_LABEL } from './lib/health.js'
@@ -56,6 +62,8 @@ export type { HealthStatus } from './lib/health.js'
 
 // What an application puts around its pages.
 export { IoitiProvider } from './components/IoitiProvider.js'
+export { useFormat, useLocale, useMessages } from './components/locale-context.js'
+export type { BoundMessages, LocaleState, MessagesOverride } from './components/locale-context.js'
 export { useAppName } from './components/app-context.js'
 export { LinkProvider } from './components/LinkProvider.js'
 export { useLinkComponent, useNavigateTo } from './components/link-context.js'
