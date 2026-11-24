@@ -1,0 +1,95 @@
+// What the package deprecated, and what replaces it: the one list a deprecation is written in. A component given an old
+// name says so once, in development (`deprecated(id)`, src/lib/deprecated.ts); the props tables mark the old prop
+// (scripts/props.mjs, which refuses one that is not marked); the CHANGELOG names each in the Deprecated section of its
+// version (scripts/check-docs.mjs); the codemod rewrites them (1.0). Data only, no import: the scripts read it too.
+// Removed in 1.0, every one.
+export const DEPRECATIONS = {
+    // 0.29.0: English's words, which no language changes (the catalogue says them).
+    'health-status-label': { kind: 'export', old: 'HEALTH_STATUS_LABEL', new: 'useMessages().status (healthOk…)', since: '0.29.0' },
+    'accent-label': { kind: 'export', old: 'ACCENT_LABEL', new: 'accentName(accent, useMessages().look)', since: '0.29.0' },
+    'material-label': { kind: 'export', old: 'MATERIAL_LABEL', new: 'materialName(material, useMessages().look)', since: '0.29.0' },
+    'theme-label': { kind: 'export', old: 'themeLabel', new: 'themeButtonLabel(preference, theme, useMessages().look)', since: '0.29.0' },
+    'default-home': { kind: 'export', old: 'DEFAULT_HOME', new: 'useMessages().shell.home', since: '0.29.0' },
+    'page-not-found': { kind: 'export', old: 'PAGE_NOT_FOUND', new: 'useMessages().shell.pageNotFound', since: '0.29.0' },
+    // 0.30.0: one way to hold state (value, defaultValue, onChange; open, defaultOpen, onOpenChange).
+    'combobox-on-value-change': { kind: 'prop', components: ['Combobox'], old: 'onValueChange', new: 'onChange', since: '0.30.0' },
+    'prompt-composer-on-value-change': { kind: 'prop', components: ['PromptComposer'], old: 'onValueChange', new: 'onChange', since: '0.30.0' },
+    'animated-tabs-active-tab': { kind: 'prop', components: ['AnimatedTabs'], old: 'activeTab', new: 'value', since: '0.30.0' },
+    'animated-tabs-default-tab': { kind: 'prop', components: ['AnimatedTabs'], old: 'defaultTab', new: 'defaultValue', since: '0.30.0' },
+    'smooth-accordion-default-open': { kind: 'prop', components: ['SmoothAccordion'], old: 'defaultOpen', new: 'defaultValue', since: '0.30.0' },
+    'notification-bell-is-open': { kind: 'prop', components: ['NotificationBell'], old: 'isOpen', new: 'open', since: '0.30.0' },
+    // 0.30.0: names that say the same thing the same way.
+    'aria-label-camel': {
+        kind: 'prop',
+        components: ['Slider', 'RangeSlider', 'LineChart', 'FanChart', 'BarChart', 'DonutChart', 'FunnelChart', 'ActivityHeatmap', 'LiveLineChart'],
+        old: 'ariaLabel',
+        new: 'aria-label',
+        since: '0.30.0',
+    },
+    'is-loading': { kind: 'prop', components: ['DataTable', 'AdvancedDataTable', 'TimeRangePicker'], old: 'isLoading', new: 'loading', since: '0.30.0' },
+    'button-is-loading': { kind: 'prop', components: ['Button'], old: 'isLoading', new: 'pending', since: '0.30.0' },
+    'save-bar-saving': { kind: 'prop', components: ['SaveBar'], old: 'saving', new: 'pending', since: '0.30.0' },
+    busy: { kind: 'prop', components: ['PromptComposer', 'AttachmentChip'], old: 'busy', new: 'pending', since: '0.30.0' },
+    'hide-close-button': {
+        kind: 'prop',
+        components: ['SettleModal'],
+        old: 'hideCloseButton',
+        new: 'showCloseButton',
+        since: '0.30.0',
+        note: 'the other way round: hideCloseButton is showCloseButton={false}',
+    },
+    'show-close': { kind: 'prop', components: ['FlysheetContent'], old: 'showClose', new: 'showCloseButton', since: '0.30.0' },
+    'link-to': { kind: 'prop', components: ['ButtonLink', 'TextLink', 'PeekLink', 'StateChip'], old: 'to', new: 'href', since: '0.30.0' },
+    'panel-dense': { kind: 'prop', components: ['Panel'], old: 'dense', new: 'density="compact"', since: '0.30.0' },
+    'empty-state-compact': { kind: 'prop', components: ['EmptyState'], old: 'compact', new: 'density="compact"', since: '0.30.0' },
+    'upload-variant-compact': {
+        kind: 'value',
+        components: ['AnimatedFileUpload'],
+        prop: 'variant',
+        old: 'compact',
+        new: 'density="compact"',
+        since: '0.30.0',
+    },
+    // 0.30.0: two vocabularies of tones, StatusTone (neutral, info, success, warning, danger) and SignTone (positive,
+    // negative, neutral: gains and losses).
+    'meter-tone-positive': {
+        kind: 'value',
+        components: ['ProgressBar', 'BarList', 'Meter', 'Slider', 'LineChart', 'FanChart'],
+        prop: 'tone',
+        old: 'positive',
+        new: 'success',
+        since: '0.30.0',
+    },
+    'meter-tone-negative': {
+        kind: 'value',
+        components: ['ProgressBar', 'BarList', 'Meter', 'Slider', 'LineChart', 'FanChart'],
+        prop: 'tone',
+        old: 'negative',
+        new: 'danger',
+        since: '0.30.0',
+    },
+    'kpi-tone-negative': { kind: 'value', components: ['KpiTile'], prop: 'tone', old: 'negative', new: 'danger', since: '0.30.0' },
+    'sidebar-badge-negative': { kind: 'value', components: ['Sidebar', 'AppShell'], prop: 'badgeTone', old: 'negative', new: 'danger', since: '0.30.0' },
+    'toast-variant': {
+        kind: 'prop',
+        components: ['VelocityToast', 'UndoToast', 'useToast'],
+        old: 'variant',
+        new: 'tone',
+        since: '0.30.0',
+        note: 'its values too: default is neutral, error is danger',
+    },
+    'drag-to-confirm-variant': {
+        kind: 'prop',
+        components: ['DragToConfirm'],
+        old: 'variant',
+        new: 'tone',
+        since: '0.30.0',
+        note: 'its value default is neutral',
+    },
+    'button-destructive': { kind: 'value', components: ['Button', 'ButtonLink'], prop: 'variant', old: 'destructive', new: 'danger', since: '0.30.0' },
+    'bar-chart-tone': { kind: 'prop', components: ['BarChart'], old: 'tone', new: 'colorBy', since: '0.30.0' },
+    'format-tone': { kind: 'export', old: 'Tone', new: 'SignTone', since: '0.30.0' },
+    'velocity-toast-variant-type': { kind: 'export', old: 'VelocityToastVariant', new: 'StatusTone', since: '0.30.0' },
+    'undo-toast-variant-type': { kind: 'export', old: 'UndoToastVariant', new: 'StatusTone', since: '0.30.0' },
+    'drag-confirm-variant-type': { kind: 'export', old: 'DragConfirmVariant', new: 'StatusTone', since: '0.30.0' },
+};

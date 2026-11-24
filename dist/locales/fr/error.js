@@ -1,0 +1,17 @@
+export const error = {
+    otherPage: 'Une erreur s’est produite',
+    otherPart: 'Cette partie n’a pas pu être affichée',
+    otherRetry: 'Réessayez ; en cas de nouvel échec, revenez plus tard.',
+    otherWait: 'Revenez plus tard ; en cas de nouvel échec, prévenez le responsable de l’application.',
+    offlinePage: 'Le serveur est injoignable',
+    offlinePart: 'Le serveur est injoignable',
+    offlineRetry: 'Vérifiez la connexion, puis réessayez.',
+    offlineWait: 'Vérifiez la connexion, puis revenez plus tard.',
+    chunkPage: 'Cette page n’a pas pu être chargée',
+    chunkPart: 'Cette partie n’a pas pu être chargée',
+    chunkReload: 'Une nouvelle version de l’application a peut-être été publiée depuis l’ouverture de cette page : la recharger permet de l’obtenir.',
+    tryAgain: 'Réessayer',
+    reload: 'Recharger',
+    backToHome: 'Retour à l’accueil',
+    details: 'Détails',
+};

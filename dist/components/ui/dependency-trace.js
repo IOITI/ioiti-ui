@@ -1,0 +1,142 @@
+'use client';
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+// ioiti-ui: EasyUI's graph kept (its curves, dashed at rest and lit when traced, its springs and status bar), with:
+// a node's health as a ring, an icon and a word (never colour alone); its whole name under it (EasyUI cut names to
+// seven letters inside the circle); arrows from what calls to what is called, and each link's name while traced;
+// nodes the keyboard reaches and traces (Enter keeps a trace, as a click does); the canvas's size given by the caller;
+// a light theme.
+import React, { useState, useMemo, useId } from 'react';
+import { motion, useReducedMotionConfig } from 'framer-motion';
+import { cn } from '../../lib/utils.js';
+import { motionTransitions } from '../../lib/motion-tokens.js';
+// ioiti-ui: its words in the provider's language (`layout`).
+import { useMessages } from '../locale-context.js';
+// ioiti-ui: the status colours of theme.css, each with its icon.
+const STATUS_STROKE = {
+    ok: 'var(--positive)',
+    warning: 'var(--warning)',
+    down: 'var(--negative)',
+    unknown: 'var(--chart-muted)',
+    disabled: 'var(--chart-muted)',
+};
+const STATUS_ICON = {
+    ok: '✓',
+    warning: '!',
+    down: '✕',
+    unknown: '?',
+    disabled: '–',
+};
+export const DependencyTrace = ({ nodes, connections, onNodeSelect, onNodeHover, nodeSize = 36, width = 400, height = 280, label: givenLabel, className, }) => {
+    // ioiti-ui: its words in the provider's language, its name given over them; its links counted as the language counts
+    // ("1 connection": EasyUI's said "1 connections").
+    const words = useMessages().layout;
+    const label = givenLabel ?? words.dependencyGraph;
+    // ioiti-ui: the pulse of the node traced is a loop: it stops where motion is reduced (IoitiProvider or the system).
+    const reduceMotion = useReducedMotionConfig() ?? false;
+    const [hoveredNodeId, setHoveredNodeId] = useState(null);
+    const [selectedNodeId, setSelectedNodeId] = useState(null);
+    const markerId = `${useId().replace(/:/g, '')}-arrow`;
+    // Position nodes nicely on SVG canvas (hierarchical / circular layout)
+    const positionedNodes = useMemo(() => {
+        return nodes.map((node, i) => {
+            if (node.x !== undefined && node.y !== undefined)
+                return node;
+            // Default radial positioning
+            const total = nodes.length;
+            if (total === 1)
+                return { ...node, x: width / 2, y: height / 2 };
+            const angle = (i / total) * 2 * Math.PI - Math.PI / 2;
+            const radiusX = width * 0.35;
+            const radiusY = height * 0.3;
+            return {
+                ...node,
+                x: width / 2 + radiusX * Math.cos(angle),
+                y: height / 2 + radiusY * Math.sin(angle),
+            };
+        });
+    }, [nodes, width, height]);
+    const activeId = hoveredNodeId || selectedNodeId;
+    const activeNode = positionedNodes.find((node) => node.id === activeId);
+    // Set of node IDs connected to the currently active node
+    const connectedNodeIds = useMemo(() => {
+        if (!activeId)
+            return new Set();
+        const ids = new Set([activeId]);
+        connections.forEach((conn) => {
+            if (conn.from === activeId)
+                ids.add(conn.to);
+            if (conn.to === activeId)
+                ids.add(conn.from);
+        });
+        return ids;
+    }, [activeId, connections]);
+    // ioiti-ui: what the traced node calls, and what calls it, said in the status bar.
+    const nameOf = (id) => positionedNodes.find((node) => node.id === id)?.label ?? id;
+    const needs = activeId ? connections.filter((conn) => conn.from === activeId).map((conn) => nameOf(conn.to)) : [];
+    const neededBy = activeId ? connections.filter((conn) => conn.to === activeId).map((conn) => nameOf(conn.from)) : [];
+    const handleHover = (id) => {
+        setHoveredNodeId(id);
+        if (onNodeHover)
+            onNodeHover(id);
+    };
+    const handleSelect = (id) => {
+        setSelectedNodeId(id === selectedNodeId ? null : id);
+        if (onNodeSelect)
+            onNodeSelect(id);
+    };
+    const radius = nodeSize / 2;
+    return (_jsxs("div", { role: "region", "aria-label": label, 
+        // ioiti-ui: each colour has a light value in front of EasyUI's own, kept behind `dark:`; as tall as its canvas.
+        className: cn('relative w-full rounded-2xl bg-surface-raised border border-border overflow-hidden select-none flex flex-col', className), children: [_jsxs("svg", { 
+                // ioiti-ui: as wide as its box, never wider than its canvas: on a wide page it grew, its words with it.
+                className: "mx-auto block w-full h-auto", style: { maxWidth: width }, viewBox: `0 0 ${width} ${height}`, preserveAspectRatio: "xMidYMid meet", children: [_jsxs("defs", { children: [_jsx("marker", { id: `${markerId}-idle`, viewBox: "0 0 8 8", refX: "7", refY: "4", markerWidth: "6", markerHeight: "6", orient: "auto", children: _jsx("path", { d: "M0 0L8 4L0 8Z", fill: "var(--chart-muted)" }) }), _jsx("marker", { id: `${markerId}-on`, viewBox: "0 0 8 8", refX: "7", refY: "4", markerWidth: "6", markerHeight: "6", orient: "auto", children: _jsx("path", { d: "M0 0L8 4L0 8Z", className: "fill-accent-blue accent:fill-brand" }) })] }), connections.map((conn, idx) => {
+                        const fromNode = positionedNodes.find((n) => n.id === conn.from);
+                        const toNode = positionedNodes.find((n) => n.id === conn.to);
+                        if (!fromNode || !toNode || fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
+                            return null;
+                        }
+                        const isConnected = activeId && (conn.from === activeId || conn.to === activeId);
+                        const isDimmed = activeId && !isConnected;
+                        // Bezier curve calculation. ioiti-ui: from the edge of one circle to the edge of the other, for the arrow.
+                        const dx = toNode.x - fromNode.x;
+                        const dy = toNode.y - fromNode.y;
+                        const length = Math.hypot(dx, dy) || 1;
+                        const startX = fromNode.x + (dx / length) * radius;
+                        const startY = fromNode.y + (dy / length) * radius;
+                        const endX = toNode.x - (dx / length) * (radius + 3);
+                        const endY = toNode.y - (dy / length) * (radius + 3);
+                        const midX = (startX + endX) / 2;
+                        const midY = (startY + endY) / 2;
+                        const pathD = `M ${startX} ${startY} Q ${midX} ${midY - 15} ${endX} ${endY}`;
+                        return (_jsxs("g", { children: [isConnected && (_jsx(motion.path, { d: pathD, fill: "none", className: "stroke-accent-blue/30 accent:stroke-[var(--brand-glow)]", strokeWidth: "6", strokeLinecap: "round", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: motionTransitions.easeFast })), _jsx(motion.path, { d: pathD, fill: "none", className: isConnected ? 'stroke-accent-blue accent:stroke-brand' : 'stroke-[var(--chart-axis)]', strokeWidth: isConnected ? '2.5' : '1.5', strokeDasharray: isConnected ? 'none' : '4 4', strokeLinecap: "round", markerEnd: `url(#${markerId}-${isConnected ? 'on' : 'idle'})`, animate: {
+                                        opacity: isDimmed ? 0.2 : isConnected ? 1 : 0.7,
+                                    }, transition: motionTransitions.springSnappy }), isConnected && conn.label && (_jsx("text", { x: midX, y: midY - 10, textAnchor: "middle", className: "text-[11px] font-mono fill-text-secondary pointer-events-none", style: { paintOrder: 'stroke', strokeWidth: 3, strokeLinejoin: 'round' }, stroke: "var(--surface)", children: conn.label }))] }, `${conn.from}-${conn.to}-${idx}`));
+                    }), positionedNodes.map((node) => {
+                        if (node.x === undefined || node.y === undefined)
+                            return null;
+                        const isCurrentActive = activeId === node.id;
+                        const isConnected = connectedNodeIds.has(node.id);
+                        const isDimmed = activeId !== null && !isConnected;
+                        const said = node.statusLabel ? words.nodeStatus({ name: node.label, status: node.statusLabel }) : node.label;
+                        return (_jsxs("g", { transform: `translate(${node.x}, ${node.y})`, onClick: () => handleSelect(node.id), onMouseEnter: () => handleHover(node.id), onMouseLeave: () => handleHover(null), 
+                            // ioiti-ui: reached and traced by the keyboard too; Enter or Space keeps the trace, as a click does.
+                            tabIndex: 0, role: "button", "aria-pressed": selectedNodeId === node.id, "aria-label": said, onFocus: () => handleHover(node.id), onBlur: () => handleHover(null), onKeyDown: (event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                    event.preventDefault();
+                                    handleSelect(node.id);
+                                }
+                            }, 
+                            // The trace it starts (the glow, the status bar) is where the focus is.
+                            className: "cursor-pointer outline-none", children: [isCurrentActive && (_jsx(motion.circle, { r: radius + 6, fill: "none", className: "stroke-accent-blue/40 accent:stroke-[var(--brand-glow)]", strokeWidth: "2", animate: reduceMotion ? { opacity: 0.4 } : { scale: [1, 1.15, 1], opacity: [0.6, 0.2, 0.6] }, transition: reduceMotion ? { duration: 0 } : { ...motionTransitions.easeSoft, repeat: Infinity, duration: 2 } })), _jsx(motion.circle, { r: radius, className: cn(isCurrentActive ? 'fill-surface-hover' : 'fill-surface', 
+                                    // ioiti-ui: a ring that says a health keeps its colour.
+                                    isCurrentActive && !node.status && 'stroke-accent-blue accent:stroke-brand'), stroke: node.status ? STATUS_STROKE[node.status] : isCurrentActive ? undefined : 'var(--chart-axis)', strokeWidth: node.status ? 2.5 : 1.5, animate: {
+                                        scale: isCurrentActive ? 1.15 : 1,
+                                        opacity: isDimmed ? 0.25 : 1,
+                                    }, transition: motionTransitions.springSnappy }), _jsx(motion.text, { textAnchor: "middle", dy: "4", className: "text-xs font-semibold pointer-events-none fill-text-secondary", animate: { opacity: isDimmed ? 0.25 : 1 }, children: node.status ? STATUS_ICON[node.status] : '·' }), _jsx(motion.text, { textAnchor: "middle", y: radius + 13, className: "text-[11px] font-medium pointer-events-none fill-foreground", animate: {
+                                        opacity: isDimmed ? 0.25 : 1,
+                                        fontWeight: isCurrentActive ? 600 : 500,
+                                    }, children: node.label })] }, node.id));
+                    })] }), _jsxs("div", { "aria-live": "polite", 
+                // ioiti-ui: glass under the glass material (glass-float).
+                className: "m-3 mt-0 flex items-center justify-between gap-3 text-xs text-muted-foreground bg-surface px-3 py-1.5 rounded-xl border border-border/60 pointer-events-none glass-float", children: [_jsx("span", { className: "min-w-0", children: activeNode ? (_jsxs(_Fragment, { children: [_jsx("span", { className: "font-medium text-foreground", children: activeNode.label }), activeNode.statusLabel && words.traceStatus(activeNode.statusLabel), activeNode.detail && ` (${activeNode.detail})`, needs.length > 0 && ` · ${words.traceCalls(needs)}`, neededBy.length > 0 && ` · ${words.traceCalledBy(neededBy)}`] })) : (words.traceHint) }), _jsx("span", { className: "shrink-0 font-mono", children: words.connections(connections.length) })] })] }));
+};
