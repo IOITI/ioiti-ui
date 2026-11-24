@@ -26,7 +26,7 @@ holds the sections, their order and the links at the CHANGELOG's foot (`scripts/
    npm run release -- 0.24.0
    ```
 
-   Elsewhere (another branch, a `main` behind origin's, a Node before 22.12, whose tests cannot start), it says so
+   Elsewhere (another branch, a `main` behind origin's, a Node older than `.nvmrc`'s, whose tests cannot start), it says so
    and touches nothing.
 
    - **Every version the CHANGELOG names before it is a tag on origin** (`git ls-remote`), or nothing is released:

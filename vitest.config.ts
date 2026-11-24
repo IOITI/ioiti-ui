@@ -1,13 +1,15 @@
+import { readFileSync } from 'node:fs'
+
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
 import { packageAliases } from './gallery/aliases.ts'
 
-// jsdom's dependencies are ES modules it requires from CommonJS, which Node does from 22.12 (20.19 on its line): said
-// here, rather than in an error per test file. `nvm use` gives the Node of .nvmrc.
-const [major, minor] = process.versions.node.split('.').map(Number)
-if (major < 22 || (major === 22 && minor < 12)) {
-  throw new Error(`Node ${process.versions.node} runs the tests, which need Node 22.12 or later: nvm use (.nvmrc), then again`)
+// The tests need the Node of .nvmrc: their jsdom asks for a recent one (22.22.2, 24.15 or later), and an older Node
+// fails every test file with an error of its own. Said here once instead; `nvm use` gives the Node of .nvmrc.
+const wanted = Number(readFileSync(new URL('.nvmrc', import.meta.url), 'utf8').trim())
+if (Number(process.versions.node.split('.')[0]) < wanted) {
+  throw new Error(`Node ${process.versions.node} runs the tests, which need Node ${wanted} (.nvmrc): nvm use, then again`)
 }
 
 export default defineConfig({

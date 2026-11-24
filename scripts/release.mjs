@@ -5,8 +5,8 @@
 //
 // 1. Every version CHANGELOG.md names before this one is a tag on origin (git ls-remote): one tagged and never
 //    pushed, or never tagged, is said with the command that mends it, and nothing is released before.
-//    Before it, nothing is touched unless Node is 22.12 or later, and the branch is main (clean, with all of
-//    origin's main).
+//    Before it, nothing is touched unless Node is the one of .nvmrc (the tests need it), and the branch is main
+//    (clean, with all of origin's main).
 // 2. On main: what is under `## [Unreleased]` in CHANGELOG.md becomes the version's,
 //    dated today (unless the version's section is there already), its sections checked (scripts/changelog.mjs);
 //    the version set in package.json, in the template's dependency on ioiti-ui and in the tag the READMEs install.
@@ -81,12 +81,11 @@ if (args.includes('--at') && !at) fail('give the commit: npm run release -- 0.17
 const tag = `v${version}`
 if (git('tag', '--list', tag)) fail(`${tag} exists already`)
 
-// The build and its checks need Node 22.12 or later (the tests' jsdom has ES modules that older Node cannot require):
-// said before anything is touched, not in a hundred errors once the files are stamped.
-const [major, minor] = process.versions.node.split('.').map(Number)
-if (major < 22 || (major === 22 && minor < 12)) {
-  const wanted = readFileSync(join(root, '.nvmrc'), 'utf8').trim()
-  fail(`Node ${process.versions.node} runs this, and the checks need 22.12 or later: nvm use (.nvmrc: ${wanted}), then again`)
+// The checks need the Node of .nvmrc (the tests' jsdom asks for a recent one): said before anything is touched, not
+// in a hundred errors once the files are stamped.
+const wanted = Number(readFileSync(join(root, '.nvmrc'), 'utf8').trim())
+if (Number(process.versions.node.split('.')[0]) < wanted) {
+  fail(`Node ${process.versions.node} runs this, and the checks need Node ${wanted} (.nvmrc): nvm use, then again`)
 }
 
 // The release commit, apart from any branch, and its tag: dist/ (built here, or copied from root) and a

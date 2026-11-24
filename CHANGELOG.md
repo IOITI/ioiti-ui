@@ -11,6 +11,12 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Fixed
+
+- **CI's job on Node 22.12** builds the package and checks it as an application installs it (`check:package`), and no
+  longer runs the tests, whose jsdom needs Node 22.22.2, 24.15 or later: it failed on every run, and held the
+  gallery's publication back. `npm run release` and the tests ask for the Node of `.nvmrc` (24) before anything else.
+
 ## [0.24.0] - 2026-11-24
 
 ### Added
