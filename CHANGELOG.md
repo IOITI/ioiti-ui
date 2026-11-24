@@ -11,6 +11,11 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Fixed
+
+- **The screenshots of the gallery's pages leave its version out** (`e2e/visual.spec.ts`, masked): a release changes
+  it, which failed them on `main` from 0.27.0's, and held the gallery's publication back.
+
 ## [0.27.0] - 2026-11-24
 
 ### Added

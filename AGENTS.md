@@ -169,7 +169,8 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   picture that has no baseline and uploads it (`visual-baselines`, to look at and commit into `e2e/__screenshots__`),
   and fails on a picture that moved (`visual-diffs`). A Mac draws other pixels: `E2E_SNAPSHOTS=<a folder>` keeps a set
   of its own there, to see a change draw the same twice. An example that moves on its own or reads the time is not
-  pictured (`LIVE`); the clock stands still and Math.random is seeded for the others.
+  pictured (`LIVE`); the clock stands still and Math.random is seeded for the others; the gallery's version, which a
+  release changes, is masked.
 - jsdom has no view transitions: pages and looks change at once there. `src/test/viewTransition.ts` stands in
   for `document.startViewTransition` (a change of look), not for React's `ViewTransition`, whose pictures jsdom
   cannot animate.

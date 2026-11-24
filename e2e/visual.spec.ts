@@ -4,7 +4,8 @@
 // purpose.
 //
 // Each picture is the same at every run: the clock stands at one moment, Math.random is seeded, motion is reduced and
-// the animations stopped, the fonts loaded. The examples that move or read the time as they run are not pictured.
+// the animations stopped, the fonts loaded. The examples that move or read the time as they run are not pictured; the
+// gallery's version, which every release changes, is masked.
 import type { Page } from '@playwright/test'
 
 import { arrived, expect, settled, test } from './fixtures'
@@ -69,6 +70,9 @@ const LOOKS = [
 
 const LOOK_PAGES = ['/foundations/themes', '/foundations/colours', '/patterns/dashboard', '/patterns/sign-in', '/patterns/not-found']
 
+/** The gallery's version, under its name in the sidebar: masked, as a release changes it and nothing of the design. */
+const VERSION = /^v\d+\.\d+\.\d+(?:-[\w.]+)?$/
+
 for (const path of LOOK_PAGES) {
   for (const [accent, material] of LOOKS) {
     test(`${path} in ${accent}, ${material}`, async ({ page }) => {
@@ -84,7 +88,10 @@ for (const path of LOOK_PAGES) {
       await page.goto(path)
       await arrived(page)
       await still(page)
-      await expect(page).toHaveScreenshot(`${path.slice(1).replaceAll('/', '-')}--${accent}-${material}.png`, SHOT)
+      await expect(page).toHaveScreenshot(`${path.slice(1).replaceAll('/', '-')}--${accent}-${material}.png`, {
+        ...SHOT,
+        mask: [page.getByText(VERSION)],
+      })
     })
   }
 }
