@@ -164,6 +164,36 @@ describe('the data table, as the pages use it', () => {
     expect(screen.getByText('Inside Row 2')).toBeInTheDocument()
   })
 
+  it('keeps an opened row to the width its frame shows, in view while the table scrolls sideways', async () => {
+    const user = userEvent.setup()
+    // jsdom lays nothing out: the table's frame says it shows 420 px, whatever its table's width.
+    const clientWidth = Object.getOwnPropertyDescriptor(Element.prototype, 'clientWidth')!
+    Object.defineProperty(Element.prototype, 'clientWidth', {
+      configurable: true,
+      get() {
+        return (this as HTMLElement).classList.contains('overflow-x-auto') ? 420 : 0
+      },
+    })
+    try {
+      render(
+        <AdvancedDataTable<Row>
+          data={ROWS.slice(0, 1)}
+          columns={COLUMNS}
+          getRowId={(row) => row.id}
+          selectable={false}
+          renderSubComponent={(row) => <p>Inside {row.name}</p>}
+        />,
+      )
+      await user.click(screen.getByRole('button', { name: 'Expand row details' }))
+      const details = screen.getByText('Inside Row 1').closest('[data-row-details]') as HTMLElement
+      expect(details.style.width).toBe('420px')
+      expect(details.style.position).toBe('sticky')
+      expect(details.style.left).toBe('0px')
+    } finally {
+      Object.defineProperty(Element.prototype, 'clientWidth', clientWidth)
+    }
+  })
+
   it('chooses a row by its box without opening it, and hides a column from the column list', async () => {
     const user = userEvent.setup()
     render(

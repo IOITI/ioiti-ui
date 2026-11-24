@@ -3,6 +3,13 @@
 What changes from one version of ioiti-ui to the next. A version is a git tag (`v0.1.0`), which an
 application installs as `github:IOITI/ioiti-ui#v0.1.0` (`docs/releasing.md`).
 
+## [Unreleased]
+
+- **An opened row of a data table is as wide as its frame shows** (`AdvancedDataTable`'s `renderSubComponent`):
+  in a table wider than its frame, it took the whole table's width, so what draws itself to its width (a chart)
+  ran past the frame's edge and was read by scrolling sideways. It now takes the width the frame shows, measured,
+  and stays at the frame's left edge while the table scrolls under it.
+
 ## [0.23.1] - 2026-11-23
 
 - **A timeline's line no longer shows through a failed or a warning step** (`InteractiveTimeline`): their nodes'

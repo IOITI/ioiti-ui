@@ -765,6 +765,21 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
     [columns, hiddenColumnIds]
   );
 
+  // ioiti-ui: an opened row is as wide as the frame shows, not as the table: in a table wider than its frame, what it
+  // draws to its own width (a chart) was drawn as wide as every column and read by scrolling sideways. Measured, as
+  // container units would make the frame's width ignore its table wherever it is sized by its content.
+  const [frame, setFrame] = useState<HTMLDivElement | null>(null);
+  const [frameWidth, setFrameWidth] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    if (!frame || !renderSubComponent) return;
+    const update = () => setFrameWidth(Math.round(frame.clientWidth) || null);
+    update();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(update);
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, [frame, renderSubComponent]);
+
   if (error) {
     return (
       <div className="py-12 px-6 text-center flex flex-col items-center justify-center gap-2 font-sans">
@@ -922,7 +937,7 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
   return (
     // ioiti-ui: positioned, so that the cells' words for screen readers (sr-only) stay in the frame that scrolls them.
     // ioiti-ui: a thin scrollbar, not none: a table wider than its box says it goes on past the edge.
-    <div className={cn('relative overflow-x-auto [scrollbar-width:thin] font-sans', className)}>
+    <div ref={setFrame} className={cn('relative overflow-x-auto [scrollbar-width:thin] font-sans', className)}>
       <table className="w-full border-collapse text-left font-sans text-sm min-w-[500px] sm:min-w-full">
         <thead>
           <tr className="border-b border-border/40 bg-surface-raised/20 text-xs text-muted-foreground select-none">
@@ -1065,6 +1080,9 @@ export const DataTableContent: React.FC<DataTableContentProps> = ({
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={motionTransitions.springSnappy}
+                        // ioiti-ui: held at the frame's left edge while the table scrolls under it, at its width.
+                        style={frameWidth ? { position: 'sticky', left: 0, width: frameWidth } : undefined}
+                        data-row-details=""
                         className="p-3.5 sm:p-6 overflow-hidden border-t border-border/40"
                       >
                         {renderSubComponent(row)}
