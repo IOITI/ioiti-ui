@@ -30,7 +30,8 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
   `npm run release` names and dates.
 - **`npm run release`** releases no version while one the CHANGELOG names before it is no tag on origin, and says
   the command that mends it; `--at <commit>` releases a version whose tag was never made, from the commit that set
-  it. It sets the tag the READMEs install with the version, and commits once every check has passed.
+  it. It sets the tag the READMEs install with the version, and commits once every check has passed. It runs on
+  `main`, with all of origin's, under Node 22.12 or later, and says so before it changes anything elsewhere.
 - **CI checks the package on Node 22.12 too**, the oldest `engines` allows, and audits what an application installs
   with it; its actions are pinned to commits, its jobs read-only but the ones that publish.
 

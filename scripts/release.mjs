@@ -5,7 +5,9 @@
 //
 // 1. Every version CHANGELOG.md names before this one is a tag on origin (git ls-remote): one tagged and never
 //    pushed, or never tagged, is said with the command that mends it, and nothing is released before.
-// 2. On the branch checked out (clean): what is under `## [Unreleased]` in CHANGELOG.md becomes the version's,
+//    Before it, nothing is touched unless Node is 22.12 or later, and the branch is main (clean, with all of
+//    origin's main).
+// 2. On main: what is under `## [Unreleased]` in CHANGELOG.md becomes the version's,
 //    dated today (unless the version's section is there already), its sections checked (scripts/changelog.mjs);
 //    the version set in package.json, in the template's dependency on ioiti-ui and in the tag the READMEs install.
 // 3. Builds, and runs every check (lint, typecheck, tests, the gallery's build, check:package) unless
@@ -79,6 +81,14 @@ if (args.includes('--at') && !at) fail('give the commit: npm run release -- 0.17
 const tag = `v${version}`
 if (git('tag', '--list', tag)) fail(`${tag} exists already`)
 
+// The build and its checks need Node 22.12 or later (the tests' jsdom has ES modules that older Node cannot require):
+// said before anything is touched, not in a hundred errors once the files are stamped.
+const [major, minor] = process.versions.node.split('.').map(Number)
+if (major < 22 || (major === 22 && minor < 12)) {
+  const wanted = readFileSync(join(root, '.nvmrc'), 'utf8').trim()
+  fail(`Node ${process.versions.node} runs this, and the checks need 22.12 or later: nvm use (.nvmrc: ${wanted}), then again`)
+}
+
 // The release commit, apart from any branch, and its tag: dist/ (built here, or copied from root) and a
 // package.json that npm installs as it is.
 function release(commit, { build }) {
@@ -135,6 +145,19 @@ if (at) {
 }
 
 if (git('status', '--porcelain')) fail('the working tree has changes: commit or remove them first')
+
+// From main, as origin has it at least: a release made on a branch merged later (squashed, rebased) would leave its tag
+// on no commit of main.
+const branch = git('rev-parse', '--abbrev-ref', 'HEAD')
+if (branch !== 'main') fail(`a release is made on main, and this is ${branch}: merge it into main first (docs/releasing.md)`)
+let behind = null
+try {
+  git('fetch', '--quiet', 'origin', 'main')
+  behind = Number(git('rev-list', '--count', 'HEAD..origin/main'))
+} catch {
+  console.warn("release: origin's main could not be read (offline?): main is not checked to have all of it")
+}
+if (behind) fail(`main is ${behind} commit${behind === 1 ? '' : 's'} behind origin's: git pull --ff-only first`)
 
 // 1. Every version before this one installable from origin.
 const changelogPath = join(root, 'CHANGELOG.md')

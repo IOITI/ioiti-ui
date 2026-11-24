@@ -20,11 +20,14 @@ holds the sections, their order and the links at the CHANGELOG's foot (`scripts/
 
 ## Steps
 
-1. On `main`, with nothing uncommitted:
+1. On `main`, with nothing uncommitted and all of origin's `main`, under Node 24 (`nvm use`):
 
    ```bash
    npm run release -- 0.24.0
    ```
+
+   Elsewhere (another branch, a `main` behind origin's, a Node before 22.12, whose tests cannot start), it says so
+   and touches nothing.
 
    - **Every version the CHANGELOG names before it is a tag on origin** (`git ls-remote`), or nothing is released:
      the command that mends one is said (`git push origin v…` for a tag made and never pushed, `--at` below for
