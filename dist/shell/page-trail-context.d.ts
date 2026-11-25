@@ -1,0 +1,42 @@
+import type { Dispatch, SetStateAction } from 'react';
+import type { Crumb, Menu, PageName } from './navigation.js';
+/** A page's name, with the address it was given for. */
+export interface Named extends PageName {
+    pathname: string;
+}
+export interface Publisher {
+    pathname: string;
+    publish: Dispatch<SetStateAction<Named | null>>;
+}
+/** Where a page gives its name: the shell's (PageTrailProvider). */
+export declare const PublisherContext: import("react").Context<Publisher | null>;
+/** The name the page shown gave, read by the top bar. */
+export declare const NamedContext: import("react").Context<Named | null>;
+/** The menu, and the address of the page shown (its query too): what the trail is made from. */
+export interface Trail {
+    menu: Menu;
+    pathname: string;
+    /** The address's query (`?tab=open`), for a menu whose entries say some (`/orders?tab=open`); `''` without. */
+    search: string;
+}
+/** The menu, and the address of the page shown: what the trail is made from. */
+export declare const TrailContext: import("react").Context<Trail | null>;
+/** Whether the pages here name the browser's tab: not those of a shell drawn in a page (a demo, a preview). */
+export declare const TabTitleContext: import("react").Context<boolean>;
+/**
+ * Gives the trail of the top bar the name of the page and the pages between
+ * its entry of the menu and itself. PageHeader does it with its title; outside
+ * the shell (the tests of a page alone) it does nothing.
+ */
+export declare function usePageName(title: string, parents?: Crumb[]): void;
+/**
+ * The tab says which page it is: several are often open side by side. Its title is the page's,
+ * then the application's name when IoitiProvider was given one ("Orders · My App"); a page named
+ * as the application (its sign-in page) says the name once. Not a page of a shell drawn in a page
+ * (`tabTitle={false}`, the default of a shell inside another).
+ */
+export declare function useTabTitle(title: string): void;
+/** The menu and the address of the page shown; null outside the shell. */
+export declare function useTrail(): Trail | null;
+/** The trail of the page shown, after Home, in the provider's language; nothing outside the shell. */
+export declare function usePageTrail(): Crumb[];
