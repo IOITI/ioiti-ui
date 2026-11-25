@@ -11,6 +11,84 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- `npx ioiti-ui-codemod`: an application's code given today's names, from the list of what is deprecated
+  (`src/lib/deprecations.ts`): an import renamed and its uses, a prop, a value (in the objects a prop is given too, and
+  in what `useToast()`'s function is given), read with the application's own TypeScript, its formatting kept. What it
+  cannot rewrite for sure (a spread, a value computed, a name with no name in its place) it says, with the file and the
+  line; `--dry-run` writes nothing, `--check` fails where anything is left (`docs/conventions.md`, Deprecated).
+- `Dialog`, `Sheet` (and `SheetBody`, `SheetClose`, `SheetContent`, `SheetDescription`, `SheetFooter`, `SheetHeader`,
+  `SheetTitle`, `SheetTrigger`), `SelectMenu`, `Toast`, `Accordion`, `Tooltip`, `Tabs`, `FileUpload`, `WorldClock`,
+  `ComparisonTable`, `StatusIsland`: the components EasyUI named by how they move, named by their roles, with their
+  types (`DialogProps`, `SheetProps`, `SelectMenuOption`, `ToastPosition`, `WorldClockCity`, `StatusIslandState`…).
+- A control takes what a native one does: `id` and `ref` (on what takes the focus), `name` (what a form sends: its own
+  input, else a hidden one; a day as `yyyy-mm-dd`, a range as two values under one name, several values one input
+  each), `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-invalid`, and `data-*` beside `className`:
+  `NumberInput`, `Combobox`, `MultiSelect`, `SelectMenu`, `Switch`, `RadioGroup`, `Slider`, `RangeSlider`,
+  `SegmentedControl`, `DatePicker`, `DateRangePicker`, `OTPInput`, `InlineEdit`, `TimeRangePicker`. Each reads the
+  `Field` or the `FormItem` around it: named by its label, described by its description and its error, marked wrong.
+- `NumberInputProps`, `AvatarProps`, `ButtonLinkProps`, `TableRowProps`, `RouterLinkProps`… Every component's props type
+  is exported by the entry that exports it (95 more), so that an application that wraps a component, or keeps its
+  props, can name them; a part that takes an element's attributes takes a named type of them (`TableRowProps` is
+  `ComponentProps<'tr'>`).
+- The gallery: a family's former names under its title, found by ⌘K and the index; its former address leads to it, its
+  examples' anchors kept (`/components/overlays/settle-modal#form`).
+
+### Changed
+
+- `Sheet`, `SpotlightSearch` and `ProductTour` keep the focus as every layer over the page does (`useFocusScope`), their
+  own traps gone. A child sheet keeps Tab to itself while it is open (Tab went round it and its parent beside it); a
+  sheet without a backdrop holds no page, the focus taken as it opens, its Escape heard from within. The palette's Tab
+  and Escape are heard from the page too, Escape closing it wherever the focus is. A tour's card keeps every control in
+  reach of Tab (its buttons alone were), gives the focus back unless it went elsewhere meanwhile, and a dialog opened
+  over it keeps its keys (its Escape ended the tour too, the arrows moved its steps).
+- A `Field`'s label points to the id of the package's control it holds: a group (`RadioGroup`, `SegmentedControl`,
+  `RangeSlider`, `TimeRangePicker`, `OTPInput`) is named by it (`aria-labelledby`), the label naming none of its parts.
+  A `FormLabel` has an id of its own in a `FormItem`, which names a group or a slider too.
+- `NumberInput` sends its number as code writes it (`1234.5`), whatever the locale shows, from a hidden input that takes
+  its `name`.
+- `Slider`, `RangeSlider` and `InlineEdit`: `label` is optional, a `Field`'s label naming them.
+- A deprecation of 0.30.0 names the component of today in its warning (`Dialog's hideCloseButton`).
+- **What an application bundles grows by 0.8 kB gzipped** (the template 197.7 kB, React and the rest with it): what a
+  control sends with a form and reads of its field. The whole package by 2.8 kB (200.3 kB), its former names included.
+
+### Deprecated
+
+Each former name draws its component of today until 1.0, which removes it, and says so once in development; the
+codemod rewrites them.
+
+- **Names of roles**: `SettleModal` (`Dialog`); `Flysheet`, `FlysheetBody`, `FlysheetClose`, `FlysheetContent`,
+  `FlysheetDescription`, `FlysheetFooter`, `FlysheetHeader`, `FlysheetTitle`, `FlysheetTrigger` (`Sheet`, `SheetBody`…);
+  `SpringSelect` (`SelectMenu`); `VelocityToast` (`Toast`); `SmoothAccordion` (`Accordion`); `DirectionalTooltip`
+  (`Tooltip`); `AnimatedTabs` (`Tabs`); `AnimatedFileUpload` (`FileUpload`); `AirportMatrixClock` (`WorldClock`);
+  `SmartComparison` (`ComparisonTable`); `DynamicIsland` (`StatusIsland`).
+- **Their types**: `SettleModalProps`; `FlysheetProps`, `FlysheetContentProps`, `FlysheetCloseReason`,
+  `FlysheetPadding`, `FlysheetSide`, `FlysheetSize`, `FlysheetType`; `SpringSelectProps`, `SpringSelectOption`;
+  `VelocityToastProps`, `VelocityToastPosition`, `VelocityToastAction` (`ToastAction`, the same); `SmoothAccordionProps`;
+  `DirectionalTooltipProps`; `AnimatedTabsProps`; `AnimatedFileUploadProps`; `AirportMatrixClockProps`,
+  `AirportMatrixCity`; `SmartComparisonProps`; `DynamicIslandProps`, `DynamicIslandState`: the same names of today.
+- `StretchSwitch` and `StretchSwitchProps`: `Switch` and `SwitchProps`, which take the same props, drawn as the design's
+  switch.
+- `SegmentedControl`'s `labelledBy`: `aria-labelledby`.
+
+### Fixed
+
+- A `Field` around a `RadioGroup` named its first radio by the whole label and checked it at a click on the label;
+  around a `SegmentedControl`, its first segment; around a `MultiSelect`, a click on the label pressed its first chip's
+  ×.
+- `Dialog`, the sidebar's drawer: an input method's Escape, composing a character, closed them.
+- `Table`: its JSDoc is its own, where it stood above its classes and an editor showed none.
+
+### Upgrading
+
+- `npx ioiti-ui-codemod --dry-run`, then `npx ioiti-ui-codemod`: the deprecated names rewritten (src/ by default),
+  then what it says is left, by hand. Every former name still works until 1.0, and says so in development.
+- A server that reads a `NumberInput`'s `name` gets `1234.5` in every locale (it got what the field showed: `1 234,5` in
+  French).
+- A test that found a `RadioGroup`'s first radio, or a `SegmentedControl`'s first segment, by its `Field`'s label finds
+  the group by it.
+
 ## [0.30.0] - 2026-11-24
 
 ### Added

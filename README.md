@@ -300,6 +300,12 @@ itself is worked on with Node.js 24 (`.nvmrc`). CI checks the package on both.
 - **Until 1.0, nothing changes at once.** An API renamed or reshaped keeps its old name working, which says it is
   deprecated (a warning in the console, once, in development only) and a line of the CHANGELOG's Deprecated says
   what replaces it; it goes at 1.0. From 1.0, semantic versioning.
+- **The codemod rewrites what is deprecated**, in an application's code, with its own TypeScript:
+
+  ```bash
+  npx ioiti-ui-codemod --dry-run    # what it would rewrite, under src/
+  npx ioiti-ui-codemod              # rewritten; what it cannot rewrite for sure, said with its file and line
+  ```
 
 ## Working on it
 
