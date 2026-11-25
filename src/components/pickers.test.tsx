@@ -285,7 +285,7 @@ describe('a combobox', () => {
     expect(screen.getByRole('listbox', { name: 'Country of delivery' })).toContainElement(screen.getByRole('option', { name: 'Germany' }))
     await user.keyboard('xyz')
     expect(screen.getByRole('listbox', { name: 'Country of delivery' })).toBeEmptyDOMElement()
-    expect(screen.getByText('No results.')).toBeInTheDocument()
+    expect(screen.getByRole('listbox', { name: 'Country of delivery' })).toHaveAccessibleDescription('No results.')
     await expectAccessible(document.body)
   })
 
