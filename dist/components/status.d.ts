@@ -1,0 +1,52 @@
+import type { ReactNode } from 'react';
+import type { HealthStatus } from '../lib/health.js';
+/** The props of `StatusBadge`. */
+export interface StatusBadgeProps {
+    /** The state it shows, in its tone and with its word. */
+    status: HealthStatus;
+    /** Another word for it than the provider's language's. */
+    label?: string;
+}
+/**
+ * A state: always a word next to the colour, never the colour alone; the provider's language's ("Up", "Degraded",
+ * "Down", "Unknown", "Disabled") unless `label` says another.
+ */
+export declare function StatusBadge({ status, label }: StatusBadgeProps): import("react").JSX.Element;
+/** The props of `SignedValue`. */
+export interface SignedValueProps {
+    value: number | null | undefined;
+    kind: 'money' | 'percent';
+    /** For money: the currency's code (EUR by default). */
+    currency?: string | null;
+    className?: string;
+    /** Its digits roll to each new value: for a figure that changes in front of the user. */
+    animate?: boolean;
+    /**
+     * The figure is old: what sends it stopped (a live result no longer published). It is muted, as `LiveValue`
+     * mutes one, its sign telling a gain from a loss still, and a screen reader hears that it is stale.
+     */
+    stale?: boolean;
+    /** The word a screen reader hears for a stale figure; the provider's language's by default ("stale"). */
+    staleLabel?: string;
+}
+/**
+ * A gain or a loss, a change: signed, so the sign carries the meaning and the colour repeats it. Written as the
+ * provider's locale writes an amount or a percentage ("+€12.40"; "+12,40 €" in French).
+ */
+export declare function SignedValue({ value, kind, currency, className, animate, stale, staleLabel: givenStaleLabel, }: SignedValueProps): import("react").JSX.Element;
+/** The props of `QueryState`. */
+export interface QueryStateProps {
+    isPending: boolean;
+    error: Error | null;
+    /** There is data from an earlier fetch: keep showing it and report the failure above it. */
+    hasData: boolean;
+    skeleton?: ReactNode;
+    children: ReactNode;
+}
+/**
+ * Loading and failure states shared by the pages. A failed refresh never blanks what is on screen.
+ * What arrives where a skeleton was fades in (animate-reveal); what is there from the start is shown
+ * as it is. It has no box of its own, at any time: what it shows keeps its place among the page's (a column's
+ * gaps and margins, a grid's cells). Its failures are said in the provider's language.
+ */
+export declare function QueryState({ isPending, error, hasData, skeleton, children }: QueryStateProps): import("react").JSX.Element;

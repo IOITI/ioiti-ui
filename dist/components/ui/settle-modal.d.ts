@@ -1,0 +1,55 @@
+import React from 'react';
+export interface DialogProps {
+    /** ioiti-ui: open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`). */
+    open?: boolean;
+    /** ioiti-ui: open at first, the dialog holding it then (it closes itself); closed by default. */
+    defaultOpen?: boolean;
+    /** ioiti-ui: told of every change, whoever holds it: `false` when Escape, its backdrop or its × closes it. */
+    onOpenChange?: (open: boolean) => void;
+    /** Told when Escape, its backdrop or its × closes it. */
+    onClose?: () => void;
+    title?: React.ReactNode;
+    description?: React.ReactNode;
+    children?: React.ReactNode;
+    /** Footer area (typically action buttons) */
+    footer?: React.ReactNode;
+    /** ioiti-ui: its close (×) button, in the top-right (true), as every layer names it. */
+    showCloseButton?: boolean;
+    /** @deprecated Use `showCloseButton`. Removed in 1.0. The other way round: `hideCloseButton` is `showCloseButton={false}`. */
+    hideCloseButton?: boolean;
+    /**
+     * ioiti-ui: its name, for a dialog without a `title`: a screen reader says "dialog" and nothing else without one. In
+     * development, a dialog with neither says so in the console.
+     */
+    'aria-label'?: string;
+    /** ioiti-ui: the id of what names it, where that is not its `title` (a heading of its own in `children`). */
+    'aria-labelledby'?: string;
+    /** Click on backdrop closes the modal (default true) */
+    closeOnBackdrop?: boolean;
+    /**
+     * Maximum width of the modal (Tailwind class). ioiti-ui: `xl` for a form with rows of fields, `full` for
+     * what is read side by side (two versions of a script).
+     */
+    size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+    className?: string;
+}
+/**
+ * Dialog — Content has a tiny scale + settle instead of a generic fade.
+ *
+ * ioiti-ui: EasyUI's SettleModal, named after its role.
+ *
+ * ioiti-ui: one calm entrance, the design's: the panel grows from what opened
+ * it (0.96 to 1, 6 px of travel, springGentle), without EasyUI's overshoot
+ * (0.94 -> 1.02 -> 1), and its content with it rather than a layer after it.
+ * It leaves quicker than it came (easeExit).
+ *
+ * ioiti-ui: rendered in document.body, so that it takes nothing from the element
+ * that opens it (a table cell passes its alignment and wrapping on to what is
+ * inside it). Keyboard focus moves into the dialog when it opens, stays in it,
+ * and goes back to where it was when it closes.
+ */
+export declare const Dialog: React.FC<DialogProps>;
+/** @deprecated Use `Dialog`. Removed in 1.0. */
+export declare const SettleModal: React.FC<DialogProps>;
+/** @deprecated Use `DialogProps`. Removed in 1.0. */
+export type SettleModalProps = DialogProps;
