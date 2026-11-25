@@ -1,0 +1,47 @@
+/* -----------------------------------------------------------------------------
+   The finish, where the tokens stop: what is selected, and the scrollbars in
+   every browser. ioiti-ui's own, not the design it was taken from: it adds,
+   as the accents, the glass, the motion and the type do, and writes nothing
+   in the design's layers or its blocks.
+
+   - Text selected is the browser's blue on no other colour of the page: a
+     faint step of the text's own colour here, the accent's tint (the colour
+     of a chosen row) where the look has one. The text keeps its colour.
+   - The design's scrollbar track is the page's `--bg` (tokens.css), which in
+     dark (#111113) is not the page's ground (#09090b): a stripe down the
+     window, and down every panel that scrolls. The track shows what is under
+     it; the thumb is the design's.
+   - Firefox draws no ::-webkit-scrollbar: it takes the same colours, thin.
+     Only there: a browser that reads scrollbar-color (Chrome too, now) leaves
+     the ::-webkit-scrollbar the design draws.
+   - The 404's folder of frosted glass (NotFound) blurs what is behind it, cut
+     to the folder by a mask: a clip-path does not cut a backdrop-filter in
+     Chrome under a parent that clips with round corners (a card's
+     overflow-hidden), where it blurs the rectangle around the folder. The
+     folder's outline is a file beside this one (no data: URI: img-src stays
+     at self); the component's own clip-path still cuts what it paints.
+   --------------------------------------------------------------------------- */
+
+::selection {
+  background-color: color-mix(in oklab, var(--foreground) 16%, transparent);
+}
+
+:root[data-accent] ::selection {
+  background-color: var(--brand-soft);
+}
+
+:root ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@supports (-moz-appearance: none) {
+  :root {
+    scrollbar-color: var(--border) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+.np404-glass {
+  -webkit-mask: url("./not-found-folder.svg") 0 0 / 100% 100% no-repeat;
+  mask: url("./not-found-folder.svg") 0 0 / 100% 100% no-repeat;
+}

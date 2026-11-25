@@ -1,0 +1,46 @@
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { useSyncExternalStore } from 'react';
+import { useControllableState } from '../lib/controllable.js';
+import { Kbd } from './Kbd.js';
+import { useMessages } from './locale-context.js';
+import { useShortcut, useShortcutRegistry } from './shortcuts-context.js';
+import { Dialog } from './ui/settle-modal.js';
+// Where the words of its last line put the keys that open it, drawn as key caps: the sentence is written around this
+// mark, and split at it.
+const KEYS_MARK = '\u0000';
+/**
+ * The application's keyboard shortcuts, listed by group with their keys: those registered with a
+ * description (`useShortcut`), while the parts that register them are on the page. `?` opens it, once
+ * there is a shortcut to list; AppShell draws it.
+ */
+export function ShortcutsDialog({ open, defaultOpen = false, onOpenChange, title: givenTitle, keys = '?' }) {
+    // Its words in the provider's language, the title given over its own.
+    const words = useMessages().shortcuts;
+    const title = givenTitle ?? words.title;
+    const [shown, setShown] = useControllableState(open, defaultOpen, onOpenChange);
+    const registry = useShortcutRegistry();
+    const all = useSyncExternalStore(registry.subscribe, registry.list, registry.list);
+    // What it lists: every shortcut described, but the one that opens it; once, when two parts register the same
+    // keys for the same thing (a second sidebar's ⌘B).
+    const seen = new Set();
+    const listed = all.filter((shortcut) => {
+        const id = `${shortcut.keys}\n${shortcut.description}`;
+        if (!shortcut.description || shortcut.keys === keys || seen.has(id))
+            return false;
+        seen.add(id);
+        return true;
+    });
+    useShortcut(keys ?? '', () => listed.length > 0 && setShown(!shown), {
+        description: listed.length > 0 ? words.showShortcuts : undefined,
+        group: words.general,
+        enabled: keys !== null,
+    });
+    const groups = new Map();
+    for (const shortcut of listed) {
+        const group = shortcut.group ?? words.general;
+        groups.set(group, [...(groups.get(group) ?? []), shortcut]);
+    }
+    // The last line, its keys where its words put them (none drawn where an application's words name none).
+    const again = words.showAgain(KEYS_MARK).split(KEYS_MARK);
+    return (_jsx(Dialog, { open: shown, onOpenChange: setShown, title: title, size: "md", children: _jsxs("div", { className: "flex flex-col gap-5", children: [Array.from(groups.entries()).map(([group, shortcuts]) => (_jsxs("section", { children: [_jsx("h3", { className: "mb-2 text-xs font-medium text-text-secondary", children: group }), _jsx("dl", { className: "flex flex-col divide-y divide-border/40 text-sm", children: shortcuts.map((shortcut) => (_jsxs("div", { className: "flex items-center justify-between gap-4 py-2", children: [_jsx("dt", { className: "text-foreground", children: shortcut.description }), _jsx("dd", { children: _jsx(Kbd, { keys: shortcut.keys }) })] }, `${shortcut.keys}\n${shortcut.description}`))) })] }, group))), keys && (_jsxs("p", { className: "text-xs text-muted-foreground", children: [again[0], again.length > 1 && (_jsxs(_Fragment, { children: [_jsx(Kbd, { keys: keys }), again.slice(1).join('')] }))] }))] }) }));
+}
