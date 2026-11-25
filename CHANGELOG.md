@@ -11,6 +11,8 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+## [1.0.0-rc.1] - 2026-11-25
+
 ### Added
 
 - `docs/stability.md`, 1.0's promise: what is public (each entry's exports and types, the stylesheets, the tokens' names, the classes
@@ -1744,7 +1746,8 @@ tokens and the same shell, in both themes (`docs/fidelity.md`).
 - **`ioiti-ui/vite`**: `ioiti()`, the pre-paint script in the pages, no font as a `data:` URI, one React.
 - **The gallery** (`npm run gallery`) and **the starter template** (`templates/app`).
 
-[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.32.0...main
+[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v1.0.0-rc.1...main
+[1.0.0-rc.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v1.0.0-rc.1
 [0.32.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.32.0
 [0.31.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.31.0
 [0.30.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.30.0
