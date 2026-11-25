@@ -232,14 +232,18 @@ export function Sidebar({
   // ioiti-ui: its words, and its shortcut's, in the provider's language.
   const { shell: words, shortcuts } = useMessages();
 
-  // ioiti-ui: ⌘B on an Apple computer, Ctrl B elsewhere (useShortcut), listed by ShortcutsDialog.
+  // ioiti-ui: the drawer, on a phone (its focus scope below).
+  const drawerRef = React.useRef<HTMLElement>(null);
+
+  // ioiti-ui: ⌘B on an Apple computer, Ctrl B elsewhere (useShortcut), listed by ShortcutsDialog. It opens the drawer and
+  // closes it too: heard while the drawer is the dialog open (`layer`), where every other shortcut waits.
   useShortcut(
     TOGGLE_KEYS,
     () => {
       if (isWide()) setCollapsed(!collapsed);
       else setMobileOpen(!mobileOpen);
     },
-    { description: shortcuts.toggleSidebar, group: shortcuts.navigation }
+    { description: shortcuts.toggleSidebar, group: shortcuts.navigation, layer: drawerRef }
   );
 
   // drawer: scroll lock
@@ -255,7 +259,6 @@ export function Sidebar({
   // ioiti-ui: the drawer is a dialog (aria-modal), and keeps the focus as one does (useFocusScope): moved in, on the
   // page shown (where the reader is), kept in by Tab, given back to what opened it; Escape closes it. It had none of
   // it: the focus stayed behind it, on the page its scrim covers.
-  const drawerRef = React.useRef<HTMLElement>(null);
   useFocusScope(drawerRef, {
     active: mobileOpen && !isWide(),
     initialFocus: () => drawerRef.current?.querySelector<HTMLElement>('[aria-current="page"]'),

@@ -327,7 +327,12 @@ describe('the selects in French', () => {
     expect(screen.getByRole('button', { name: 'Retirer Lyon' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Effacer' })).toBeInTheDocument()
     await user.click(screen.getByRole('combobox', { name: 'Villes' }))
-    expect(screen.getByText(saying('1 choix au maximum : retirez-le pour en faire un autre.'))).toHaveAttribute('role', 'status')
+    // Shown above the list, in no live region drawn with its words (said once to a screen reader, its words in a live
+    // region of the package's too), describing the options it holds back.
+    const list = screen.getByRole('listbox', { name: 'Villes' })
+    const limit = within(list.parentElement!).getByText(saying('1 choix au maximum : retirez-le pour en faire un autre.'))
+    expect(limit).not.toHaveAttribute('role')
+    expect(within(list).getByRole('option', { name: 'Paris' })).toHaveAttribute('aria-describedby', limit.id)
   })
 
   it('MultiSelect says nothing matches, and names the chips "+2" stands for as French lists them', async () => {

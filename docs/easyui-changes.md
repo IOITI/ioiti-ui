@@ -934,6 +934,16 @@ otherwise).
   context their parts read: `loading`.
 - `animated-file-upload` (1.0.0): `variant="compact"`, EasyUI's, removed: `density="compact"`. `variant` takes
   `standard` alone, its default.
+- `scroll-progress-nav` (1.0.0): a part followed, a link's or a button's, takes the focus, as the browser's own jump to
+  `#part` gives it: not scrolled to again (`preventScroll`), and a part that takes no focus of its own (a section) at
+  `tabindex="-1"` for as long as it keeps it, with no ring, as the shell's skip link gives it to the page. The focus
+  stayed in the bar (on a phone, it fell to the page's body as the menu closed), the next Tab going on from there.
+- `notification-bell` (1.0.0): its list, taller than the panel, is a stop of the keyboard while it scrolls holding no
+  control (every entry read, none leading anywhere), a region named "Notifications" whose arrows scroll it
+  (`useScrollRegion`, `src/lib/scroll-region.ts`); none while it fits or holds a control, which Tab reaches. Nothing in
+  it took the focus, and a keyboard could not scroll it (WCAG 2.1.1).
+- `sidebar` (1.0.0): ⌘B (Ctrl+B) closes the drawer it opened on a phone: its shortcut names the drawer as the layer it
+  opens (`useShortcut`'s `layer`), heard while that is the dialog open, where every shortcut waited.
 
 ## ioiti-ui's own changes
 

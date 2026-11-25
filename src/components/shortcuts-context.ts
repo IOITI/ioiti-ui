@@ -1,11 +1,14 @@
 import { createContext, useContext, useEffect, useRef } from 'react'
+import type { RefObject } from 'react'
 
+import { currentFocusScope } from '../lib/focus-scope.js'
 import { matchesStroke, parseKeys } from '../lib/keys.js'
 import type { KeyStroke } from '../lib/keys.js'
 
 // The keyboard shortcuts of an application: each registered where it means something (a page, a panel),
 // heard by one listener on the window, attached while one is registered. They wait while a dialog is open
-// (one dialog at a time: its keys are its own), and keys without ⌘ or Ctrl wait while text is typed.
+// (one dialog at a time: its keys are its own), but the shortcut of the layer open, which closes it (⌘B, the drawer
+// it opened); keys without ⌘ or Ctrl wait while text is typed.
 
 export interface Shortcut {
   keys: string
@@ -17,6 +20,11 @@ export interface Shortcut {
   allowInInputs?: boolean
   /** Its action; `null` for a shortcut listed and heard by someone else (a component's own ⌘B). */
   handler: ((event: KeyboardEvent) => void) | null
+  /**
+   * The layer it opens (a drawer, a dialog): heard while that layer is the one open, which its keys then close, as they
+   * opened it. Every other shortcut waits while a dialog is open.
+   */
+  layer?: () => Element | null | undefined
 }
 
 interface Entry extends Shortcut {
@@ -58,13 +66,18 @@ export function createShortcutRegistry(): ShortcutRegistry {
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.defaultPrevented || ['Shift', 'Control', 'Alt', 'Meta'].includes(event.key)) return
-    // A dialog is open: its keys are its own.
-    if (document.querySelector('[aria-modal="true"]')) return
+    // A dialog is open (the latest that holds the page): its keys are its own, but the shortcut of that very layer.
+    const open = currentFocusScope() ?? document.querySelector('[aria-modal="true"]')
+    const opens = (entry: Entry): boolean => {
+      const layer = entry.layer?.()
+      return !!open && !!layer && (layer === open || layer.contains(open) || open.contains(layer))
+    }
+    if (open && ![...entries.values()].some(opens)) return
     const now = event.timeStamp
     pressed = [...pressed.filter((each) => now - each.at < SEQUENCE_WAIT), { stroke: event, at: now }].slice(-3)
     const inText = typing(event.target)
     for (const entry of entries.values()) {
-      if (!entry.handler) continue
+      if (!entry.handler || (open && !opens(entry))) continue
       const held = entry.strokes.some((stroke) => stroke.mod || stroke.ctrl || stroke.meta)
       if (inText && !held && !entry.allowInInputs) continue
       const last = pressed.slice(-entry.strokes.length)
@@ -111,16 +124,18 @@ interface ShortcutOptions {
   /** Off for now: neither heard nor listed. */
   enabled?: boolean
   allowInInputs?: boolean
+  /** The layer it opens (a drawer, a dialog's content): heard while that layer is open, to close it. */
+  layer?: RefObject<Element | null>
 }
 
 /**
  * A keyboard shortcut, heard while the component that registers it is there: `mod+k` (⌘K or Ctrl K),
  * `g o` (G, then O), `?`. Given a description, ShortcutsDialog lists it. Keys without ⌘ or Ctrl are not
- * heard while text is typed, nor any while a dialog is open.
+ * heard while text is typed, nor any while a dialog is open but the one of the layer it opens (`layer`), which closes it.
  */
 export function useShortcut(keys: string, handler: ((event: KeyboardEvent) => void) | null, options: ShortcutOptions = {}) {
   const registry = useShortcutRegistry()
-  const { description, group, enabled = true, allowInInputs = false } = options
+  const { description, group, enabled = true, allowInInputs = false, layer } = options
   // The latest handler, without registering again at each render.
   const latest = useRef(handler)
   useEffect(() => {
@@ -135,6 +150,7 @@ export function useShortcut(keys: string, handler: ((event: KeyboardEvent) => vo
       group,
       allowInInputs,
       handler: handles ? (event) => latest.current?.(event) : null,
+      layer: layer ? () => layer.current : undefined,
     })
-  }, [registry, keys, description, group, enabled, allowInInputs, handles])
+  }, [registry, keys, description, group, enabled, allowInInputs, handles, layer])
 }

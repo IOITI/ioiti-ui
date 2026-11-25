@@ -11,6 +11,28 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- `useShortcut`'s `layer`: the layer a shortcut opens (a drawer, a dialog's content), where its keys are heard while
+  it is the dialog open, to close it; every other shortcut waits, as before.
+- The starter template's `.github/dependabot.yml`: its actions' next commits and its dependencies' next versions
+  (ioiti-ui's next tag among them), proposed each week.
+
+### Fixed
+
+- `Sidebar`: ⌘B (Ctrl+B) closes the drawer it opened on a phone, where every shortcut waited while it was open.
+- `ShortcutsDialog`: its keys (`?`) close it, as they open it.
+- `ScrollProgressNav`: a part followed takes the focus, as the browser's own jump to it gives it, where the focus stayed
+  in the bar and the next Tab went on from there.
+- `MultiSelect`: the arrows follow its options as they are drawn, group by group (they followed `options`' order, and
+  jumped between groups), and Home and End go to the first and the last. What says it takes no more ("1 choice at
+  most…") is no live region drawn with its words: it describes the options it keeps from being chosen, and is said once.
+- `NotificationBell`: its list, taller than its panel and holding no control, is a stop of the keyboard, which can scroll
+  it.
+- The starter template's CI follows the repository's pins of its actions (`scripts/template-actions.mjs`, held by
+  `npm run lint`): Dependabot, which reads the workflows of the root alone, moved the repository's and left the
+  template's behind.
+
 ## [1.0.0-rc.1] - 2026-11-25
 
 ### Added

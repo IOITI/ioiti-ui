@@ -55,6 +55,8 @@ npm run preview    # serves dist/, under the Content-Security-Policy below
 - **CI**: `.github/workflows/ci.yml`, on every push to `main` and every pull request, on the Node of `.nvmrc`:
   installs what `package-lock.json` holds (`npm ci`: commit it), then runs `npm run check`. Its actions are pinned to
   a commit, the version beside it.
+- **Updates**: `.github/dependabot.yml` proposes, once a week, the actions' next commits and the dependencies' next
+  versions (ioiti-ui's next tag among them), grouped, each a pull request CI holds.
 
 ## Languages
 

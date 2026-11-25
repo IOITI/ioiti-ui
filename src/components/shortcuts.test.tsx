@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import { IoitiProvider } from './IoitiProvider.js'
@@ -87,23 +87,72 @@ describe('keyboard shortcuts', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
 
-  it('opens on its keys and closes on Escape: its keys wait while it is open, as every shortcut while a dialog is', async () => {
+  it('opens on its keys and closes on them, as on Escape: the other shortcuts wait while it is open', async () => {
     const user = userEvent.setup()
     const changed = vi.fn()
+    const go = vi.fn()
     render(
       <IoitiProvider>
-        <Page go={() => {}} search={() => {}} />
+        <Page go={go} search={() => {}} />
         <ShortcutsDialog onOpenChange={changed} />
       </IoitiProvider>,
     )
     await user.keyboard('?')
     await screen.findByRole('dialog', { name: 'Keyboard shortcuts' })
     expect(changed).toHaveBeenLastCalledWith(true)
+    // Another part's shortcut waits while it is open.
+    await user.keyboard('go')
+    expect(go).not.toHaveBeenCalled()
+    // Its own keys close it.
     await user.keyboard('?')
-    expect(changed).not.toHaveBeenCalledWith(false)
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(changed).toHaveBeenLastCalledWith(false)
+    await user.keyboard('?')
+    await screen.findByRole('dialog', { name: 'Keyboard shortcuts' })
     await user.keyboard('{Escape}')
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(changed).toHaveBeenLastCalledWith(false)
+  })
+
+  it('heard while the layer they open is the dialog open, to close it; not while another dialog is', async () => {
+    const user = userEvent.setup()
+    const toggled = vi.fn()
+    function Drawer() {
+      const [open, setOpen] = useState(false)
+      const layer = useRef<HTMLDivElement>(null)
+      useShortcut('mod+j', () => {
+        toggled()
+        setOpen(!open)
+      }, { layer })
+      return open ? (
+        <div ref={layer} role="dialog" aria-modal="true" aria-label="Drawer">
+          <button type="button">Inside</button>
+        </div>
+      ) : null
+    }
+    const { rerender } = render(
+      <IoitiProvider>
+        <Drawer />
+      </IoitiProvider>,
+    )
+    await user.keyboard('{Control>}j{/Control}')
+    expect(await screen.findByRole('dialog', { name: 'Drawer' })).toBeInTheDocument()
+    await user.keyboard('{Control>}j{/Control}')
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Drawer' })).not.toBeInTheDocument())
+    expect(toggled).toHaveBeenCalledTimes(2)
+
+    // Another dialog open: its keys are its own, the drawer's shortcut waits.
+    rerender(
+      <IoitiProvider>
+        <Drawer />
+        <Dialog open onClose={() => {}} title="Edit">
+          <p>Inside</p>
+        </Dialog>
+      </IoitiProvider>,
+    )
+    await screen.findByRole('dialog', { name: 'Edit' })
+    await user.keyboard('{Control>}j{/Control}')
+    expect(toggled).toHaveBeenCalledTimes(2)
   })
 
   it('opens at first with defaultOpen, then holds itself, onOpenChange told', async () => {

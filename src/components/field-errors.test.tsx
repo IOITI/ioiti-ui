@@ -194,7 +194,8 @@ describe('a MultiSelect with a maximum', () => {
     const list = screen.getByRole('listbox', { name: 'Cities' })
     expect(within(list).getByRole('option', { name: 'Rome' })).toHaveAttribute('aria-disabled', 'true')
     expect(within(list).getByRole('option', { name: 'Paris' })).not.toHaveAttribute('aria-disabled')
-    expect(screen.getByRole('status')).toHaveTextContent('2 at most')
+    // Why, beside the list: the option it keeps from being chosen is described by it (no live region drawn with its words).
+    expect(within(list).getByRole('option', { name: 'Rome' })).toHaveAccessibleDescription(expect.stringContaining('2 at most'))
 
     await user.click(within(list).getByRole('option', { name: 'Rome' }))
     expect(screen.queryByRole('button', { name: 'Remove Rome' })).not.toBeInTheDocument()

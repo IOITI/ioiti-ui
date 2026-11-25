@@ -263,6 +263,21 @@ describe('the sidebar in French', () => {
     expect(tip.textContent).toBe('DévelopperCtrl B')
   })
 
+  it('opens its drawer on a phone with its keys, and closes it with them: they are heard while it is the dialog open', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider>
+        <Sidebar sections={SECTIONS} activeId="orders" />
+      </IoitiProvider>,
+    )
+    // jsdom draws no media query: a phone's width, where the keys open the drawer (they fold the sidebar on a screen).
+    await user.keyboard('{Control>}b{/Control}')
+    const drawer = await screen.findByRole('dialog', { name: 'Navigation' })
+    expect(drawer).toContainElement(document.activeElement as HTMLElement)
+    await user.keyboard('{Control>}b{/Control}')
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Navigation' })).not.toBeInTheDocument())
+  })
+
   it("says its drawer's buttons", () => {
     render(
       <>

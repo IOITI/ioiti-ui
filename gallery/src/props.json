@@ -7266,7 +7266,7 @@
    {
     "name": "onOpenChange",
     "type": "(open: boolean) => void",
-    "description": "Told of every change, whoever holds it: its keys open it, Escape closes it (its keys, as every shortcut, wait while a dialog is open)."
+    "description": "Told of every change, whoever holds it: its keys open it and close it, as Escape does."
    },
    {
     "name": "title",

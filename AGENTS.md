@@ -40,6 +40,7 @@ npm run api                        # test/api/<entry>.api.txt, after a change of
 node scripts/props.mjs --docs-baseline   # scripts/docs-baseline.json, once a component or a prop it lists is documented
 npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 npm run check:package -- --update-budget   # test/size-budget.json, after a change that weighs more on purpose
+node scripts/template-actions.mjs  # the template's CI pinned as the repository's, after Dependabot moves an action (lint checks it)
 npm run e2e                        # the gallery built, in Chromium: pages, axe with CSS, the keyboard, motion
 E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's dev server), a port of its own
 ```
@@ -229,7 +230,8 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   of its own there, to see a change draw the same twice. An example that moves on its own or reads the time is not
   pictured (`LIVE`); the clock stands still and Math.random is seeded for the others; the gallery's version, which a
   release changes, is made invisible (its words: a mask's box was as wide as them). An example's picture leaves out the
-  page's contents bar (`e2e/example-shot.css`).
+  page's contents bar (`e2e/example-shot.css`), and a tall one is taken in a window as tall as it needs (the page's
+  frame paints nothing below the window).
 - jsdom has no view transitions: pages and looks change at once there. `src/test/viewTransition.ts` stands in
   for `document.startViewTransition` (a change of look), not for React's `ViewTransition`, whose pictures jsdom
   cannot animate.

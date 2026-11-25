@@ -19,5 +19,5 @@ A `Dialog` named by its title ("Keyboard shortcuts"): the focus moves into it, a
 
 | Key | What it does |
 |---|---|
-| ? | Opens it, once a shortcut is listed; not while text is typed, nor while a dialog is open |
+| ? | Opens it, once a shortcut is listed, and closes it; not while text is typed, nor while another dialog is open |
 | Escape | Closes it |

@@ -140,11 +140,16 @@ export function MultiSelect({
     (option) => !query || option.label.toLowerCase().includes(query) || option.description?.toLowerCase().includes(query),
   )
   const exact = options.some((option) => option.label.toLowerCase() === query)
-  const rows: Row[] = [
+  const listed: Row[] = [
     ...matches.map((option) => ({ option })),
     ...(onCreateOption && query && !exact ? [{ option: { value: text.trim(), label: text.trim() }, create: true }] : []),
   ]
-  const groups = Array.from(new Set(rows.map((row) => (row.create ? '' : (row.option.group ?? '')))))
+  // The rows in the order they are drawn: group by group, each group where its first option is, the option to be made in
+  // the options without one. The arrows, Home and End go through them as the eye does: in the order of `options`, ↓
+  // jumped from a group to another and back where a group's options are apart in it.
+  const groupOf = (row: Row) => (row.create ? '' : (row.option.group ?? ''))
+  const groups = Array.from(new Set(listed.map(groupOf)))
+  const rows = groups.flatMap((group) => listed.filter((row) => groupOf(row) === group))
   const labelOf = (each: string) => options.find((option) => option.value === each)?.label ?? each
   // As many as it takes: what is not chosen yet waits for one to be removed.
   const full = max !== undefined && chosen.length >= max
@@ -156,6 +161,14 @@ export function MultiSelect({
   const nothing = emptyText ?? words.nothingMatches
   const emptyId = `${listId}-empty`
   useAnnounceWhen(open && rows.length === 0, nothing)
+
+  // Full: said above the list, describing each option it holds back (where a screen reader on it hears why it cannot be
+  // chosen), and to a screen reader once as it comes to be, as "Nothing matches" is: no live region drawn with its words,
+  // which some screen readers miss.
+  const fullSaid = max === undefined ? '' : words.atMost(max)
+  const fullId = `${listId}-full`
+  const heldBack = (row: Row) => full && !row.option.disabled && (!!row.create || !chosen.includes(row.option.value))
+  useAnnounceWhen(open && full, fullSaid)
 
   // The option the arrows are on stays in sight.
   useEffect(() => {
@@ -185,6 +198,10 @@ export function MultiSelect({
       event.preventDefault()
       if (!open) setOpen(true)
       else setActive((at - 1 + rows.length) % Math.max(rows.length, 1))
+    } else if ((event.key === 'Home' || event.key === 'End') && open && rows.length > 0) {
+      // The list open, the first option or the last, as a Combobox's; closed, the field's own (its caret).
+      event.preventDefault()
+      setActive(event.key === 'Home' ? 0 : rows.length - 1)
     } else if (event.key === 'Enter') {
       if (!open || rows.length === 0) return
       event.preventDefault()
@@ -302,9 +319,9 @@ export function MultiSelect({
                 transition={motionTransitions.springSnappy}
                 className={cn('z-50 overflow-auto p-1', FLOATING)}
               >
-                {full && max !== undefined && (
-                  <p role="status" className="px-2.5 pb-1 pt-1.5 text-xs text-muted-foreground">
-                    {words.atMost(max)}
+                {full && (
+                  <p id={fullId} className="px-2.5 pb-1 pt-1.5 text-xs text-muted-foreground">
+                    {fullSaid}
                   </p>
                 )}
                 {rows.length === 0 && (
@@ -325,7 +342,7 @@ export function MultiSelect({
                       {group && <div className="px-2.5 pb-1 pt-2 text-xs font-medium text-text-secondary">{group}</div>}
                       <ul role="group" aria-label={group || undefined}>
                         {rows.map((row, index) => {
-                          if ((row.create ? '' : (row.option.group ?? '')) !== group) return null
+                          if (groupOf(row) !== group) return null
                           const ticked = !row.create && chosen.includes(row.option.value)
                           return (
                             <li
@@ -334,6 +351,7 @@ export function MultiSelect({
                               role="option"
                               aria-selected={ticked}
                               aria-disabled={blocked(row) || undefined}
+                              aria-describedby={heldBack(row) ? fullId : undefined}
                               // The focus stays in the field.
                               onPointerDown={(event) => event.preventDefault()}
                               onClick={() => toggle(row)}

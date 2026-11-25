@@ -11,9 +11,9 @@ const main = useMainScroll()
 ```
 
 - It follows the scroll of `containerRef` (the window's with `fixed`): the part marked is the last whose top is within 120 px of the container's top; at the end of the page, the last one begun on the screen. A part clicked stays marked until the reader scrolls on their own (wheel, touch, keys, the scroll bar), though the page can't bring it to its top. With `sticky` or `inline` and no `containerRef`, it follows nothing.
-- A part with `href` is a link: a plain click scrolls to it and writes it in the address in place; with ⌘ or Ctrl it opens in another tab. Give each part a `scroll-margin-top` so it lands clear of the bar.
+- A part with `href` is a link: a plain click scrolls to it, gives it the focus and writes it in the address in place; with ⌘ or Ctrl it opens in another tab. Give each part a `scroll-margin-top` so it lands clear of the bar.
 - On a phone, its parts are a menu under a pill. The line and the current part are ink (the accent's `brand`, `brand-soft` and `brand-text` with one); `glass-float` under glass.
 
 ## Accessibility
 
-A navigation landmark named by its `label`: its parts are the browser's own links (buttons, without `href`), the one being read said current; on a phone, a button opens their list and says whether it is open; Back to the top is a button too. A part followed is scrolled to, the focus staying in the bar.
+A navigation landmark named by its `label`: its parts are the browser's own links (buttons, without `href`), the one being read said current; on a phone, a button opens their list and says whether it is open; Back to the top is a button too. A part followed is scrolled to and takes the focus, as the browser's own jump to `#part` gives it: the next Tab goes on from the part, and a screen reader reads on from it. A part that takes no focus of its own (a section) takes it for as long as it keeps it, with no ring.

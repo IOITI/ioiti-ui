@@ -1,0 +1,23 @@
+# Updates proposed as pull requests, each held by CI (.github/workflows/ci.yml): once a week, grouped, to be few.
+version: 2
+updates:
+  # The workflow's actions, pinned to commits: their next versions.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+
+  # The application's dependencies (ioiti-ui's next tag among them) and its tools.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dependencies:
+        dependency-type: production
+      tools:
+        dependency-type: development
+        update-types: [minor, patch]

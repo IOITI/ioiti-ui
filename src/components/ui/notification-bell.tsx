@@ -8,6 +8,8 @@ import { focusables, useAnchoredLayer } from '../../lib/anchor.js';
 // ioiti-ui: held by its caller or by itself, as every layer (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
 import { isPlainClick } from '../../lib/links.js';
+// ioiti-ui: its list a stop of the keyboard while it scrolls holding no control.
+import { useScrollRegion } from '../../lib/scroll-region.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, FLOATING, PRESSABLE, TONE_LINE, TONE_MARK, TONE_SOFT, TONE_SOLID } from '../../lib/recipes.js';
@@ -112,6 +114,12 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   // `onOpenChange` told either way: given without `isOpen`, it took the bell's own state's place, and the panel never
   // opened.
   const [isPanelOpen, setPanelOpen] = useControllableState(open, defaultOpen, onOpenChange);
+
+  // ioiti-ui: its list, taller than the panel, scrolls. Holding no control (every entry read, none leading anywhere),
+  // it is a stop of the keyboard while it does, a region named by what it holds, its arrows scrolling it: nothing in
+  // it took the focus, and a keyboard could not scroll it. Nothing while it fits or holds a control, which Tab reaches.
+  // Watched anew each time the panel opens, a list of its own.
+  const listRegion = useScrollRegion(listRef, { label: words.notifications, key: isPanelOpen });
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const prevCountRef = useRef(unreadCount);
@@ -308,7 +316,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             )}
 
             {/* List */}
-            <div ref={listRef} className="min-h-0 max-h-80 overflow-y-auto divide-y divide-border/40">
+            {/* ioiti-ui: a stop of the keyboard while it scrolls holding no control (listRegion, above). */}
+            <div ref={listRef} {...listRegion} className="min-h-0 max-h-80 overflow-y-auto divide-y divide-border/40">
               {notifications.length === 0 && failed ? (
                 // ioiti-ui: what is true when nothing could be read: not "No notifications right now".
                 <div className="py-8 px-4 text-center">

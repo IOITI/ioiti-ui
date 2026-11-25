@@ -2,7 +2,7 @@ import type { MessageKit } from '../../lib/messages.js'
 
 /** NotificationBell. */
 export const notification = {
-  /** "Notifications": the bell's name with nothing unread, its panel's name and heading. */
+  /** "Notifications": the bell's name with nothing unread, its panel's name and heading, its list's while it scrolls. */
   notifications: 'Notifications',
   /** "3 unread notifications": the bell's name while some are unread. */
   unread: (count: number, { plural }: MessageKit) => plural(count, { one: '# unread notification', other: '# unread notifications' }),

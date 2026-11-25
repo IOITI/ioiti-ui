@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { useRef, useSyncExternalStore } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
 import { Kbd } from './Kbd.js'
@@ -12,10 +12,7 @@ export interface ShortcutsDialogProps {
   open?: boolean
   /** Open at first, the dialog holding it then; closed by default. */
   defaultOpen?: boolean
-  /**
-   * Told of every change, whoever holds it: its keys open it, Escape closes it (its keys, as every shortcut, wait while
-   * a dialog is open).
-   */
+  /** Told of every change, whoever holds it: its keys open it and close it, as Escape does. */
   onOpenChange?: (open: boolean) => void
   /** Its title; the provider's language's by default ("Keyboard shortcuts"). */
   title?: string
@@ -29,7 +26,7 @@ const KEYS_MARK = '\u0000'
 
 /**
  * The application's keyboard shortcuts, listed by group with their keys: those registered with a
- * description (`useShortcut`), while the parts that register them are on the page. `?` opens it, once
+ * description (`useShortcut`), while the parts that register them are on the page. `?` opens and closes it, once
  * there is a shortcut to list; AppShell draws it.
  */
 export function ShortcutsDialog({ open, defaultOpen = false, onOpenChange, title: givenTitle, keys = '?' }: ShortcutsDialogProps) {
@@ -49,10 +46,13 @@ export function ShortcutsDialog({ open, defaultOpen = false, onOpenChange, title
     return true
   })
 
+  // Its keys open it, and close it: heard while it is the dialog open (`layer`), where every other shortcut waits.
+  const content = useRef<HTMLDivElement>(null)
   useShortcut(keys ?? '', () => listed.length > 0 && setShown(!shown), {
     description: listed.length > 0 ? words.showShortcuts : undefined,
     group: words.general,
     enabled: keys !== null,
+    layer: content,
   })
 
   const groups = new Map<string, typeof listed>()
@@ -65,7 +65,7 @@ export function ShortcutsDialog({ open, defaultOpen = false, onOpenChange, title
 
   return (
     <Dialog open={shown} onOpenChange={setShown} title={title} size="md">
-      <div className="flex flex-col gap-5">
+      <div ref={content} className="flex flex-col gap-5">
         {Array.from(groups.entries()).map(([group, shortcuts]) => (
           <section key={group}>
             <h3 className="mb-2 text-xs font-medium text-text-secondary">{group}</h3>

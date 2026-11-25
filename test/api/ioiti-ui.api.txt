@@ -3428,6 +3428,7 @@ interface ShortcutOptions {
   description?: string
   enabled?: boolean
   group?: string
+  layer?: RefObject<Element | null>
 }
 
 // src/components/ui/date-picker.tsx

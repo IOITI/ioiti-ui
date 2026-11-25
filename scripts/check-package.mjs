@@ -78,11 +78,6 @@ function policyIn(file) {
   return section.match(/^```text\n(.+)\n```$/m)?.[1]
 }
 
-/** The actions a workflow uses, and the commit (or tag) each is pinned to. */
-function actionsIn(file) {
-  return new Map([...readFileSync(join(root, file), 'utf8').matchAll(/^\s*-?\s*uses:\s*([^@\s]+)@(\S+)/gm)].map(([, action, ref]) => [action, ref]))
-}
-
 /** A port nothing listens on, for the server to take (`--strictPort`: one taken meanwhile is said, not replaced). */
 function freePort() {
   return new Promise((resolve, reject) => {
@@ -432,15 +427,7 @@ try {
     check(tested.ok, `the template's tests pass (npm test${passed ? `, ${passed} of them` : ''}: its pages through its router, in jsdom)`)
     if (!tested.ok) console.log(indented(tested.output))
   }
-  // Its CI pins each action to the commit the repository's own CI does: dependabot moves those, this says when the
-  // template's are left behind.
-  const ours = actionsIn('.github/workflows/ci.yml')
-  const its = actionsIn('templates/app/.github/workflows/ci.yml')
-  const astray = [...its].filter(([action, ref]) => !/^[0-9a-f]{40}$/.test(ref) || ours.get(action) !== ref)
-  check(
-    its.size > 0 && astray.length === 0,
-    `the template's CI pins its actions to the commits the repository's does (${[...its.keys()].join(', ')})${astray.map(([action, ref]) => `; ${action}@${ref}, the repository's ${ours.get(action) ?? 'none'}`).join('')}`,
-  )
+  // Its CI pins each action to the commit the repository's own CI does: scripts/template-actions.mjs (npm run lint).
 
   // The codemod rewrites a page of deprecated names, and touches nothing else of the template, which writes today's.
   const page = join(app, 'src', 'codemod-archive.tsx')

@@ -54,6 +54,10 @@ const SHOT = { animations: 'disabled', caret: 'hide' } as const
  */
 const EXAMPLE_SHOT = { ...SHOT, stylePath: fileURLToPath(new URL('./example-shot.css', import.meta.url)) } as const
 
+/** The window the pictures are taken in (playwright.config.ts), and what a page takes of its height above an example. */
+const WINDOW = { width: 1280, height: 800 }
+const ROOM = 160
+
 for (const family of FAMILIES) {
   if (LIVE.has(family.slug)) continue
   for (const scheme of ['light', 'dark'] as const) {
@@ -64,6 +68,13 @@ for (const family of FAMILIES) {
       const example = page.locator(`[data-example="${family.firstExample}"]`)
       await expect(example).toBeVisible()
       await still(page)
+      // The page scrolls in its own frame, the window's height less the top bar: what is lower is not painted. A tall
+      // example is pictured whole in a window as tall as it needs, its width the same.
+      const height = (await example.boundingBox())?.height ?? 0
+      if (height + ROOM > WINDOW.height) {
+        await page.setViewportSize({ width: WINDOW.width, height: Math.ceil(height + ROOM) })
+        await still(page)
+      }
       await expect(example).toHaveScreenshot(`${family.slug}--${scheme}.png`, EXAMPLE_SHOT)
     })
   }

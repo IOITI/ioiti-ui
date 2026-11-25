@@ -154,6 +154,58 @@ describe('a nav of parts the page cannot bring to its top', () => {
   })
 })
 
+describe('a nav of parts followed', () => {
+  function Guide() {
+    const box = useRef<HTMLDivElement>(null)
+    return (
+      <div ref={box} data-testid="followed">
+        <ScrollProgressNav
+          mode="sticky"
+          containerRef={box}
+          sections={[
+            { id: 'install', label: 'Install', href: '#install' },
+            { id: 'run', label: 'Run' },
+          ]}
+        />
+        <section id="install">
+          <h2>Installing</h2>
+          <button type="button">Copy the command</button>
+        </section>
+        <section id="run">
+          <h2>Running</h2>
+        </section>
+      </div>
+    )
+  }
+
+  it('gives the part the focus, as the browser’s own jump would, not scrolled again and with no ring: Tab goes on from it', async () => {
+    const user = userEvent.setup()
+    render(<Guide />)
+    const box = screen.getByTestId('followed')
+    const scrollTo = vi.fn()
+    box.scrollTo = scrollTo as unknown as typeof box.scrollTo
+    const install = document.getElementById('install')!
+    const focus = vi.spyOn(install, 'focus')
+    try {
+      await user.click(screen.getAllByRole('link', { name: 'Install' })[0])
+      expect(install).toHaveFocus()
+      expect(focus).toHaveBeenCalledWith({ preventScroll: true })
+      expect(scrollTo).toHaveBeenCalledTimes(1)
+      // A section takes it for as long as it keeps it, at tabindex -1, where design.css draws no ring.
+      expect(install).toHaveAttribute('tabindex', '-1')
+      await user.tab()
+      expect(screen.getByRole('button', { name: 'Copy the command' })).toHaveFocus()
+      expect(install).not.toHaveAttribute('tabindex')
+
+      // A part without an address, a button, too: the focus is not left in the bar.
+      await user.click(screen.getAllByRole('button', { name: 'Run' })[0])
+      expect(document.getElementById('run')).toHaveFocus()
+    } finally {
+      window.history.replaceState(null, '', '/')
+    }
+  })
+})
+
 describe('a data table loading its records', () => {
   it('says so, shows rows to come in both themes, and counts nothing yet', () => {
     render(

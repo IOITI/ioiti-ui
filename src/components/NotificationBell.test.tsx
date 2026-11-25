@@ -302,6 +302,61 @@ describe('NotificationBell in a language', () => {
   })
 })
 
+describe('NotificationBell’s list, taller than its panel', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  // Twelve entries, read, leading nowhere: no control in the list.
+  const READ: Notification[] = Array.from({ length: 12 }, (_, index) => ({
+    id: String(index),
+    message: `Export ${index + 1} ready`,
+    timestamp: 'Today, 09:00',
+    read: true,
+  }))
+  // jsdom lays nothing out: the list (what scrolls in the panel) as tall as said, all else nothing.
+  const scrolling = () => {
+    const tall = (size: number) =>
+      function (this: Element) {
+        return this.classList.contains('overflow-y-auto') ? size : 0
+      }
+    vi.spyOn(Element.prototype, 'scrollHeight', 'get').mockImplementation(tall(1200))
+    vi.spyOn(Element.prototype, 'clientHeight', 'get').mockImplementation(tall(320))
+  }
+
+  it('is a stop of the keyboard while it scrolls holding no control, a region named by what it holds; none while it fits', async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(<NotificationBell open notifications={READ} onMarkAsRead={() => {}} />)
+    // It fits: no stop, no region.
+    expect(screen.queryByRole('region')).not.toBeInTheDocument()
+    unmount()
+
+    scrolling()
+    render(<NotificationBell defaultOpen notifications={READ} onMarkAsRead={() => {}} />)
+    const panel = screen.getByRole('dialog', { name: 'Notifications' })
+    const list = within(panel).getByRole('region', { name: 'Notifications' })
+    expect(list).toHaveAttribute('tabindex', '0')
+    expect(within(list).getByText('Export 12 ready')).toBeInTheDocument()
+
+    // Tab reaches it after Close, its arrows its own; past it, out of the panel, which closes.
+    within(panel).getByRole('button', { name: 'Close notifications' }).focus()
+    await user.tab()
+    expect(list).toHaveFocus()
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Notifications' })).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('is none while it holds a control, which Tab reaches', () => {
+    scrolling()
+    const unread = READ.map((item, index) => (index === 11 ? { ...item, read: false } : item))
+    render(<NotificationBell open notifications={unread} onMarkAsRead={() => {}} />)
+    expect(screen.queryByRole('region')).not.toBeInTheDocument()
+    const linked = READ.map((item, index) => (index === 0 ? { ...item, href: '/exports/1' } : item))
+    render(<NotificationBell open notifications={linked} onMarkAsRead={() => {}} />)
+    expect(screen.queryByRole('region')).not.toBeInTheDocument()
+  })
+})
+
 describe('NotificationBell holding its panel open', () => {
   afterEach(() => {
     vi.restoreAllMocks()

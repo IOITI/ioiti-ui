@@ -26,7 +26,7 @@ A navigation landmark ("Main"): each entry a link (a button, without `href`), th
 
 | Key | What it does |
 |---|---|
-| ⌘B (Ctrl+B) | Folds it to the rail, and back; below 768px, opens the drawer |
+| ⌘B (Ctrl+B) | Folds it to the rail, and back; below 768px, opens the drawer and closes it |
 | Tab, Shift+Tab | Through its entries, their chevrons and its sections' headings |
 | Enter | On an entry that is a link: follows it (in the drawer, closing it) |
 | Enter, Space | On a button: opens an entry or a section, or closes it; in the rail, opens an entry's pages |

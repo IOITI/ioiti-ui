@@ -59,6 +59,75 @@ describe('MultiSelect', () => {
     expect(screen.getByRole('button', { name: 'Remove Lyon' })).toBeInTheDocument()
   })
 
+  it('moves with the arrows, Home and End through its options as they are drawn, group by group, the search narrowing them too', async () => {
+    const user = userEvent.setup()
+    // Paris listed after Berlin, drawn under France with Lyon; Bremen under Germany with Berlin.
+    const APART: MultiSelectOption[] = [
+      { value: 'lyon', label: 'Lyon', group: 'France' },
+      { value: 'berlin', label: 'Berlin', group: 'Germany' },
+      { value: 'paris', label: 'Paris', group: 'France' },
+      { value: 'bremen', label: 'Bremen', group: 'Germany' },
+    ]
+    render(<MultiSelect label="Cities" options={APART} />)
+    const field = screen.getByRole('combobox', { name: 'Cities' })
+    const active = () => document.getElementById(field.getAttribute('aria-activedescendant') ?? '')?.textContent
+
+    await user.click(field)
+    const list = screen.getByRole('listbox', { name: 'Cities' })
+    expect(within(list).getAllByRole('option').map((option) => option.textContent)).toEqual(['Lyon', 'Paris', 'Berlin', 'Bremen'])
+    expect(active()).toBe('Lyon')
+    const seen: (string | undefined)[] = []
+    for (let step = 0; step < 4; step++) {
+      await user.keyboard('{ArrowDown}')
+      seen.push(active())
+    }
+    expect(seen).toEqual(['Paris', 'Berlin', 'Bremen', 'Lyon'])
+    await user.keyboard('{ArrowUp}')
+    expect(active()).toBe('Bremen')
+    await user.keyboard('{Home}')
+    expect(active()).toBe('Lyon')
+    await user.keyboard('{End}')
+    expect(active()).toBe('Bremen')
+    await user.keyboard('{Home}{ArrowDown}{Enter}')
+    expect(screen.getByRole('button', { name: 'Remove Paris' })).toBeInTheDocument()
+
+    // Narrowed to Berlin, Paris and Bremen: the first drawn made active, ↓ on to the next drawn.
+    await user.type(field, 'r')
+    expect(within(list).getAllByRole('option').map((option) => option.textContent)).toEqual(['Berlin', 'Bremen', 'Paris'])
+    expect(active()).toBe('Berlin')
+    await user.keyboard('{ArrowDown}')
+    expect(active()).toBe('Bremen')
+  })
+
+  it('says it is full above its list, describing the options it holds back, and to a screen reader once as it comes to be', async () => {
+    const user = userEvent.setup()
+    render(<MultiSelect label="Cities" options={CITIES} max={2} defaultValue={['lyon']} />)
+    const field = screen.getByRole('combobox', { name: 'Cities' })
+    const said = () => document.querySelector('[data-ioiti-announcer="polite"]')
+    const limit = '2 at most: remove one to choose another.'
+
+    await user.click(field)
+    const list = screen.getByRole('listbox', { name: 'Cities' })
+    const layer = list.parentElement!
+    expect(within(layer).queryByText(limit)).not.toBeInTheDocument()
+
+    await user.click(within(list).getByRole('option', { name: 'Paris' }))
+    // Shown where it was, in no live region drawn with its words.
+    const shown = within(layer).getByText(limit)
+    expect(shown).not.toHaveAttribute('role')
+    expect(shown).not.toHaveAttribute('aria-live')
+    // Describing what it holds back: Berlin; not what is chosen, nor Rome, dimmed of its own.
+    expect(within(list).getByRole('option', { name: 'Berlin' })).toHaveAccessibleDescription(limit)
+    expect(within(list).getByRole('option', { name: 'Paris' })).not.toHaveAttribute('aria-describedby')
+    expect(within(list).getByRole('option', { name: 'Rome' })).not.toHaveAttribute('aria-describedby')
+    await waitFor(() => expect(said()).toHaveTextContent(limit))
+
+    // No longer full: shown nowhere, describing nothing.
+    await user.click(within(list).getByRole('option', { name: 'Paris' }))
+    expect(within(layer).queryByText(limit)).not.toBeInTheDocument()
+    expect(within(list).getByRole('option', { name: 'Berlin' })).not.toHaveAttribute('aria-describedby')
+  })
+
   it('makes a value of what is typed, where it may', async () => {
     const user = userEvent.setup()
     function Tags() {

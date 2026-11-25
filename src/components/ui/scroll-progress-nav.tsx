@@ -47,6 +47,17 @@ function partIn(container: HTMLElement, id: string): HTMLElement | null {
   return container.querySelector<HTMLElement>(`[id="${id.replace(/["\\]/g, '\\$&')}"]`);
 }
 
+// ioiti-ui: a part followed takes the focus, as the browser's own jump to `#part` gives it: not scrolled to again
+// (preventScroll), and, where it takes no focus of its own (a section), for as long as it keeps it, with no ring
+// (tabindex -1, which design.css's ring passes by), as AppShell's skip link gives it to the page.
+function focusPart(part: HTMLElement) {
+  if (part.tabIndex < 0 && !part.hasAttribute('tabindex')) {
+    part.tabIndex = -1;
+    part.addEventListener('blur', () => part.getAttribute('tabindex') === '-1' && part.removeAttribute('tabindex'), { once: true });
+  }
+  part.focus({ preventScroll: true });
+}
+
 // ioiti-ui: EasyUI's demo, drawn only where an application gives no part of its own (their ids are on none of its pages):
 // the parts are the application's, in its words.
 const defaultSections: NavSectionItem[] = [
@@ -182,11 +193,15 @@ export const ScrollProgressNav: React.FC<ScrollProgressNavProps> = ({
     } else {
       part?.scrollIntoView?.({ behavior, block: 'start' });
     }
+    // ioiti-ui: the focus on the part, where it stayed in the bar (or fell to the page's body, the phone's menu closed):
+    // the next Tab goes on from the part, and a screen reader reads on from it.
+    if (part) focusPart(part);
     setIsExpanded(false);
   };
 
-  // ioiti-ui: a part with an address is a link. A plain click scrolls to it here and puts it in the address, in place
-  // (no step more to go back through); with ⌘, Ctrl, Shift or Alt the browser has it (another tab, at its place).
+  // ioiti-ui: a part with an address is a link. A plain click scrolls to it here, gives it the focus and puts it in the
+  // address, in place (no step more to go back through); with ⌘, Ctrl, Shift or Alt the browser has it (another tab, at
+  // its place).
   const followSection = (event: React.MouseEvent, section: NavSectionItem) => {
     if (!isPlainClick(event)) return;
     event.preventDefault();
