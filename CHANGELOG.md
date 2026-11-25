@@ -11,6 +11,69 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- `docs/stability.md`, 1.0's promise: what is public (each entry's exports and types, the stylesheets, the tokens' names, the classes
+  and attributes the docs name, the catalogue's keys) and what is not (the DOM a component draws, the package's own
+  modules, the look pixel for pixel); semantic versioning from 1.0, a deprecation living through one minor version at
+  least before a major removes it; the peers, the Node and the browsers it runs with.
+- `src/codemod/table.ts`, what 1.0 removed: `npx ioiti-ui-codemod` rewrites it in an application, as it rewrites what is
+  deprecated.
+
+### Changed
+
+- `ButtonLink`, `TextLink`, `PeekLink` and `StateChip` require `href` again (`ButtonLink` takes `null` for a button with
+  nowhere to go).
+- `Dialog` and `SheetContent` draw their close button by default (`showCloseButton`, true); `Panel` and `EmptyState`
+  are `density="regular"` by default; a toast is `neutral` by default.
+- The list of what is deprecated (`src/lib/deprecations.ts`) is empty, its means kept for what a minor version
+  deprecates: a warning once in development, a component's former name (`renamed()`).
+- **What an application bundles shrinks by 0.2 kB gzipped** (the template 197.5 kB, React and the rest with it); the
+  whole package by 2.1 kB (198.2 kB), its former names gone.
+
+### Removed
+
+Each name with what replaces it; the codemod rewrites them.
+
+- **0.29.0's words in English**: `HEALTH_STATUS_LABEL`, `DEFAULT_HOME` and `PAGE_NOT_FOUND` (the catalogue's,
+  `useMessages()`), `ACCENT_LABEL`, `MATERIAL_LABEL` and `themeLabel` (`accentName`, `materialName`,
+  `themeButtonLabel`, given the catalogue's words).
+- **0.30.0's props**: `onValueChange` (`onChange`: `Combobox`, `PromptComposer`); `activeTab` and `defaultTab`
+  (`value`, `defaultValue`: `Tabs`); `defaultOpen` (`defaultValue`: `Accordion`); `isOpen` (`open`:
+  `NotificationBell`); `ariaLabel` (`aria-label`: the sliders and the charts); `isLoading` (`loading`: `DataTable`,
+  `AdvancedDataTable`, `TimeRangePicker`; `pending`: `Button`); `saving` and `busy` (`pending`: `SaveBar`,
+  `PromptComposer`, `AttachmentChip`); `hideCloseButton` (`showCloseButton={false}`: `Dialog`) and `showClose`
+  (`showCloseButton`: `SheetContent`); `to` (`href`: `ButtonLink`, `TextLink`, `PeekLink`, `StateChip`); `dense` and
+  `compact` (`density="compact"`: `Panel`, `EmptyState`); `variant` (`tone`: the toasts, `useToast()`'s message,
+  `DragToConfirm`); `tone` (`colorBy`: `BarChart`).
+- **0.30.0's values**: a meter's `positive` and `negative` (`success`, `danger`: `ProgressBar`, `BarList`, `Meter`,
+  a slider's levels, a chart's references); `negative` (`danger`: `KpiTile`, a sidebar badge's `badgeTone`);
+  `destructive` (`danger`: `Button`'s and `ButtonLink`'s `variant`); `variant="compact"` (`density="compact"`:
+  `FileUpload`).
+- **0.30.0's types**: `Tone` (`SignTone`); `VelocityToastVariant`, `UndoToastVariant` and `DragConfirmVariant`
+  (`StatusTone`).
+- **0.31.0's former names**: `SettleModal` and `SettleModalProps` (`Dialog`); `Flysheet`, `FlysheetBody`,
+  `FlysheetClose`, `FlysheetContent`, `FlysheetDescription`, `FlysheetFooter`, `FlysheetHeader`, `FlysheetTitle`,
+  `FlysheetTrigger`, `FlysheetProps`, `FlysheetContentProps`, `FlysheetCloseReason`, `FlysheetPadding`, `FlysheetSide`,
+  `FlysheetSize` and `FlysheetType` (`Sheet`…); `SpringSelect`, `SpringSelectProps` and `SpringSelectOption`
+  (`SelectMenu`…); `VelocityToast`, `VelocityToastProps`, `VelocityToastPosition` and `VelocityToastAction` (`Toast`…,
+  `ToastAction`); `SmoothAccordion` and `SmoothAccordionProps` (`Accordion`); `DirectionalTooltip` and
+  `DirectionalTooltipProps` (`Tooltip`); `AnimatedTabs` and `AnimatedTabsProps` (`Tabs`); `AnimatedFileUpload` and
+  `AnimatedFileUploadProps` (`FileUpload`); `AirportMatrixClock`, `AirportMatrixClockProps` and `AirportMatrixCity`
+  (`WorldClock`…); `SmartComparison` and `SmartComparisonProps` (`ComparisonTable`); `DynamicIsland`,
+  `DynamicIslandProps` and `DynamicIslandState` (`StatusIsland`…).
+- **`StretchSwitch` and `StretchSwitchProps`**: `Switch`, which takes the same props; its page in the gallery leads to
+  Switch's.
+- `SegmentedControl`'s `labelledBy`: `aria-labelledby`.
+
+### Upgrading
+
+- **The codemod first**: `npx ioiti-ui-codemod --dry-run`, then `npx ioiti-ui-codemod` (src/ by default), then what it
+  says is left, by hand (a spread, a value computed, the words of 0.29.0). An application on 0.31.0 or 0.32.0 that says
+  nothing in development (no warning of a deprecated name) has nothing left for it to do.
+- A link of `ButtonLink`, `TextLink`, `PeekLink` or `StateChip` given neither `href` nor `to` gets a type error: give it
+  `href`.
+
 ## [0.32.0] - 2026-11-25
 
 ### Added

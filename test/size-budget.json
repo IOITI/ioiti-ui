@@ -2,12 +2,12 @@
   "about": "What an application bundles, gzipped, in bytes (scripts/check-package.mjs). A change that weighs more on purpose writes it again: npm run check:package -- --update-budget.",
   "tolerance": 0.05,
   "gzipped": {
-    "Button, alone": 13720,
-    "ioiti-ui, whole": 205093,
-    "ioiti-ui/react-router, whole": 54352,
-    "ioiti-ui/code, whole (its languages included)": 28802,
-    "ioiti-ui/locales/fr, whole": 9323,
-    "the template: its JavaScript": 202439,
-    "the template: its CSS": 25438
+    "Button, alone": 13694,
+    "ioiti-ui, whole": 202952,
+    "ioiti-ui/react-router, whole": 53881,
+    "ioiti-ui/code, whole (its languages included)": 28836,
+    "ioiti-ui/locales/fr, whole": 9358,
+    "the template: its JavaScript": 202253,
+    "the template: its CSS": 25430
   }
 }

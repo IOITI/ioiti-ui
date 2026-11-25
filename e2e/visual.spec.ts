@@ -46,6 +46,12 @@ async function still(page: Page) {
 
 const SHOT = { animations: 'disabled', caret: 'hide' } as const
 
+/**
+ * An example's picture, without the page's contents bar ("On this page"): sticky over the top of a tall example, it is
+ * the page's, not the example's, and its progress line moves with the page's length (a guideline longer, a badge gone).
+ */
+const EXAMPLE_SHOT = { ...SHOT, style: 'nav[aria-label="On this page"] { visibility: hidden !important; }' } as const
+
 for (const family of FAMILIES) {
   if (LIVE.has(family.slug)) continue
   for (const scheme of ['light', 'dark'] as const) {
@@ -56,7 +62,7 @@ for (const family of FAMILIES) {
       const example = page.locator(`[data-example="${family.firstExample}"]`)
       await expect(example).toBeVisible()
       await still(page)
-      await expect(example).toHaveScreenshot(`${family.slug}--${scheme}.png`, SHOT)
+      await expect(example).toHaveScreenshot(`${family.slug}--${scheme}.png`, EXAMPLE_SHOT)
     })
   }
 }
