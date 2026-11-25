@@ -23,10 +23,11 @@ Records to search, sort, filter and open, a page at a time: whole as `AdvancedDa
 
 ## Accessibility
 
-A table whose sortable columns say how they sort, their headings buttons. Each row's box and its arrow are named after it with `rowLabel` ("Select order IT-1042", "Open order IT-1042"), the box of the page's rows said mixed while some are ticked. The filters are a group: a list's button says how many options it has, or how many are ticked; an on/off pair's buttons say the column they filter, and whether they are pressed. While it loads, it says so ("Loading the records"). Its pages are buttons named by where they lead ("First page"), and a select of how many rows a page holds.
+A table whose sortable columns say how they sort, their headings buttons. Its search is named ("Search the table"), its placeholder no name, and so is the × that empties it ("Clear the search"), a target of 24px. Each row's box and its arrow are named after it with `rowLabel` ("Select order IT-1042", "Open order IT-1042"), the box of the page's rows said mixed while some are ticked. The filters are a group: a list's button says how many options it has, or how many are ticked; an on/off pair's buttons say the column they filter, and whether they are pressed. A list's keys are its own, in a dialog or a sheet too: neither its Tab nor its Escape reaches them. While it loads, it says so ("Loading the records"). Its pages are buttons named by where they lead ("First page"), and a select of how many rows a page holds.
 
 | Key | What it does |
 |---|---|
+| Enter, Space | On the search's ×: empties it, the focus back in the search |
 | Enter, Space | On a column's heading: sorts by it, up, then down, then not |
 | Space | On a box: ticks the row, or every row of the page |
 | Enter, Space | On a row's arrow: opens it, or closes it |

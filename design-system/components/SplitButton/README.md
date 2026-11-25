@@ -14,7 +14,7 @@ One action, and its variants behind the chevron: each option acts or leads somew
 
 ## Accessibility
 
-Two buttons side by side: the main action (a link where it leads somewhere), and the chevron, named by `menuLabel`, which says it opens a menu and whether it is open. The menu keeps the focus and says the option the arrows are on; one that cannot be chosen is said dimmed, and the arrows pass it by.
+Two buttons side by side: the main action (a link where it leads somewhere), and the chevron, named by `menuLabel`, or after the main action in the provider's language ("More Save options"), which says it opens a menu and whether it is open. The menu keeps the focus and says the option the arrows are on; one that cannot be chosen is said dimmed, and the arrows pass it by.
 
 | Key | What it does |
 |---|---|

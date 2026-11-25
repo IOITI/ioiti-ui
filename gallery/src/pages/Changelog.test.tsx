@@ -1,6 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import changelog from '../../../CHANGELOG.md?raw'
 import { expectAccessible } from '../../../test/a11y'
 import { A_PAGE, renderAt } from '../gallery-pages'
 
@@ -22,11 +23,13 @@ describe('the Changelog page', () => {
     expect(panel.id).toBe('v0.24.0')
     expect(within(panel).queryByText('2026-11-24')).not.toBeNull()
 
-    // The versions written in sections, from 0.24.0; the notes before them, one list each, are on GitHub: none of them
-    // here, nor the name of the application the design was taken from, which they say.
+    // The versions written in sections, from 0.24.0; the notes before them, one list each, written for the application
+    // the design was taken from, are on GitHub: none of their words here (0.1.0's first line, for one).
     expect(versions.find((heading) => heading.textContent === '0.23.2')).toBeUndefined()
     expect(page.getByRole('link', { name: /CHANGELOG\.md, on GitHub/ }).getAttribute('href')).toBe('https://github.com/IOITI/ioiti-ui/blob/main/CHANGELOG.md')
-    expect(main.textContent).not.toMatch(/\b(wata|saxo)\b/i)
+    const firstNotes = changelog.slice(changelog.indexOf('## [0.1.0]')).split('\n').find((line) => line.startsWith('- '))
+    expect(firstNotes).toBeTruthy()
+    expect(main.textContent).not.toContain(firstNotes!.replace(/^- /, '').replace(/[*`]/g, '').slice(0, 40))
 
     // A version's sections are its h3s: Added, Changed…
     const sections = within(document.getElementById('v0.30.0')!).getAllByRole('heading', { level: 3 })

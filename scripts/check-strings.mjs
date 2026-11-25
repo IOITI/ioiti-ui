@@ -3,7 +3,10 @@
 // src/shell, src/react-router, src/code; not the tests): JSX text and the words in a JSX element's expressions
 // (`{found ? … : 'No match'}`), the words of an attribute a person reads or hears (aria-label, placeholder, title, alt, a
 // Hint's content, `label`, `emptyText`…), and the words such a prop takes by default (`title = 'Recovery ledger'`,
-// `rowLabels`). A word that is not one to translate (a brand, a code, a symbol) says why where it is written:
+// `rowLabels`). And a template literal, wherever it is, that says words around what it puts in (`More ${label} options`,
+// `${count} items`): a sentence built around a value, whose words the catalogue holds as a function of it; not a class,
+// nor what is said to the developer (thrown, logged).
+// A word that is not one to translate (a brand, a code, a symbol) says why where it is written:
 // `// i18n-exempt: <why>` (or `{/* i18n-exempt: <why> */}` in JSX), on its line or the line above.
 //
 //   node scripts/check-strings.mjs            the check (npm run lint): none written
@@ -75,6 +78,47 @@ function literalsIn(node, found = []) {
   return found
 }
 
+/** Where a template puts in a value, in its text: no character a template's own text holds. */
+const PUT = '\uE000'
+/** A piece of a template's text that is a word: letters (an apostrophe within), a mark of punctuation after them. */
+const WORD = /^\p{L}+(?:['’]\p{L}+)*[.,:;!?…]?$/u
+/** What a template puts in, alone between spaces: a mark of punctuation or a quote around it at most (`“${name}”,`). */
+const ALONE = new RegExp(`^[("“‘«]?${PUT}[.,:;!?…)"”’»]?$`, 'u')
+
+/**
+ * Whether a template literal says words around what it puts in (`More ${label} options`, `${count} items`): each piece
+ * of its text between spaces a word of letters or what it puts in, alone; one word of two letters at least. Not a class
+ * (`text-${tone}`, `${base} animate-pulse`), an id (`${id}-label`), a unit (`${size}px`), a path or a selector: their
+ * pieces are glued to what is put in, or hold what no word holds (a hyphen, a digit, a bracket, a sign).
+ */
+function templateSaysWords(node) {
+  const text = [node.head.text, ...node.templateSpans.map((span) => `${PUT}${span.literal.text}`)].join('')
+  const pieces = text.split(/\s+/).filter(Boolean)
+  return pieces.every((piece) => WORD.test(piece) || ALONE.test(piece)) && pieces.some((piece) => WORD.test(piece) && /\p{L}{2}/u.test(piece))
+}
+
+/** The calls that make a class of their arguments, and what is said to the developer (a thrown error, the console). */
+const CLASS_CALLS = new Set(['cn', 'clsx', 'cx', 'twMerge', 'cva'])
+const DEVELOPER_CALLS = new Set(['devWarn', 'deprecated'])
+
+/**
+ * Whether a template is a class or a style (a `className` or `style` attribute, a `cn(…)`), or words said to the developer
+ * (thrown, logged): no words a person using the application reads.
+ */
+function notForAPerson(node) {
+  for (let at = node.parent; at && !ts.isSourceFile(at); at = at.parent) {
+    if (ts.isJsxAttribute(at)) return ['className', 'class', 'style'].includes(at.name.getText())
+    if (ts.isThrowStatement(at)) return true
+    if (ts.isNewExpression(at) && /Error$/.test(at.expression.getText())) return true
+    if (ts.isCallExpression(at)) {
+      const callee = at.expression.getText()
+      if (CLASS_CALLS.has(callee) || DEVELOPER_CALLS.has(callee) || callee.startsWith('console.')) return true
+    }
+    if (ts.isTaggedTemplateExpression(at)) return true
+  }
+  return false
+}
+
 /** The words written in the code of a file: each `{ line, text }`. */
 export function wordsIn(file, source = readFileSync(join(root, file), 'utf8')) {
   const tree = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS)
@@ -84,8 +128,12 @@ export function wordsIn(file, source = readFileSync(join(root, file), 'utf8')) {
     const line = tree.getLineAndCharacterOfPosition(node.getStart(tree)).line
     return EXEMPT.test(lines[line] ?? '') || EXEMPT.test(lines[line - 1] ?? '')
   }
+  // Each literal once: a template in an attribute that takes words is found by both.
+  const said = new Set()
   const say = (node, text) => {
-    if (!exempt(node)) found.push({ line: tree.getLineAndCharacterOfPosition(node.getStart(tree)).line + 1, text })
+    if (said.has(node) || exempt(node)) return
+    said.add(node)
+    found.push({ line: tree.getLineAndCharacterOfPosition(node.getStart(tree)).line + 1, text })
   }
   const visit = (node) => {
     if (ts.isJsxText(node)) {
@@ -100,6 +148,7 @@ export function wordsIn(file, source = readFileSync(join(root, file), 'utf8')) {
       const name = (node.propertyName ?? node.name).getText(tree)
       if (WORDS_PROP.test(name)) for (const each of literalsIn(node.initializer)) say(each.node, each.text)
     }
+    if (ts.isTemplateExpression(node) && templateSaysWords(node) && !notForAPerson(node)) say(node, tidy(literalText(node)))
     ts.forEachChild(node, visit)
   }
   visit(tree)

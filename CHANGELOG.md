@@ -11,6 +11,62 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+### Added
+
+- The gallery, a reference: a family's page links its code at the tag of its version ("Its source"), says the version
+  it shipped in ("Since 0.12.0", from `gallery/src/since.json`, which `scripts/since.mjs` writes at each release), marks
+  it New (not shipped yet) or Deprecated, names its former names, and folds its deprecated props under "2 deprecated
+  props".
+- The gallery's Changelog page (`/changelog`): the versions written in sections (0.24.0 on), each a link to its GitHub
+  Release; the notes before them on GitHub.
+- `## Accessibility` in the guidelines of 54 families: what a screen reader hears, and for 47 a table of each key and
+  what it does; a sentence for those of native buttons and links. The catalogue's test holds them.
+- "Which one?" on 11 categories' pages: the families that answer one need in different ways, and when to use each.
+- The design system's cards for `Sidebar`, `TopBarTrail`, `StateSummary`, `Form`, `Input`, `Textarea`, `Select`,
+  `Combobox`, `RadioGroup`, `Calendar`, `Meter`, `AnimatedNumber`, `EmptyText` and `ErrorState`;
+  `design-system/no-card.json` says why six have none. `check-docs` holds both.
+- The starter template, a product: its tests (Vitest, its pages through its router, a page that fails inside the
+  shell), its lint (oxlint), a `check` script (lint, types, tests, build), CI (`.github/workflows/ci.yml`), `engines`
+  (Node ≥ 22.12), and the Content-Security-Policy sent by `vite preview`; its README says how an application speaks
+  French.
+- `check:package` runs the template's lint and tests, and opens its build in Chromium under the policy: nothing refused,
+  nothing said wrong, no request elsewhere.
+
+### Changed
+
+- The gallery's guidelines keep their `##` headings (they were left out), and its markdown reads heading levels, tables
+  and links.
+- The template exports its routes (`routes`, `src/router.tsx`), keeps its shell in `src/Shell.tsx`, and writes its
+  figures with `useFormat()` (its budget as en-GB writes it: "€16,000.00").
+- A release's check installs the tag into the template, which passes its checks; CI installs Chromium where it checks
+  the package.
+
+### Fixed
+
+- `NotificationBell`: "Read all" and "Mark as read", gone once pressed, left the focus on the page's body (the list open,
+  Escape heard no more); it goes to the next entry's control, else to the panel.
+- `DataTable`: its filter lists are placed as every layer beside its trigger (`useAnchoredLayer`), their Tab and Escape
+  their own in a dialog or a sheet (a Tab in one let the dialog take the focus back), keeping the side they opened on as
+  their search shortens them. Its search is named ("Search the table", not by its placeholder alone), and its × is named
+  ("Clear the search"), a 24 px target that gives the focus back to the search.
+- `SplitButton`: its menu's name, written in English in its code, is the catalogue's (`field.moreOptions`); `check-strings`
+  finds words written around values in a template.
+- `MultiSelect` and `Combobox`: what they say when nothing matches is no row of their list (an empty listbox, described by
+  it), and is said once to a screen reader.
+- `LogViewer`: its lines are a stop of the keyboard only while they scroll.
+- A layer beside its trigger (a menu, a list, the bell's panel) closes on Shift+Tab from itself, as from its first
+  control.
+- The design system's build (`design-system/build.mjs`), broken since 0.22.0: it copied neither `type.css` nor
+  `finish.css`.
+
+### Upgrading
+
+- An application that gives a whole catalogue of another language (typed `Messages`) adds `field.moreOptions`,
+  `table.searchTable` and `table.clearSearch`; one that gives some words (`MessagesOverride`) has nothing to do.
+- An application made from the template before 0.32.0 takes its checks by copying `.oxlintrc.json`,
+  `src/router.test.tsx`, `src/test/setup.ts`, `vite.config.ts`'s `test` and `preview` blocks,
+  `.github/workflows/ci.yml` and the scripts of its `package.json`.
+
 ## [0.31.0] - 2026-11-25
 
 ### Added

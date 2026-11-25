@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { useAnchoredLayer } from "../../lib/anchor.js";
+// ioiti-ui: what its list says when nothing is found, said to a screen reader too (announce.ts).
+import { useAnnounceWhen } from "../../lib/announce.js";
 // ioiti-ui: held by its caller or by itself, as every control (useControllableState): its own copy is gone.
 import { useControllableState } from "../../lib/controllable.js";
 // ioiti-ui: a former name said once, in development (deprecated).
@@ -293,6 +295,11 @@ function Panel({
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
   const byKeyboard = React.useRef(false);
 
+  // ioiti-ui: nothing found is said beside the list (it holds options alone), which describes it, and to a screen
+  // reader, which reads the search: once as it comes to be, as MultiSelect says it. It was shown, and said to no one.
+  const emptyId = `${id}-empty`;
+  useAnnounceWhen(items.length === 0, emptyText);
+
   React.useEffect(() => {
     inputRef.current?.focus({ preventScroll: true });
   }, []);
@@ -376,7 +383,13 @@ function Panel({
 
       <div ref={scrollRef} className="max-h-64 overflow-y-auto overscroll-contain">
         {/* ioiti-ui: named as the trigger is; options alone in it, its padding theirs. */}
-        <div id={id} role="listbox" {...name} className={cn("relative", items.length > 0 && "p-1")}>
+        <div
+          id={id}
+          role="listbox"
+          {...name}
+          aria-describedby={items.length === 0 ? emptyId : undefined}
+          className={cn("relative", items.length > 0 && "p-1")}
+        >
           {box && items.length > 0 && (
             <motion.div
               aria-hidden
@@ -431,6 +444,7 @@ function Panel({
         {/* ioiti-ui: beside the list, not in it (a list holds options alone): where the list's padding was, its margin. */}
         {items.length === 0 && (
           <motion.p
+            id={emptyId}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="m-1 px-3 py-6 text-center text-sm text-muted-foreground"

@@ -1,6 +1,6 @@
 import type { MessageKit } from '../../lib/messages.js'
 
-/** Fields and their actions: InlineEdit, SaveBar, the form, OTPInput, CopyChip, CopyButton, ExportButton, CodeBlock. */
+/** Fields and their actions: InlineEdit, SaveBar, the form, OTPInput, CopyChip, CopyButton, ExportButton, CodeBlock, SplitButton. */
 export const field = {
   /** "Save": InlineEdit's button that saves the value typed, and SaveBar's, where the application says nothing (`saveLabel`). */
   save: 'Save',
@@ -50,4 +50,8 @@ export const field = {
   // ExportButton.
   /** "Export CSV": the button that saves the rows as a CSV file. */
   exportCsv: 'Export CSV',
+
+  // SplitButton.
+  /** "More Save options": the name of the chevron and of its menu, its main action's label given (`menuLabel` over it). */
+  moreOptions: (label: string) => `More ${label} options`,
 }

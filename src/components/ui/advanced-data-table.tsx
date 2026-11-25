@@ -27,7 +27,7 @@ import { useAnchoredLayer } from '../../lib/anchor.js';
 // ioiti-ui: its former name said once in development.
 import { deprecated } from '../../lib/deprecated.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
-import { DISABLED, FLOATING, MENU_ROW, PRESSABLE, SECTION } from '../../lib/recipes.js';
+import { CLOSE_SM, DISABLED, FLOATING, MENU_ROW, PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { SelectionBasket } from './selection-basket.js';
 import type { SelectionActionItem } from './selection-basket.js';
 // ioiti-ui: every box of the table is the package's checkbox, EasyUI's draw-checkbox.
@@ -172,6 +172,8 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
     setViewMode,
   } = useDataTable();
 
+  // ioiti-ui: the search, to give it the focus back once its × has emptied it (the × goes with what was typed).
+  const searchRef = useRef<HTMLInputElement>(null);
   const [isColumnPickerOpen, setIsColumnPickerOpen] = useState(false);
   // ioiti-ui: the columns' list is an anchored layer (src/lib/anchor.ts): in document.body, out of the frame's
   // overflow that cut it, beside its button where the window has room; Escape, a Tab out of it or a press elsewhere
@@ -216,25 +218,36 @@ export const DataTableToolbar: React.FC<DataTableToolbarProps> = ({
           {/* Search Input */}
           <div className="relative flex-1 sm:w-64 min-w-0">
             <Search className="size-4 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            {/* ioiti-ui: a field as the form's Input draws one (its surface, its border, in focus the accent's). */}
+            {/* ioiti-ui: a field as the form's Input draws one (its surface, its border, in focus the accent's); named in
+                the provider's words, its placeholder no name. */}
             <input
+              ref={searchRef}
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label={words.searchTable}
               placeholder={searchPlaceholder ?? words.searchPlaceholder}
               className={cn(
                 'w-full h-8 pl-8 sm:pl-9 pr-7 sm:pr-8 rounded-lg border bg-surface text-base sm:text-sm text-foreground placeholder:text-text-subtle focus:outline-none transition-colors font-sans',
                 fieldBorder(false)
               )}
             />
+            {/* ioiti-ui: the × is a close button (CLOSE_SM): named, its hint the same words, a target of 24 px (16 px, and
+                no name, in EasyUI's), its 12 px icon where it was. Pressed, it goes: the focus back in the search. */}
             {searchTerm && (
-              <button
-                type="button"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-0.5 cursor-pointer"
-              >
-                <X className="size-3" />
-              </button>
+              <Hint content={words.clearSearch} className="absolute right-1 sm:right-1.5 top-1/2 -translate-y-1/2">
+                <button
+                  type="button"
+                  aria-label={words.clearSearch}
+                  onClick={() => {
+                    setSearchTerm('');
+                    searchRef.current?.focus();
+                  }}
+                  className={cn(CLOSE_SM, '[&>svg]:size-3')}
+                >
+                  <X aria-hidden />
+                </button>
+              </Hint>
             )}
           </div>
 
@@ -401,8 +414,6 @@ const FILTER_COUNT_TICKED = 'bg-foreground text-background accent:bg-brand accen
 
 /** ioiti-ui: from this many options, a list has a search of its own. */
 const FILTER_SEARCH_FROM = 8;
-const FILTER_LIST_WIDTH = 256;
-const FILTER_LIST_MARGIN = 8;
 
 /** ioiti-ui: a column's options as buttons of their own, pressed one at a time: an on/off pair (EUI's withNext). */
 function FilterToggles<T>({ column }: { column: ColumnDef<T> }) {
@@ -431,39 +442,15 @@ function FilterToggles<T>({ column }: { column: ColumnDef<T> }) {
   );
 }
 
-interface FilterListPlace {
-  left: number;
-  top?: number;
-  bottom?: number;
-  width: number;
-  maxHeight: number;
-  below: boolean;
-}
-
-/**
- * ioiti-ui: where a list goes, from its button's rect: under it, or above it where the window has no room
- * below. A list open keeps its side as it follows its button; its height too as the page scrolls
- * (`keepHeight`), fitting the room a new size of the window leaves it.
- */
-function placeFilterList(button: DOMRect, opened?: FilterListPlace, keepHeight = false): FilterListPlace {
-  const roomBelow = window.innerHeight - button.bottom - FILTER_LIST_MARGIN;
-  const roomAbove = button.top - FILTER_LIST_MARGIN;
-  const width = Math.min(FILTER_LIST_WIDTH, window.innerWidth - FILTER_LIST_MARGIN * 2);
-  const left = Math.min(Math.max(button.left, FILTER_LIST_MARGIN), window.innerWidth - width - FILTER_LIST_MARGIN);
-  const below = opened ? opened.below : roomBelow >= 240 || roomBelow >= roomAbove;
-  const maxHeight = opened && keepHeight ? opened.maxHeight : Math.max((below ? roomBelow : roomAbove) - 6, 0);
-  return below
-    ? { left, top: button.bottom + 6, width, maxHeight, below }
-    : { left, bottom: window.innerHeight - button.top + 6, width, maxHeight, below };
-}
-
 /**
  * ioiti-ui: a column's options in a list that opens from its button (EUI's EuiFilterButton in a popover, with
- * a searchable list): each ticked or not, with the rows it would leave. Drawn in document.body at fixed
- * coordinates under its button, or above it where the window has no room below (the table's frame cuts what
- * overflows it), following its button when the page scrolls or the window changes size. The focus goes in
- * when it opens, on its search, or on its first option when a finger opened it; Escape, or a Tab past its
- * ends, gives it back to the button; a click elsewhere closes it.
+ * a searchable list): each ticked or not, with the rows it would leave. An anchored layer (src/lib/anchor.ts), as
+ * every list beside its button: in document.body (the table's frame cut what overflowed it), under its button or above
+ * it where the window has more room, on that side while it is open, following its button as the page scrolls or the
+ * window changes size (a phone's keyboard does both), never closed by that. The focus goes in when it opens, on its search, or on its first option when a
+ * finger opened it; Escape, or a Tab past its ends, gives it back to the button, and neither reaches a dialog or a
+ * sheet around the table (whose own keeping of the focus pulled a Tab in the list back into it); a press elsewhere
+ * closes it. It placed itself by hand, its keys half its own.
  */
 function FilterList<T>({ column }: { column: ColumnDef<T> }) {
   const { activeFilters, toggleFilter, setFilter, countOptions } = useDataTable<T>();
@@ -474,7 +461,6 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
   const chosen = activeFilters[column.id] ?? [];
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [place, setPlace] = useState<FilterListPlace | null>(null);
   const id = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -487,72 +473,24 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const listed = options.filter((option) => words.every((word) => option.label.toLowerCase().includes(word)));
 
-  const close = (giveBackFocus: boolean) => {
+  const close = () => {
     setOpen(false);
     setQuery('');
-    // Placed again when it opens again: the button may have moved.
-    setPlace(null);
-    if (giveBackFocus) buttonRef.current?.focus();
   };
-
-  useLayoutEffect(() => {
-    if (!open || !buttonRef.current) return;
-    setPlace(placeFilterList(buttonRef.current.getBoundingClientRect()));
-  }, [open]);
-
-  // Once, when it is first placed: not again as it follows its button.
-  const placed = place !== null;
-  useEffect(() => {
-    if (!open || !placed || !panelRef.current) return;
-    // Not the search under a finger: a phone's keyboard would open over the list.
-    const first = openedByFinger.current ? panelRef.current.querySelector<HTMLElement>('input[type="checkbox"]') : null;
-    (first ?? panelRef.current.querySelector<HTMLElement>('input'))?.focus();
-  }, [open, placed]);
-
-  useEffect(() => {
-    if (!open) return;
-    const inside = (target: EventTarget | null) =>
-      target instanceof Node && (!!panelRef.current?.contains(target) || !!buttonRef.current?.contains(target));
-    const pointerDown = (event: PointerEvent) => {
-      if (!inside(event.target)) close(false);
-    };
-    // A scroll or a new size moves it with its button, never closes it: a phone's keyboard scrolls the page
-    // as it opens, or shortens the window, which would close the list under the finger typing in its search.
-    const follow = (keepHeight: boolean) => {
-      const button = buttonRef.current?.getBoundingClientRect();
-      if (button) setPlace((opened) => opened && placeFilterList(button, opened, keepHeight));
-    };
-    // Not its own list scrolling.
-    const scroll = (event: Event) => {
-      if (!(event.target instanceof Node && panelRef.current?.contains(event.target))) follow(true);
-    };
-    const resize = () => follow(false);
-    document.addEventListener('pointerdown', pointerDown);
-    window.addEventListener('scroll', scroll, true);
-    window.addEventListener('resize', resize);
-    return () => {
-      document.removeEventListener('pointerdown', pointerDown);
-      window.removeEventListener('scroll', scroll, true);
-      window.removeEventListener('resize', resize);
-    };
-  }, [open]);
-
-  const onPanelKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Escape') {
-      // Its own: not a sheet's or a dialog's around the table.
-      event.preventDefault();
-      event.stopPropagation();
-      close(true);
-      return;
-    }
-    if (event.key !== 'Tab' || !panelRef.current) return;
-    const stops = Array.from(panelRef.current.querySelectorAll<HTMLElement>('input, button')).filter((stop) => !stop.hasAttribute('disabled'));
-    const leaving = event.shiftKey ? document.activeElement === stops[0] : document.activeElement === stops[stops.length - 1];
-    if (leaving) {
-      event.preventDefault();
-      close(true);
-    }
-  };
+  const layer = useAnchoredLayer({
+    open,
+    onClose: close,
+    triggerRef: buttonRef,
+    layerRef: panelRef,
+    side: 'bottom',
+    align: 'start',
+    // On the side it opened on as its search shrinks it, or grows it again.
+    keepSide: true,
+    // Its first control (its search, or its first option); not the search under a finger: a phone's keyboard would
+    // open over the list.
+    initialFocus: () =>
+      openedByFinger.current ? (panelRef.current?.querySelector<HTMLElement>('input[type="checkbox"]') ?? null) : null,
+  });
 
   const clearColumn = () => {
     setFilter(column.id, []);
@@ -574,10 +512,11 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
           // A click without a pointer before it is the keyboard's.
           const finger = lastPointer.current === 'touch' || lastPointer.current === 'pen';
           lastPointer.current = null;
-          if (open) return close(false);
+          if (open) return close();
           openedByFinger.current = finger;
           setOpen(true);
         }}
+        onKeyDown={layer.onTriggerKeyDown}
         className={cn(FILTER_BUTTON, chosen.length > 0 ? FILTER_BUTTON_ON : FILTER_BUTTON_IDLE, open && 'bg-surface-hover')}
       >
         {column.header}
@@ -591,26 +530,22 @@ function FilterList<T>({ column }: { column: ColumnDef<T> }) {
       </button>
       {createPortal(
         <AnimatePresence>
-          {open && place && (
+          {open && (
             <motion.div
               ref={panelRef}
               id={`${id}-list`}
               role="group"
               aria-label={table.filterBy(column.header)}
-              onKeyDown={onPanelKeyDown}
-              initial={{ opacity: 0, scale: 0.98, y: place.below ? -4 : 4 }}
+              // A press on its empty space keeps the focus in it, and its keys with it.
+              tabIndex={-1}
+              onKeyDown={layer.onLayerKeyDown}
+              initial={{ opacity: 0, scale: 0.98, y: layer.side === 'top' ? 4 : -4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, transition: motionTransitions.easeExit }}
               transition={motionTransitions.springSnappy}
-              style={{
-                left: place.left,
-                top: place.top,
-                bottom: place.bottom,
-                width: place.width,
-                maxHeight: place.maxHeight,
-                transformOrigin: place.below ? 'top left' : 'bottom left',
-              }}
-              className={cn('fixed z-50 flex flex-col overflow-hidden font-sans select-none', FLOATING)}
+              style={{ ...layer.style, transformOrigin: layer.side === 'top' ? 'bottom left' : 'top left' }}
+              // 256 px wide, 8 px from each edge of a narrower window.
+              className={cn('z-50 flex w-64 max-w-[calc(100vw-1rem)] flex-col overflow-hidden font-sans outline-none select-none', FLOATING)}
             >
               {searchable && (
                 <div className="border-b border-border/60 p-2">

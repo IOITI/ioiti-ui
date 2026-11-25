@@ -4,6 +4,8 @@
 // as it mounts); `announce` makes them otherwise, the first time something is said, nothing being added to the page by
 // loading the package. While a dialog keeps the focus (focus-scope.ts), its regions are in it: a screen reader keeps
 // to an aria-modal dialog, and may not hear a region outside it.
+import { useEffect, useRef } from 'react'
+
 import { currentFocusScope } from './focus-scope.js'
 
 export type Politeness = 'polite' | 'assertive'
@@ -54,4 +56,19 @@ export function announce(message: string, politeness: Politeness = 'polite'): vo
   pending[politeness] = setTimeout(() => {
     target.textContent = message
   }, 50)
+}
+
+/**
+ * Says `message` once as `when` turns true, and again only once it has been false in between: what a list shows beside
+ * a field that keeps the focus (a search that leaves it empty: "Nothing matches"), which a screen reader, reading the
+ * field, would not hear. The words said are the latest given; a change of them alone says nothing.
+ */
+export function useAnnounceWhen(when: boolean, message: string, politeness: Politeness = 'polite'): void {
+  const latest = useRef(message)
+  useEffect(() => {
+    latest.current = message
+  })
+  useEffect(() => {
+    if (when) announce(latest.current, politeness)
+  }, [when, politeness])
 }

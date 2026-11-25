@@ -3,8 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { AdvancedDataTable } from './ui/advanced-data-table.js'
 import type { ColumnDef } from './ui/advanced-data-table.js'
+import { Dialog } from './ui/settle-modal.js'
 
 interface Row {
   id: string
@@ -321,11 +324,11 @@ describe('the filters, as one group of buttons', () => {
     expect(search).toHaveFocus()
     await user.type(search, 'row')
 
-    // The page scrolled the button 300px down: the list follows it, its height kept.
-    const opened = list.style.maxHeight
+    // The page scrolled the button 300px down: the list follows it, as high as the room under its button (jsdom's
+    // window is 768px high, 8px kept from its edge).
     vi.spyOn(button, 'getBoundingClientRect').mockReturnValue({ top: 300, bottom: 332, left: 40, right: 140, width: 100, height: 32, x: 40, y: 300, toJSON: () => ({}) })
     fireEvent.scroll(window)
-    expect(list).toHaveStyle({ top: '338px', left: '40px', maxHeight: opened })
+    expect(list).toHaveStyle({ position: 'fixed', top: '338px', left: '40px', maxHeight: `${768 - 332 - 8 - 6}px` })
 
     // The keyboard shortened the window to 500px: the list fits what is left under its button.
     vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500)
@@ -335,6 +338,52 @@ describe('the filters, as one group of buttons', () => {
     expect(screen.getByRole('group', { name: 'Filter by Name' })).toBe(list)
     expect(search).toHaveFocus()
     expect(search).toHaveValue('row')
+  })
+
+  it('keeps the side it opened on as its search shrinks it: above its button, not under it once it would fit there', async () => {
+    const user = userEvent.setup()
+    renderFiltered()
+    const button = screen.getByRole('button', { name: 'Name, 12 options' })
+    // jsdom lays nothing out: the button near the window's foot (768px high), the list as tall as it says.
+    vi.spyOn(button, 'getBoundingClientRect').mockReturnValue({ top: 700, bottom: 732, left: 40, right: 140, width: 100, height: 32, x: 40, y: 700, toJSON: () => ({}) })
+    let tall = 300
+    vi.spyOn(Element.prototype, 'scrollHeight', 'get').mockImplementation(function (this: Element) {
+      return this.getAttribute('role') === 'group' && this.id.endsWith('-list') ? tall : 0
+    })
+    await user.click(button)
+    const list = screen.getByRole('group', { name: 'Filter by Name' })
+    // 28px under the button, 692px above: above it, its foot 6px from the button.
+    expect(list).toHaveStyle({ top: `${700 - 6 - 300}px` })
+
+    // Searched down to one option, 20px: it would fit under the button, and stays above it.
+    await user.type(within(list).getByRole('searchbox', { name: 'Search the options of Name' }), 'row 12')
+    tall = 20
+    fireEvent.scroll(window)
+    expect(list).toHaveStyle({ top: `${700 - 6 - 20}px` })
+  })
+
+  it('keeps its keys in a dialog: Tab goes through its options, Escape closes it and not the dialog', async () => {
+    const user = userEvent.setup()
+    render(
+      <Dialog open onClose={() => {}} title="Orders">
+        <AdvancedDataTable<Row> data={ROWS} columns={FILTERED} getRowId={(row) => row.id} selectable={false} />
+      </Dialog>,
+    )
+    const button = screen.getByRole('button', { name: 'Group, 3 options' })
+    await user.click(button)
+    const list = screen.getByRole('group', { name: 'Filter by Group' })
+    expect(within(list).getByRole('checkbox', { name: 'A, 6 rows' })).toHaveFocus()
+
+    // The dialog's keeping of the focus leaves its Tab to it: the next option, not the dialog's first control.
+    await user.tab()
+    expect(within(list).getByRole('checkbox', { name: 'B, 3 rows' })).toHaveFocus()
+    await user.tab({ shift: true })
+    expect(within(list).getByRole('checkbox', { name: 'A, 6 rows' })).toHaveFocus()
+
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('group', { name: 'Filter by Group' })).not.toBeInTheDocument())
+    expect(button).toHaveFocus()
+    expect(screen.getByRole('dialog', { name: 'Orders' })).toBeInTheDocument()
   })
 
   it('opened by a finger, takes the focus on its first option, not its search: a phone\'s keyboard opens when the search is tapped', async () => {
@@ -422,6 +471,39 @@ describe('the table state a page holds, arrays and sorting (0.9.0)', () => {
     await user.type(screen.getByPlaceholderText('Search…'), '1')
     expect(changes.at(-1)).toEqual({ search: '1', filters: { kind: ['odd'] }, sort: { column: 'name', direction: 'desc' }, page: 1 })
     expect(shown()).toEqual([expect.stringMatching(/^Row 12/), expect.stringMatching(/^Row 10/)])
+  })
+})
+
+describe("the data table's search", () => {
+  it('is named, not by its placeholder alone, and so is its ×: a target of 24 px that empties it and gives it the focus back', async () => {
+    const user = userEvent.setup()
+    render(<AdvancedDataTable<Row> data={ROWS} columns={COLUMNS} getRowId={(row) => row.id} selectable={false} searchPlaceholder="Find a row" />)
+    const search = screen.getByRole('textbox', { name: 'Search the table' })
+    expect(search).toHaveAttribute('placeholder', 'Find a row')
+    expect(screen.queryByRole('button', { name: 'Clear the search' })).not.toBeInTheDocument()
+
+    await user.type(search, 'Row 1')
+    const clear = screen.getByRole('button', { name: 'Clear the search' })
+    // 24 px square (WCAG 2.5.8), its icon the 12 px it was.
+    expect(clear).toHaveClass('size-6', '[&>svg]:size-3')
+    expect(clear).not.toHaveClass('[&>svg]:size-3.5')
+    await user.click(clear)
+    expect(search).toHaveValue('')
+    expect(search).toHaveFocus()
+    expect(screen.queryByRole('button', { name: 'Clear the search' })).not.toBeInTheDocument()
+  })
+
+  it('says their names in the language given', async () => {
+    const user = userEvent.setup()
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <AdvancedDataTable<Row> data={ROWS} columns={COLUMNS} getRowId={(row) => row.id} selectable={false} />
+      </IoitiProvider>,
+    )
+    const search = screen.getByRole('textbox', { name: 'Rechercher dans le tableau' })
+    expect(search).toHaveAttribute('placeholder', 'Rechercher…')
+    await user.type(search, 'Row')
+    expect(screen.getByRole('button', { name: 'Effacer la recherche' })).toBeInTheDocument()
   })
 })
 

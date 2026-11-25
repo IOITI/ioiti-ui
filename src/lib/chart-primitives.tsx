@@ -2,7 +2,6 @@
 
 import {
   useEffect,
-  useId,
   useLayoutEffect,
   useRef,
   useState,
@@ -183,44 +182,5 @@ export function Dot({ color }: { color: string }) {
   return <span className="inline-block size-2 shrink-0 rounded-full" style={{ background: color }} aria-hidden />;
 }
 
-export function SegmentedControl<T extends string>({
-  value,
-  onChange,
-  options,
-  label,
-}: {
-  value: T;
-  onChange: (v: T) => void;
-  options: { value: T; label: string }[];
-  label: string;
-}) {
-  const id = useId();
-  return (
-    <div role="radiogroup" aria-label={label} className="relative inline-flex shrink-0 rounded-full bg-surface-raised p-0.5">
-      {options.map((o) => {
-        const on = o.value === value;
-        return (
-          <button
-            key={o.value}
-            type="button"
-            role="radio"
-            aria-checked={on}
-            onClick={() => onChange(o.value)}
-            className={`relative z-10 h-8 cursor-pointer rounded-full px-3.5 text-sm font-medium transition-colors duration-150 [-webkit-tap-highlight-color:transparent] sm:px-3 ${focus} ${
-              on ? "text-foreground" : "text-muted-foreground"
-            }`}
-          >
-            {on && (
-              <motion.span
-                layoutId={id}
-                className="absolute inset-0 -z-10 rounded-full bg-surface shadow-subtle"
-                transition={motionTransitions.springMorph}
-              />
-            )}
-            {o.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+// ioiti-ui: EasyUI's SegmentedControl, which no chart drew, is gone: its radios were each a stop of the keyboard, with no
+// arrow between them. A choice of a chart's view is the package's SegmentedControl (src/components), a radio group.

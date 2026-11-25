@@ -14,10 +14,10 @@ A job's output as it is written (a build, a deploy, an import): numbered lines, 
 
 ## Accessibility
 
-A region named by its `label`. Its lines are a log a screen reader reads when asked, not as it grows, and a stop of the keyboard whose keys scroll it. The search says where it is ("3 of 12", "No match"); Wrap long lines says whether it is on.
+A region named by its `label`. Its lines are a log a screen reader reads when asked, not as it grows, and, while they scroll, a stop of the keyboard whose keys scroll them: none while they fit. The search says where it is ("3 of 12", "No match"); Wrap long lines says whether it is on.
 
 | Key | What it does |
 |---|---|
 | Enter, Shift+Enter | In the search: the next line found, the one before |
 | ↓, ↑, Page Down, Page Up, Home, End | On the lines: scroll them |
-| Tab | From the search through its buttons, then onto the lines |
+| Tab | From the search through its buttons, then onto the lines while they scroll |

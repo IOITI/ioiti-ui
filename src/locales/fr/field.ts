@@ -30,4 +30,8 @@ export const field: Messages['field'] = {
   code: 'Bloc de code',
 
   exportCsv: 'Exporter en CSV',
+
+  // The main action's label between guillemets, as it is given: a verb (« Enregistrer ») or a noun, whose gender an
+  // article or « de » would have to agree with.
+  moreOptions: (label) => `Autres options pour « ${label} »`,
 }

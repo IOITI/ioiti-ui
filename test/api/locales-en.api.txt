@@ -274,6 +274,8 @@ const en: {
   }
   table: {
     searchPlaceholder: string
+    searchTable: string
+    clearSearch: string
     selectedCount: (count: number, {…}: MessageKit) => string
     showAsTable: string
     showAsCards: string
@@ -383,6 +385,7 @@ const en: {
     copyCode: string
     code: string
     exportCsv: string
+    moreOptions: (label: string) => string
   }
   status: {
     healthOk: string

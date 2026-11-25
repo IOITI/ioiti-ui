@@ -16,7 +16,7 @@ One value from a list long enough to search: typing filters it, the arrows move,
 
 ## Accessibility
 
-Its button is a combobox named by its label, which says the value chosen and that it opens a list. Open, the focus is in its search, named as the button is, which says the option the arrows are on and whether it is the one chosen. An option that cannot be chosen is said dimmed, and the arrows pass it by.
+Its button is a combobox named by its label, which says the value chosen and that it opens a list. Open, the focus is in its search, named as the button is, which says the option the arrows are on and whether it is the one chosen. An option that cannot be chosen is said dimmed, and the arrows pass it by. When its search finds nothing, the list is empty and "No results." (`emptyText`) is shown beside it, describing it, and said to a screen reader once, as MultiSelect says it.
 
 | Key | What it does |
 |---|---|

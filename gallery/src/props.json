@@ -7415,7 +7415,7 @@
    {
     "name": "onOpenChange",
     "type": "(open: boolean) => void",
-    "description": "Told of every change, whoever holds it: its keys and Escape open and close it."
+    "description": "Told of every change, whoever holds it: its keys open it, Escape closes it (its keys, as every shortcut, wait while a dialog is open)."
    },
    {
     "name": "title",
@@ -7911,7 +7911,7 @@
    {
     "name": "menuLabel",
     "type": "string",
-    "description": "The name of the chevron and its menu (EasyUI's \"More <label> options\")."
+    "description": "The name of the chevron and its menu; the provider's language's by default (\"More Save options\")."
    },
    {
     "name": "options",

@@ -289,6 +289,21 @@ describe('a combobox', () => {
     await expectAccessible(document.body)
   })
 
+  it('says it found nothing beside its list, which it describes, and to a screen reader, as MultiSelect says it', async () => {
+    const user = userEvent.setup()
+    render(<Combobox aria-label="Carrier" options={[{ value: 'post', label: 'Post' }, { value: 'courier', label: 'Courier' }]} />)
+    await user.click(screen.getByRole('combobox', { name: 'Carrier' }))
+    const search = screen.getByPlaceholderText('Search…')
+    await waitFor(() => expect(search).toHaveFocus())
+
+    await user.keyboard('xyz')
+    const list = screen.getByRole('listbox', { name: 'Carrier' })
+    expect(list).toBeEmptyDOMElement()
+    expect(list).toHaveAccessibleDescription('No results.')
+    await waitFor(() => expect(document.querySelector('[data-ioiti-announcer="polite"]')).toHaveTextContent('No results.'))
+    await expectAccessible(document.body)
+  })
+
   it('names them by its aria-label, or by the words of a label around it, its own left out', async () => {
     const user = userEvent.setup()
     const options = [{ value: 'post', label: 'Post' }]

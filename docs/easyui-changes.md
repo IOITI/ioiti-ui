@@ -873,6 +873,24 @@ otherwise).
   over it keeps the keys: its Escape closes it alone, and the arrows move no step while it is open.
 - `alert`, `form`, `flysheet`, `sidebar`, `stat-card` (0.31.0): the props of their parts named and exported, as every
   component's (`AlertTitleProps`, `FormControlProps`, `SheetBodyProps`…, `SidebarTriggerProps`, `StatGridProps`).
+- `notification-bell` (0.32.0): a button of its list that goes once pressed (Read all, an entry's Mark as read, Try
+  again) leaves the focus in the list: on the first control of an entry after its own, else on the list itself. It fell
+  to the page's body, the list still open: its Escape no longer heard, the next Tab from the top of the page. Whenever
+  the button goes: at once, or once the application has had its answer.
+- `advanced-data-table` (0.32.0): a filter's list is an anchored layer (`useAnchoredLayer`, `src/lib/anchor.ts`), as
+  every list beside its button, its placing by hand gone: on the side it opened on while its search shrinks it
+  (`keepSide`), as high as the room the window leaves it there (it kept its height as the page scrolled), and its Tab
+  its own, as its Escape was: in a dialog or a sheet, whose keeping of the focus pulled a Tab in the list back into it.
+  A press on its empty space keeps the focus in it. The search is named in the provider's words ("Search the table":
+  its placeholder alone named it), and so is its ×, a close button (`CLOSE_SM`, "Clear the search", its hint the same
+  words) of 24 px (16 px, and no name), its 12 px icon where it was; pressed, it gives the focus back to the search.
+- `split-button` (0.32.0): its chevron and its menu are named in the provider's language after the main action
+  ("More Save options", `field.moreOptions`), `menuLabel` over it: EasyUI's English was written in the code.
+- `combobox` (0.32.0): "No results." describes the list it stands beside, and is said to a screen reader once as it
+  comes to be (`useAnnounceWhen`, `src/lib/announce.ts`), as MultiSelect says "Nothing matches": it was shown, and said
+  to no one.
+- `chart-primitives` (0.32.0): its `SegmentedControl`, which no chart drew, is gone (its radios each a stop of the
+  keyboard, no arrow between them): a choice of a chart's view is the package's `SegmentedControl`.
 
 ## ioiti-ui's own changes
 

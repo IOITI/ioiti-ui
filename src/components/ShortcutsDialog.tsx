@@ -12,7 +12,10 @@ export interface ShortcutsDialogProps {
   open?: boolean
   /** Open at first, the dialog holding it then; closed by default. */
   defaultOpen?: boolean
-  /** Told of every change, whoever holds it: its keys and Escape open and close it. */
+  /**
+   * Told of every change, whoever holds it: its keys open it, Escape closes it (its keys, as every shortcut, wait while
+   * a dialog is open).
+   */
   onOpenChange?: (open: boolean) => void
   /** Its title; the provider's language's by default ("Keyboard shortcuts"). */
   title?: string

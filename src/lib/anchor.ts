@@ -91,6 +91,11 @@ export interface AnchoredLayerOptions {
   focus?: 'move' | 'keep'
   /** Where the focus goes in, when it moves: the layer's first control otherwise. */
   initialFocus?: () => HTMLElement | null
+  /**
+   * The side it is on kept while it is open, as long as it has room there, or more than on the other: a list searched,
+   * which shrinks and grows as it is typed into, would go from one side of its trigger to the other. It opens on `side`.
+   */
+  keepSide?: boolean
 }
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -127,8 +132,11 @@ export function useAnchoredLayer({
   offset = 6,
   focus = 'move',
   initialFocus,
+  keepSide = false,
 }: AnchoredLayerOptions) {
   const [place, setPlace] = useState<Placement | null>(null)
+  // The side it is on since it opened, where it keeps it (`keepSide`).
+  const sideOpen = useRef<AnchorSide | null>(null)
   const onCloseRef = useRef(onClose)
   const initialFocusRef = useRef(initialFocus)
   useEffect(() => {
@@ -145,17 +153,26 @@ export function useAnchoredLayer({
     const anchor = anchorRect()
     const layer = layerRef.current
     if (!anchor || !layer) return
-    const next = placeBeside(anchor, { width: layer.offsetWidth, height: layer.scrollHeight }, side, align, offset)
+    const next = placeBeside(
+      anchor,
+      { width: layer.offsetWidth, height: layer.scrollHeight },
+      (keepSide && sideOpen.current) || side,
+      align,
+      offset,
+    )
+    sideOpen.current = next.side
     // The same place kept as it is: a new size from it is not measured again, and again.
     setPlace((current) =>
       current && current.top === next.top && current.left === next.left && current.side === next.side &&
       current.maxHeight === next.maxHeight ? current : next)
-  }, [anchorRect, layerRef, side, align, offset])
+  }, [anchorRect, layerRef, side, align, offset, keepSide])
 
-  // Placed before the browser paints it, once it is drawn to be measured. Closed, it keeps its place:
-  // it leaves from where it was.
+  // Placed before the browser paints it, once it is drawn to be measured, on its own side first. Closed, it keeps its
+  // place: it leaves from where it was.
   useLayoutEffect(() => {
-    if (open) measure()
+    if (!open) return
+    sideOpen.current = null
+    measure()
   }, [open, measure])
 
   // What it holds grows or shrinks (what it waited for arrives): placed again at its new size, so that it
@@ -214,9 +231,9 @@ export function useAnchoredLayer({
     // Its own: a dialog's trap around it would pull the focus back into the dialog.
     event.stopPropagation()
     const stops = focusables(layerRef.current)
-    const leaving =
-      stops.length === 0 ||
-      (event.shiftKey ? document.activeElement === stops[0] : document.activeElement === stops[stops.length - 1])
+    // Back from the layer itself (what keeps the focus once a control it held has gone), as from its first stop.
+    const first = document.activeElement === stops[0] || document.activeElement === layerRef.current
+    const leaving = stops.length === 0 || (event.shiftKey ? first : document.activeElement === stops[stops.length - 1])
     if (leaving) {
       event.preventDefault()
       close('tab')

@@ -6,6 +6,7 @@ import { keysInWords } from '../lib/keys.js'
 import { blocksInSight, findInLog, LOG_BLOCK, logLevel, matchParts, splitLog } from '../lib/log.js'
 import type { LogLevel } from '../lib/log.js'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
+import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
 import { CopyButton } from './CopyButton.js'
 import { FieldContext } from './field-context.js'
@@ -90,6 +91,9 @@ export function LogViewer({
   // The line to bring into sight (a match), by its index among the lines shown.
   const [target, setTarget] = useState<number | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
+  // A stop of the keyboard while its lines scroll, whose keys scroll them; none while they fit. A log of its own name:
+  // no region's role over it (`region: false`).
+  const stop = useScrollRegion(scroller, { region: false })
 
   // Heights of the blocks drawn wrapped, measured; a block not measured yet is as high as its lines unwrapped.
   const measured = useRef(new Map<number, { height: number; count: number }>())
@@ -257,7 +261,7 @@ export function LogViewer({
         role="log"
         aria-label={label}
         aria-live="off"
-        tabIndex={0}
+        {...stop}
         style={view}
         onScroll={onScroll}
         className="overflow-auto font-mono text-[13px] leading-5 text-foreground"

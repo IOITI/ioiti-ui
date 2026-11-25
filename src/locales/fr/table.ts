@@ -2,6 +2,8 @@ import type { Messages } from '../en.js'
 
 export const table: Messages['table'] = {
   searchPlaceholder: 'Rechercher…',
+  searchTable: 'Rechercher dans le tableau',
+  clearSearch: 'Effacer la recherche',
   // What is selected are items (« éléments »), as the bulk actions say.
   selectedCount: (count, { plural }) => plural(count, { one: '# sélectionné', other: '# sélectionnés' }),
   showAsTable: 'Afficher en tableau',

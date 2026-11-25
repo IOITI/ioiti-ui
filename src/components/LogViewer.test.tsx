@@ -103,6 +103,26 @@ describe('LogViewer', () => {
     expect(screen.queryByRole('button', { name: 'Jump to the end' })).not.toBeInTheDocument()
   })
 
+  it('is a stop of the keyboard while its lines scroll, still a log of its name; none while they fit', () => {
+    const { unmount } = render(<LogViewer label="Build log" lines={['start', 'done']} />)
+    // jsdom lays nothing out: two lines fit.
+    expect(screen.getByRole('log', { name: 'Build log' })).not.toHaveAttribute('tabindex')
+    unmount()
+
+    // Taller than the view: Tab reaches the lines, whose keys scroll them.
+    const tall = (size: number) =>
+      function (this: Element) {
+        return this.getAttribute('role') === 'log' ? size : 0
+      }
+    vi.spyOn(Element.prototype, 'scrollHeight', 'get').mockImplementation(tall(2000))
+    vi.spyOn(Element.prototype, 'clientHeight', 'get').mockImplementation(tall(384))
+    render(<LogViewer label="Build log" lines={Array.from({ length: 100 }, (_, index) => `line ${index + 1}`)} />)
+    const log = screen.getByRole('log', { name: 'Build log' })
+    expect(log).toHaveAttribute('tabindex', '0')
+    // A log still, not a region over it.
+    expect(log).toHaveAttribute('role', 'log')
+  })
+
   it('wraps long lines when asked, and says it does', async () => {
     const user = userEvent.setup()
     render(<LogViewer label="Build log" lines={['a long line']} />)

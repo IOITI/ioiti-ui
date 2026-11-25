@@ -16,11 +16,12 @@ What happened while the page was open, newest first, each leading to where it is
 
 ## Accessibility
 
-The bell is named by what is unread ("3 unread notifications", or "Notifications") and says whether its list is open. The list is a dialog ("Notifications"), not modal, which says it is reading them while `loading`. An entry that leads somewhere is a link; Read all, Close and each entry's Mark as read are buttons.
+The bell is named by what is unread ("3 unread notifications", or "Notifications") and says whether its list is open. The list is a dialog ("Notifications"), not modal, which says it is reading them while `loading`. An entry that leads somewhere is a link; Read all, Close and each entry's Mark as read are buttons. A button that goes once pressed (an entry read, or every one) leaves the focus in the list: on the first control of an entry after its own, else on the list itself, whose keys stay its own.
 
 | Key | What it does |
 |---|---|
 | Enter, Space | On the bell: opens the list, the focus on its first control |
 | Tab, Shift+Tab | Through its buttons and its entries' links; past its ends, closes the list, the focus back on the bell |
 | Enter | On an entry's link: follows it, marks it read and closes the list |
+| Enter, Space | On Mark as read: marks the entry read, the focus on the next entry's link or button, else on the list. On Read all: marks them all read, the focus on the list |
 | Escape | Closes the list, the focus back on the bell |

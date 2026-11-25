@@ -15,7 +15,7 @@ Several values from a list, each a chip in the field: typing filters the list; o
 
 ## Accessibility
 
-Its field is a combobox named by its label, which keeps the focus and says the option the arrows are on, ticked or not, under its group's name; past `max`, the list says so. The chips are read before the field, their × no stop of the keyboard: the keys untick a value in the list, or take the last one back with Backspace. Clear, a button after the field, empties it.
+Its field is a combobox named by its label, which keeps the focus and says the option the arrows are on, ticked or not, under its group's name; past `max`, the list says so. When nothing matches, the list is empty and "Nothing matches" (`emptyText`) is shown beside it, describing it, and said to a screen reader once, as it comes to be: reading the field, it would hear nothing of the list. The chips are read before the field, their × no stop of the keyboard: the keys untick a value in the list, or take the last one back with Backspace. Clear, a button after the field, empties it.
 
 | Key | What it does |
 |---|---|

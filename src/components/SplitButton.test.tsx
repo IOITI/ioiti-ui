@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
+import { fr } from '../locales/fr.js'
+import { IoitiProvider } from './IoitiProvider.js'
 import { SplitButton } from './ui/split-button.js'
 
 describe('SplitButton', () => {
@@ -44,5 +46,26 @@ describe('SplitButton', () => {
     await user.keyboard('{Escape}')
     await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument())
     expect(chevron).toHaveFocus()
+  })
+
+  it('names its chevron and its menu in the language given, after its label, its own menuLabel first', async () => {
+    const user = userEvent.setup()
+    const options = [{ value: 'draft', label: 'Enregistrer comme brouillon' }]
+    const { unmount } = render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <SplitButton label="Enregistrer" onClick={() => {}} options={options} />
+      </IoitiProvider>,
+    )
+    const chevron = screen.getByRole('button', { name: 'Autres options pour «\u00a0Enregistrer\u00a0»' })
+    await user.click(chevron)
+    expect(await screen.findByRole('menu', { name: 'Autres options pour «\u00a0Enregistrer\u00a0»' })).toBeInTheDocument()
+    unmount()
+
+    render(
+      <IoitiProvider locale="fr-FR" messages={fr}>
+        <SplitButton label="Enregistrer" menuLabel="Autres façons d’enregistrer" onClick={() => {}} options={options} />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Autres façons d’enregistrer' })).toBeInTheDocument()
   })
 })

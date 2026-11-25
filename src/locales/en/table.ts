@@ -5,6 +5,10 @@ export const table = {
   // DataTable's toolbar.
   /** "Search…": the placeholder of the table's search, and of a filter's list of options. */
   searchPlaceholder: 'Search…',
+  /** "Search the table": the name of the table's search (its placeholder is no name). */
+  searchTable: 'Search the table',
+  /** "Clear the search": the name and the hint of the × that empties it. */
+  clearSearch: 'Clear the search',
   /** "3 selected": how many rows are selected, beside the table's title, where it has no selection basket. */
   selectedCount: (count: number, { number }: MessageKit) => `${number(count)} selected`,
   /** "Show as a table": the name and the hint of the button that shows the rows as a table, while they are cards. */

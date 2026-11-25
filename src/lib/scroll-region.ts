@@ -14,7 +14,10 @@ export interface ScrollRegionOptions {
   label?: string
   /** Or the ids of what names it (a table's own `aria-labelledby`), taken before `label`. */
   labelledBy?: string
-  /** `false` for an element that is a landmark of its own (`<main>`): a stop, without a role or a name. */
+  /**
+   * `false` for an element that is a landmark of its own (`<main>`), or has a role and a name of its own (LogViewer's
+   * log): a stop, without a role or a name.
+   */
   region?: boolean
   /** What the element is drawn anew for, the ref kept (a page's frame, keyed by its page): the new one watched instead. */
   key?: unknown

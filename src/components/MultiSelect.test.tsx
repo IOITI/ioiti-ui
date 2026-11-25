@@ -79,6 +79,31 @@ describe('MultiSelect', () => {
     expect(screen.getByRole('button', { name: 'Remove gift' })).toBeInTheDocument()
   })
 
+  it('says nothing matches beside its list, not in it, which it describes, and to a screen reader once as it comes', async () => {
+    const user = userEvent.setup()
+    render(<MultiSelect label="Cities" options={CITIES} />)
+    const field = screen.getByRole('combobox', { name: 'Cities' })
+    const said = () => document.querySelector('[data-ioiti-announcer="polite"]')
+
+    await user.type(field, 'zz')
+    const list = screen.getByRole('listbox', { name: 'Cities' })
+    // A listbox holds options alone: empty, described by the words beside it.
+    expect(list).toBeEmptyDOMElement()
+    expect(list).toHaveAccessibleDescription('Nothing matches')
+    expect(field).not.toHaveAttribute('aria-activedescendant')
+    await waitFor(() => expect(said()).toHaveTextContent('Nothing matches'))
+
+    // Once: not again at each letter typed while nothing matches (said again, it is emptied first).
+    await user.type(field, 'z')
+    expect(said()).toHaveTextContent('Nothing matches')
+
+    // Something matches again: the list holds it, described by nothing.
+    await user.clear(field)
+    await user.type(field, 'ly')
+    expect(within(list).getByRole('option', { name: 'Lyon' })).toBeInTheDocument()
+    expect(list).not.toHaveAttribute('aria-describedby')
+  })
+
   it('closes its list on Escape, not the dialog around it', async () => {
     const user = userEvent.setup()
     render(

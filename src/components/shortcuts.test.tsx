@@ -87,6 +87,25 @@ describe('keyboard shortcuts', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
 
+  it('opens on its keys and closes on Escape: its keys wait while it is open, as every shortcut while a dialog is', async () => {
+    const user = userEvent.setup()
+    const changed = vi.fn()
+    render(
+      <IoitiProvider>
+        <Page go={() => {}} search={() => {}} />
+        <ShortcutsDialog onOpenChange={changed} />
+      </IoitiProvider>,
+    )
+    await user.keyboard('?')
+    await screen.findByRole('dialog', { name: 'Keyboard shortcuts' })
+    expect(changed).toHaveBeenLastCalledWith(true)
+    await user.keyboard('?')
+    expect(changed).not.toHaveBeenCalledWith(false)
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(changed).toHaveBeenLastCalledWith(false)
+  })
+
   it('opens at first with defaultOpen, then holds itself, onOpenChange told', async () => {
     const user = userEvent.setup()
     const changed = vi.fn()

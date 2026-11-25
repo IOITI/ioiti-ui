@@ -15,6 +15,8 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { FLOATING, MENU_ROW, TONE_SOLID } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 import { useLinkComponent } from '../link-context.js';
+// ioiti-ui: its words in the provider's language (`field`).
+import { useMessages } from '../locale-context.js';
 
 // -----------------------------------------------------------------------------
 // Motion
@@ -60,7 +62,7 @@ export interface SplitButtonProps
   /** ioiti-ui: an icon before the primary label. */
   icon?: React.ReactNode;
 
-  /** ioiti-ui: the name of the chevron and its menu (EasyUI's "More <label> options"). */
+  /** ioiti-ui: the name of the chevron and its menu; the provider's language's by default ("More Save options"). */
   menuLabel?: string;
 
   /** Dropdown options revealed by the chevron trigger. */
@@ -173,7 +175,10 @@ export function SplitButton({
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
   const reduceMotion = useReducedMotionConfig();
-  const menuName = menuLabel ?? `More ${label} options`;
+  // ioiti-ui: named in the provider's language, a function of the label (EasyUI's English was written here), its own
+  // prop given over it.
+  const words = useMessages().field;
+  const menuName = menuLabel ?? words.moreOptions(label);
   // ioiti-ui: the option the arrows are on is announced (aria-activedescendant): the menu has the focus, not it.
   const idPrefix = useId();
   const optionRefs = useRef<(HTMLElement | null)[]>([]);

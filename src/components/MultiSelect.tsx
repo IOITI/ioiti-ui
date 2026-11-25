@@ -5,6 +5,7 @@ import type { KeyboardEvent, Ref } from 'react'
 import { createPortal } from 'react-dom'
 
 import { useAnchoredLayer } from '../lib/anchor.js'
+import { useAnnounceWhen } from '../lib/announce.js'
 import { useControllableState } from '../lib/controllable.js'
 import { dataAttributes } from '../lib/data-attributes.js'
 import type { DataAttributes } from '../lib/data-attributes.js'
@@ -149,6 +150,12 @@ export function MultiSelect({
   const full = max !== undefined && chosen.length >= max
   const blocked = (row: Row) => !!row.option.disabled || (full && (row.create || !chosen.includes(row.option.value)))
   const at = Math.min(active, Math.max(rows.length - 1, 0))
+
+  // Nothing matches: said beside the list, not in it (a listbox holds options alone), and to a screen reader, which reads
+  // the field: once as it comes to be, and again once something has matched in between.
+  const nothing = emptyText ?? words.nothingMatches
+  const emptyId = `${listId}-empty`
+  useAnnounceWhen(open && rows.length === 0, nothing)
 
   // The option the arrows are on stays in sight.
   useEffect(() => {
@@ -300,8 +307,19 @@ export function MultiSelect({
                     {words.atMost(max)}
                   </p>
                 )}
-                <ul id={listId} role="listbox" aria-multiselectable="true" {...named} className="text-sm">
-                  {rows.length === 0 && <li className="px-2.5 py-2 text-xs text-muted-foreground">{emptyText ?? words.nothingMatches}</li>}
+                {rows.length === 0 && (
+                  <p id={emptyId} className="px-2.5 py-2 text-xs text-muted-foreground">
+                    {nothing}
+                  </p>
+                )}
+                <ul
+                  id={listId}
+                  role="listbox"
+                  aria-multiselectable="true"
+                  {...named}
+                  aria-describedby={rows.length === 0 ? emptyId : undefined}
+                  className="text-sm"
+                >
                   {groups.map((group) => (
                     <li key={group || '·'} role="presentation">
                       {group && <div className="px-2.5 pb-1 pt-2 text-xs font-medium text-text-secondary">{group}</div>}

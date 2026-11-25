@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Bell, CheckCheck, X } from 'lucide-react';
-import { useAnchoredLayer } from '../../lib/anchor.js';
+import { focusables, useAnchoredLayer } from '../../lib/anchor.js';
 // ioiti-ui: held by its caller or by itself, as every layer (useControllableState); a former name said once, in
 // development (deprecated).
 import { useControllableState } from '../../lib/controllable.js';
@@ -110,6 +110,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   const [isShaking, setIsShaking] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
+  // ioiti-ui: its list, whose entries the focus goes on to (below).
+  const listRef = useRef<HTMLDivElement>(null);
 
   // ioiti-ui: `open`, as every layer; `isOpen`, its former name, read where it alone is given. Held by the bell unless
   // the page holds it, `onOpenChange` told either way: given without `isOpen`, it took the bell's own state's place,
@@ -142,6 +144,35 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     side: 'bottom',
     align: 'end',
     offset: 8,
+  });
+
+  // ioiti-ui: what has the focus in the panel, and the entries after its own. A control that goes once pressed (Read
+  // all, an entry's Mark as read, Try again) gave it to the page's body, the panel still open: its Escape no longer
+  // heard, the next Tab from the top of the page.
+  const focused = useRef<{ control: HTMLElement; entry: HTMLElement | null; after: HTMLElement[] } | null>(null);
+  const followFocus = (event: React.FocusEvent<HTMLElement>) => {
+    const control = event.target;
+    const entries = Array.from(listRef.current?.children ?? []) as HTMLElement[];
+    const at = entries.findIndex((entry) => entry.contains(control));
+    focused.current =
+      control === layerRef.current ? null : { control, entry: entries[at] ?? null, after: at >= 0 ? entries.slice(at + 1) : [] };
+  };
+  // ioiti-ui: that control gone (its entry read, or every one), the focus on the first control of an entry after its
+  // own (the next to read), else on the panel: its keys its own still, Tab going on from there. Whenever it goes: at
+  // once, or once the application has had its answer.
+  useLayoutEffect(() => {
+    const had = focused.current;
+    if (!had || had.control.isConnected) return;
+    focused.current = null;
+    const panel = layerRef.current;
+    if (!isPanelOpen || !panel?.isConnected) return;
+    // The focus already elsewhere (a press on the page): left there.
+    if (document.activeElement && document.activeElement !== document.body) return;
+    const list = listRef.current;
+    const listed = list ? (Array.from(list.children) as HTMLElement[]) : [];
+    const after = had.entry?.isConnected ? listed.slice(listed.indexOf(had.entry) + 1) : had.after.filter((entry) => entry.isConnected);
+    const next = after.map((entry) => focusables(entry)[0]).find((control) => control !== undefined);
+    (next ?? panel).focus();
   });
 
   // ioiti-ui: the notifications could not be read, and what to do about it.
@@ -224,6 +255,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             ref={layerRef}
             tabIndex={-1}
             onKeyDown={layer.onLayerKeyDown}
+            // ioiti-ui: where the focus is in it, for it to stay in it when what holds it goes.
+            onFocus={followFocus}
             style={layer.style}
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -281,7 +314,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             )}
 
             {/* List */}
-            <div className="min-h-0 max-h-80 overflow-y-auto divide-y divide-border/40">
+            <div ref={listRef} className="min-h-0 max-h-80 overflow-y-auto divide-y divide-border/40">
               {notifications.length === 0 && failed ? (
                 // ioiti-ui: what is true when nothing could be read: not "No notifications right now".
                 <div className="py-8 px-4 text-center">

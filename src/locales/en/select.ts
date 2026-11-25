@@ -6,13 +6,13 @@ export const select = {
   placeholder: 'Select…',
   /** "Search…": the placeholder of Combobox's search. */
   search: 'Search…',
-  /** "No results.": what Combobox's list says when its search finds nothing. */
+  /** "No results.": what Combobox says beside its list, and to a screen reader, when its search finds nothing. */
   noResults: 'No results.',
 
   // MultiSelect.
   /** "Choose…": what MultiSelect says while nothing is chosen, where the application says nothing. */
   choosePlaceholder: 'Choose…',
-  /** "Nothing matches": what its list says when nothing matches what is typed. */
+  /** "Nothing matches": what it says beside its list, and to a screen reader, when nothing matches what is typed. */
   nothingMatches: 'Nothing matches',
   /** "Remove Lyon": the name of a chip's × button. */
   removeChoice: (label: string) => `Remove ${label}`,

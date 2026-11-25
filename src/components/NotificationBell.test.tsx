@@ -1,11 +1,12 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { fr } from '../locales/fr.js'
 import { IoitiProvider } from './IoitiProvider.js'
 import { NotificationBell } from './ui/notification-bell.js'
-import type { NotificationBellProps } from './ui/notification-bell.js'
+import type { Notification, NotificationBellProps } from './ui/notification-bell.js'
 
 describe('NotificationBell', () => {
   it('is a button as the top bar\'s others, held as pressed while its panel is open', async () => {
@@ -112,6 +113,103 @@ describe('NotificationBell', () => {
     await user.keyboard('{Escape}')
     expect(bell).toHaveAttribute('aria-expanded', 'false')
     expect(bell).toHaveFocus()
+  })
+
+  describe('once a button of its list goes, pressed', () => {
+    // Three unread, the second leading somewhere; marked read as the application marks them, when it is told.
+    const UNREAD: Notification[] = [
+      { id: '1', message: 'Export ready', timestamp: 'Today, 09:00', read: false },
+      { id: '2', message: 'Order 2026-0042 paid', timestamp: 'Today, 08:00', read: false, href: '/orders/2026-0042' },
+      { id: '3', message: 'Weekly summary sent', timestamp: 'Today, 07:00', read: false },
+    ]
+    // What the server has yet to answer, where the application waits for it.
+    const answers: (() => void)[] = []
+    function Held({ later = false }: { later?: boolean }) {
+      const [items, setItems] = useState(UNREAD)
+      const mark = (change: (now: Notification[]) => Notification[]) => {
+        if (later) answers.push(() => setItems(change))
+        else setItems(change)
+      }
+      return (
+        <NotificationBell
+          notifications={items}
+          onMarkAsRead={(id) => mark((now) => now.map((item) => (item.id === id ? { ...item, read: true } : item)))}
+          onMarkAllAsRead={() => mark((now) => now.map((item) => ({ ...item, read: true })))}
+        />
+      )
+    }
+    const open = async (user: ReturnType<typeof userEvent.setup>) => {
+      const bell = screen.getByRole('button', { name: '3 unread notifications' })
+      bell.focus()
+      await user.keyboard('{Enter}')
+      return { bell, panel: await screen.findByRole('dialog', { name: 'Notifications' }) }
+    }
+
+    it('gives the focus to the next entry’s control once an entry is read, then the panel after the last, and still closes on Escape', async () => {
+      const user = userEvent.setup()
+      render(<Held />)
+      const { bell, panel } = await open(user)
+
+      // The first entry's: the second's link takes the focus, the first control of the entry after it.
+      within(panel).getAllByRole('button', { name: 'Mark notification as read' })[0].focus()
+      await user.keyboard('{Enter}')
+      expect(within(panel).getAllByRole('button', { name: 'Mark notification as read' })).toHaveLength(2)
+      expect(within(panel).getByRole('link', { name: 'Order 2026-0042 paid' })).toHaveFocus()
+
+      // The last entry's: no entry after it, the panel itself.
+      within(panel).getAllByRole('button', { name: 'Mark notification as read' })[1].focus()
+      await user.keyboard('{Enter}')
+      expect(within(panel).getAllByRole('button', { name: 'Mark notification as read' })).toHaveLength(1)
+      expect(panel).toHaveFocus()
+
+      await user.keyboard('{Escape}')
+      expect(bell).toHaveAttribute('aria-expanded', 'false')
+      expect(bell).toHaveFocus()
+    })
+
+    it('gives the panel the focus once Read all goes, Tab going on from there', async () => {
+      const user = userEvent.setup()
+      render(<Held />)
+      const { panel } = await open(user)
+
+      within(panel).getByRole('button', { name: 'Read all' }).focus()
+      await user.keyboard('{Enter}')
+      expect(within(panel).queryByRole('button', { name: 'Read all' })).not.toBeInTheDocument()
+      expect(panel).toHaveFocus()
+      await user.tab()
+      expect(within(panel).getByRole('button', { name: 'Close notifications' })).toHaveFocus()
+    })
+
+    it('closes on Shift+Tab from the panel, as from its first control, the focus back on the bell', async () => {
+      const user = userEvent.setup()
+      render(<Held />)
+      const { bell, panel } = await open(user)
+
+      within(panel).getByRole('button', { name: 'Read all' }).focus()
+      await user.keyboard('{Enter}')
+      expect(panel).toHaveFocus()
+      await user.tab({ shift: true })
+      expect(bell).toHaveAttribute('aria-expanded', 'false')
+      expect(bell).toHaveFocus()
+    })
+
+    it('does so when the application marks it read later, once it has its answer', async () => {
+      const user = userEvent.setup()
+      render(<Held later />)
+      const { bell, panel } = await open(user)
+
+      const first = within(panel).getAllByRole('button', { name: 'Mark notification as read' })[0]
+      first.focus()
+      await user.keyboard('{Enter}')
+      // Not read yet: the focus stays where it is.
+      expect(first).toHaveFocus()
+      act(() => answers.shift()?.())
+      expect(first).not.toBeInTheDocument()
+      expect(within(panel).getByRole('link', { name: 'Order 2026-0042 paid' })).toHaveFocus()
+
+      await user.keyboard('{Escape}')
+      expect(bell).toHaveFocus()
+    })
   })
 
   it('closes at a press elsewhere', async () => {
