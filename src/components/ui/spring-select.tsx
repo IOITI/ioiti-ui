@@ -9,8 +9,6 @@ import { ChevronDown, Check } from 'lucide-react';
 import { useAnchoredLayer } from '../../lib/anchor.js';
 // ioiti-ui: held by its caller or by itself, as every control (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
-// ioiti-ui: EasyUI's names kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { fold } from '../../lib/search.js';
 import { cn } from '../../lib/utils.js';
@@ -24,7 +22,7 @@ import { dataAttributes, type DataAttributes } from '../../lib/data-attributes.j
 import { useForwardedRef } from '../../lib/refs.js';
 import { useFieldControl } from '../field-context.js';
 
-// ioiti-ui: named after its role, `SelectMenu` (EasyUI's `SpringSelect`, its former name: at the end of the file).
+// ioiti-ui: named after its role, `SelectMenu` (EasyUI's `SpringSelect`, its former name, removed in 1.0).
 export interface SelectMenuOption {
   value: string;
   label: string;
@@ -497,12 +495,3 @@ export const SelectMenu: React.FC<SelectMenuProps> = ({
     </div>
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the select, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `SelectMenu`. Removed in 1.0. */
-export const SpringSelect = renamed(SelectMenu, 'SpringSelect');
-/** @deprecated Use `SelectMenuProps`. Removed in 1.0. */
-export type SpringSelectProps = SelectMenuProps;
-/** @deprecated Use `SelectMenuOption`. Removed in 1.0. */
-export type SpringSelectOption = SelectMenuOption;

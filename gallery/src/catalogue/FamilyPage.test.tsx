@@ -8,7 +8,8 @@ import { A_PAGE, renderAt } from '../gallery-pages'
 import PROPS from '../props.json'
 import SINCE from '../since.json'
 import { FamilyStatus } from './FamilyStatus'
-import { PropsTables } from './PropsTables'
+import { COMPONENT_PROPS } from './props'
+import { PropsTable } from './PropsTables'
 import { isNew, sourceOf } from './shipped'
 import type { FamilyInfo } from './types'
 
@@ -22,8 +23,7 @@ const family = (name: string, more: Partial<FamilyInfo> = {}): FamilyInfo => ({ 
 const shown = (element: Element) => element.closest('details')?.open ?? true
 
 describe('a family’s page', () => {
-  it('says since when its component shipped, links to its source at the tag, and folds its deprecated props', async () => {
-    const user = userEvent.setup()
+  it('says since when its component shipped, and links to its source at the tag', async () => {
     renderAt('/components/actions/button')
     const title = await screen.findByRole('heading', { level: 1, name: 'Button' }, { timeout: 10_000 })
     const header = within(title.parentElement!)
@@ -33,19 +33,10 @@ describe('a family’s page', () => {
     expect(header.queryByText(`Since ${SHIPPED.Button}`)).not.toBeNull()
     expect(header.queryByText('New')).toBeNull()
     expect(header.queryByText('Deprecated')).toBeNull()
-
-    // Its deprecated prop (isLoading) is not among those of today, but folded under how many there are.
-    const props = within(document.getElementById('props')!)
-    expect(within(props.getByRole('table', { name: 'The props of Button' })).queryByText('isLoading')).toBeNull()
-    const folded = props.getByText('isLoading')
-    expect(shown(folded)).toBe(false)
-    await user.click(props.getByText('1 deprecated prop'))
-    expect(shown(folded)).toBe(true)
-    expect(folded.closest('table')?.getAttribute('aria-label')).toBe('The deprecated props of Button')
   }, A_PAGE)
 
-  it('marks a component no release has had as new, and one deprecated, beside its former names', () => {
-    const { unmount } = render(
+  it('marks a component no release has had as new, beside its former names', () => {
+    render(
       <IoitiProvider appName="ioiti-ui">
         <FamilyStatus family={family('Brandnew', { formerly: ['OldBrand'] })} />
       </IoitiProvider>,
@@ -53,19 +44,6 @@ describe('a family’s page', () => {
     const line = within(screen.getByText('Formerly OldBrand').parentElement!)
     expect(line.queryByText('New')).not.toBeNull()
     expect(line.queryByText(/^Since /)).toBeNull()
-    unmount()
-
-    render(
-      <IoitiProvider appName="ioiti-ui">
-        <FamilyStatus family={family('StretchSwitch', { deprecated: 'Switch' })} />
-      </IoitiProvider>,
-    )
-    expect(screen.queryByText('Deprecated')).not.toBeNull()
-    expect(screen.queryByText('New')).toBeNull()
-    expect(screen.queryByText(`Since ${SHIPPED.StretchSwitch}`)).not.toBeNull()
-    const replacement = screen.getByRole('link', { name: 'Switch' })
-    expect(replacement.getAttribute('href')).toBe('/components/choices/switch')
-    expect(replacement.parentElement?.textContent).toBe('Use Switch, which takes the same props; removed in 1.0.')
   })
 
   it('is new until a release after the one that shipped it, its source on main until one has', () => {
@@ -77,13 +55,21 @@ describe('a family’s page', () => {
     expect(sourceOf('NoSuchComponent', { NoSuchComponent: '0.1.0' }, '0.32.0')).toBeUndefined()
   })
 
-  it('says how many deprecated props a component has, and shows them on demand', async () => {
+  it('says how many deprecated props a component has, and shows them on demand, apart from those of today', async () => {
     const user = userEvent.setup()
-    render(<PropsTables names={['Tabs']} />)
-    const deprecated = PROPS.Tabs.props.filter((prop) => 'deprecated' in prop).map((prop) => prop.name)
-    expect(deprecated).toHaveLength(2)
+    // 1.0 removed every deprecated prop: two given here, as a version that deprecates one draws it.
+    const deprecated = ['activeTab', 'defaultTab']
+    const tabs = COMPONENT_PROPS.Tabs
+    render(
+      <PropsTable
+        name="Tabs"
+        component={{ ...tabs, props: [...tabs.props, ...deprecated.map((name) => ({ name, type: 'string', deprecated: 'Use `value`.' }))] }}
+      />,
+    )
+    expect(within(screen.getByRole('table', { name: 'The props of Tabs' })).queryByText('activeTab')).toBeNull()
     for (const name of deprecated) expect(shown(screen.getByText(name))).toBe(false)
     await user.click(screen.getByText('2 deprecated props'))
     for (const name of deprecated) expect(shown(screen.getByText(name))).toBe(true)
+    expect(screen.getByText('activeTab').closest('table')?.getAttribute('aria-label')).toBe('The deprecated props of Tabs')
   })
 })

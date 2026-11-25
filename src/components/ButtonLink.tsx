@@ -1,7 +1,6 @@
 import { Loader2 } from 'lucide-react'
 import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 
-import { deprecated } from '../lib/deprecated.js'
 import { cn } from '../lib/utils.js'
 import { useLinkComponent } from './link-context.js'
 import { Button, BUTTON_LABEL_CLASS, buttonClassName, buttonIconClassName } from './ui/button.js'
@@ -9,13 +8,8 @@ import type { ButtonSize, ButtonVariant } from './ui/button.js'
 
 /** The props of `ButtonLink`. */
 export interface ButtonLinkProps extends Omit<ComponentProps<'a'>, 'href' | 'className'> {
-  /**
-   * Where it leads. Nothing (`null`, or none given): a button that cannot be pressed, there being nowhere to go (no day
-   * before the first).
-   */
-  href?: string | null
-  /** @deprecated Use `href`. Removed in 1.0. */
-  to?: string | null
+  /** Where it leads. Nothing: a button that cannot be pressed, there being nowhere to go (no day before the first). */
+  href: string | null | undefined
   /**
    * Its page is loaded from the server: a plain `<a>`, not the application's link. For an address the server
    * answers, which the router would look for among the application's own pages and not find: a sign-in that
@@ -42,9 +36,8 @@ export interface ButtonLinkProps extends Omit<ComponentProps<'a'>, 'href' | 'cla
  */
 export function ButtonLink({
   href,
-  to,
   reloadDocument = false,
-  variant: givenVariant = 'primary',
+  variant = 'primary',
   size = 'md',
   pending = false,
   leftIcon,
@@ -55,12 +48,7 @@ export function ButtonLink({
   ...props
 }: ButtonLinkProps) {
   const Link = useLinkComponent(reloadDocument ? 'a' : undefined)
-  // Its former names read as today's, each said once in development.
-  if (to !== undefined) deprecated('link-to', 'ButtonLink')
-  if (givenVariant === 'destructive') deprecated('button-destructive', 'ButtonLink')
-  const target = href === undefined ? to : href
-  const variant = givenVariant === 'destructive' ? 'danger' : givenVariant
-  if (!target) {
+  if (!href) {
     return (
       <Button variant={variant} size={size} pending={pending} leftIcon={leftIcon} rightIcon={rightIcon} className={className} disabled>
         {children}
@@ -72,7 +60,7 @@ export function ButtonLink({
     // The application's link, held in context (LinkProvider), or `a`: the same component at every render.
     // oxlint-disable-next-line react/static-components
     <Link
-      href={target}
+      href={href}
       className={buttonClassName({
         variant,
         size,

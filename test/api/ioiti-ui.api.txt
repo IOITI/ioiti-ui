@@ -3,8 +3,6 @@ Made by npm run api (scripts/api-report.mjs); npm run lint holds it.
 
 type Accent = (typeof ACCENTS)[number]
 
-/** @deprecated */ const ACCENT_LABEL: Record<Accent, string>
-
 function accentName(accent: Accent, words?: LookWords): string
 
 const ACCENTS: readonly ["neutral", "violet", "indigo", "blue", "bloom", "lagoon", "aurora", "dusk", "golden"]
@@ -21,7 +19,6 @@ interface AccordionItem {
 interface AccordionProps {
   allowMultiple?: boolean
   className?: string
-  /** @deprecated */ defaultOpen?: string[]
   defaultValue?: string[]
   headingLevel?: 2 | 3 | 4 | 5 | 6
   items: AccordionItem[]
@@ -34,7 +31,6 @@ component ActivityHeatmap(props: ActivityHeatmapProps): JSX.Element
 interface ActivityHeatmapProps {
   animated?: boolean
   "aria-label"?: string
-  /** @deprecated */ ariaLabel?: string
   className?: string
   color?: string
   data?: HeatDay[]
@@ -251,12 +247,6 @@ interface AIResponseToolsSummaryProps {
   }>
 }
 
-/** @deprecated */ type AirportMatrixCity = WorldClockCity
-
-/** @deprecated */ component AirportMatrixClock(props: WorldClockProps): JSX.Element
-
-/** @deprecated */ type AirportMatrixClockProps = WorldClockProps
-
 component Alert(props: AlertProps): JSX.Element
 
 component AlertDescription(props: AlertDescriptionProps): JSX.Element
@@ -279,10 +269,6 @@ type AlertTone = StatusTone
 
 const ALL_TIME: DateRange
 
-/** @deprecated */ component AnimatedFileUpload: FC<FileUploadProps>
-
-/** @deprecated */ type AnimatedFileUploadProps = FileUploadProps
-
 component AnimatedNumber: FC<AnimatedNumberProps>
 
 interface AnimatedNumberProps {
@@ -298,10 +284,6 @@ interface AnimatedNumberProps {
   useGrouping?: boolean
   value: number
 }
-
-/** @deprecated */ component AnimatedTabs: FC<TabsProps>
-
-/** @deprecated */ type AnimatedTabsProps = TabsProps
 
 function announce(message: string, politeness?: Politeness): void
 
@@ -349,7 +331,6 @@ interface AppShellProps<S extends string = string> {
 component AttachmentChip(props: AttachmentChipProps): JSX.Element
 
 interface AttachmentChipProps {
-  /** @deprecated */ busy?: boolean
   className?: string
   detail?: ReactNode
   href?: string
@@ -431,7 +412,6 @@ component BarChart(props: BarChartProps): JSX.Element
 interface BarChartProps {
   animated?: boolean
   "aria-label"?: string
-  /** @deprecated */ ariaLabel?: string
   className?: string
   colorBy?: "series" | "sign"
   data: BarDatum[]
@@ -448,7 +428,6 @@ interface BarChartProps {
   series: BarSeries[]
   showLegend?: boolean
   tickAt?: (datum: BarDatum, index: number) => boolean
-  /** @deprecated */ tone?: "series" | "sign"
   variant?: "grouped" | "stacked"
 }
 
@@ -507,20 +486,18 @@ component ButtonLink(props: ButtonLinkProps): JSX.Element
 
 interface ButtonLinkProps extends Omit<ComponentProps<"a">, "href" | "className"> {
   className?: string
-  href?: string | null
+  href: string | null | undefined
   leftIcon?: ReactNode
   pending?: boolean
   reloadDocument?: boolean
   rightIcon?: ReactNode
   size?: ButtonSize
-  /** @deprecated */ to?: string | null
   variant?: ButtonVariant
 }
 
 interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
   children?: ReactNode
   fullWidth?: boolean
-  /** @deprecated */ isLoading?: boolean
   leftIcon?: ReactNode
   loadingText?: string
   pending?: boolean
@@ -531,7 +508,7 @@ interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
 
 type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon"
 
-type ButtonVariant = "default" | "primary" | "secondary" | "outline" | "ghost" | "danger" | "destructive" | "success" | "link" | "gradient"
+type ButtonVariant = "default" | "primary" | "secondary" | "outline" | "ghost" | "danger" | "success" | "link" | "gradient"
 
 component Calendar(props: CalendarProps): JSX.Element
 
@@ -711,7 +688,6 @@ interface ComboboxProps extends DataAttributes {
   id?: string
   name?: string
   onChange?: (value: string | null) => void
-  /** @deprecated */ onValueChange?: (value: string | null) => void
   options: ComboboxOption[]
   placeholder?: string
   ref?: Ref<HTMLButtonElement>
@@ -864,7 +840,6 @@ interface DataTableContextValue<T = any> {
   hiddenColumnIds: Set<string>
   isAllSelected: boolean
   isIndeterminate: boolean
-  /** @deprecated */ isLoading?: boolean
   isRowSelectable: (row: T) => boolean
   loading?: boolean
   pageSize: number
@@ -919,7 +894,6 @@ interface DataTableProps<T = any> {
   initialExpandedRowIds?: string[]
   initialFilters?: Record<string, string[]>
   initialSearch?: string
-  /** @deprecated */ isLoading?: boolean
   isRowSelectable?: (row: T) => boolean
   loading?: boolean
   onSelectionChange?: (ids: Set<string>) => void
@@ -1012,11 +986,6 @@ interface DateRangePreset {
   range?: DateRange
 }
 
-/** @deprecated */ const DEFAULT_HOME: {
-  label: string
-  href: string
-}
-
 const DEFAULT_THEME_STORAGE_KEY: "ioiti.theme"
 
 component DependencyTrace: FC<DependencyTraceProps>
@@ -1063,7 +1032,6 @@ interface DialogProps {
   defaultOpen?: boolean
   description?: ReactNode
   footer?: ReactNode
-  /** @deprecated */ hideCloseButton?: boolean
   onClose?: () => void
   onOpenChange?: (open: boolean) => void
   open?: boolean
@@ -1071,10 +1039,6 @@ interface DialogProps {
   size?: "sm" | "md" | "lg" | "xl" | "full"
   title?: ReactNode
 }
-
-/** @deprecated */ component DirectionalTooltip: FC<TooltipProps>
-
-/** @deprecated */ type DirectionalTooltipProps = TooltipProps
 
 component Disclosure(props: DisclosureProps): JSX.Element
 
@@ -1098,7 +1062,6 @@ component DonutChart(props: DonutChartProps): JSX.Element
 interface DonutChartProps {
   animated?: boolean
   "aria-label"?: string
-  /** @deprecated */ ariaLabel?: string
   centerLabel?: string
   className?: string
   data: DonutDatum[]
@@ -1122,8 +1085,6 @@ type DragConfirmActionType = "delete" | "archive" | "confirm" | "submit" | "unlo
 
 type DragConfirmSize = "sm" | "md" | "lg"
 
-/** @deprecated */ type DragConfirmVariant = "default" | "danger" | "warning" | "info" | "success"
-
 component DragToConfirm: FC<DragToConfirmProps>
 
 interface DragToConfirmProps {
@@ -1141,7 +1102,6 @@ interface DragToConfirmProps {
   onReset?: () => void
   size?: DragConfirmSize
   tone?: StatusTone
-  /** @deprecated */ variant?: DragConfirmVariant
 }
 
 component DropdownMenu(props: DropdownMenuProps): JSX.Element
@@ -1209,18 +1169,11 @@ interface DropdownMenuSubmenu extends ItemBase {
   type: "submenu"
 }
 
-/** @deprecated */ component DynamicIsland: FC<StatusIslandProps>
-
-/** @deprecated */ type DynamicIslandProps = StatusIslandProps
-
-/** @deprecated */ type DynamicIslandState = StatusIslandState
-
 component EmptyState(props: EmptyStateProps): JSX.Element
 
 interface EmptyStateProps {
   actions?: ReactNode
   className?: string
-  /** @deprecated */ compact?: boolean
   density?: "regular" | "compact"
   description?: ReactNode
   headingLevel?: 1 | 2 | 3 | 4 | 5 | 6
@@ -1315,7 +1268,6 @@ component FanChart(props: FanChartProps): JSX.Element
 interface FanChartProps {
   animated?: boolean
   "aria-label"?: string
-  /** @deprecated */ ariaLabel?: string
   bands: FanBand[]
   className?: string
   data: FanPoint[]
@@ -1388,43 +1340,11 @@ interface FileUploadProps {
   onUploadComplete?: (file: UploadFileItem) => void
   sequential?: boolean
   uploadHandler?: (file: UploadFileItem, onProgress: (progress: number) => void) => Promise<UploadResult>
-  variant?: "standard" | "compact"
+  variant?: "standard"
   workingLabel?: string
 }
 
 type FileUploadStatus = "queued" | "uploading" | "processing" | "complete" | "error"
-
-/** @deprecated */ component Flysheet(props: SheetProps): JSX.Element
-
-/** @deprecated */ component FlysheetBody(props: SheetBodyProps): JSX.Element
-
-/** @deprecated */ component FlysheetClose(props: SheetCloseProps): JSX.Element
-
-/** @deprecated */ type FlysheetCloseReason = SheetCloseReason
-
-/** @deprecated */ component FlysheetContent(props: SheetContentProps): JSX.Element | null
-
-/** @deprecated */ type FlysheetContentProps = SheetContentProps
-
-/** @deprecated */ component FlysheetDescription(props: SheetDescriptionProps): JSX.Element
-
-/** @deprecated */ component FlysheetFooter(props: SheetFooterProps): JSX.Element
-
-/** @deprecated */ component FlysheetHeader(props: SheetHeaderProps): JSX.Element
-
-/** @deprecated */ type FlysheetPadding = SheetPadding
-
-/** @deprecated */ type FlysheetProps = SheetProps
-
-/** @deprecated */ type FlysheetSide = SheetSide
-
-/** @deprecated */ type FlysheetSize = SheetSize
-
-/** @deprecated */ component FlysheetTitle(props: SheetTitleProps): JSX.Element
-
-/** @deprecated */ component FlysheetTrigger(props: SheetTriggerProps): JSX.Element
-
-/** @deprecated */ type FlysheetType = SheetType
 
 component Form: ForwardRefExoticComponent<FormProps & RefAttributes<HTMLFormElement>>
 
@@ -1514,7 +1434,6 @@ component FunnelChart(props: FunnelChartProps): JSX.Element
 interface FunnelChartProps {
   animated?: boolean
   "aria-label"?: string
-  /** @deprecated */ ariaLabel?: string
   className?: string
   emptyText?: string
   formatValue?: (n: number) => string
@@ -1536,8 +1455,6 @@ type GoodWhen = "up" | "down"
 function gravestTone(items: readonly {
   tone: StateTone
 }[]): StateTone
-
-/** @deprecated */ const HEALTH_STATUS_LABEL: Record<HealthStatus, string>
 
 type HealthStatus = "ok" | "warning" | "down" | "unknown" | "disabled"
 
@@ -1691,7 +1608,6 @@ interface LineChartProps {
   animated?: boolean
   area?: boolean
   "aria-label"?: string
-  /** @deprecated */ ariaLabel?: string
   className?: string
   connectGaps?: boolean
   data: LinePoint[]
@@ -1742,7 +1658,6 @@ component LiveLineChart(props: LiveLineChartProps): JSX.Element
 
 interface LiveLineChartProps {
   "aria-label"?: string
-  /** @deprecated */ ariaLabel?: string
   className?: string
   color?: string
   domain?: [number, number]
@@ -1816,8 +1731,6 @@ type LookWords = BoundCatalogue<Messages>["look"]
 
 type Material = (typeof MATERIALS)[number]
 
-/** @deprecated */ const MATERIAL_LABEL: Record<Material, string>
-
 function materialName(material: Material, words?: LookWords): string
 
 const MATERIALS: readonly ["flat", "glass"]
@@ -1872,7 +1785,7 @@ interface MeterProps {
   tone?: MeterTone
 }
 
-type MeterTone = "neutral" | "success" | "warning" | "danger" | "positive" | "negative"
+type MeterTone = "neutral" | "success" | "warning" | "danger"
 
 const motionTransitions: {
   springGentle: Transition
@@ -2004,7 +1917,6 @@ interface NotificationBellProps {
   defaultOpen?: boolean
   error?: ReactNode
   footer?: ReactNode
-  /** @deprecated */ isOpen?: boolean
   linkComponent?: ElementType
   loading?: boolean
   notifications: Notification[]
@@ -2069,8 +1981,6 @@ interface OTPInputProps extends DataAttributes {
   value?: string
 }
 
-/** @deprecated */ const PAGE_NOT_FOUND: string
-
 component PageHeader(props: PageHeaderProps): JSX.Element
 
 interface PageHeaderProps {
@@ -2110,7 +2020,6 @@ interface PanelProps {
   bodyClassName?: string
   children: ReactNode
   className?: string
-  /** @deprecated */ dense?: boolean
   density?: "regular" | "compact"
   description?: ReactNode
   id?: string
@@ -2140,9 +2049,8 @@ interface PeekLinkProps {
   children: ReactNode
   className?: string
   content: () => ReactNode
-  href?: string
+  href: string
   openOnTap?: boolean
-  /** @deprecated */ to?: string
 }
 
 type PluralForms = {
@@ -2197,7 +2105,6 @@ component PromptComposer(props: PromptComposerProps): JSX.Element
 
 interface PromptComposerProps {
   attachments?: ReactNode
-  /** @deprecated */ busy?: boolean
   className?: string
   controls?: ReactNode
   defaultValue?: string
@@ -2214,7 +2121,6 @@ interface PromptComposerProps {
   onFiles?: (files: File[]) => void
   onStop?: () => void
   onSubmit: (value: string) => void
-  /** @deprecated */ onValueChange?: (value: string) => void
   pending?: boolean
   placeholder?: string
   suggestions?: PromptSuggestion[]
@@ -2395,7 +2301,6 @@ interface SaveBarProps {
   pending?: boolean
   saveDisabled?: boolean
   saveLabel?: string
-  /** @deprecated */ saving?: boolean
 }
 
 component ScrollProgressNav: FC<ScrollProgressNavProps>
@@ -2434,7 +2339,6 @@ interface SegmentedControlProps<T extends string = string> extends DataAttribute
   fullWidth?: boolean
   id?: string
   label?: string
-  /** @deprecated */ labelledBy?: string
   name?: string
   onChange?: (value: T) => void
   options: SegmentedControlOption<T>[]
@@ -2511,10 +2415,6 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   options?: SelectOption[]
 }
 
-/** @deprecated */ component SettleModal: FC<DialogProps>
-
-/** @deprecated */ type SettleModalProps = DialogProps
-
 component Sheet(props: SheetProps): JSX.Element
 
 component SheetBody(props: SheetBodyProps): JSX.Element
@@ -2542,7 +2442,6 @@ interface SheetContentProps {
   padding?: SheetPadding
   pushMinWidth?: number
   resizable?: boolean
-  /** @deprecated */ showClose?: boolean
   showCloseButton?: boolean
   side?: SheetSide
   size?: SheetSize
@@ -2600,7 +2499,7 @@ type ShowToast = (message: ToastMessage) => void
 
 component Sidebar(props: SidebarProps): JSX.Element
 
-type SidebarBadgeTone = "neutral" | "warning" | "danger" | "negative"
+type SidebarBadgeTone = "neutral" | "warning" | "danger"
 
 type SidebarChild = {
   id: string
@@ -2745,14 +2644,6 @@ interface SliderTick {
   value: number
 }
 
-/** @deprecated */ component SmartComparison: FC<ComparisonTableProps>
-
-/** @deprecated */ type SmartComparisonProps = ComparisonTableProps
-
-/** @deprecated */ component SmoothAccordion: FC<AccordionProps>
-
-/** @deprecated */ type SmoothAccordionProps = AccordionProps
-
 type SortDirection = "asc" | "desc" | null
 
 component Sparkline(props: SparklineProps): JSX.Element | null
@@ -2839,12 +2730,6 @@ interface SpotlightSearchProps {
   remember?: string
 }
 
-/** @deprecated */ component SpringSelect: FC<SelectMenuProps>
-
-/** @deprecated */ type SpringSelectOption = SelectMenuOption
-
-/** @deprecated */ type SpringSelectProps = SelectMenuProps
-
 component StatCard(props: StatCardProps): JSX.Element
 
 interface StatCardProps {
@@ -2867,10 +2752,9 @@ component StateChip(props: StateChipProps): JSX.Element
 
 interface StateChipProps {
   hint: ReactNode
-  href?: string
+  href: string
   icon: ReactNode
   label: string
-  /** @deprecated */ to?: string
   tone: keyof typeof CHIP_TONE
 }
 
@@ -2969,10 +2853,6 @@ interface StepperProps {
   steps: Step[]
 }
 
-/** @deprecated */ component StretchSwitch: FC<SwitchProps>
-
-/** @deprecated */ type StretchSwitchProps = SwitchProps
-
 component Switch: FC<SwitchProps>
 
 interface SwitchProps extends DataAttributes {
@@ -3037,9 +2917,7 @@ type TableRowProps = ComponentProps<"tr">
 component Tabs: FC<TabsProps>
 
 interface TabsProps {
-  /** @deprecated */ activeTab?: string
   className?: string
-  /** @deprecated */ defaultTab?: string
   defaultValue?: string
   label?: string
   layoutId?: string
@@ -3061,9 +2939,8 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 component TextLink(props: TextLinkProps): JSX.Element
 
 interface TextLinkProps extends Omit<ComponentProps<"a">, "href"> {
-  href?: string
+  href: string
   reloadDocument?: boolean
-  /** @deprecated */ to?: string
   variant?: keyof typeof LOOK
 }
 
@@ -3072,8 +2949,6 @@ type Theme = "light" | "dark"
 const THEME_KEY_ATTRIBUTE: "data-theme-storage-key"
 
 function themeButtonLabel(preference: ThemePreference, theme: Theme, words?: LookWords): string
-
-/** @deprecated */ function themeLabel(preference: ThemePreference, theme: Theme): string
 
 type ThemePreference = "system" | Theme
 
@@ -3141,7 +3016,6 @@ interface TimeRangePickerProps extends DataAttributes {
   commonlyUsed?: CommonRange[]
   defaultValue?: TimeRange
   id?: string
-  /** @deprecated */ isLoading?: boolean
   loading?: boolean
   locale?: string
   name?: string
@@ -3169,7 +3043,6 @@ interface ToastMessage {
   description?: string
   title: string
   tone?: StatusTone
-  /** @deprecated */ variant?: VelocityToastVariant
 }
 
 type ToastPosition = "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right"
@@ -3188,7 +3061,6 @@ interface ToastProps {
   showProgress?: boolean
   title: string
   tone?: StatusTone
-  /** @deprecated */ variant?: VelocityToastVariant
   wrapperClassName?: string
   wrapperStyle?: CSSProperties
 }
@@ -3203,8 +3075,6 @@ interface ToastProviderProps {
 function toCsv<T>(rows: readonly T[], columns: readonly CsvColumn<T>[]): string
 
 function toIsoDay(date: Date): string
-
-/** @deprecated */ type Tone = SignTone
 
 function toneOf(value: number | null | undefined): SignTone
 
@@ -3294,11 +3164,8 @@ interface UndoToastProps {
   title?: string
   tone?: StatusTone
   undoLabel?: string
-  /** @deprecated */ variant?: UndoToastVariant
   wrapperClassName?: string
 }
-
-/** @deprecated */ type UndoToastVariant = "default" | "success" | "warning" | "error" | "info"
 
 const UNNAMED: "…"
 
@@ -3380,16 +3247,6 @@ function useTheme(): ThemeState
 function useToast(): ShowToast
 
 function useTrail(): Trail | null
-
-/** @deprecated */ component VelocityToast: FC<ToastProps>
-
-/** @deprecated */ type VelocityToastAction = ToastAction
-
-/** @deprecated */ type VelocityToastPosition = ToastPosition
-
-/** @deprecated */ type VelocityToastProps = ToastProps
-
-/** @deprecated */ type VelocityToastVariant = "default" | "success" | "warning" | "error" | "info"
 
 function watchSystem(onChange: () => void): () => void
 
@@ -3518,7 +3375,7 @@ interface KpiTileBaseProps {
 }
 
 // src/components/KpiTile.tsx
-type KpiTileTone = "warning" | "danger" | "negative"
+type KpiTileTone = "warning" | "danger"
 
 // src/components/KpiTile.tsx
 type KpiTileToneProps = {
@@ -3582,7 +3439,6 @@ interface SliderBase extends DataAttributes {
   "aria-invalid"?: boolean | "true" | "false"
   "aria-label"?: string
   "aria-labelledby"?: string
-  /** @deprecated */ ariaLabel?: string
   className?: string
   disabled?: boolean
   format?: (value: number) => string

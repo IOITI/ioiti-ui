@@ -6,15 +6,15 @@ import type { StatusTone } from '../lib/tones.js'
 import { cn } from '../lib/utils.js'
 import { Toast } from './ui/velocity-toast.js'
 
-import { ToastContext, ToastInsetContext, ToastRegionContext, toastTone } from './toast-context.js'
+import { ToastContext, ToastInsetContext, ToastRegionContext } from './toast-context.js'
 import type { ShowToast, ToastMessage } from './toast-context.js'
 
 /** Beyond this, the oldest waiting toasts are dropped: a burst must not take minutes to read out. */
 const MAX_WAITING = 6
 
 
-/** A toast waiting its turn: its tone read once, as it was shown (a former `variant` too). */
-interface QueuedToast extends Omit<ToastMessage, 'tone' | 'variant'> {
+/** A toast waiting its turn: its tone `neutral` where it was given none. */
+interface QueuedToast extends Omit<ToastMessage, 'tone'> {
   id: number
   tone: StatusTone
 }
@@ -53,9 +53,9 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
   const [leaving, setLeaving] = useState<number | null>(null)
   const nextId = useRef(0)
 
-  const show = useCallback<ShowToast>(({ tone, variant, ...message }) => {
+  const show = useCallback<ShowToast>(({ tone = 'neutral', ...message }) => {
     nextId.current += 1
-    const toast = { ...message, tone: toastTone(tone, variant, 'useToast'), id: nextId.current }
+    const toast = { ...message, tone, id: nextId.current }
     setQueue((waiting) => [...waiting, toast].slice(-MAX_WAITING))
   }, [])
 

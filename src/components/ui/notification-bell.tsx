@@ -5,10 +5,8 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Bell, CheckCheck, X } from 'lucide-react';
 import { focusables, useAnchoredLayer } from '../../lib/anchor.js';
-// ioiti-ui: held by its caller or by itself, as every layer (useControllableState); a former name said once, in
-// development (deprecated).
+// ioiti-ui: held by its caller or by itself, as every layer (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
-import { deprecated } from '../../lib/deprecated.js';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -48,8 +46,6 @@ export interface NotificationBellProps {
   open?: boolean;
   /** ioiti-ui: its panel open at first, the bell holding it then; closed by default. */
   defaultOpen?: boolean;
-  /** @deprecated Use `open`. Removed in 1.0. */
-  isOpen?: boolean;
   /** Open state change handler. ioiti-ui: told of every change, whoever holds it. */
   onOpenChange?: (open: boolean) => void;
   /** Show numeric counter inside red badge. Default is true. */
@@ -91,7 +87,6 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   onMarkAllAsRead,
   open,
   defaultOpen = false,
-  isOpen: formerOpen,
   onOpenChange,
   showCount = true,
   linkComponent,
@@ -113,11 +108,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   // ioiti-ui: its list, whose entries the focus goes on to (below).
   const listRef = useRef<HTMLDivElement>(null);
 
-  // ioiti-ui: `open`, as every layer; `isOpen`, its former name, read where it alone is given. Held by the bell unless
-  // the page holds it, `onOpenChange` told either way: given without `isOpen`, it took the bell's own state's place,
-  // and the panel never opened.
-  if (formerOpen !== undefined) deprecated('notification-bell-is-open', 'NotificationBell');
-  const [isPanelOpen, setPanelOpen] = useControllableState(open ?? formerOpen, defaultOpen, onOpenChange);
+  // ioiti-ui: `open`, as every layer, where EasyUI's said `isOpen`. Held by the bell unless the page holds it,
+  // `onOpenChange` told either way: given without `isOpen`, it took the bell's own state's place, and the panel never
+  // opened.
+  const [isPanelOpen, setPanelOpen] = useControllableState(open, defaultOpen, onOpenChange);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const prevCountRef = useRef(unreadCount);

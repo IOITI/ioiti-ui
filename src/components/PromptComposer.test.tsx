@@ -195,10 +195,6 @@ describe('PromptComposer in a locale', () => {
   })
 })
 
-// What the package says of a former name, once, in development.
-const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
-const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
-
 describe('PromptComposer holding its text', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -227,37 +223,5 @@ describe('PromptComposer holding its text', () => {
     expect(sent).toHaveBeenCalledWith('Why?')
     expect(screen.getByRole('textbox')).toHaveValue('Why?')
     expect(changed).not.toHaveBeenCalled()
-  })
-
-  it('says nothing of its names of today', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    render(<PromptComposer label="Ask" value="Again" onChange={() => {}} onSubmit={() => {}} pending onStop={() => {}} />)
-    expect(deprecations(warn)).toHaveLength(0)
-  })
-
-  it('still takes onValueChange and busy, each said once in development', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const told = vi.fn()
-    const { rerender } = render(<PromptComposer label="Ask" value="Again" onValueChange={told} onSubmit={() => {}} busy onStop={() => {}} />)
-    rerender(<PromptComposer label="Ask" value="Again" onValueChange={told} onSubmit={() => {}} busy onStop={() => {}} />)
-
-    expect(screen.getByRole('button', { name: 'Stop' })).toBeInTheDocument()
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Again, now' } })
-    expect(told).toHaveBeenCalledWith('Again, now')
-    const said = deprecations(warn).map(([message]) => String(message))
-    expect(said).toHaveLength(2)
-    expect(said[0]).toContain("(PromptComposer's onValueChange: onChange)")
-    expect(said[1]).toContain("(PromptComposer's busy: pending)")
-  })
-
-  it('tells onChange alone, and takes pending over busy, given both', () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const told = vi.fn()
-    const changed = vi.fn()
-    render(<PromptComposer label="Ask" value="Again" onChange={changed} onValueChange={told} onSubmit={() => {}} pending={false} busy onStop={() => {}} />)
-    expect(screen.queryByRole('button', { name: 'Stop' })).not.toBeInTheDocument()
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Again, now' } })
-    expect(changed).toHaveBeenCalledWith('Again, now')
-    expect(told).not.toHaveBeenCalled()
   })
 })

@@ -7,19 +7,15 @@ import { X } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_MD, DIALOG, SCRIM } from '../../lib/recipes.js';
-// ioiti-ui: held by its caller or by itself, as every layer (useControllableState); a former name said once, in
-// development (deprecated).
+// ioiti-ui: held by its caller or by itself, as every layer (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
-import { deprecated } from '../../lib/deprecated.js';
-// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 // ioiti-ui: the focus kept as every layer over the page keeps it; a dialog without a name said to its developer.
 import { devWarn } from '../../lib/dev.js';
 import { useFocusScope } from '../../lib/focus-scope.js';
 // ioiti-ui: its close button named in the provider's language.
 import { useMessages } from '../locale-context.js';
 
-// ioiti-ui: named after its role, `Dialog` (EasyUI's `SettleModal`, its former name: at the end of the file).
+// ioiti-ui: named after its role, `Dialog` (EasyUI's `SettleModal`, its former name, removed in 1.0).
 export interface DialogProps {
   /** ioiti-ui: open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`). */
   open?: boolean;
@@ -36,8 +32,6 @@ export interface DialogProps {
   footer?: React.ReactNode;
   /** ioiti-ui: its close (×) button, in the top-right (true), as every layer names it. */
   showCloseButton?: boolean;
-  /** @deprecated Use `showCloseButton`. Removed in 1.0. The other way round: `hideCloseButton` is `showCloseButton={false}`. */
-  hideCloseButton?: boolean;
   /**
    * ioiti-ui: its name, for a dialog without a `title`: a screen reader says "dialog" and nothing else without one. In
    * development, a dialog with neither says so in the console.
@@ -88,8 +82,7 @@ export const Dialog: React.FC<DialogProps> = ({
   description,
   children,
   footer,
-  showCloseButton,
-  hideCloseButton,
+  showCloseButton = true,
   closeOnBackdrop = true,
   size = 'md',
   className,
@@ -97,15 +90,12 @@ export const Dialog: React.FC<DialogProps> = ({
   'aria-labelledby': ariaLabelledBy,
 }) => {
   // ioiti-ui: open, held by the page or by the dialog (useControllableState); what closes it tells `onOpenChange` and
-  // `onClose`. `showCloseButton`, as every layer names it; `hideCloseButton`, its former name the other way round, read
-  // where it alone is given.
+  // `onClose`. `showCloseButton`, as every layer names it, where EasyUI's said `hideCloseButton` the other way round.
   const [open, setOpen] = useControllableState(openProp, defaultOpen, onOpenChange);
   const onClose = () => {
     setOpen(false);
     onClosed?.();
   };
-  if (hideCloseButton !== undefined) deprecated('hide-close-button', 'Dialog');
-  const withCloseButton = showCloseButton ?? !hideCloseButton;
   const titleId = useId();
   const words = useMessages().dialog;
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -200,7 +190,7 @@ export const Dialog: React.FC<DialogProps> = ({
               className
             )}
           >
-            {withCloseButton && (
+            {showCloseButton && (
               <button
                 type="button"
                 aria-label={words.close}
@@ -236,10 +226,3 @@ export const Dialog: React.FC<DialogProps> = ({
     document.body
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the dialog, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `Dialog`. Removed in 1.0. */
-export const SettleModal = renamed(Dialog, 'SettleModal');
-/** @deprecated Use `DialogProps`. Removed in 1.0. */
-export type SettleModalProps = DialogProps;

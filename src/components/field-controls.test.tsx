@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
 import type { ReactElement } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { expectAccessible } from '../../test/a11y.js'
 import { fr } from '../locales/fr.js'
@@ -19,7 +19,6 @@ import { DatePicker, DateRangePicker } from './ui/date-picker.js'
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage, RadioGroup, Switch } from './ui/form.js'
 import { OTPInput } from './ui/otp-input.js'
 import { SelectMenu } from './ui/spring-select.js'
-import { StretchSwitch } from './ui/stretch-switch.js'
 
 // Every control of the package wired by a Field as a native control is: named by its label, described by its
 // description and its error, marked invalid by the error; and taking what a native control takes (an id, a ref, a
@@ -380,8 +379,6 @@ describe('a control in a form', () => {
 
 describe('a control’s data attributes', () => {
   it('are drawn on its outermost element, with its class', () => {
-    // StretchSwitch, deprecated, says so once: not this test's matter.
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const { container } = render(
       <>
         <NumberInput label="Seats" data-testid="number" className="number" />
@@ -389,7 +386,6 @@ describe('a control’s data attributes', () => {
         <MultiSelect label="Cities" options={CITIES} data-testid="multi" className="multi" />
         <SelectMenu aria-label="Carrier" options={COUNTRIES} data-testid="menu" className="menu" />
         <Switch aria-label="Weekly summary" data-testid="switch" className="switch" />
-        <StretchSwitch aria-label="Notify the customer" data-testid="stretch" className="stretch" />
         <RadioGroup aria-label="Plan" name="plan" options={PLANS} data-testid="radios" className="radios" />
         <Slider label="Risk" data-testid="slider" className="slider" />
         <RangeSlider label="Price" data-testid="range" className="range" />
@@ -401,8 +397,7 @@ describe('a control’s data attributes', () => {
         <TimeRangePicker aria-label="Period of the logs" data-testid="time" className="time" />
       </>,
     )
-    warn.mockRestore()
-    for (const name of ['number', 'combobox', 'multi', 'menu', 'switch', 'stretch', 'radios', 'slider', 'range', 'segments', 'date', 'dates', 'code', 'edit', 'time']) {
+    for (const name of ['number', 'combobox', 'multi', 'menu', 'switch', 'radios', 'slider', 'range', 'segments', 'date', 'dates', 'code', 'edit', 'time']) {
       const element = screen.getByTestId(name)
       expect(element).toHaveClass(name)
       expect(element.parentElement).toBe(container)

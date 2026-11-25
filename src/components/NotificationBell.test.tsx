@@ -302,10 +302,6 @@ describe('NotificationBell in a language', () => {
   })
 })
 
-// What the package says of a former name, once, in development.
-const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
-const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
-
 describe('NotificationBell holding its panel open', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -340,23 +336,8 @@ describe('NotificationBell holding its panel open', () => {
     expect(bell).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('says nothing of its names of today, and still takes isOpen, said once in development', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { unmount } = render(<NotificationBell open notifications={[]} onMarkAsRead={() => {}} />)
-    expect(deprecations(warn)).toHaveLength(0)
-    unmount()
-
-    const { rerender } = render(<NotificationBell isOpen notifications={[]} onMarkAsRead={() => {}} />)
-    rerender(<NotificationBell isOpen notifications={[]} onMarkAsRead={() => {}} />)
+  it('shows its panel while the page holds it open', () => {
+    render(<NotificationBell open notifications={[]} onMarkAsRead={() => {}} />)
     expect(screen.getByRole('dialog', { name: 'Notifications' })).toBeInTheDocument()
-    const said = deprecations(warn)
-    expect(said).toHaveLength(1)
-    expect(String(said[0][0])).toContain("(NotificationBell's isOpen: open)")
-  })
-
-  it('takes open over isOpen, given both', () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
-    render(<NotificationBell open={false} isOpen notifications={[]} onMarkAsRead={() => {}} />)
-    expect(screen.queryByRole('dialog', { name: 'Notifications' })).not.toBeInTheDocument()
   })
 })

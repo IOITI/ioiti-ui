@@ -6,13 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { TOOLTIP } from '../../lib/recipes.js';
-// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 
 export type TooltipSide = 'top' | 'right' | 'bottom' | 'left';
 export type TooltipAlign = 'start' | 'center' | 'end';
 
-// ioiti-ui: named after its role, `Tooltip` (EasyUI's `DirectionalTooltip`, its former name: at the end of the file).
+// ioiti-ui: named after its role, `Tooltip` (EasyUI's `DirectionalTooltip`, its former name, removed in 1.0).
 export interface TooltipProps {
   /** Trigger element(s) */
   children: React.ReactElement;
@@ -298,10 +296,3 @@ export const Tooltip: React.FC<TooltipProps> = ({
     </span>
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the tooltip, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `Tooltip`. Removed in 1.0. */
-export const DirectionalTooltip = renamed(Tooltip, 'DirectionalTooltip');
-/** @deprecated Use `TooltipProps`. Removed in 1.0. */
-export type DirectionalTooltipProps = TooltipProps;

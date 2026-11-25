@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 
-import { deprecated } from '../lib/deprecated.js'
 import { cn } from '../lib/utils.js'
 
 /** The props of `EmptyState`. */
@@ -23,8 +22,6 @@ export interface EmptyStateProps {
    * @default 'regular'
    */
   density?: 'regular' | 'compact'
-  /** @deprecated Use `density="compact"`. Removed in 1.0. */
-  compact?: boolean
   className?: string
 }
 
@@ -32,10 +29,8 @@ export interface EmptyStateProps {
  * What a page, a panel or a table says when it has nothing to show, and the way to something: an icon, what
  * there is not under a heading, why, and what to do about it. For one quiet line, `EmptyText`.
  */
-export function EmptyState({ icon, title, headingLevel, description, actions, density, compact: formerCompact, className }: EmptyStateProps) {
-  // Its former name read as today's, said once in development.
-  if (formerCompact !== undefined) deprecated('empty-state-compact', 'EmptyState')
-  const compact = (density ?? (formerCompact ? 'compact' : 'regular')) === 'compact'
+export function EmptyState({ icon, title, headingLevel, description, actions, density = 'regular', className }: EmptyStateProps) {
+  const compact = density === 'compact'
   const Heading = `h${headingLevel ?? (compact ? 3 : 2)}` as const
   return (
     // Its words wrap, in a table whose cells keep theirs on one line too.

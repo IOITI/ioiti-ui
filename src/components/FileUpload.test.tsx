@@ -18,6 +18,15 @@ describe('FileUpload', () => {
     expect(screen.getByLabelText('Kibana export')).toHaveAttribute('type', 'file')
   })
 
+  it('draws the inline zone where its density is compact, the full-size one by default', () => {
+    const { unmount } = render(<FileUpload density="compact" />)
+    expect(screen.getByRole('button', { name: /Drop files here/ })).toHaveClass('min-h-[120px]')
+    unmount()
+
+    render(<FileUpload />)
+    expect(screen.getByRole('button', { name: /Drop files here/ })).toHaveClass('min-h-[180px]')
+  })
+
   it('tells the application of a file taken off the list', async () => {
     const user = userEvent.setup()
     const removed = vi.fn()

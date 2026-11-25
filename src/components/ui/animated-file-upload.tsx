@@ -17,10 +17,6 @@ import {
   Code
 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
-// ioiti-ui: its former value said once in development.
-import { deprecated } from '../../lib/deprecated.js';
-// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
@@ -45,8 +41,7 @@ export interface UploadFileItem {
 /** ioiti-ui: what an upload handler may answer: where its result is opened. */
 export type UploadResult = { href: string; label: string } | void;
 
-// ioiti-ui: named after its role, `FileUpload` (EasyUI's `AnimatedFileUpload`, its former name: at the end of the
-// file).
+// ioiti-ui: named after its role, `FileUpload` (EasyUI's `AnimatedFileUpload`, its former name, removed in 1.0).
 export interface FileUploadProps {
   /** Allow multiple files selection and upload */
   multiple?: boolean;
@@ -65,8 +60,8 @@ export interface FileUploadProps {
    * @default 'regular'
    */
   density?: 'regular' | 'compact';
-  /** Layout mode: standard full-size. ioiti-ui: `compact` is deprecated: use `density="compact"`, removed in 1.0. */
-  variant?: 'standard' | 'compact';
+  /** Layout mode: standard full-size. ioiti-ui: the inline zone is `density="compact"`. */
+  variant?: 'standard';
   /** Disabled state */
   disabled?: boolean;
   /** Initial files list for controlled or default showcase */
@@ -128,8 +123,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   maxFiles = 10,
   dropTitle,
   dropSubtitle,
-  density,
-  variant = 'standard',
+  density = 'regular',
   disabled = false,
   initialFiles,
   onFilesSelected,
@@ -369,9 +363,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     }
   };
 
-  // ioiti-ui: its former value read as today's, said once in development.
-  if (variant === 'compact') deprecated('upload-variant-compact', 'FileUpload');
-  const isCompact = (density ?? (variant === 'compact' ? 'compact' : 'regular')) === 'compact';
+  // ioiti-ui: the inline zone, `density="compact"`, where EasyUI's said `variant="compact"`.
+  const isCompact = density === 'compact';
 
   return (
     <div className={cn('w-full select-none font-sans', className)}>
@@ -594,10 +587,3 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     </div>
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the upload, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `FileUpload`. Removed in 1.0. */
-export const AnimatedFileUpload = renamed(FileUpload, 'AnimatedFileUpload');
-/** @deprecated Use `FileUploadProps`. Removed in 1.0. */
-export type AnimatedFileUploadProps = FileUploadProps;

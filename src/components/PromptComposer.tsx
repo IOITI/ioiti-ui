@@ -3,7 +3,6 @@ import type { ClipboardEvent, DragEvent, KeyboardEvent, ReactNode } from 'react'
 import { ArrowUp, Square } from 'lucide-react'
 
 import { useControllableState } from '../lib/controllable.js'
-import { deprecated } from '../lib/deprecated.js'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
@@ -24,16 +23,12 @@ export interface PromptComposerProps {
   defaultValue?: string
   /** Told of the text at each change, whoever holds it. */
   onChange?: (value: string) => void
-  /** @deprecated Use `onChange`. Removed in 1.0. */
-  onValueChange?: (value: string) => void
   /** The text sent, without its spaces around. */
   onSubmit: (value: string) => void
   /** While `pending`: the request under way stopped. Without it, nothing can be sent until it ends. */
   onStop?: () => void
   /** A request sent and not answered yet: nothing more can be sent meanwhile; `onStop` stops it. */
   pending?: boolean
-  /** @deprecated Use `pending`. Removed in 1.0. */
-  busy?: boolean
   disabled?: boolean
   /** Why nothing can be sent: shown on the button's hint, on hover, focus and tap. */
   disabledReason?: ReactNode
@@ -88,11 +83,9 @@ export function PromptComposer({
   value: valueProp,
   defaultValue = '',
   onChange,
-  onValueChange,
   onSubmit,
   onStop,
-  pending: pendingProp,
-  busy,
+  pending = false,
   disabled = false,
   disabledReason,
   label,
@@ -112,12 +105,8 @@ export function PromptComposer({
   const id = useId()
   const { formatNumber } = useFormat()
   const words = useMessages().ai
-  // Its text, held by the page or by itself (useControllableState); `onChange` and `pending`, as every control names
-  // them, their former names read where they alone are given.
-  if (onValueChange !== undefined) deprecated('prompt-composer-on-value-change', 'PromptComposer')
-  if (busy !== undefined) deprecated('busy', 'PromptComposer')
-  const [value, setValue] = useControllableState(valueProp, defaultValue, onChange ?? onValueChange)
-  const pending = pendingProp ?? busy ?? false
+  // Its text, held by the page or by itself (useControllableState).
+  const [value, setValue] = useControllableState(valueProp, defaultValue, onChange)
   const field = useRef<HTMLTextAreaElement>(null)
   // A drag of files over the frame: entered and left once for each element under it, so counted.
   const [dragged, setDragged] = useState(0)

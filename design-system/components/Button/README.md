@@ -2,7 +2,7 @@
 
 An action: primary for the one thing a page or a dialog is for, outline and ghost for the others, danger for what removes.
 
-**You provide** the words as `children`, `onClick`; `variant` (`primary` · `secondary` · `outline` · `ghost` · `danger` · `success` · `link`; `danger` formerly `destructive`), `size` (`xs` 24px · `sm` 32px · `md` 40px · `lg` 48px · `icon`), `leftIcon` / `rightIcon` (a lucide icon, sized to the words), `pending` with `loadingText` while the action it started is under way (formerly `isLoading`), `disabled`, `fullWidth`.
+**You provide** the words as `children`, `onClick`; `variant` (`primary` · `secondary` · `outline` · `ghost` · `danger` · `success` · `link`), `size` (`xs` 24px · `sm` 32px · `md` 40px · `lg` 48px · `icon`), `leftIcon` / `rightIcon` (a lucide icon, sized to the words), `pending` with `loadingText` while the action it started is under way, `disabled`, `fullWidth`.
 
 ```tsx
 <Button leftIcon={<Plus />}>New order</Button>

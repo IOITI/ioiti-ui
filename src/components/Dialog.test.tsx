@@ -82,10 +82,6 @@ describe('Dialog in a language', () => {
   })
 })
 
-// What the package says of a former name, once, in development.
-const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
-const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
-
 describe('Dialog held open', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -123,25 +119,5 @@ describe('Dialog held open', () => {
     expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
     rerender(<Dialog open title="Archive" showCloseButton={false} />)
     expect(screen.queryByRole('button', { name: 'Close' })).toBeNull()
-  })
-
-  it('says nothing of its names of today, and still takes hideCloseButton, said once in development', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { unmount } = render(<Dialog open title="Archive" showCloseButton={false} onOpenChange={() => {}} />)
-    expect(deprecations(warn)).toHaveLength(0)
-    unmount()
-
-    const { rerender } = render(<Dialog open title="Archive" hideCloseButton onClose={() => {}} />)
-    rerender(<Dialog open title="Archive" hideCloseButton onClose={() => {}} />)
-    expect(screen.queryByRole('button', { name: 'Close' })).toBeNull()
-    const said = deprecations(warn)
-    expect(said).toHaveLength(1)
-    expect(String(said[0][0])).toContain("(Dialog's hideCloseButton: showCloseButton, the other way round")
-  })
-
-  it('takes showCloseButton over hideCloseButton, given both', () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
-    render(<Dialog open title="Archive" showCloseButton hideCloseButton />)
-    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
   })
 })

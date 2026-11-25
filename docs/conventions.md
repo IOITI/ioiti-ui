@@ -1,7 +1,8 @@
 # Conventions
 
 What a component's props are called, so that an application can guess them: one thing is said one way everywhere. A
-name that breaks a convention is deprecated (`src/lib/deprecations.ts`) and keeps working until 1.0, which removes it.
+name that breaks a convention is deprecated (`src/lib/deprecations.ts`) and keeps working until the next major version,
+which removes it (`docs/stability.md`).
 
 ## A value
 
@@ -67,9 +68,11 @@ Success and positive are drawn in the positive colours, danger and negative in t
 
 A name or a value that breaks a convention is deprecated: listed in `src/lib/deprecations.ts` with what replaces it,
 typed `@deprecated` (the props tables mark it), said once in development when it is given (`deprecated(id)`), named in
-the CHANGELOG's Deprecated section. It works until 1.0, which removes it.
+the CHANGELOG's Deprecated section. It works through one minor version at least, and goes only in a major
+(`docs/stability.md`): 1.0 removed what 0.29.0 to 0.31.0 deprecated.
 
-An application rewrites its code with today's names by the codemod, which reads the same list:
+An application rewrites its code with today's names by the codemod, which reads the same list, and what 1.0 removed
+(`src/codemod/table.ts`):
 
 ```bash
 npx ioiti-ui-codemod            # src/, in place

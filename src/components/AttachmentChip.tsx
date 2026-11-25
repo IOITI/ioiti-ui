@@ -1,7 +1,6 @@
 import type { ElementType, ReactNode } from 'react'
 import { LoaderCircle, Paperclip, X } from 'lucide-react'
 
-import { deprecated } from '../lib/deprecated.js'
 import { CLOSE_SM } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
@@ -28,8 +27,6 @@ export interface AttachmentChipProps {
   tone?: 'neutral' | 'danger'
   /** While it is made ready (an upload): a spinner in place of its icon, said to screen readers. */
   pending?: boolean
-  /** @deprecated Use `pending`. Removed in 1.0. */
-  busy?: boolean
   className?: string
 }
 
@@ -56,13 +53,9 @@ export function AttachmentChip({
   linkComponent,
   onRemove,
   tone = 'neutral',
-  pending: givenPending,
-  busy,
+  pending = false,
   className,
 }: AttachmentChipProps) {
-  // Its former name read as today's, said once in development.
-  if (busy !== undefined) deprecated('busy', 'AttachmentChip')
-  const pending = givenPending ?? busy ?? false
   const applicationLink = useLinkComponent()
   const Link = linkComponent ?? applicationLink
   const words = useMessages().ai

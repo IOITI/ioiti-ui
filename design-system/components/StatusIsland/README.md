@@ -12,7 +12,7 @@ A pill that keeps its place in the top bar and grows into an island over the pag
 
 - The pill is a button: pressed, the island grows from it over the page; a press outside closes it.
 - The bar keeps its height: the pill stays in place and the island opens from its left edge, 22rem wide; on a phone, across the screen under the bar. Under glass both are `glass-float`.
-- Formerly `DynamicIsland`: that name still draws it until 1.0, and says so once in development.
+- Formerly `DynamicIsland`, removed in 1.0: `npx ioiti-ui-codemod` rewrites it.
 
 ## Accessibility
 

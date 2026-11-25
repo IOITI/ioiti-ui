@@ -1,8 +1,6 @@
 import { createContext, useContext } from 'react'
 
-import { deprecated } from '../lib/deprecated.js'
 import type { StatusTone } from '../lib/tones.js'
-import type { VelocityToastVariant } from './ui/velocity-toast.js'
 
 /**
  * The one thing a toast leads on to: where its news is dealt with (`href`, a link drawn by the application's,
@@ -25,10 +23,6 @@ export interface ToastMessage {
    * went wrong, which stays 8 s and is read out at once.
    */
   tone?: StatusTone
-  /**
-   * @deprecated Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`.
-   */
-  variant?: VelocityToastVariant
   /** One thing to do from the toast: a link or a button, beside its words. Such a toast stays longer (6 s). */
   action?: ToastAction
 }
@@ -41,18 +35,6 @@ export function useToast(): ShowToast {
   const context = useContext(ToastContext)
   if (!context) throw new Error('useToast must be used inside <ToastProvider>')
   return context
-}
-
-/**
- * A toast's tone: the one given, else its former `variant` read as one (`default` as `neutral`, `error` as `danger`),
- * `neutral` without either. A `variant` given is said once, in development (`where`: what was given it).
- */
-export function toastTone(tone: StatusTone | undefined, variant: VelocityToastVariant | undefined, where: string): StatusTone {
-  if (variant !== undefined) deprecated('toast-variant', where)
-  if (tone !== undefined) return tone
-  if (variant === 'default') return 'neutral'
-  if (variant === 'error') return 'danger'
-  return variant ?? 'neutral'
 }
 
 /**

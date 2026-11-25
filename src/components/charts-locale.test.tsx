@@ -284,6 +284,15 @@ describe('a chart given an application’s own words', () => {
     expect(screen.getByRole('img', { name: 'Lines: Essai 41 / Essai 42' })).toBeInTheDocument()
     expect(screen.getByRole('table', { name: 'Chart data' })).toBeInTheDocument()
   })
+
+  it('takes the name it is given over the catalogue’s, a live chart’s too', () => {
+    render(
+      <IoitiProvider messages={OWN_WORDS}>
+        <LiveLineChart initial={[1, 2, 3]} aria-label="Response time" />
+      </IoitiProvider>,
+    )
+    expect(screen.getByRole('img', { name: 'Response time' })).toBeInTheDocument()
+  })
 })
 
 describe('a chart in English, as it changed', () => {

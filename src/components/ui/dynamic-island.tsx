@@ -9,15 +9,13 @@ import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import { X } from 'lucide-react';
 // ioiti-ui: held by its caller or by itself, as every state (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
-// ioiti-ui: EasyUI's names kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, FLOATING } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 // ioiti-ui: what it says to a screen reader in the provider's language.
 import { useMessages } from '../locale-context.js';
 
-// ioiti-ui: named after its role, `StatusIsland` (EasyUI's `DynamicIsland`, its former name: at the end of the file).
+// ioiti-ui: named after its role, `StatusIsland` (EasyUI's `DynamicIsland`, its former name, removed in 1.0).
 export type StatusIslandState = 'collapsed' | 'expanded';
 
 export interface StatusIslandProps {
@@ -173,12 +171,3 @@ export const StatusIsland: React.FC<StatusIslandProps> = ({
     </div>
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the island, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `StatusIsland`. Removed in 1.0. */
-export const DynamicIsland = renamed(StatusIsland, 'DynamicIsland');
-/** @deprecated Use `StatusIslandProps`. Removed in 1.0. */
-export type DynamicIslandProps = StatusIslandProps;
-/** @deprecated Use `StatusIslandState`. Removed in 1.0. */
-export type DynamicIslandState = StatusIslandState;

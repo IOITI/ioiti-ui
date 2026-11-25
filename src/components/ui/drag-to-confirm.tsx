@@ -6,9 +6,8 @@ import { ChevronRight, Check, Trash2, Lock, Unlock, Archive, ArrowRight } from '
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { TONE_LINE, TONE_SOFT, TONE_SOLID, TONE_TEXT, type Tone } from '../../lib/recipes.js';
-// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md); its former `variant` said once
-// in development.
-import { deprecated } from '../../lib/deprecated.js';
+// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md), where EasyUI's took a
+// `variant`.
 import type { StatusTone } from '../../lib/tones.js';
 // ioiti-ui: its words in the provider's language, its percentage in its locale.
 import { useFormat, useMessages } from '../locale-context.js';
@@ -20,17 +19,6 @@ export type DragConfirmActionType =
   | 'submit'
   | 'unlock'
   | 'continue';
-
-/**
- * @deprecated Use `StatusTone`, which `tone` takes. Removed in 1.0. ioiti-ui: the values of the former `variant`, read as
- * a tone's (`default` as `neutral`).
- */
-export type DragConfirmVariant =
-  | 'default'
-  | 'danger'
-  | 'warning'
-  | 'info'
-  | 'success';
 
 export type DragConfirmSize = 'sm' | 'md' | 'lg';
 
@@ -46,8 +34,6 @@ export interface DragToConfirmProps {
    * (`danger` to delete, `warning` to unlock, `info` to submit, `neutral` otherwise).
    */
   tone?: StatusTone;
-  /** @deprecated Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`. */
-  variant?: DragConfirmVariant;
   /** Size variant */
   size?: DragConfirmSize;
   /** Custom idle icon */
@@ -105,9 +91,8 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   label: givenLabel,
   confirmedLabel: givenConfirmedLabel,
   actionType = 'confirm',
-  // ioiti-ui: its tone, and its former variant (read below).
+  // ioiti-ui: its tone (read below).
   tone: givenTone,
-  variant,
   size = 'md',
   icon,
   confirmedIcon,
@@ -139,10 +124,8 @@ export const DragToConfirm: React.FC<DragToConfirmProps> = ({
   const currentSize = SIZE_CONFIG[size] || SIZE_CONFIG.md;
 
   // Resolve active theme tone archetype
-  // ioiti-ui: a StatusTone, the one given, else the former `variant` (`default` read as `neutral`; said once in
-  // development), else the action's.
-  if (variant !== undefined) deprecated('drag-to-confirm-variant', 'DragToConfirm');
-  const resolvedTone: StatusTone = givenTone ?? (variant === 'default' ? 'neutral' : variant) ?? (
+  // ioiti-ui: a StatusTone, the one given, else the action's.
+  const resolvedTone: StatusTone = givenTone ?? (
     actionType === 'delete' ? 'danger' :
     actionType === 'unlock' ? 'warning' :
     actionType === 'submit' ? 'info' :

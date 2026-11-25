@@ -33,8 +33,6 @@ import {
 // ioiti-ui: more to say of a category, in the tooltip and the table.
 import { detailsText, type ChartDetail } from "../../lib/chart-details.js";
 import { niceDomain } from "../../lib/chart-scale.js";
-// ioiti-ui: its former names said once in development.
-import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { ChartLegend } from "../ChartLegend.js";
 // ioiti-ui: the words in the interface's language.
@@ -60,8 +58,6 @@ export interface BarChartProps {
    * @default "series"
    */
   colorBy?: "series" | "sign";
-  /** @deprecated Use `colorBy`. Removed in 1.0. */
-  tone?: "series" | "sign";
   height?: number;
   /** ioiti-ui: a value in the tooltip and the table: as the interface's locale writes it by default ("1,234.5"). */
   formatValue?: (n: number) => string;
@@ -88,8 +84,6 @@ export interface BarChartProps {
    * chart of Profit, Fees across 7 categories" and "Chart data".
    */
   "aria-label"?: string;
-  /** @deprecated Use `aria-label`. Removed in 1.0. */
-  ariaLabel?: string;
   className?: string;
 }
 
@@ -122,8 +116,7 @@ export function BarChart({
   data,
   series,
   variant = "grouped",
-  colorBy: givenColorBy,
-  tone,
+  colorBy = "series",
   height = 260,
   formatValue: givenFormatValue,
   formatTick: givenFormatTick,
@@ -134,15 +127,10 @@ export function BarChart({
   marked,
   showLegend = true,
   animated = true,
-  "aria-label": givenName,
-  ariaLabel,
+  // ioiti-ui: its name as ARIA writes it, where EasyUI's said `ariaLabel`.
+  "aria-label": name,
   className = "",
 }: BarChartProps) {
-  // ioiti-ui: its former names read as today's, each said once in development.
-  if (tone !== undefined) deprecated("bar-chart-tone", "BarChart");
-  if (ariaLabel !== undefined) deprecated("aria-label-camel", "BarChart");
-  const colorBy = givenColorBy ?? tone ?? "series";
-  const name = givenName ?? ariaLabel;
   // ioiti-ui: reduced as the system asks or IoitiProvider's reducedMotion says.
   const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;

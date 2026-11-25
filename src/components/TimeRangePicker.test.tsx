@@ -19,6 +19,11 @@ describe('TimeRangePicker', () => {
     expect(refreshed).toHaveBeenCalledWith({ from: 'now-15m', to: 'now' })
   })
 
+  it('says its data is on its way: its Refresh busy while it is loading', () => {
+    render(<TimeRangePicker loading />)
+    expect(screen.getByRole('button', { name: 'Refreshing' })).toHaveAttribute('aria-busy', 'true')
+  })
+
   it('applies a range commonly used in two clicks, then lists it as recently used', async () => {
     const user = userEvent.setup()
     const changed = vi.fn()

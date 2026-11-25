@@ -4,8 +4,6 @@ import { memo, useEffect, useId, useMemo, useState, type PointerEvent, type Reac
 import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { SECTION } from '../../lib/recipes.js';
-// ioiti-ui: EasyUI's names kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 import { useLocale, useMessages } from '../locale-context.js';
 
 
@@ -17,8 +15,7 @@ export interface WorldClockCity {
   timeZone: string;
 }
 
-// ioiti-ui: named after its role, `WorldClock` (EasyUI's `AirportMatrixClock`, its former name: at the end of the
-// file).
+// ioiti-ui: named after its role, `WorldClock` (EasyUI's `AirportMatrixClock`, its former name, removed in 1.0).
 export interface WorldClockProps {
   /** ioiti-ui: one to five cities, each with its IANA time zone. */
   cities: WorldClockCity[];
@@ -251,12 +248,3 @@ export function WorldClock({
     </section>
   );
 }
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the clock, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `WorldClock`. Removed in 1.0. */
-export const AirportMatrixClock = renamed(WorldClock, 'AirportMatrixClock');
-/** @deprecated Use `WorldClockProps`. Removed in 1.0. */
-export type AirportMatrixClockProps = WorldClockProps;
-/** @deprecated Use `WorldClockCity`. Removed in 1.0. */
-export type AirportMatrixCity = WorldClockCity;

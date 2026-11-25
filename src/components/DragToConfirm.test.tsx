@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { DragToConfirm } from './ui/drag-to-confirm.js'
 
@@ -11,13 +11,7 @@ function drawn(name: string) {
 
 // DragToConfirm's gestures and words: ConfirmAction.test.tsx (the slide).
 describe("DragToConfirm's tone", () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  // First: a deprecated name is said once in a run, whatever said it before.
   it('draws each tone its own: success in the positive one on its way too, neutral in grey', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     render(
       <>
         <DragToConfirm label="Slide to confirm" />
@@ -37,7 +31,6 @@ describe("DragToConfirm's tone", () => {
     expect(drawn('Slide to override').fill).toHaveClass('bg-warning/5')
     expect(drawn('Slide to remove').fill).toHaveClass('bg-negative/5')
     expect(drawn('Slide to remove').icon).toHaveClass('text-negative')
-    expect(warn).not.toHaveBeenCalled()
   })
 
   it("takes its action's tone where it is given none, the tone given over it", () => {
@@ -55,18 +48,5 @@ describe("DragToConfirm's tone", () => {
     expect(drawn('Slide to submit').fill).toHaveClass('bg-info/5')
     expect(drawn('Slide to archive').fill).toHaveClass('bg-border')
     expect(drawn('Slide to delete the draft').fill).toHaveClass('bg-warning/5')
-  })
-
-  it('reads its variant as its tone (default as neutral), the tone given over it, and says once in development that it is deprecated', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { rerender } = render(<DragToConfirm label="Slide to approve" variant="success" />)
-    expect(drawn('Slide to approve').fill).toHaveClass('bg-positive/5')
-    rerender(<DragToConfirm label="Slide to approve" variant="default" actionType="delete" />)
-    expect(drawn('Slide to approve').fill).toHaveClass('bg-border')
-    rerender(<DragToConfirm label="Slide to approve" variant="danger" tone="info" />)
-    expect(drawn('Slide to approve').fill).toHaveClass('bg-info/5')
-    expect(warn).toHaveBeenCalledTimes(1)
-    expect(String(warn.mock.calls[0][0])).toMatch(/^ioiti-ui: a name or a value the package deprecated/)
-    expect(String(warn.mock.calls[0][0])).toContain("(DragToConfirm's variant: tone")
   })
 })

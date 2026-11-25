@@ -200,11 +200,6 @@
   "height": 132
  },
  {
-  "name": "StretchSwitch",
-  "group": "Forms",
-  "height": 108
- },
- {
   "name": "OTPInput",
   "group": "Forms",
   "height": 116

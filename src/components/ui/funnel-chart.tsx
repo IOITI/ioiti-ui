@@ -11,8 +11,6 @@ import {
   useDismissOutside,
   useElementWidth,
 } from "../../lib/chart-primitives.js";
-// ioiti-ui: its former name said once in development.
-import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 // ioiti-ui: the words in the interface's language.
 import { useMessages } from "../locale-context.js";
@@ -44,8 +42,6 @@ export interface FunnelChartProps {
    * with 4 stages from Visited to Paid" and "Funnel data".
    */
   "aria-label"?: string;
-  /** @deprecated Use `aria-label`. Removed in 1.0. */
-  ariaLabel?: string;
   className?: string;
   /**
    * ioiti-ui: what the last stage is of the first, beside its share ("of the visits ended in a purchase"); "overall
@@ -74,16 +70,13 @@ export function FunnelChart({
   formatValue: givenFormatValue,
   showSummary = true,
   animated = true,
-  "aria-label": givenName,
-  ariaLabel,
+  // ioiti-ui: its name as ARIA writes it, where EasyUI's said `ariaLabel`.
+  "aria-label": name,
   className = "",
   summaryLabel: givenSummaryLabel,
   noun: givenNoun,
   emptyText: givenEmptyText,
 }: FunnelChartProps) {
-  // ioiti-ui: its former name read as today's, said once in development.
-  if (ariaLabel !== undefined) deprecated("aria-label-camel", "FunnelChart");
-  const name = givenName ?? ariaLabel;
   const reduce = useReducedMotionConfig();
   const anim = animated && !reduce;
   // ioiti-ui: the numbers, percentages and words in the interface's locale and language, where the application gives

@@ -564,8 +564,16 @@ try {
   const ids = Object.keys(DEPRECATIONS)
   const keptIds = ids.filter((id) => id.includes('-') && codes['ioiti-ui, whole'].includes(id))
   check(keptIds.length === 0, `a production build keeps none of the deprecations' list${keptIds.length ? `: ${keptIds.join(', ')}` : ''}`)
-  const { code: warned } = await bundled(app, work, "export { Button } from 'ioiti-ui'", 'development')
-  check(warned.includes('button-is-loading'), 'a development build keeps it (Button says isLoading is deprecated): the check above reads the right words')
+  // A development build of a component that reads a deprecated name keeps its id: the check above reads the right words.
+  // None to look for while nothing is deprecated (1.0 removed what 0.x deprecated).
+  const [warnedId, warnedEntry] = Object.entries(DEPRECATIONS).find(([, entry]) => entry.kind !== 'export' && entry.components?.length) ?? []
+  if (warnedId) {
+    const component = warnedEntry.components[0]
+    const { code: warned } = await bundled(app, work, `export { ${component} } from 'ioiti-ui'`, 'development')
+    check(warned.includes(warnedId), `a development build keeps it (${component} says ${warnedEntry.old} is deprecated): the check above reads the right words`)
+  } else {
+    check(ids.length === 0, 'nothing is deprecated: no warning for a development build to keep')
+  }
 
   // A language is bundled by an application that imports it, never by one that speaks English: the template's JavaScript
   // has none of French's words, which the French entry bundled alone has.

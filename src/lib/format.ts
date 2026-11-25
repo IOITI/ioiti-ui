@@ -281,14 +281,6 @@ export function toIsoDay(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
-/**
- * Which way a figure goes.
- *
- * @deprecated Use `SignTone`. Removed in 1.0. The same three values (`positive`, `negative`, `neutral`), under the name
- * of the package's vocabulary of signs (docs/conventions.md).
- */
-export type Tone = SignTone
-
 /** Which way a figure goes: `positive` above zero, `negative` below, `neutral` at zero or for no number. */
 export function toneOf(value: number | null | undefined): SignTone {
   if (!isNumber(value) || value === 0) return 'neutral'

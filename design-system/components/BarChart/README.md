@@ -1,6 +1,6 @@
 # BarChart
 
-Values by category, side by side or stacked, things compared in `chart-compare-1…4`; losses below zero, and `colorBy="sign"` (formerly `tone`) colours each bar `chart-positive` or `chart-negative`.
+Values by category, side by side or stacked, things compared in `chart-compare-1…4`; losses below zero, and `colorBy="sign"` colours each bar `chart-positive` or `chart-negative`.
 
 **You provide** `aria-label`, `data` (`[{ label, <key>: number }]`), `series` (`[{ key, label }]`); `variant` (`grouped` · `stacked`), `colorBy="sign"`, `height`, `formatValue`, `formatTitle`, `details(datum)`.
 

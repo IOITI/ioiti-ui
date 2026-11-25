@@ -58,10 +58,6 @@ describe('Tabs', () => {
   })
 })
 
-// What the package says of a former name, once, in development.
-const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
-const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
-
 describe('Tabs holding the tab shown', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -90,33 +86,5 @@ describe('Tabs holding the tab shown', () => {
     await user.click(screen.getByRole('tab', { name: 'History' }))
     rerender(<Tabs label="Views" tabs={TABS} defaultValue="lines" />)
     expect(screen.getByRole('tab', { name: 'History' })).toHaveAttribute('aria-selected', 'true')
-  })
-
-  it('says nothing of its names of today', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    render(<Tabs label="Views" tabs={TABS} value="lines" onChange={() => {}} />)
-    render(<Tabs label="Views" tabs={TABS} defaultValue="lines" />)
-    expect(deprecations(warn)).toHaveLength(0)
-  })
-
-  it('still takes its former names, activeTab and defaultTab, each said once in development', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { unmount } = render(<Tabs label="Views" tabs={TABS} activeTab="history" />)
-    expect(screen.getByRole('tab', { name: 'History' })).toHaveAttribute('aria-selected', 'true')
-    unmount()
-    const { rerender } = render(<Tabs label="Views" tabs={TABS} defaultTab="payments" />)
-    rerender(<Tabs label="Views" tabs={TABS} defaultTab="payments" />)
-    expect(screen.getByRole('tab', { name: 'Payments 0' })).toHaveAttribute('aria-selected', 'true')
-
-    const said = deprecations(warn).map(([message]) => String(message))
-    expect(said).toHaveLength(2)
-    expect(said[0]).toContain("(Tabs's activeTab: value)")
-    expect(said[1]).toContain("(Tabs's defaultTab: defaultValue)")
-  })
-
-  it('takes value over activeTab, given both', () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
-    render(<Tabs label="Views" tabs={TABS} value="lines" activeTab="history" />)
-    expect(screen.getByRole('tab', { name: 'Lines 4' })).toHaveAttribute('aria-selected', 'true')
   })
 })

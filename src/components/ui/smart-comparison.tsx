@@ -7,8 +7,6 @@ import { cn } from '../../lib/utils.js';
 import { fieldBorder } from '../../lib/field-border.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { PRESSABLE, SECTION } from '../../lib/recipes.js';
-// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 import { Hint } from '../Hint.js';
 import { useLinkComponent } from '../link-context.js';
 // ioiti-ui: its words in the provider's language (`table`).
@@ -46,7 +44,7 @@ export interface ComparisonCategory {
   features: ComparisonFeature[];
 }
 
-// ioiti-ui: named after its role, `ComparisonTable` (EasyUI's `SmartComparison`, its former name: at the end of the file).
+// ioiti-ui: named after its role, `ComparisonTable` (EasyUI's `SmartComparison`, its former name, removed in 1.0).
 export interface ComparisonTableProps extends React.HTMLAttributes<HTMLDivElement> {
   plans: ComparisonPlan[];
   categories: ComparisonCategory[];
@@ -471,10 +469,3 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
     </div>
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the comparison, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `ComparisonTable`. Removed in 1.0. */
-export const SmartComparison = renamed(ComparisonTable, 'SmartComparison');
-/** @deprecated Use `ComparisonTableProps`. Removed in 1.0. */
-export type SmartComparisonProps = ComparisonTableProps;

@@ -1,7 +1,8 @@
-// What the codemod rewrites, read from the list of what is deprecated (src/lib/deprecations.ts): a name the package
+// What the codemod rewrites, read from what 1.0 removed (table.ts) and what is deprecated (src/lib/deprecations.ts): a name the package
 // exports, a component's prop, one value of a prop. What the list cannot say alone (a prop whose meaning turned the
 // other way round, the values renamed with a prop) is said here, by the deprecation's id.
 import { DEPRECATIONS } from '../lib/deprecations.js'
+import { REMOVED } from './table.js'
 
 /** A name the package exports, renamed: its imports and every use of them in a file. */
 export interface ExportRename {
@@ -92,8 +93,11 @@ const IDENTIFIER = /^[A-Za-z_$][\w$]*$/
 const ATTRIBUTE = /^[A-Za-z][\w-]*$/
 const SET = /^([A-Za-z][\w-]*)="([^"]*)"$/
 
-/** The rules the list makes. `entries` is the list (DEPRECATIONS by default: a test gives its own). */
-export function rulesOf(entries: Readonly<Record<string, Entry>> = DEPRECATIONS): Rules {
+/**
+ * The rules the lists make: what 1.0 removed (table.ts) and what is deprecated today (deprecations.ts), by default; a
+ * test gives its own.
+ */
+export function rulesOf(entries: Readonly<Record<string, Entry>> = { ...REMOVED, ...DEPRECATIONS }): Rules {
   const exports: ExportRename[] = []
   const byHand: ExportByHand[] = []
   for (const [id, entry] of Object.entries(entries)) {

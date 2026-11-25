@@ -2,7 +2,7 @@
 
 One ratio against a limit, as a bar: a disk filled, a quota used, an error budget spent; under a `KpiTile`'s figure, or on a row of its own beside the figure it draws.
 
-**You provide** `ratio` (0–1, held to it), `label` (what it measures, for a screen reader: "Disk used"); `tone` (`neutral` · `success` · `warning` · `danger`, `neutral` by default; formerly `positive` and `negative` for success and danger); `scale` (what its two ends stand for, written under it: `['0', '50 GB']`).
+**You provide** `ratio` (0–1, held to it), `label` (what it measures, for a screen reader: "Disk used"); `tone` (`neutral` · `success` · `warning` · `danger`, `neutral` by default); `scale` (what its two ends stand for, written under it: `['0', '50 GB']`).
 
 ```tsx
 <KpiTile label="Disk" value="91%" hint="of 50 GB" tone="warning" toneLabel="Near the limit">

@@ -15,8 +15,8 @@ interface FamilyPageProps {
 }
 
 /**
- * A component's page: where it stands (new, deprecated, since when) and its source, then its examples, each with its
- * code, then its guidelines and its props.
+ * A component's page: where it stands (new, its former names, since when) and its source, then its examples, each
+ * with its code, then its guidelines and its props.
  */
 export function FamilyPage({ category, family, examples }: FamilyPageProps) {
   const main = useMainScroll()

@@ -1,8 +1,11 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { fr } from '../locales/fr.js'
 import { MENU } from '../test/menu.js'
-import { DEFAULT_HOME, menuEntry, menuSections, PAGE_NOT_FOUND, sidebarSections, trailFor, UNNAMED, type Menu } from './navigation.js'
+import { menuEntry, menuSections, sidebarSections, trailFor, UNNAMED, type Menu } from './navigation.js'
+
+/** The trail's step for an address that is no page, in English, the words by default. */
+const NOT_FOUND = 'Page not found'
 
 const entry = (pathname: string) => menuEntry(MENU, pathname)
 const trail = (pathname: string, page?: Parameters<typeof trailFor>[2]) => trailFor(MENU, pathname, page)
@@ -70,11 +73,11 @@ describe('where a page is', () => {
   })
 
   it('says of an address that is no page that it is none', () => {
-    expect(trail('/nothing')).toEqual([{ label: PAGE_NOT_FOUND }])
-    expect(trail('/orders/nothing', { title: PAGE_NOT_FOUND })).toEqual([
+    expect(trail('/nothing')).toEqual([{ label: NOT_FOUND }])
+    expect(trail('/orders/nothing', { title: NOT_FOUND })).toEqual([
       { label: 'Work' },
       { label: 'Orders', href: '/orders' },
-      { label: PAGE_NOT_FOUND },
+      { label: NOT_FOUND },
     ])
   })
 
@@ -129,7 +132,7 @@ describe('sections said more of than their names', () => {
       { label: 'October report', href: '/reports/r1' },
       { label: '9 Oct 2026' },
     ])
-    expect(trailFor(plain, '/nothing')).toEqual([{ label: PAGE_NOT_FOUND }])
+    expect(trailFor(plain, '/nothing')).toEqual([{ label: NOT_FOUND }])
   })
 })
 
@@ -267,38 +270,18 @@ describe('the trail in a language', () => {
     // A page that names itself names its step, in any language.
     expect(trailFor(MENU, '/orders/nothing', { title: 'Commande inconnue' }, '', fr.shell).at(-1)).toEqual({ label: 'Commande inconnue' })
   })
-
-  it('keeps its former constants in English', () => {
-    expect(PAGE_NOT_FOUND).toBe('Page not found')
-    expect(DEFAULT_HOME).toEqual({ label: 'Home', href: '/' })
-  })
 })
 
-describe('a badge in a former tone', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  const TONED = (tone: 'danger' | 'negative'): Menu => ({
-    sections: ['Work'],
-    entries: [
-      { id: 'orders', path: '/orders', label: 'Orders', section: 'Work', badge: '2 late', badgeTone: tone },
-      { id: 'returns', path: '/orders/returns', label: 'Returns', section: 'Work', parent: 'orders', badge: 'Blocked', badgeTone: tone },
-    ],
-  })
-
-  it('is the sidebar\'s danger, said once in development, and nothing is said of danger', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const said = () => warn.mock.calls.filter(([message]) => String(message).startsWith('ioiti-ui: a name or a value the package deprecated'))
-    const [today] = sidebarSections(TONED('danger'))
-    expect(today.items[0].badgeTone).toBe('danger')
-    expect(said()).toHaveLength(0)
-
-    const [former] = sidebarSections(TONED('negative'))
-    sidebarSections(TONED('negative'))
-    expect(former.items[0].badgeTone).toBe('danger')
-    expect(former.items[0].children?.[0].badgeTone).toBe('danger')
-    expect(said()).toHaveLength(1)
-    expect(String(said()[0][0])).toContain(`(AppShell's badgeTone="negative": danger)`)
+describe('a badge in a tone', () => {
+  it('is the sidebar\'s, on an entry and on one under it', () => {
+    const [section] = sidebarSections({
+      sections: ['Work'],
+      entries: [
+        { id: 'orders', path: '/orders', label: 'Orders', section: 'Work', badge: '2 late', badgeTone: 'danger' },
+        { id: 'returns', path: '/orders/returns', label: 'Returns', section: 'Work', parent: 'orders', badge: 'Blocked', badgeTone: 'warning' },
+      ],
+    })
+    expect(section.items[0].badgeTone).toBe('danger')
+    expect(section.items[0].children?.[0].badgeTone).toBe('warning')
   })
 })

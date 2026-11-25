@@ -2,7 +2,7 @@
 
 A value along a scale (`Slider`), or a range between two (`RangeSlider`), its value said in words.
 
-**You provide** `label` (or a `Field` or a `FormItem` around it, which names it), `min`, `max`, `step`, `value` / `defaultValue`, `onChange`, `format(value)` for the words; `ticks` (`true`, or `[{ value, label }]`); `levels` (`[{ from, to, tone: 'success' | 'warning' | 'danger' }]`, formerly `positive` and `negative`) to show where a value is safe or too far; `showInput` for a field beside it. In a form: `name`, its value sent (a `RangeSlider`'s two, the lower first). `id`, `ref` (its range input; a `RangeSlider`'s first thumb), `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-invalid`, as a range input takes them.
+**You provide** `label` (or a `Field` or a `FormItem` around it, which names it), `min`, `max`, `step`, `value` / `defaultValue`, `onChange`, `format(value)` for the words; `ticks` (`true`, or `[{ value, label }]`); `levels` (`[{ from, to, tone: 'success' | 'warning' | 'danger' }]`) to show where a value is safe or too far; `showInput` for a field beside it. In a form: `name`, its value sent (a `RangeSlider`'s two, the lower first). `id`, `ref` (its range input; a `RangeSlider`'s first thumb), `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-invalid`, as a range input takes them.
 
 ```tsx
 <Slider label="Risk per order" defaultValue={1.5} min={0} max={5} step={0.5}

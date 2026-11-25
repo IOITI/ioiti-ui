@@ -3,7 +3,6 @@ import { useContext, useEffect, useId, useLayoutEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 
 import { announce } from '../lib/announce.js'
-import { deprecated } from '../lib/deprecated.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { TOAST } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
@@ -22,8 +21,6 @@ export interface SaveBarProps {
   onDiscard?: () => void
   /** The save is on its way: Save says so, and neither Save nor Discard can be pressed meanwhile. */
   pending?: boolean
-  /** @deprecated Use `pending`. Removed in 1.0. */
-  saving?: boolean
   /** Save cannot be pressed: what there is to save is not valid yet (say why in `error`). */
   saveDisabled?: boolean
   /** Why it cannot be saved, or why the last save failed: said at once to a screen reader. */
@@ -50,8 +47,7 @@ export function SaveBar({
   message: givenMessage,
   onSave,
   onDiscard,
-  pending: givenPending,
-  saving,
+  pending = false,
   saveDisabled = false,
   error,
   saveLabel: givenSaveLabel,
@@ -60,9 +56,6 @@ export function SaveBar({
   label: givenLabel,
   className,
 }: SaveBarProps) {
-  // Its former name read as today's, said once in development.
-  if (saving !== undefined) deprecated('save-bar-saving', 'SaveBar')
-  const pending = givenPending ?? saving ?? false
   // Its words the provider's language's, its own props given over them.
   const words = useMessages().field
   // A `null` given says nothing, as it did.

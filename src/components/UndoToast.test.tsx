@@ -93,39 +93,17 @@ describe('UndoToast', () => {
   })
 })
 
-describe("UndoToast's tone, and its former variant", () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
+describe("UndoToast's tone", () => {
   /** The icon in its box, before its words. */
   const icon = (frame: HTMLElement) => frame.querySelector('.size-8 > svg')
 
-  // First: a deprecated name is said once in a run, whatever said it before.
   it('is drawn by its tone: a grey bin where it is neutral, the tone’s own icon otherwise', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const { rerender } = render(<UndoToast title="2 files removed" />)
     expect(icon(screen.getByRole('status'))).toHaveClass('text-muted-foreground')
     rerender(<UndoToast title="Customer blocked" tone="danger" />)
     expect(icon(screen.getByRole('alert'))).toHaveClass('text-negative')
     rerender(<UndoToast title="Invoice marked as paid" tone="success" />)
     expect(icon(screen.getByRole('status'))).toHaveClass('text-positive')
-    expect(warn).not.toHaveBeenCalled()
-  })
-
-  it('reads its variant as its tone (error as danger, default as neutral), and says once in development that it is deprecated', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { rerender } = render(<UndoToast title="Customer blocked" variant="error" />)
-    expect(screen.getByRole('alert')).toHaveTextContent('Customer blocked')
-    expect(icon(screen.getByRole('alert'))).toHaveClass('text-negative')
-    rerender(<UndoToast title="2 files removed" variant="default" />)
-    expect(icon(screen.getByRole('status'))).toHaveClass('text-muted-foreground')
-    // The tone given wins.
-    rerender(<UndoToast title="Customer blocked" variant="default" tone="danger" />)
-    expect(screen.getByRole('alert')).toHaveTextContent('Customer blocked')
-    expect(warn).toHaveBeenCalledTimes(1)
-    expect(String(warn.mock.calls[0][0])).toMatch(/^ioiti-ui: a name or a value the package deprecated/)
-    expect(String(warn.mock.calls[0][0])).toContain("(UndoToast's variant: tone, its values too: default is neutral, error is danger)")
   })
 })
 

@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useEffect } from 'react'
 import type { ComponentProps } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -205,14 +205,8 @@ describe('ToastProvider', () => {
   })
 })
 
-describe("a toast's tone, and its former variant", () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  // First: a deprecated name is said once in a run, whatever said it before.
-  it('is drawn by its tone, the icon its own, nothing said of a name deprecated', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+describe("a toast's tone", () => {
+  it('is drawn by its tone, the icon its own', () => {
     const icon = (frame: HTMLElement) => frame.querySelector('.size-8 > svg')
     const { rerender } = render(<Toast open title="Could not print the labels" tone="danger" />)
     expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
@@ -221,32 +215,6 @@ describe("a toast's tone, and its former variant", () => {
     expect(icon(screen.getByRole('status'))).toHaveClass('text-positive')
     rerender(<Toast open title="Draft saved" />)
     expect(icon(screen.getByRole('status'))).toHaveClass('text-muted-foreground')
-    renderProvider()
-    act(() => show({ title: 'Saved', tone: 'success' }))
-    expect(warn).not.toHaveBeenCalled()
-  })
-
-  it("reads useToast's variant as its tone (error as danger), and says once in development that it is deprecated", async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    renderProvider()
-    act(() => show({ title: 'The mail server does not answer', variant: 'error' }))
-    await waitFor(() => expect(screen.getAllByRole('alert').at(-1)).toHaveTextContent('The mail server does not answer'))
-    act(() => show({ title: 'Sent anyway', variant: 'default' }))
-    expect(warn).toHaveBeenCalledTimes(1)
-    expect(String(warn.mock.calls[0][0])).toMatch(/^ioiti-ui: a name or a value the package deprecated/)
-    expect(String(warn.mock.calls[0][0])).toContain("(useToast's variant: tone, its values too: default is neutral, error is danger)")
-  })
-
-  it("reads Toast's variant as its tone, the tone given over it, and says so once", () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { rerender } = render(<Toast open title="Could not print the labels" variant="error" />)
-    expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
-    rerender(<Toast open title="Could not print the labels" variant="default" />)
-    expect(screen.getByRole('status')).toHaveTextContent('Could not print the labels')
-    rerender(<Toast open title="Could not print the labels" variant="default" tone="danger" />)
-    expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
-    expect(warn).toHaveBeenCalledTimes(1)
-    expect(String(warn.mock.calls[0][0])).toContain("(Toast's variant: tone, its values too: default is neutral, error is danger)")
   })
 })
 

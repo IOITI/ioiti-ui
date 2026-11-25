@@ -4,7 +4,6 @@ import type { KeyboardEvent, ReactNode, Ref } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
 import { dataAttributes } from '../lib/data-attributes.js'
-import { deprecated } from '../lib/deprecated.js'
 import type { DataAttributes } from '../lib/data-attributes.js'
 import { invalidOf } from '../lib/field-border.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
@@ -29,8 +28,6 @@ export interface SegmentedControlProps<T extends string = string> extends DataAt
   onChange?: (value: T) => void
   /** The group's name for a screen reader: what is chosen ("Period"). Or `aria-labelledby`, a heading's id. */
   label?: string
-  /** @deprecated Use `aria-labelledby`. Removed in 1.0. */
-  labelledBy?: string
   /** Its name, as `label`. */
   'aria-label'?: string
   /** The id of what names the group: a heading. A Field's label names it without it. */
@@ -71,9 +68,8 @@ export function SegmentedControl<T extends string = string>({
   defaultValue,
   onChange,
   label,
-  labelledBy: formerLabelledBy,
   'aria-label': ariaLabel,
-  'aria-labelledby': labelledBy = formerLabelledBy,
+  'aria-labelledby': labelledBy,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
   id,
@@ -85,7 +81,6 @@ export function SegmentedControl<T extends string = string>({
   ref,
   ...rest
 }: SegmentedControlProps<T>) {
-  if (formerLabelledBy !== undefined) deprecated('segmented-control-labelled-by', 'SegmentedControl')
   const [chosen, choose] = useControllableState<T | undefined>(value, defaultValue, onChange as (value: T | undefined) => void)
   const pill = useId()
   const ownName = ariaLabel ?? label

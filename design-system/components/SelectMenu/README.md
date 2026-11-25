@@ -14,7 +14,7 @@ One value from a short list that springs open under its button, each option with
 
 - The button is 40px high on `surface` with `border`; the list floats in the document's body under it, or above it where there is more room, as wide as it, on `surface`, `shadow-elevated`, `glass-float` under glass, the option chosen ticked in the accent's `brand-text`.
 - A long list, or one typed into, is a `Select` or a `Combobox`; several values, a `MultiSelect`.
-- Formerly `SpringSelect`: that name still draws it until 1.0, and says so once in development.
+- Formerly `SpringSelect`, removed in 1.0: `npx ioiti-ui-codemod` rewrites it.
 
 ## Accessibility
 

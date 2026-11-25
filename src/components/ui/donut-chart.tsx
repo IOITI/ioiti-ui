@@ -22,8 +22,6 @@ import {
 } from "../../lib/chart-primitives.js";
 // ioiti-ui: the design's colours for things compared, and its grey for the rest.
 import { MUTED_COLOUR, seriesColours } from "../../lib/chart-colours.js";
-// ioiti-ui: its former name said once in development.
-import { deprecated } from "../../lib/deprecated.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 // ioiti-ui: the words in the interface's language.
 import { useMessages } from "../locale-context.js";
@@ -58,8 +56,6 @@ export interface DonutChartProps {
    * chart. Total 750" ("Gauge chart…" for a gauge) and "Chart data".
    */
   "aria-label"?: string;
-  /** @deprecated Use `aria-label`. Removed in 1.0. */
-  ariaLabel?: string;
   className?: string;
 }
 
@@ -169,13 +165,10 @@ export function DonutChart({
   formatValue: givenFormatValue,
   showLegend = true,
   animated = true,
-  "aria-label": givenName,
-  ariaLabel,
+  // ioiti-ui: its name as ARIA writes it, where EasyUI's said `ariaLabel`.
+  "aria-label": name,
   className = "",
 }: DonutChartProps) {
-  // ioiti-ui: its former name read as today's, said once in development.
-  if (ariaLabel !== undefined) deprecated("aria-label-camel", "DonutChart");
-  const name = givenName ?? ariaLabel;
   // ioiti-ui: reduced as the system asks or IoitiProvider's reducedMotion says.
   const reduce = useReducedMotionConfig() ?? false;
   const anim = animated && !reduce;

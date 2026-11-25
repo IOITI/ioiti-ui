@@ -3,12 +3,8 @@
 import React, { useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-// ioiti-ui: held by its caller or by itself, as every control (useControllableState); a former name said once, in
-// development (deprecated).
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
-import { deprecated } from '../../lib/deprecated.js';
-// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -19,7 +15,7 @@ export interface AccordionItem {
   content: React.ReactNode;
 }
 
-// ioiti-ui: named after its role, `Accordion` (EasyUI's `SmoothAccordion`, its former name: at the end of the file).
+// ioiti-ui: named after its role, `Accordion` (EasyUI's `SmoothAccordion`, its former name, removed in 1.0).
 export interface AccordionProps {
   items: AccordionItem[];
   allowMultiple?: boolean;
@@ -29,8 +25,6 @@ export interface AccordionProps {
   defaultValue?: string[];
   /** ioiti-ui: told of the ids of the items open, at each opening and closing. */
   onChange?: (value: string[]) => void;
-  /** @deprecated Use `defaultValue`. Removed in 1.0. */
-  defaultOpen?: string[];
   /**
    * ioiti-ui: each question in a heading of this level, which a screen reader lists with the page's own (none by
    * default); drawn as without it.
@@ -45,14 +39,11 @@ export const Accordion: React.FC<AccordionProps> = ({
   value,
   defaultValue,
   onChange,
-  defaultOpen,
   headingLevel,
   className,
 }) => {
-  // ioiti-ui: `value`, `defaultValue` and `onChange`, as every control; `defaultOpen`, the former name of
-  // `defaultValue`, read where it alone is given.
-  if (defaultOpen !== undefined) deprecated('smooth-accordion-default-open', 'Accordion');
-  const [openIds, setOpenIds] = useControllableState<string[]>(value, defaultValue ?? defaultOpen ?? [], onChange);
+  // ioiti-ui: `value`, `defaultValue` and `onChange`, as every control, where EasyUI's said `defaultOpen`.
+  const [openIds, setOpenIds] = useControllableState<string[]>(value, defaultValue ?? [], onChange);
   // ioiti-ui: the ids that tie each question to its answer (aria-controls, aria-labelledby).
   const baseId = useId();
   const Heading = headingLevel ? (`h${headingLevel}` as const) : null;
@@ -129,10 +120,3 @@ export const Accordion: React.FC<AccordionProps> = ({
     </div>
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the accordion, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `Accordion`. Removed in 1.0. */
-export const SmoothAccordion = renamed(Accordion, 'SmoothAccordion');
-/** @deprecated Use `AccordionProps`. Removed in 1.0. */
-export type SmoothAccordionProps = AccordionProps;

@@ -77,7 +77,6 @@ export function ComponentIndex() {
                       <p className="truncate text-xs text-muted-foreground">With {family.names.slice(1).join(', ')}</p>
                     )}
                     {family.formerly && <p className="truncate text-xs text-muted-foreground">Formerly {family.formerly.join(', ')}</p>}
-                    {family.deprecated && <p className="truncate text-xs text-muted-foreground">Deprecated: use {family.deprecated}</p>}
                   </li>
                 ))}
             </ul>

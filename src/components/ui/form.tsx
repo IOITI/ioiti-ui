@@ -654,8 +654,7 @@ export const Switch: React.FC<SwitchProps> = ({
   ...rest
 }) => {
   const [current, setCurrent] = useControllableState(checked, defaultChecked, onChange);
-  // ioiti-ui: named by its label and described by its description, as StretchSwitch: a screen reader said only
-  // "switch, on".
+  // ioiti-ui: named by its label and described by its description: a screen reader said only "switch, on".
   const id = useId();
   // ioiti-ui: named and described from outside too (`aria-*`, a Field or a FormItem around it), its id from a
   // FormItem, whose FormLabel then names it; it could take none of them.

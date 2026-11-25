@@ -6,24 +6,17 @@ import { Check, X, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
-// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md); its former `variant` read as
-// one (toastTone).
+// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md), where EasyUI's took a
+// `variant`.
 import type { StatusTone } from '../../lib/tones.js';
 import { useLinkComponent } from '../link-context.js';
 // ioiti-ui: its close button named in the provider's language.
 import { useMessages } from '../locale-context.js';
-import { ToastRegionContext, toastTone } from '../toast-context.js';
-// ioiti-ui: its action, what useToast() is given (ToastAction, the same shape); EasyUI's names kept until 1.0, drawing
-// this one (renamed).
+import { ToastRegionContext } from '../toast-context.js';
+// ioiti-ui: its action, what useToast() is given (ToastAction, the same shape).
 import type { ToastAction } from '../toast-context.js';
-import { renamed } from '../../lib/renamed.js';
 
-/**
- * @deprecated Use `StatusTone`, which `tone` takes. Removed in 1.0. ioiti-ui: the values of the former `variant`, read as
- * a tone's (`default` as `neutral`, `error` as `danger`).
- */
-export type VelocityToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
-// ioiti-ui: named after its role, `Toast` (EasyUI's `VelocityToast`, its former name: at the end of the file).
+// ioiti-ui: named after its role, `Toast` (EasyUI's `VelocityToast`, its former name, removed in 1.0).
 export type ToastPosition =
   | 'top-left'
   | 'top-center'
@@ -43,10 +36,6 @@ export interface ToastProps {
    * went wrong, read out at once.
    */
   tone?: StatusTone;
-  /**
-   * @deprecated Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`.
-   */
-  variant?: VelocityToastVariant;
   position?: ToastPosition;
   showProgress?: boolean;
   icon?: React.ReactNode;
@@ -114,9 +103,8 @@ export const Toast: React.FC<ToastProps> = ({
   title,
   description,
   duration = 4000,
-  // ioiti-ui: its tone, and its former variant (read below).
-  tone: givenTone,
-  variant,
+  // ioiti-ui: its tone, `neutral` by default, where EasyUI's took a `variant`.
+  tone = 'neutral',
   position = 'bottom-center',
   showProgress = true,
   icon,
@@ -127,8 +115,6 @@ export const Toast: React.FC<ToastProps> = ({
   action,
   linkComponent,
 }) => {
-  // ioiti-ui: its tone, `neutral` by default; its former `variant` read as one, said once in development.
-  const tone = toastTone(givenTone, variant, 'Toast');
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
   const words = useMessages().toast;
@@ -306,14 +292,3 @@ export const Toast: React.FC<ToastProps> = ({
     </div>
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the toast, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `Toast`. Removed in 1.0. */
-export const VelocityToast = renamed(Toast, 'VelocityToast');
-/** @deprecated Use `ToastProps`. Removed in 1.0. */
-export type VelocityToastProps = ToastProps;
-/** @deprecated Use `ToastPosition`. Removed in 1.0. */
-export type VelocityToastPosition = ToastPosition;
-/** @deprecated Use `ToastAction`, what useToast() is given too. Removed in 1.0. */
-export type VelocityToastAction = ToastAction;

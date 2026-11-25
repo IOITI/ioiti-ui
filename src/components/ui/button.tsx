@@ -6,7 +6,6 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
-import { deprecated } from '../../lib/deprecated.js';
 
 export type ButtonVariant =
   | 'default'
@@ -14,10 +13,8 @@ export type ButtonVariant =
   | 'secondary'
   | 'outline'
   | 'ghost'
-  // ioiti-ui: `danger`, the tones' word (StatusTone); `destructive` is its former name, read as it and said once in
-  // development (removed in 1.0).
+  // ioiti-ui: `danger`, the tones' word (StatusTone), where EasyUI's said `destructive`.
   | 'danger'
-  | 'destructive'
   | 'success'
   | 'link'
   | 'gradient';
@@ -35,8 +32,6 @@ export interface ButtonProps
    * cannot be pressed again meanwhile (`loading` is for content not there yet).
    */
   pending?: boolean;
-  /** @deprecated Use `pending`. Removed in 1.0. */
-  isLoading?: boolean;
   /** Text or element displayed during loading */
   loadingText?: string;
   /** Icon placed before the button children */
@@ -69,8 +64,6 @@ const variantStyles: Record<ButtonVariant, string> = {
   // ioiti-ui: the design's tones (recipes.ts): soft at rest, filled under the pointer (in dark too: its soft ground's
   // `dark:` came after a plain `hover:`), the page's own colour on it.
   danger:
-    `${TONE_SOFT.negative} border ${TONE_LINE.negative} hover:bg-negative dark:hover:bg-negative hover:text-background cursor-pointer`,
-  destructive:
     `${TONE_SOFT.negative} border ${TONE_LINE.negative} hover:bg-negative dark:hover:bg-negative hover:text-background cursor-pointer`,
   success:
     `${TONE_SOFT.positive} border ${TONE_LINE.positive} hover:bg-positive dark:hover:bg-positive hover:text-background cursor-pointer`,
@@ -139,8 +132,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     {
       variant = 'primary',
       size = 'md',
-      pending,
-      isLoading: formerPending,
+      // ioiti-ui: `pending`, the package's word for an action under way, where EasyUI's said `isLoading`.
+      pending: isLoading = false,
       loadingText,
       leftIcon,
       rightIcon,
@@ -153,10 +146,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    // ioiti-ui: its former names read as today's, each said once in development.
-    if (formerPending !== undefined) deprecated('button-is-loading', 'Button');
-    if (variant === 'destructive') deprecated('button-destructive', 'Button');
-    const isLoading = pending ?? formerPending ?? false;
     const isDisabled = disabled || isLoading;
 
     return (

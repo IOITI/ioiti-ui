@@ -31,7 +31,7 @@ The name of the application and of its broker appear nowhere in the package's co
 |---|---|---|
 | `ConfirmLiveAction` | `ConfirmAction` | Its default warning was about WATA's live trading account; `warning` is given by the caller now. |
 | `PnlValue` | `SignedValue` | A signed figure, a gain or a loss of anything. |
-| `ServiceStatusBadge` (`ServiceStatus`, `SERVICE_STATUS_LABEL`) | `StatusBadge` (`HealthStatus`, `HEALTH_STATUS_LABEL`) | The same states and words, for anything a health check reports. |
+| `ServiceStatusBadge` (`ServiceStatus`, `SERVICE_STATUS_LABEL`) | `StatusBadge` (`HealthStatus`; its words the catalogue's, `useMessages().status`) | The same states and words, for anything a health check reports. |
 | `payment-status` (`PaymentStatus`…) | `request-status` (`RequestStatus`…) | What it shows since WATA's changes: a request followed to its outcome. |
 | `THEME_STORAGE_KEY` (`wata.theme`) | `DEFAULT_THEME_STORAGE_KEY` (`ioiti.theme`), or the application's own key | One key per application. |
 | `AppShell` (WATA's, with its menu, chips and pill) | `AppShell` / `RouterAppShell` (the menu and the top bar's ends given) | The frame without WATA's content. |

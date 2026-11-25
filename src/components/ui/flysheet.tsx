@@ -5,13 +5,10 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls, type PanInfo } from "framer-motion";
 import { X } from "lucide-react";
 // ioiti-ui: held by its caller or by itself, as every layer (useControllableState, which passes why it closed on):
-// its own copy is gone. A former name said once, in development (deprecated).
+// its own copy is gone.
 import { useControllableState } from "../../lib/controllable.js";
-import { deprecated } from "../../lib/deprecated.js";
 // ioiti-ui: the focus kept as every layer keeps it (useFocusScope): its own trap and its list of the sheets open are gone.
 import { useFocusScope } from "../../lib/focus-scope.js";
-// ioiti-ui: the names it had until 0.31.0 kept until 1.0, drawing its parts (renamed).
-import { renamed } from "../../lib/renamed.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { CLOSE_MD, SCRIM } from "../../lib/recipes.js";
 import { useScrollRegion } from "../../lib/scroll-region.js";
@@ -21,7 +18,7 @@ import { useMessages } from "../locale-context.js";
 
 /*
  * ioiti-ui: EasyUI's sheet, which this package named Flysheet until 0.31.0 (its parts are Sheet… again, the name of
- * their role; their former names, at the end of the file, draw them until 1.0), with what Elastic UI's flyout
+ * their role; their former names, removed in 1.0), with what Elastic UI's flyout
  * (EuiFlyout) does, written here from its documentation: a side sheet's width (three sizes, or pixels, between a
  * minimum and a maximum), which the reader may change by its inner edge or with the arrow keys on it; the page pushed
  * aside rather than covered, from a window wide enough; no backdrop, the page still in use; a child
@@ -317,8 +314,6 @@ export interface SheetContentProps {
   padding?: SheetPadding;
   /** ioiti-ui: its close button (true), as every layer names it (`showCloseButton`). */
   showCloseButton?: boolean;
-  /** @deprecated Use `showCloseButton`. Removed in 1.0. */
-  showClose?: boolean;
   /** ioiti-ui: the close button inside the panel, or outside it, on the side facing the page. */
   closePosition?: "inside" | "outside";
   /** ioiti-ui: its name, for a sheet without a SheetTitle. */
@@ -339,17 +334,14 @@ export function SheetContent({
   maxWidth,
   onResize,
   padding = "md",
-  showCloseButton,
-  showClose,
+  // ioiti-ui: `showCloseButton`, as every layer names it, where EasyUI's said `showClose`.
+  showCloseButton = true,
   closePosition = "inside",
   "aria-label": ariaLabel,
   className,
   children,
 }: SheetContentProps) {
   const { open, setOpen, titleId, descId, hasDesc, contentId, hasTitle } = useSheet();
-  // ioiti-ui: `showCloseButton`, as every layer names it; `showClose`, its former name, read where it alone is given.
-  if (showClose !== undefined) deprecated("show-close", "SheetContent");
-  const withCloseButton = showCloseButton ?? showClose ?? true;
   // ioiti-ui: the sheet this one is a child of, if any: it takes its side and its mode, and is drawn
   // in its layer, beside it while it fits there, over it otherwise.
   const parent = React.useContext(LayerContext);
@@ -589,7 +581,7 @@ export function SheetContent({
   // ioiti-ui: outside the panel when asked (Elastic's), but inside while a child is beside it, which it
   // would cover; the design's greys (EasyUI's neutral-400 was 2.5:1 on white) and its one focus ring.
   const outside = closePosition === "outside" && child !== "beside";
-  const closeButton = withCloseButton ? (
+  const closeButton = showCloseButton ? (
     <button
       type="button"
       aria-label={words.close}
@@ -822,38 +814,3 @@ export function SheetFooter({ className, ...props }: SheetFooterProps) {
     />
   );
 }
-
-// ioiti-ui: the names it had until 0.31.0, until 1.0: each draws its part, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `Sheet`. Removed in 1.0. */
-export const Flysheet = renamed(Sheet, "Flysheet");
-/** @deprecated Use `SheetTrigger`. Removed in 1.0. */
-export const FlysheetTrigger = renamed(SheetTrigger, "FlysheetTrigger");
-/** @deprecated Use `SheetClose`. Removed in 1.0. */
-export const FlysheetClose = renamed(SheetClose, "FlysheetClose");
-/** @deprecated Use `SheetContent`. Removed in 1.0. */
-export const FlysheetContent = renamed(SheetContent, "FlysheetContent");
-/** @deprecated Use `SheetHeader`. Removed in 1.0. */
-export const FlysheetHeader = renamed(SheetHeader, "FlysheetHeader");
-/** @deprecated Use `SheetTitle`. Removed in 1.0. */
-export const FlysheetTitle = renamed(SheetTitle, "FlysheetTitle");
-/** @deprecated Use `SheetDescription`. Removed in 1.0. */
-export const FlysheetDescription = renamed(SheetDescription, "FlysheetDescription");
-/** @deprecated Use `SheetBody`. Removed in 1.0. */
-export const FlysheetBody = renamed(SheetBody, "FlysheetBody");
-/** @deprecated Use `SheetFooter`. Removed in 1.0. */
-export const FlysheetFooter = renamed(SheetFooter, "FlysheetFooter");
-/** @deprecated Use `SheetProps`. Removed in 1.0. */
-export type FlysheetProps = SheetProps;
-/** @deprecated Use `SheetContentProps`. Removed in 1.0. */
-export type FlysheetContentProps = SheetContentProps;
-/** @deprecated Use `SheetCloseReason`. Removed in 1.0. */
-export type FlysheetCloseReason = SheetCloseReason;
-/** @deprecated Use `SheetPadding`. Removed in 1.0. */
-export type FlysheetPadding = SheetPadding;
-/** @deprecated Use `SheetSide`. Removed in 1.0. */
-export type FlysheetSide = SheetSide;
-/** @deprecated Use `SheetSize`. Removed in 1.0. */
-export type FlysheetSize = SheetSize;
-/** @deprecated Use `SheetType`. Removed in 1.0. */
-export type FlysheetType = SheetType;

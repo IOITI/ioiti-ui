@@ -6,7 +6,6 @@ import { stubSystemTheme } from '../test/systemTheme.js'
 import { bindMessages } from './messages.js'
 import {
   ACCENT_ATTRIBUTE,
-  ACCENT_LABEL,
   accentName,
   ACCENTS,
   applyAccent,
@@ -14,7 +13,6 @@ import {
   applyTheme,
   lookLabel,
   MATERIAL_ATTRIBUTE,
-  MATERIAL_LABEL,
   materialName,
   MATERIALS,
   nextPreference,
@@ -30,7 +28,6 @@ import {
   systemIsDark,
   THEME_KEY_ATTRIBUTE,
   themeButtonLabel,
-  themeLabel,
   themeStorageKey,
   watchSystem,
   writeAccent,
@@ -133,11 +130,11 @@ describe('the button', () => {
     expect(nextPreference('dark')).toBe('system')
   })
 
-  it('says where things stand and what a press does', () => {
-    expect(themeLabel('system', 'dark')).toBe('Theme: follows the system (dark now). Press for always light.')
-    expect(themeLabel('system', 'light')).toBe('Theme: follows the system (light now). Press for always light.')
-    expect(themeLabel('light', 'light')).toBe('Theme: always light. Press for always dark.')
-    expect(themeLabel('dark', 'dark')).toBe('Theme: always dark. Press to follow the system.')
+  it('says where things stand and what a press does, in English by default', () => {
+    expect(themeButtonLabel('system', 'dark')).toBe('Theme: follows the system (dark now). Press for always light.')
+    expect(themeButtonLabel('system', 'light')).toBe('Theme: follows the system (light now). Press for always light.')
+    expect(themeButtonLabel('light', 'light')).toBe('Theme: always light. Press for always dark.')
+    expect(themeButtonLabel('dark', 'dark')).toBe('Theme: always dark. Press to follow the system.')
   })
 })
 
@@ -259,8 +256,8 @@ describe('the look in words', () => {
     expect(themeButtonLabel('light', 'light')).toBe('Theme: always light. Press for always dark.')
   })
 
-  it('keeps its former names in English', () => {
-    expect(ACCENT_LABEL).toEqual({
+  it('names every accent and material in English by default', () => {
+    expect(Object.fromEntries(ACCENTS.map((accent) => [accent, accentName(accent)]))).toEqual({
       neutral: 'Neutral',
       violet: 'Violet',
       indigo: 'Indigo',
@@ -271,6 +268,6 @@ describe('the look in words', () => {
       dusk: 'Dusk',
       golden: 'Golden hour',
     })
-    expect(MATERIAL_LABEL).toEqual({ flat: 'Flat', glass: 'Glass' })
+    expect(Object.fromEntries(MATERIALS.map((material) => [material, materialName(material)]))).toEqual({ flat: 'Flat', glass: 'Glass' })
   })
 })

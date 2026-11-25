@@ -2,7 +2,7 @@
 
 The figures a page is about, in a `KpiGrid` (four across from 1280px, or the `columns` asked; two on a phone): a lead tile two columns wide, each change in the tone of what it means, a tile that needs attention tinted and saying why.
 
-**You provide** for `KpiTile`: `label`, `value` (already formatted), `hint` (what it is out of, or since when), a `Sparkline` or a `Meter` as children; `change` (a percentage: `2.5` is "+2.5%"), `goodWhen` (`up` · `down`: down for a cost, a latency), `changeFormat` for another unit; `lead`; `tone` (`warning` · `danger`, formerly `negative`) always with its `toneLabel`. For `KpiGrid`: `columns`, `period` (what the changes are compared with).
+**You provide** for `KpiTile`: `label`, `value` (already formatted), `hint` (what it is out of, or since when), a `Sparkline` or a `Meter` as children; `change` (a percentage: `2.5` is "+2.5%"), `goodWhen` (`up` · `down`: down for a cost, a latency), `changeFormat` for another unit; `lead`; `tone` (`warning` · `danger`) always with its `toneLabel`. For `KpiGrid`: `columns`, `period` (what the changes are compared with).
 
 ```tsx
 <KpiGrid period="Compared with yesterday">

@@ -15,7 +15,7 @@ interface, as a package any application can install. React 19, Tailwind CSS 4, f
 - **Motion**: calm and the same everywhere, framer-motion's springs and the stylesheets' curves alike. A page
   changes in one cross-fade, the shell still; a look in one cross-fade of the whole page; what floats arrives and
   leaves the same way. Reduced where the system asks.
-- **188 components** (counting their parts): 50 of EasyUI's, reworked for the keyboard, screen readers,
+- **187 components** (counting their parts): 49 of EasyUI's, reworked for the keyboard, screen readers,
   phones and a light theme; the blocks pages are made of (panels, tiles, tables, fields, charts, menus, inputs,
   a range of time, a tour); and the shell (sidebar, top bar, the trail of where a page is, keyboard shortcuts).
 - **Checked**: every text colour is 4.5:1 on every surface of every look (36), one focus ring everywhere, links
@@ -297,10 +297,13 @@ itself is worked on with Node.js 24 (`.nvmrc`). CI checks the package on both.
 - **A version is a git tag**, installed as `github:IOITI/ioiti-ui#v0.31.0`. Its notes are in `CHANGELOG.md` and on
   its GitHub Release: what is added, changed, deprecated, removed and fixed, and under **Upgrading** what an
   application does about it.
-- **Until 1.0, nothing changes at once.** An API renamed or reshaped keeps its old name working, which says it is
-  deprecated (a warning in the console, once, in development only) and a line of the CHANGELOG's Deprecated says
-  what replaces it; it goes at 1.0. From 1.0, semantic versioning.
-- **The codemod rewrites what is deprecated**, in an application's code, with its own TypeScript:
+- **Semantic versioning, from 1.0** (`docs/stability.md`: what is public, what is not). A patch fixes, a minor adds
+  and may deprecate, a major removes. Nothing changes at once: an API renamed or reshaped keeps its old name working
+  through one minor version at least, which says it is deprecated (a warning in the console, once, in development
+  only), and a line of the CHANGELOG's Deprecated says what replaces it; a major removes it. 1.0 removed what 0.29.0 to
+  0.31.0 deprecated.
+- **The codemod rewrites what is deprecated or removed**, in an application's code, with its own TypeScript: from 0.x
+  to 1.0, run it first.
 
   ```bash
   npx ioiti-ui-codemod --dry-run    # what it would rewrite, under src/

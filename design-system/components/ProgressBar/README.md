@@ -2,7 +2,7 @@
 
 How far a piece of work has come, in words beside the bar and for a screen reader; in a tone when it goes wrong; breathing when its length is unknown. `BarList` ranks values as bars.
 
-**You provide** `label`, `value`, `max`; `valueText` ("42 of 120 files"); `tone` (`neutral` · `success` · `warning` · `danger`; formerly `positive` and `negative` for success and danger); `size` (`sm` · `md`). Without a `value`, it is indeterminate.
+**You provide** `label`, `value`, `max`; `valueText` ("42 of 120 files"); `tone` (`neutral` · `success` · `warning` · `danger`); `size` (`sm` · `md`). Without a `value`, it is indeterminate.
 
 ```tsx
 <ProgressBar label="Importing the files" value={42} max={120} valueText="42 of 120 files" />

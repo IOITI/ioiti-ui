@@ -86,7 +86,7 @@ otherwise).
   and its tip), so that a change of page, drawn above the whole document, never covers them: named for view
   transitions while one plays, and only then, as a name at rest would make the layer the root of its glass's
   backdrop, which would then blur nothing of the page. The sidebar's trigger gives when pressed (`motion-safe:`). What a component does of
-  its own (a box drawing its mark, a switch stretching, the island growing) keeps EasyUI's motion.
+  its own (a box drawing its mark, the island growing) keeps EasyUI's motion.
 - **Text by its role** (0.22.0). Every size is one of the design's (`design-system/guide/README.md`, Type): what is
   read or acted on (an option, a row, a message, a label of a choice, a button from `sm`) is `text-sm`; what is typed
   in a field `text-base sm:text-sm`; what supports it (a caption, a description, a timestamp, a group's heading) is
@@ -891,6 +891,49 @@ otherwise).
   to no one.
 - `chart-primitives` (0.32.0): its `SegmentedControl`, which no chart drew, is gone (its radios each a stop of the
   keyboard, no arrow between them): a choice of a chart's view is the package's `SegmentedControl`.
+- `settle-modal` (1.0.0): `SettleModal` and `SettleModalProps`, its former names, removed: `Dialog`, `DialogProps`.
+- `flysheet` (1.0.0): `Flysheet` and the former names of its parts (`FlysheetTrigger`, `FlysheetContent`…) and of
+  their types (`FlysheetProps`, `FlysheetContentProps`, `FlysheetCloseReason`, `FlysheetPadding`, `FlysheetSide`,
+  `FlysheetSize`, `FlysheetType`), removed: `Sheet`, `SheetTrigger`, `SheetProps`…
+- `spring-select` (1.0.0): `SpringSelect`, `SpringSelectProps` and `SpringSelectOption`, its former names, removed:
+  `SelectMenu`, `SelectMenuProps`, `SelectMenuOption`.
+- `velocity-toast` (1.0.0): `VelocityToast`, `VelocityToastProps`, `VelocityToastPosition` and `VelocityToastAction`,
+  its former names, removed: `Toast`, `ToastProps`, `ToastPosition`, `ToastAction`.
+- `smooth-accordion` (1.0.0): `SmoothAccordion` and `SmoothAccordionProps`, its former names, removed: `Accordion`,
+  `AccordionProps`.
+- `directional-tooltip` (1.0.0): `DirectionalTooltip` and `DirectionalTooltipProps`, its former names, removed:
+  `Tooltip`, `TooltipProps`.
+- `animated-tabs` (1.0.0): `AnimatedTabs` and `AnimatedTabsProps`, its former names, removed: `Tabs`, `TabsProps`.
+- `animated-file-upload` (1.0.0): `AnimatedFileUpload` and `AnimatedFileUploadProps`, its former names, removed:
+  `FileUpload`, `FileUploadProps`.
+- `airport-matrix-clock` (1.0.0): `AirportMatrixClock`, `AirportMatrixClockProps` and `AirportMatrixCity`, its former
+  names, removed: `WorldClock`, `WorldClockProps`, `WorldClockCity`.
+- `smart-comparison` (1.0.0): `SmartComparison` and `SmartComparisonProps`, its former names, removed:
+  `ComparisonTable`, `ComparisonTableProps`.
+- `dynamic-island` (1.0.0): `DynamicIsland`, `DynamicIslandProps` and `DynamicIslandState`, its former names, removed:
+  `StatusIsland`, `StatusIslandProps`, `StatusIslandState`.
+- `stretch-switch` (1.0.0): removed, deprecated since 0.31.0 for the form's `Switch`, which takes the same props
+  (`StretchSwitchProps`: `SwitchProps`).
+- `velocity-toast` (1.0.0): `variant`, EasyUI's name, removed, and `VelocityToastVariant` with it: `tone`, a
+  `StatusTone` (`danger` where it said `error`, `neutral` where it said `default`).
+- `undo-toast` (1.0.0): `variant`, EasyUI's name, removed, and `UndoToastVariant` with it: `tone`, as Toast's.
+- `drag-to-confirm` (1.0.0): `variant`, EasyUI's name, removed, and `DragConfirmVariant` with it: `tone` (`neutral` where
+  it said `default`).
+- `button` (1.0.0): `isLoading` and the variant `destructive`, EasyUI's names, removed: `pending` and `danger`.
+- `combobox` (1.0.0): `onValueChange`, EasyUI's name, removed: `onChange`.
+- `animated-tabs` (1.0.0): `activeTab` and `defaultTab`, EasyUI's names, removed: `value` and `defaultValue`.
+- `notification-bell` (1.0.0): `isOpen`, EasyUI's name, removed: `open`.
+- `smooth-accordion` (1.0.0): `defaultOpen`, EasyUI's name, removed: `defaultValue`.
+- `settle-modal` (1.0.0): `hideCloseButton`, EasyUI's name, removed: `showCloseButton`, the other way round.
+- `flysheet` (1.0.0): `showClose`, EasyUI's name, removed: `showCloseButton`.
+- `sidebar` (1.0.0): a badge's tone `negative`, the former name of `danger`, removed: `danger`.
+- `bar-chart` (1.0.0): `ariaLabel`, EasyUI's name, and `tone`, removed: `aria-label` and `colorBy`.
+- `donut-chart`, `funnel-chart`, `activity-heatmap`, `live-line-chart` (1.0.0): `ariaLabel`, EasyUI's name, removed:
+  `aria-label`.
+- `advanced-data-table` (1.0.0): `isLoading`, EasyUI's name, removed from `DataTable`, `AdvancedDataTable` and the
+  context their parts read: `loading`.
+- `animated-file-upload` (1.0.0): `variant="compact"`, EasyUI's, removed: `density="compact"`. `variant` takes
+  `standard` alone, its default.
 
 ## ioiti-ui's own changes
 

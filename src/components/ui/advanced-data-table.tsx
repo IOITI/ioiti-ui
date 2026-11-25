@@ -24,8 +24,6 @@ import { cn } from '../../lib/utils.js';
 import { fieldBorder } from '../../lib/field-border.js';
 // ioiti-ui: the filters' lists float as everything that floats.
 import { useAnchoredLayer } from '../../lib/anchor.js';
-// ioiti-ui: its former name said once in development.
-import { deprecated } from '../../lib/deprecated.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, DISABLED, FLOATING, MENU_ROW, PRESSABLE, SECTION } from '../../lib/recipes.js';
 import { SelectionBasket } from './selection-basket.js';
@@ -120,10 +118,8 @@ export interface DataTableContextValue<T = any> {
   totalFilteredCount: number;
   paginatedData: T[];
   // Loading & State
-  /** ioiti-ui: the records are on their way (the table's `loading`). */
+  /** ioiti-ui: the records are on their way (the table's `loading`), where EasyUI's said `isLoading`. */
   loading?: boolean;
-  /** @deprecated Use `loading`. Removed in 1.0. */
-  isLoading?: boolean;
   error?: string | null;
   accentColor?: string;
 }
@@ -1267,8 +1263,6 @@ export interface DataTableProps<T = any> {
   rowLabel?: (row: T) => string;
   /** ioiti-ui: the records are on their way: rows to come in their place, said, and nothing counted yet. */
   loading?: boolean;
-  /** @deprecated Use `loading`. Removed in 1.0. */
-  isLoading?: boolean;
   error?: string | null;
   className?: string;
   children?: React.ReactNode;
@@ -1295,15 +1289,12 @@ export function DataTable<T = any>({
   expandOnRowClick = false,
   singleExpand = false,
   rowLabel,
-  loading: givenLoading,
-  isLoading,
+  // ioiti-ui: `loading`, the package's word for content not there yet, where EasyUI's said `isLoading`.
+  loading,
   error,
   className,
   children,
 }: DataTableProps<T>) {
-  // ioiti-ui: its former name read as today's, said once in development.
-  if (isLoading !== undefined) deprecated('is-loading', 'DataTable');
-  const loading = givenLoading ?? isLoading;
   const [viewMode, setViewMode] = useState<DataTableViewMode>(() => {
     if (defaultViewMode === 'auto') {
       if (typeof window !== 'undefined' && window.innerWidth < 640) {
@@ -1553,7 +1544,6 @@ export function DataTable<T = any>({
     totalFilteredCount,
     paginatedData,
     loading,
-    isLoading: loading,
     error,
     accentColor,
   };
@@ -1621,14 +1611,10 @@ export function AdvancedDataTable<T = any>({
   emptyDescription,
   onBulkDelete,
   onBulkExport,
-  loading,
-  isLoading,
   ...props
 }: AdvancedDataTableProps<T>) {
-  // ioiti-ui: its former name read as today's, said once in development (as AdvancedDataTable's).
-  if (isLoading !== undefined) deprecated('is-loading', 'AdvancedDataTable');
   return (
-    <DataTable data={data} columns={columns} loading={loading ?? isLoading} {...props}>
+    <DataTable data={data} columns={columns} {...props}>
       <DataTableToolbar
         title={title}
         searchPlaceholder={searchPlaceholder}

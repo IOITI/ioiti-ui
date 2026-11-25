@@ -14,4 +14,4 @@ Several things side by side, row by row, with the differences alone on demand: p
 - `true` is a check in green, `false` a dash. A value given as a node needs `keys` (its text) for "Differences only" to compare it.
 - The `featured` plan is set apart by a stronger border, not a shadow (it does not float), its `badge` and button in ink, the accent's `brand` where one is chosen. A plan's button shows only with `ctaText` or `onCtaClick`.
 - Below 640px one plan is shown at a time, chosen above the rows (the featured one first). A plain list of figures is a `Table`.
-- Formerly `SmartComparison`: that name still draws it until 1.0, and says so once in development.
+- Formerly `SmartComparison`, removed in 1.0: `npx ioiti-ui-codemod` rewrites it.

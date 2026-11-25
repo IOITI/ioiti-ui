@@ -6,7 +6,6 @@ import { describe, expect, it, vi } from 'vitest'
 import { expectAccessible } from '../../test/a11y.js'
 import { Field } from './Field.js'
 import { FormControl, FormDescription, FormItem, FormLabel, Switch } from './ui/form.js'
-import { StretchSwitch } from './ui/stretch-switch.js'
 
 describe('Switch', () => {
   it('is named by its label and described by its description: a screen reader says which setting it is', async () => {
@@ -38,18 +37,17 @@ describe('Switch', () => {
   })
 })
 
-describe('a switch without words of its own (Switch, StretchSwitch)', () => {
+describe('a switch without words of its own', () => {
   it('is named by its aria-label, by what it points to, or by the FormLabel of its FormItem', async () => {
     const { container } = render(
       <>
         <Switch aria-label="Dark mode" />
-        <StretchSwitch aria-label="Notify the customer" />
         <h3 id="sound-heading">Sound on new orders</h3>
         <Switch aria-labelledby="sound-heading" />
         <FormItem>
           <FormLabel>Signed delivery</FormLabel>
           <FormControl>
-            <StretchSwitch />
+            <Switch />
           </FormControl>
           <FormDescription>Always, for an order over 1,000 €</FormDescription>
         </FormItem>
@@ -61,7 +59,6 @@ describe('a switch without words of its own (Switch, StretchSwitch)', () => {
     )
 
     expect(screen.getByRole('switch', { name: 'Dark mode' })).toBeInTheDocument()
-    expect(screen.getByRole('switch', { name: 'Notify the customer' })).toBeInTheDocument()
     expect(screen.getByRole('switch', { name: 'Sound on new orders' })).toBeInTheDocument()
     expect(screen.getByLabelText('Signed delivery')).toHaveAccessibleDescription('Always, for an order over 1,000 €')
     expect(screen.getByLabelText('Delivery on Sundays')).toHaveAttribute('role', 'switch')
@@ -74,7 +71,7 @@ describe('a switch without words of its own (Switch, StretchSwitch)', () => {
       <FormItem>
         <FormLabel>Signed delivery</FormLabel>
         <FormControl>
-          <StretchSwitch />
+          <Switch />
         </FormControl>
       </FormItem>,
     )
@@ -92,7 +89,7 @@ describe('a switch without words of its own (Switch, StretchSwitch)', () => {
           <Switch onChange={onChange} />
         </Field>
         <Field label="Notify the customer" description="An email when the order leaves">
-          <StretchSwitch />
+          <Switch />
         </Field>
       </>,
     )
@@ -133,8 +130,8 @@ describe('a switch in a form', () => {
       <form aria-label="Settings">
         <Switch label="Weekly summary" name="weekly" defaultChecked />
         <Switch label="Alerts" name="alerts" value="text" />
-        <StretchSwitch label="Notify the customer" name="notify" />
-        <StretchSwitch label="Signed delivery" name="signed" defaultChecked disabled />
+        <Switch label="Notify the customer" name="notify" />
+        <Switch label="Signed delivery" name="signed" defaultChecked disabled />
       </form>,
     )
 
@@ -149,21 +146,11 @@ describe('a switch in a form', () => {
 
   it('takes an id, required and a ref to its button, to focus it', () => {
     const ref = createRef<HTMLButtonElement>()
-    const stretchRef = createRef<HTMLButtonElement>()
-    render(
-      <>
-        <Switch label="I accept the terms" id="terms" required ref={ref} />
-        <StretchSwitch label="I am over 18" id="age" required ref={stretchRef} />
-      </>,
-    )
+    render(<Switch label="I accept the terms" id="terms" required ref={ref} />)
 
     const terms = screen.getByRole('switch', { name: 'I accept the terms' })
     expect(ref.current).toBe(terms)
     expect(terms).toHaveAttribute('id', 'terms')
     expect(terms).toHaveAttribute('aria-required', 'true')
-    const age = screen.getByRole('switch', { name: 'I am over 18' })
-    expect(stretchRef.current).toBe(age)
-    expect(age).toHaveAttribute('id', 'age')
-    expect(age).toHaveAttribute('aria-required', 'true')
   })
 })

@@ -16,4 +16,4 @@ The time of a few cities, as a departures board of dot-matrix characters; small,
 - It keeps its own time. A row's characters flip under the pointer, not where motion is reduced; a screen reader hears the times and the cities.
 - Its board is a light grey or a dark grey of its own, with a `border`, `radius-xl`; the characters in `text-primary`, the footer in `text-muted`. Under glass it is `glass-card`.
 - Give `title` and `footer` in the page's words: the defaults are "World clock" and "N cities / IANA time zones", in sentence case as the page writes them.
-- Formerly `AirportMatrixClock`: that name still draws it until 1.0, and says so once in development.
+- Formerly `AirportMatrixClock`, removed in 1.0: `npx ioiti-ui-codemod` rewrites it.

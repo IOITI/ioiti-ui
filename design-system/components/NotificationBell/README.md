@@ -2,7 +2,7 @@
 
 What happened while the page was open, newest first, each leading to where it is dealt with; only what is urgent pulses.
 
-**You provide** `notifications` (`[{ id, message, detail?, timestamp, read, href?, tone?, action? }]`, `tone` being `neutral` · `info` · `success` · `warning` · `danger`, `timestamp` a `Date` said from now or words), `onMarkAsRead`; `onMarkAllAsRead`; `footer`; `loading` while they are read; `error` (`true` or your words) with `onRetry`; `showCount`; `open` / `defaultOpen` with `onOpenChange` (formerly `isOpen`); `triggerClassName`.
+**You provide** `notifications` (`[{ id, message, detail?, timestamp, read, href?, tone?, action? }]`, `tone` being `neutral` · `info` · `success` · `warning` · `danger`, `timestamp` a `Date` said from now or words), `onMarkAsRead`; `onMarkAllAsRead`; `footer`; `loading` while they are read; `error` (`true` or your words) with `onRetry`; `showCount`; `open` / `defaultOpen` with `onOpenChange`; `triggerClassName`.
 
 ```tsx
 <NotificationBell notifications={items} onMarkAsRead={markRead} onMarkAllAsRead={markAllRead}

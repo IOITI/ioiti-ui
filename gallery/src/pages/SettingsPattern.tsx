@@ -143,7 +143,7 @@ export function SettingsPattern() {
               Delivery days
             </span>
             <SegmentedControl
-              labelledBy="settings-days"
+              aria-labelledby="settings-days"
               value={draft.deliveryDays}
               onChange={(value) => set('deliveryDays', value)}
               options={[

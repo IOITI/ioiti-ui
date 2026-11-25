@@ -17,23 +17,21 @@ import type { Entry, Examples } from './types'
 const ENTRIES: Record<Entry, Record<string, unknown>> = { 'ioiti-ui': core, 'ioiti-ui/react-router': adapter, 'ioiti-ui/code': code }
 
 /**
- * What the package deprecated (src/lib/deprecations.ts), read as its scripts read it: data, not an import of the
- * package's source, which the gallery never makes.
+ * What 1.0 removed (src/codemod/table.ts, which the codemod rewrites), read as the package's scripts read it: data, not
+ * an import of the package's source, which the gallery never makes.
  */
-async function readDeprecations(): Promise<{ kind: string; old: string; new: string }[]> {
-  const source = readFileSync(join(import.meta.dirname, '..', '..', '..', 'src', 'lib', 'deprecations.ts'), 'utf8')
+async function readRemoved(): Promise<{ kind: string; old: string; new: string }[]> {
+  const source = readFileSync(join(import.meta.dirname, '..', '..', '..', 'src', 'codemod', 'table.ts'), 'utf8')
   const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } })
   const read = (await import(/* @vite-ignore */ `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`)) as {
-    DEPRECATIONS: Record<string, { kind: string; old: string; new: string }>
+    REMOVED: Record<string, { kind: string; old: string; new: string }>
   }
-  return Object.values(read.DEPRECATIONS)
+  return Object.values(read.REMOVED)
 }
 
-/** A name the package still exports for a while, beside the one that replaced it: `old` → `new`. */
-const ALIASES = new Map(
-  (await readDeprecations())
-    .filter((entry) => entry.kind === 'export' && Object.values(ENTRIES).some((exported) => entry.new in exported))
-    .map((entry): [string, string] => [entry.old, entry.new]),
+/** A name the package exported until 1.0, and the one an application writes in its place: `old` → `new`. */
+const REMOVED = new Map(
+  (await readRemoved()).filter((entry) => entry.kind === 'export').map((entry): [string, string] => [entry.old, entry.new]),
 )
 
 /** A component's name as an address writes it: `settle-modal` for SettleModal. */
@@ -68,30 +66,22 @@ describe('the catalogue', () => {
       const entry = ENTRIES[family.entry ?? 'ioiti-ui']
       expect(family.names.filter((name) => !(name in entry)), `${family.name}: names its entry does not export`).toEqual([])
     }
-    // A former name kept until 1.0 beside its new one needs no family of its own: its new one's page says it.
     const everyComponent = [...components(core), ...components(adapter), ...components(code)]
-    expect(everyComponent.filter((name) => !owners.has(name) && !ALIASES.has(name)), 'components in no family').toEqual([])
+    expect(everyComponent.filter((name) => !owners.has(name)), 'components in no family').toEqual([])
     expect([...owners].filter(([, families]) => families.length > 1), 'components in two families').toEqual([])
   })
 
-  it('names a family’s former names, each deprecated for one of its own, and leads its former address to its page', () => {
+  it('names a family’s former names, each removed in 1.0 for one of its own, and leads its former address to its page', () => {
     for (const { category, family, path } of FAMILIES) {
       for (const old of family.formerly ?? []) {
-        expect(family.names, `${family.name}: ${old}, a deprecated name of none of its own`).toContain(ALIASES.get(old))
-        expect(old in ENTRIES[family.entry ?? 'ioiti-ui'], `${family.name}: ${old}, exported no more`).toBe(true)
+        expect(family.names, `${family.name}: ${old}, removed for none of its own (src/codemod/table.ts)`).toContain(REMOVED.get(old))
+        expect(old in ENTRIES[family.entry ?? 'ioiti-ui'], `${family.name}: ${old}, exported still`).toBe(false)
       }
       if (!family.formerly) continue
       const [first] = family.examples
       expect(movedTo(`/components/${category.slug}/${kebab(family.formerly[0])}`, `#${first.id}`), family.name).toBe(`${path}#${first.id}`)
     }
     for (const { to } of FORMER_ADDRESSES) expect(FAMILIES.some((placed) => placed.path === to), to).toBe(true)
-  })
-
-  it('marks a deprecated family with the family that replaces it, each of its names deprecated for that one', () => {
-    for (const { family } of FAMILIES.filter((placed) => placed.family.deprecated)) {
-      expect(FAMILIES.some((placed) => placed.family.name === family.deprecated), `${family.name}: ${family.deprecated}, no family`).toBe(true)
-      expect(family.names.map((name) => ALIASES.get(name)), family.name).toEqual(family.names.map(() => family.deprecated))
-    }
   })
 
   it('gives each category 3 to 10 families, and unique addresses', () => {
@@ -194,7 +184,7 @@ describe('the guidelines and the choices', () => {
     }
   })
 
-  it('say which of a category’s families to use: its own, each once, none deprecated, each link to a family’s page', () => {
+  it('say which of a category’s families to use: its own, each once, each link to a family’s page', () => {
     const paths = new Set(FAMILIES.map(({ path }) => path))
     for (const category of CATEGORIES) {
       if (!category.choose) continue
@@ -206,7 +196,6 @@ describe('the guidelines and the choices', () => {
       for (const row of rows) {
         const family = category.families.find((each) => each.slug === row.family)
         expect(family, `${category.slug}: ${row.family}, none of its families`).toBeDefined()
-        expect(family?.deprecated, `${category.slug}: ${row.family}, deprecated`).toBeUndefined()
         expect(row.when.trim(), `${category.slug}: ${row.family}`).not.toBe('')
         for (const [, href] of row.when.matchAll(/\]\(([^)\s]+)\)/g)) expect(paths.has(href), `${category.slug}: ${href}`).toBe(true)
       }

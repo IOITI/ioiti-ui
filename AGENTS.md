@@ -134,7 +134,13 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   `renamed(Component, 'Former')` (`src/lib/renamed.ts`: the component itself in production), its id never its file's
   name (a bundle names its modules after their files). The codemod (`src/codemod`, `npx ioiti-ui-codemod`) rewrites an
   application from the same list: a deprecation it cannot rewrite alone (`hideCloseButton` turned the other way round)
-  is taught to it (`SPECIAL`, `src/codemod/rules.ts`), with a test. It is removed only in a major (1.0).
+  is taught to it (`SPECIAL`, `src/codemod/rules.ts`), with a test. It lives through one minor version at least, and is
+  removed only in a major, its entry moved to the codemod's table of what was removed (`src/codemod/table.ts`: 1.0's),
+  named in that version's Removed section (`check-docs`).
+- **What is public changes as semantic versioning says** (`docs/stability.md`): each entry's exports and types (the
+  snapshot, `test/api/`), the stylesheets and the tokens' names, the classes and attributes the docs name, the
+  catalogue's keys. A patch fixes, a minor adds and deprecates, a major removes. The DOM a component draws is not public:
+  a test finds a component by its role and name.
 - **A word the package says comes from its catalogue** (`src/locales/en/<namespace>.ts`, French in `src/locales/fr/`):
   a component says it with `useMessages()`, never written in its code (`check-strings` fails on one; `// i18n-exempt:
   <why>` for what is no word to translate: a brand, a code, a symbol). A word added in English is added in French in the
@@ -177,10 +183,8 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   gallery (`gallery/src/components/<category>/category.ts`, its `names`), which has its guidelines
   (`design-system/components/<Name>/README.md`), two examples at least that import it, as an application would
   (`scripts/check-source.mjs` holds their imports), and its props (`npm run props`):
-  `gallery/src/catalogue/catalogue.test.ts` fails otherwise. A former name kept until 1.0 (an `export` of
-  `src/lib/deprecations.ts`) has no family of its own: its new name's says it (`formerly`, its page's former address
-  led there by `gallery/src/catalogue/legacy.ts`); a component deprecated for another keeps its family, marked so
-  (`deprecated`).
+  `gallery/src/catalogue/catalogue.test.ts` fails otherwise. A name 1.0 removed (`src/codemod/table.ts`) has no
+  family: its new name's says it (`formerly`, its page's former address led there by `gallery/src/catalogue/legacy.ts`).
 - **A guideline says what a person does with the keyboard**: an interactive family's README has `## Accessibility`, what
   a screen reader hears and a table of its keys (`| Key | What it does |`), written from what the code does; a family
   of native buttons and links says so in a sentence. `gallery/src/catalogue/accessibility.ts` lists both kinds, which
@@ -191,7 +195,7 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   listed that has it now or is gone (`node scripts/props.mjs --docs-baseline` takes it off and takes nothing in). A
   prop's JSDoc is its description, or its `@deprecated` tag.
 - **A component exports components only** (fast refresh): constants and helpers go in a `.ts` beside it
-  (`lib/health.ts`, `link-context.ts`).
+  (`link-context.ts`, `field-context.ts`).
 - **The link drawn from context** is flagged by oxlint's `react/static-components`: disable it on that line
   with the reason (`ButtonLink.tsx` shows how), never for the file.
 

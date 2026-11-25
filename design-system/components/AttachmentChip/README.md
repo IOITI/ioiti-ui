@@ -2,7 +2,7 @@
 
 Something attached to a request or a message: a file, a record. Its label is cut where room ends; it may lead somewhere, be taken away, be made ready, or say why it could not be taken.
 
-**You provide** `label` (a file's name, a record's title), `detail` (its size, "Uploading…", why it failed); `icon` (a lucide icon; a paperclip by default) or `thumbnail` (an image's address); `href` (its label becomes the application's link; `linkComponent="a"` for a file the browser opens); `onRemove`; `pending` while it is made ready (formerly `busy`); `tone="danger"` when it could not be taken.
+**You provide** `label` (a file's name, a record's title), `detail` (its size, "Uploading…", why it failed); `icon` (a lucide icon; a paperclip by default) or `thumbnail` (an image's address); `href` (its label becomes the application's link; `linkComponent="a"` for a file the browser opens); `onRemove`; `pending` while it is made ready; `tone="danger"` when it could not be taken.
 
 ```tsx
 <AttachmentChip label="October.csv" detail="12 kB" icon={<FileText />} onRemove={() => remove(file)} />

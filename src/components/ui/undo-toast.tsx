@@ -17,16 +17,10 @@ import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
 // ioiti-ui: its words in the provider's language; a toast without a title said to its developer.
 import { devWarn } from '../../lib/dev.js';
 import { useMessages } from '../locale-context.js';
-// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md), as Toast's; its former
-// `variant` read as one (toastTone).
+// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md), as Toast's, where EasyUI's
+// took a `variant`.
 import type { StatusTone } from '../../lib/tones.js';
-import { toastTone } from '../toast-context.js';
 
-/**
- * @deprecated Use `StatusTone`, which `tone` takes. Removed in 1.0. ioiti-ui: the values of the former `variant`, read as
- * a tone's (`default` as `neutral`, `error` as `danger`).
- */
-export type UndoToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 export type UndoToastPosition =
   | 'top-left'
   | 'top-center'
@@ -59,10 +53,6 @@ export interface UndoToastProps {
    * `warning`; `danger`, read out at once.
    */
   tone?: StatusTone;
-  /**
-   * @deprecated Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`.
-   */
-  variant?: UndoToastVariant;
   /** Toast screen placement */
   position?: UndoToastPosition;
   /** Callback fired when user clicks Undo */
@@ -90,9 +80,8 @@ export const UndoToast: React.FC<UndoToastProps> = ({
   undoLabel: givenUndoLabel,
   restoredMessage: givenRestoredMessage,
   duration = 5000,
-  // ioiti-ui: its tone, and its former variant (read below).
-  tone: givenTone,
-  variant,
+  // ioiti-ui: its tone, `neutral` by default (its bin), where EasyUI's took a `variant`.
+  tone = 'neutral',
   position = 'bottom-center',
   onUndo,
   onDismiss,
@@ -101,8 +90,6 @@ export const UndoToast: React.FC<UndoToastProps> = ({
   className,
   wrapperClassName,
 }) => {
-  // ioiti-ui: its tone, `neutral` by default; its former `variant` read as one, said once in development.
-  const tone = toastTone(givenTone, variant, 'UndoToast');
   // ioiti-ui: its words in the provider's language, the ones given over them. A title the application gives: "Done"
   // names nothing that was done (EasyUI's "Project archived" was one application's word).
   const words = useMessages().toast;

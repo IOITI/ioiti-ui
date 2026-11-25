@@ -74,16 +74,6 @@ export function themeButtonLabel(preference: ThemePreference, theme: Theme, word
   return words.themeButton({ state, press })
 }
 
-/**
- * What the button says, in English: where things stand, and what a press does ("Theme: always light. Press for always
- * dark.").
- * @deprecated English whatever the language: ThemeToggle says it in the provider's (the catalogue's `look`:
- * `useMessages().look.themeButton`, its states and presses). Removed in 1.0.
- */
-export function themeLabel(preference: ThemePreference, theme: Theme): string {
-  return themeButtonLabel(preference, theme)
-}
-
 export function systemIsDark(): boolean {
   return typeof window.matchMedia === 'function' && window.matchMedia(SYSTEM_DARK).matches
 }
@@ -206,23 +196,6 @@ export function accentName(accent: Accent, words: LookWords = english()): string
 export function materialName(material: Material, words: LookWords = english()): string {
   return words[MATERIAL_WORD[material]]
 }
-
-/**
- * The accents' names, in English.
- * @deprecated English whatever the language: the catalogue's `look` names them (`useMessages().look.accentViolet`…, or
- * `en.look` from 'ioiti-ui/locales/en'). Removed in 1.0.
- */
-export const ACCENT_LABEL: Record<Accent, string> = Object.fromEntries(ACCENTS.map((accent) => [accent, accentName(accent)])) as Record<Accent, string>
-
-/**
- * The materials' names, in English.
- * @deprecated English whatever the language: the catalogue's `look` names them (`useMessages().look.materialGlass`…, or
- * `en.look` from 'ioiti-ui/locales/en'). Removed in 1.0.
- */
-export const MATERIAL_LABEL: Record<Material, string> = Object.fromEntries(MATERIALS.map((material) => [material, materialName(material)])) as Record<
-  Material,
-  string
->
 
 /** What the picker's button says, in the words given (English's by default): what it is for, and what is shown ("Accent and material: violet, glass"). */
 export function lookLabel(accent: Accent, material: Material, words: LookWords = english()): string {

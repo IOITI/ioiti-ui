@@ -13,7 +13,7 @@ The application's menu, beside the page from 768px up and a drawer below: its se
 ```
 
 - ⌘B (Ctrl B) folds it to a rail of icons, each named in a tip, as its Collapse button does. In the rail a badge is a dot on its icon, in its tone, its words in the entry's name and tip. In `header` and `footer`, `useSidebar()` says whether it is folded.
-- The page shown is marked in the accent where there is one. A badge counts, quiet, or says a state in `warning` or `danger` (formerly `negative`) with a dot.
+- The page shown is marked in the accent where there is one. A badge counts, quiet, or says a state in `warning` or `danger` with a dot.
 - A folded section (`foldable`) stays folded for each reader, in their browser, until the page shown is in it. Folded, it shows a dot when an entry under it has a badge, in the gravest tone among them.
 - An entry with children and an `href` is a page and a link, its chevron apart opening it; the one that is, or holds, the page shown opens at every page. Closed, it shows a dot when a child has a badge, in the gravest tone among them.
 - Folded to the rail, an entry with children shows its pages in a menu beside it (its own page first, unless a child is at its address), the page shown marked; it keeps the pill while it holds the page shown.

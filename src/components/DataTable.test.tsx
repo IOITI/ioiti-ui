@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { fr } from '../locales/fr.js'
 import { IoitiProvider } from './IoitiProvider.js'
-import { AdvancedDataTable } from './ui/advanced-data-table.js'
+import { AdvancedDataTable, DataTable, useDataTable } from './ui/advanced-data-table.js'
 import type { ColumnDef } from './ui/advanced-data-table.js'
 import { Dialog } from './ui/settle-modal.js'
 
@@ -521,5 +521,22 @@ describe("the data table's list of columns", () => {
     await user.keyboard('{Escape}')
     await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Columns shown' })).not.toBeInTheDocument())
     expect(button).toHaveFocus()
+  })
+})
+
+/** What a part drawn in the table reads of its loading. */
+function Loading() {
+  const { loading } = useDataTable()
+  return <p>{`loading ${String(loading)}`}</p>
+}
+
+describe('a data table loading its records', () => {
+  it('tells the parts drawn in it, through its context', () => {
+    render(
+      <DataTable data={[]} columns={COLUMNS} loading>
+        <Loading />
+      </DataTable>,
+    )
+    expect(screen.getByText('loading true')).toBeInTheDocument()
   })
 })

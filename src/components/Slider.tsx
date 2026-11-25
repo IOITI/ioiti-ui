@@ -4,12 +4,11 @@ import type { ChangeEvent, ReactNode, Ref } from 'react'
 import { useControllableState } from '../lib/controllable.js'
 import { dataAttributes } from '../lib/data-attributes.js'
 import type { DataAttributes } from '../lib/data-attributes.js'
-import { deprecated } from '../lib/deprecated.js'
 import { invalidOf } from '../lib/field-border.js'
 import { cn } from '../lib/utils.js'
 import { FieldContext, useFieldControl, useLabelWords } from './field-context.js'
 import { useFormat, useMessages } from './locale-context.js'
-import { METER_FILL, meterTone } from './meter-tones.js'
+import { METER_FILL } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 import { NumberInput } from './NumberInput.js'
 
@@ -29,8 +28,6 @@ interface SliderBase extends DataAttributes {
   label?: ReactNode
   /** Its name for a screen reader, where the label is not text. */
   'aria-label'?: string
-  /** @deprecated Use `aria-label`. Removed in 1.0. */
-  ariaLabel?: string
   /** The id of what names it, in place of its label: a heading. A Field's label names it without it. */
   'aria-labelledby'?: string
   /** Read out with it: what a Field around it says under it (its description, its error). */
@@ -127,7 +124,7 @@ function Track({
             <span
               key={index}
               aria-hidden
-              className={cn('absolute inset-y-0 opacity-30', METER_FILL[meterTone(level.tone, 'Slider')])}
+              className={cn('absolute inset-y-0 opacity-30', METER_FILL[level.tone])}
               style={{ left: `${at(level.from)}%`, width: `${at(level.to) - at(level.from)}%` }}
             />
           ))}
@@ -175,8 +172,7 @@ function Header({ id, label, said }: { id: string; label: ReactNode; said: strin
  */
 export function Slider({
   label,
-  'aria-label': givenName,
-  ariaLabel,
+  'aria-label': name,
   'aria-labelledby': labelledBy,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
@@ -197,9 +193,6 @@ export function Slider({
   ref,
   ...rest
 }: SliderProps) {
-  // Its former name read as today's, said once in development.
-  if (ariaLabel !== undefined) deprecated('aria-label-camel', 'Slider')
-  const name = givenName ?? ariaLabel
   const format = useValueFormat(given, step)
   const [current, setCurrent] = useControllableState(value, defaultValue ?? min, onChange)
   const id = useId()
@@ -268,7 +261,6 @@ export function Slider({
 export function RangeSlider({
   label,
   'aria-label': givenName,
-  ariaLabel,
   'aria-labelledby': labelledBy,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
@@ -288,15 +280,13 @@ export function RangeSlider({
   ref,
   ...rest
 }: RangeSliderProps) {
-  // Its former name read as today's, said once in development.
-  if (ariaLabel !== undefined) deprecated('aria-label-camel', 'RangeSlider')
   const format = useValueFormat(given, step)
   const words = useMessages().numberInput
   const [current, setCurrent] = useControllableState<[number, number]>(value, defaultValue ?? [min, max], onChange)
   const id = useId()
   const [low, high] = current
   const at = (number: number) => ((number - min) / (max - min || 1)) * 100
-  const ownName = givenName ?? ariaLabel ?? (typeof label === 'string' ? label : undefined)
+  const ownName = givenName ?? (typeof label === 'string' ? label : undefined)
   // Named by what it is given or its label, else by a Field's or a FormItem's around it: the two thumbs a group named
   // by it, each said with its words ("Price, from"). Described and marked by them too.
   const control = useFieldControl({

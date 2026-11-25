@@ -15,9 +15,9 @@ node design-system/check.mjs      # optional: renders every card in both themes 
 Then ask Claude Code to publish it: *"Publish design-system/out to the IOITI Design System artifact"*. It reads
 the artifact's index first, then sends `out/files.json`'s files with `root: design-system/out`, the index
 (`out/project/design-system.json`) last, as the Design System type's instructions say. Someone may have edited
-the system on its page since: Claude Code compares, and keeps their edits or asks. A card renamed leaves its former
-files in the artifact (0.31.0 gave EasyUI's components the names of their roles: `SettleModal` is `Dialog`): the
-publish removes them (`null`), as the artifact's listing of its files shows them.
+the system on its page since: Claude Code compares, and keeps their edits or asks. A card renamed or removed leaves
+its former files in the artifact (0.31.0 gave EasyUI's components the names of their roles: `SettleModal` is `Dialog`;
+1.0 removed `StretchSwitch`'s): the publish removes them (`null`), as the artifact's listing of its files shows them.
 
 The build stops when the stylesheets define a token `config.json` has no note for (a new colour), or no longer
 define one it has (a token removed): say what the new one is for in `notes`, or remove the note, and build

@@ -8,12 +8,11 @@ import type { ChartDetail } from '../lib/chart-details.js'
 import { Tooltip, useChartFormat, useDismissOutside, useElementWidth } from '../lib/chart-primitives.js'
 import { formatTimeTick, niceDomain, timeTicks } from '../lib/chart-scale.js'
 import { monotonePath } from '../lib/dashboard-chart-utils.js'
-import { deprecated } from '../lib/deprecated.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { cn } from '../lib/utils.js'
 import { ChartLegend } from './ChartLegend.js'
 import { useLocale, useMessages } from './locale-context.js'
-import { METER_COLOUR, meterTone } from './meter-tones.js'
+import { METER_COLOUR } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 
 type Moment = number | string | Date
@@ -80,8 +79,6 @@ export interface LineChartProps {
    * 41, Run 42" and "Chart data".
    */
   'aria-label'?: string
-  /** @deprecated Use `aria-label`. Removed in 1.0. */
-  ariaLabel?: string
   className?: string
 }
 
@@ -140,13 +137,9 @@ export function LineChart({
   connectGaps = false,
   showLegend = true,
   animated = true,
-  'aria-label': givenName,
-  ariaLabel,
+  'aria-label': name,
   className,
 }: LineChartProps) {
-  // Its former name read as today's, said once in development.
-  if (ariaLabel !== undefined) deprecated('aria-label-camel', 'LineChart')
-  const name = givenName ?? ariaLabel
   const reduce = useReducedMotionConfig()
   const draw = animated && !reduce
   const gradient = useId()
@@ -341,7 +334,7 @@ export function LineChart({
                 x2={width - M.right}
                 y1={y(reference.value)}
                 y2={y(reference.value)}
-                stroke={METER_COLOUR[meterTone(reference.tone ?? 'neutral', 'LineChart')]}
+                stroke={METER_COLOUR[reference.tone ?? 'neutral']}
                 strokeDasharray="6 4"
                 strokeWidth={1.25}
               />

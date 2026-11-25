@@ -69,10 +69,6 @@ describe('Accordion', () => {
   })
 })
 
-// What the package says of a former name, once, in development.
-const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
-const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
-
 describe('Accordion holding what is open', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -95,26 +91,5 @@ describe('Accordion holding what is open', () => {
     expect(returns).toHaveAttribute('aria-expanded', 'false')
     rerender(<Accordion value={['returns']} onChange={changed} items={ITEMS} />)
     expect(returns).toHaveAttribute('aria-expanded', 'true')
-  })
-
-  it('says nothing of its names of today, and still takes defaultOpen, said once in development', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { unmount } = render(<Accordion defaultValue={['returns']} items={ITEMS} />)
-    expect(deprecations(warn)).toHaveLength(0)
-    unmount()
-
-    const { rerender } = render(<Accordion defaultOpen={['invoice']} items={ITEMS} />)
-    rerender(<Accordion defaultOpen={['invoice']} items={ITEMS} />)
-    expect(screen.getByRole('button', { name: /Where is the invoice\?/ })).toHaveAttribute('aria-expanded', 'true')
-    const said = deprecations(warn)
-    expect(said).toHaveLength(1)
-    expect(String(said[0][0])).toContain("(Accordion's defaultOpen: defaultValue)")
-  })
-
-  it('takes defaultValue over defaultOpen, given both', () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
-    render(<Accordion defaultValue={['returns']} defaultOpen={['invoice']} items={ITEMS} />)
-    expect(screen.getByRole('button', { name: 'Can an order be returned?' })).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('button', { name: /Where is the invoice\?/ })).toHaveAttribute('aria-expanded', 'false')
   })
 })

@@ -92,7 +92,7 @@ function PropRows({ label, props }: { label: string; props: Prop[] }) {
 const deprecatedCount = (count: number) => `${count} deprecated prop${count === 1 ? '' : 's'}`
 
 /** A component's props: those of today in the open, the deprecated ones folded under how many there are. */
-function PropsTable({ name, component }: { name: string; component: ComponentProps }) {
+export function PropsTable({ name, component }: { name: string; component: ComponentProps }) {
   if (!component.props.length) {
     return component.inherits ? (
       <InheritedLine inherits={{ ...component.inherits, count: 0 }} />

@@ -9,7 +9,7 @@ import type { ComponentType, JSXElementConstructor } from 'react'
 
 import { deprecated } from './deprecated.js'
 import { DEPRECATIONS } from './deprecations.js'
-import type { DeprecationId } from './deprecations.js'
+import type { Deprecation, DeprecationId } from './deprecations.js'
 
 // The bundler's, or Node's in the tests: no type of Node in the package's own.
 declare const process: { env: { NODE_ENV?: string } }
@@ -26,9 +26,9 @@ export type FormerName = (typeof DEPRECATIONS)[ExportId]['old']
  */
 export function renamed<C extends JSXElementConstructor<never>>(Component: C, former: FormerName): C {
   if (process.env.NODE_ENV === 'production') return Component
-  const id = (Object.keys(DEPRECATIONS) as DeprecationId[]).find(
-    (key) => DEPRECATIONS[key].kind === 'export' && DEPRECATIONS[key].old === former,
-  )
+  // Read as any list of deprecations: it is empty between a major and the next minor that deprecates.
+  const list: Readonly<Record<string, Deprecation>> = DEPRECATIONS
+  const id = Object.keys(list).find((key) => list[key].kind === 'export' && list[key].old === former) as DeprecationId | undefined
   const Drawn = Component as unknown as ComponentType<object>
   function Renamed(props: object) {
     if (id) deprecated(id)

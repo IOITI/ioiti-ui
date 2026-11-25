@@ -2,7 +2,7 @@
 
 The box every section of a page sits in: a hairline `border` at 70%, `surface` at half its strength over `background`, `radius-2xl` corners, a `section-title` heading and its body padded `panel-padding`.
 
-**You provide** `title`, `description`, an `action` on the right (a small outline button, a quiet `TextLink`), the body as `children`; `density="compact"` (formerly `dense`) brings the body close under the title for a list or a table; `id` makes it a target. A box set apart in it is a `PanelInset` (`className`, `children`).
+**You provide** `title`, `description`, an `action` on the right (a small outline button, a quiet `TextLink`), the body as `children`; `density="compact"` brings the body close under the title for a list or a table; `id` makes it a target. A box set apart in it is a `PanelInset` (`className`, `children`).
 
 ```tsx
 <Panel title="Latest orders" description="The five sent last."

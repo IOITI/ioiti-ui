@@ -8,12 +8,11 @@ import type { ChartDetail } from '../lib/chart-details.js'
 import { Tooltip, useChartFormat, useDismissOutside, useElementWidth } from '../lib/chart-primitives.js'
 import { niceDomain, niceStep } from '../lib/chart-scale.js'
 import { monotonePath } from '../lib/dashboard-chart-utils.js'
-import { deprecated } from '../lib/deprecated.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { cn } from '../lib/utils.js'
 import { ChartLegend } from './ChartLegend.js'
 import { useMessages } from './locale-context.js'
-import { METER_COLOUR, meterTone } from './meter-tones.js'
+import { METER_COLOUR } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 
 /** A place on the x axis (`x`: a count, a distance, a step) and each key's value there; `null` is nothing there. */
@@ -85,8 +84,6 @@ export interface FanChartProps {
    * Expected, Actual" and "Chart data".
    */
   'aria-label'?: string
-  /** @deprecated Use `aria-label`. Removed in 1.0. */
-  ariaLabel?: string
   className?: string
 }
 
@@ -174,13 +171,9 @@ export function FanChart({
   details,
   showLegend = true,
   animated = true,
-  'aria-label': givenName,
-  ariaLabel,
+  'aria-label': name,
   className,
 }: FanChartProps) {
-  // Its former name read as today's, said once in development.
-  if (ariaLabel !== undefined) deprecated('aria-label-camel', 'FanChart')
-  const name = givenName ?? ariaLabel
   const reduce = useReducedMotionConfig()
   const draw = animated && !reduce
   // Its numbers and words in the interface's locale and language, where the application gives none of its own.
@@ -372,7 +365,7 @@ export function FanChart({
                 x2={width - M.right}
                 y1={y(reference.value)}
                 y2={y(reference.value)}
-                stroke={METER_COLOUR[meterTone(reference.tone ?? 'neutral', 'FanChart')]}
+                stroke={METER_COLOUR[reference.tone ?? 'neutral']}
                 strokeDasharray="6 4"
                 strokeWidth={1.25}
               />

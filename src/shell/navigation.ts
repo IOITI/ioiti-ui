@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 
 import type { SidebarBadgeTone, SidebarSection } from '../components/ui/sidebar.js'
-import { deprecated } from '../lib/deprecated.js'
 import { en } from '../locales/en.js'
 import type { Messages } from '../locales/en.js'
 
@@ -24,10 +23,7 @@ export interface MenuEntry<S extends string = string> {
   icon?: ReactNode
   /** A count ("38") or a state in a word ("Degraded", "2 open"), after its label. */
   badge?: string | number
-  /**
-   * The badge's tone, for a state: `warning` or `danger`, in its colour with a dot; a count stays neutral. `negative`,
-   * the former name of `danger`, is read as it (said once in development; removed in 1.0).
-   */
+  /** The badge's tone, for a state: `warning` or `danger`, in its colour with a dot; a count stays neutral. */
   badgeTone?: SidebarBadgeTone
   /**
    * The entry this one is under (its `id`), in the same section: the sidebar lists it under its parent, which
@@ -95,19 +91,6 @@ export interface PageName {
   parents?: Crumb[]
 }
 
-/**
- * The first step of every trail, in English.
- * @deprecated English whatever the language: AppShell's trail starts at the catalogue's `shell.home` ("Home"), at `/`
- * (`useMessages().shell.home`, or `en.shell.home` from 'ioiti-ui/locales/en'). Removed in 1.0.
- */
-export const DEFAULT_HOME = { label: en.shell.home, href: '/' }
-
-/**
- * The trail's step for an address that is no page, in English.
- * @deprecated English whatever the language: the catalogue's `shell.pageNotFound` (`useMessages().shell.pageNotFound`,
- * or `en.shell.pageNotFound` from 'ioiti-ui/locales/en'), which `trailFor` takes in its `words`. Removed in 1.0.
- */
-export const PAGE_NOT_FOUND = en.shell.pageNotFound
 /** The end of a deeper page's trail until the page has said its name. */
 export const UNNAMED = '…'
 
@@ -200,13 +183,6 @@ function ownsItsPage<S extends string>(menu: Menu<S>, parent: MenuEntry<S>): boo
   return !menu.entries.some((child) => child.path === parent.path && parentOf(menu, child)?.id === parent.id)
 }
 
-/** A badge's tone in today's name: `negative`, the former name of `danger`, read as it and said once. */
-function badgeToneOf(tone: SidebarBadgeTone | undefined): SidebarBadgeTone | undefined {
-  if (tone !== 'negative') return tone
-  deprecated('sidebar-badge-negative', 'AppShell')
-  return 'danger'
-}
-
 /**
  * The menu as the sidebar draws it: each entry a link, which can be opened in another tab as well as followed;
  * the entries under another (`parent`) listed under it; the sections at the foot (`place: 'footer'`) said so.
@@ -224,8 +200,8 @@ export function sidebarSections(menu: Menu): SidebarSection[] {
         .map(({ id, label, icon, badge, badgeTone, path }) => {
           const children = entries
             .filter((child) => parentOf(menu, child)?.id === id)
-            .map((child) => ({ id: child.id, label: child.label, badge: child.badge, badgeTone: badgeToneOf(child.badgeTone), href: child.path }))
-          return { id, label, icon, badge, badgeTone: badgeToneOf(badgeTone), href: path, ...(children.length ? { children } : {}) }
+            .map((child) => ({ id: child.id, label: child.label, badge: child.badge, badgeTone: child.badgeTone, href: child.path }))
+          return { id, label, icon, badge, badgeTone, href: path, ...(children.length ? { children } : {}) }
         }),
     }
   })

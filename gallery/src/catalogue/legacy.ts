@@ -1,7 +1,8 @@
 /**
  * Where the gallery's former pages went: until 0.18 a page held a whole group of components, each a part of it
  * (`/components/data#kpi`); each now has a page of its own. A link to a former part leads to that page. Until 0.31, a
- * component copied from EasyUI kept EasyUI's name, and its page's address that name (RENAMED, below).
+ * component copied from EasyUI kept EasyUI's name, and its page's address that name (RENAMED, below); a component 1.0
+ * removed for another leads to the other's page (REPLACED).
  */
 const MOVED: Record<string, Record<string, string>> = {
   shell: {
@@ -128,7 +129,7 @@ const MOVED: Record<string, Record<string, string>> = {
 export const GONE: Record<string, string> = { '/components/data': '/components/tables' }
 
 /**
- * The components given the name of their role in 0.31.0 (their former names still work until 1.0: FamilyInfo's
+ * The components given the name of their role in 0.31.0 (their former names, which 1.0 removed: FamilyInfo's
  * `formerly`): a page's former address, in its category, and its address now. Its examples kept their anchors.
  */
 const RENAMED: Record<string, string> = {
@@ -145,8 +146,13 @@ const RENAMED: Record<string, string> = {
   'feedback/dynamic-island': 'feedback/status-island',
 }
 
-/** The former addresses of the components renamed, each a route of its own (router.tsx), and where each leads. */
-export const FORMER_ADDRESSES: { from: string; to: string }[] = Object.entries(RENAMED).map(([from, to]) => ({
+/** The components 1.0 removed for another, which takes the same props: a page's former address, and the other's. */
+const REPLACED: Record<string, string> = {
+  'choices/stretch-switch': 'choices/switch',
+}
+
+/** Each former address of a component renamed or replaced, a route of its own (router.tsx), and where it leads. */
+export const FORMER_ADDRESSES: { from: string; to: string }[] = Object.entries({ ...RENAMED, ...REPLACED }).map(([from, to]) => ({
   from: `/components/${from}`,
   to: `/components/${to}`,
 }))
@@ -154,12 +160,14 @@ export const FORMER_ADDRESSES: { from: string; to: string }[] = Object.entries(R
 /**
  * Where a link to a former page's part leads now (`/components/data#kpi`), when it is one: a category kept its
  * former page's address, and a part of it that is one of its components stays where it is. A component's former
- * address leads to its page, at the same example (`/components/overlays/settle-modal#form`).
+ * address leads to its page, at the same example (`/components/overlays/settle-modal#form`); that of a component 1.0
+ * removed, to the page of the one that replaced it.
  */
 export function movedTo(pathname: string, hash: string): string | undefined {
   const path = pathname.replace(/\/+$/, '')
   const family = path.match(/^\/components\/([^/]+\/[^/]+)$/)?.[1]
   if (family && RENAMED[family]) return `/components/${RENAMED[family]}${hash}`
+  if (family && REPLACED[family]) return `/components/${REPLACED[family]}${hash}`
   const page = path.match(/^\/components\/([^/]+)$/)?.[1]
   const part = decodeURIComponent(hash.replace(/^#/, ''))
   if (!page) return undefined

@@ -7,7 +7,6 @@ import { dataAttributes } from '../lib/data-attributes.js'
 import type { DataAttributes } from '../lib/data-attributes.js'
 import { formatTimeRange, formatTimeRangeEnd, parseDateMath, relativeEnd, TIME_UNITS } from '../lib/date-math.js'
 import type { TimeRange, TimeRangeWordsOptions, TimeUnit } from '../lib/date-math.js'
-import { deprecated } from '../lib/deprecated.js'
 import { fieldBorder, invalidOf } from '../lib/field-border.js'
 import type { WeekDay } from '../lib/locale.js'
 import { PRESSABLE } from '../lib/recipes.js'
@@ -475,8 +474,6 @@ export interface TimeRangePickerProps extends DataAttributes {
   onRefresh?: (range: TimeRange) => void
   /** Data is on its way: Refresh shows it. */
   loading?: boolean
-  /** @deprecated Use `loading`. Removed in 1.0. */
-  isLoading?: boolean
   /**
    * The ranges offered at once, in place of the usual ones: today, this week, the last 15 and 30 minutes, hour, 24 hours,
    * 7, 30 and 90 days, and year, each named as `formatTimeRange` names it, in the provider's words.
@@ -523,8 +520,7 @@ export function TimeRangePicker({
   defaultValue = { from: 'now-15m', to: 'now' },
   onChange,
   onRefresh,
-  loading: givenLoading,
-  isLoading,
+  loading = false,
   commonlyUsed,
   refresh,
   onRefreshChange,
@@ -540,9 +536,6 @@ export function TimeRangePicker({
   ref,
   ...rest
 }: TimeRangePickerProps) {
-  // Its former name read as today's, said once in development.
-  if (isLoading !== undefined) deprecated('is-loading', 'TimeRangePicker')
-  const loading = givenLoading ?? isLoading ?? false
   // A group of buttons, named, described and marked by a Field or a FormItem around it too, its own props first: by
   // its label's words (aria-labelledby: a label names no group), the label pointing to it, so that it names no button.
   const groupId = useId()

@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url'
 
 import ts from 'typescript'
 
-import { changelogProblems, formatChangelog, parseChangelog, sectionsOf, UNRELEASED } from './changelog.mjs'
+import { changelogProblems, compareVersions, formatChangelog, isVersion, parseChangelog, sectionsOf, UNRELEASED } from './changelog.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (file) => readFileSync(join(root, file), 'utf8')
@@ -139,6 +139,25 @@ const deprecatedIn = (name) => {
 for (const [id, entry] of Object.entries(DEPRECATIONS)) {
   if (!deprecatedIn(entry.since).includes(`\`${entry.old}\``)) {
     problems.push(`CHANGELOG.md: \`${entry.old}\` (${id}, src/lib/deprecations.ts) is named in no Deprecated section of ${entry.since}`)
+  }
+}
+
+// What 1.0 removed (src/codemod/table.ts, which the codemod rewrites) was deprecated in its version, and is named in the
+// Removed section of 1.0 (a release candidate's, or [Unreleased] until it is released).
+const { outputText: removedText } = ts.transpileModule(read('src/codemod/table.ts'), {
+  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+})
+const { REMOVED } = await import(`data:text/javascript;base64,${Buffer.from(removedText).toString('base64')}`)
+const removedSections = changelog.versions
+  .filter((each) => each.name === UNRELEASED || (isVersion(each.name) && compareVersions(each.name, '1.0.0-rc.1') >= 0))
+  .map((each) => sectionsOf(each).sections.find((section) => section.name === 'Removed')?.lines.join('\n') ?? '')
+  .join('\n')
+for (const [id, entry] of Object.entries(REMOVED)) {
+  if (!deprecatedIn(entry.since).includes(`\`${entry.old}\``)) {
+    problems.push(`CHANGELOG.md: \`${entry.old}\` (${id}, src/codemod/table.ts) is named in no Deprecated section of ${entry.since}`)
+  }
+  if (!removedSections.includes(`\`${entry.old}\``)) {
+    problems.push(`CHANGELOG.md: \`${entry.old}\` (${id}, src/codemod/table.ts) is named in no Removed section of 1.0`)
   }
 }
 

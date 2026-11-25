@@ -9,11 +9,9 @@ export { announce } from './lib/announce.js'
 export type { Politeness } from './lib/announce.js'
 export { motionTransitions } from './lib/motion-tokens.js'
 export {
-  ACCENT_LABEL,
   ACCENTS,
   accentName,
   DEFAULT_THEME_STORAGE_KEY,
-  MATERIAL_LABEL,
   MATERIALS,
   materialName,
   THEME_KEY_ATTRIBUTE,
@@ -23,7 +21,6 @@ export {
   resolveTheme,
   systemIsDark,
   themeButtonLabel,
-  themeLabel,
   themeStorageKey,
   watchSystem,
   writePreference,
@@ -47,7 +44,7 @@ export {
   toIsoDay,
   toneOf,
 } from './lib/format.js'
-export type { FormatOptions, Formatters, Tone } from './lib/format.js'
+export type { FormatOptions, Formatters } from './lib/format.js'
 export type { SignTone, StatusTone } from './lib/tones.js'
 export { parseLocaleNumber } from './lib/locale.js'
 export type { HourCycle, WeekDay } from './lib/locale.js'
@@ -61,7 +58,6 @@ export { formatTimeRange, resolveTimeRange } from './lib/date-math.js'
 export type { TimeRange, TimeUnit } from './lib/date-math.js'
 export { useNow } from './lib/now.js'
 export type { Check, CheckState } from './lib/checks.js'
-export { HEALTH_STATUS_LABEL } from './lib/health.js'
 export type { HealthStatus } from './lib/health.js'
 
 // What an application puts around its pages.
@@ -109,7 +105,7 @@ export { StateSummary } from './shell/StateSummary.js'
 export type { StateSummaryProps } from './shell/StateSummary.js'
 export { gravestTone } from './shell/state-summary.js'
 export type { StateItem, StateTone } from './shell/state-summary.js'
-export { DEFAULT_HOME, PAGE_NOT_FOUND, UNNAMED, menuEntry, menuSections, sidebarSections, trailFor } from './shell/navigation.js'
+export { UNNAMED, menuEntry, menuSections, sidebarSections, trailFor } from './shell/navigation.js'
 export type { Crumb, Menu, MenuEntry, MenuSection, PageName, TrailWords } from './shell/navigation.js'
 export { usePageName, usePageTrail, useTabTitle, useTrail } from './shell/page-trail-context.js'
 export { useMainScroll } from './components/main-scroll-context.js'
@@ -308,13 +304,12 @@ export type {
   AIResponseThinkingProps,
   AIResponseToolsSummaryProps,
 } from './components/ui/ai-response.js'
-export { AirportMatrixClock, WorldClock } from './components/ui/airport-matrix-clock.js'
-export type { AirportMatrixCity, AirportMatrixClockProps, WorldClockCity, WorldClockProps } from './components/ui/airport-matrix-clock.js'
+export { WorldClock } from './components/ui/airport-matrix-clock.js'
+export type { WorldClockCity, WorldClockProps } from './components/ui/airport-matrix-clock.js'
 export { Alert, AlertDescription, AlertTitle } from './components/ui/alert.js'
 export type { AlertDescriptionProps, AlertProps, AlertTitleProps, AlertTone } from './components/ui/alert.js'
-export { AnimatedFileUpload, FileUpload } from './components/ui/animated-file-upload.js'
+export { FileUpload } from './components/ui/animated-file-upload.js'
 export type {
-  AnimatedFileUploadProps,
   FileUploadProps,
   FileUploadStatus,
   UploadFileItem,
@@ -322,8 +317,8 @@ export type {
 } from './components/ui/animated-file-upload.js'
 export { AnimatedNumber } from './components/ui/animated-number.js'
 export type { AnimatedNumberProps } from './components/ui/animated-number.js'
-export { AnimatedTabs, Tabs } from './components/ui/animated-tabs.js'
-export type { AnimatedTabsProps, TabItem, TabsProps } from './components/ui/animated-tabs.js'
+export { Tabs } from './components/ui/animated-tabs.js'
+export type { TabItem, TabsProps } from './components/ui/animated-tabs.js'
 export { Badge } from './components/ui/badge.js'
 export type { BadgeProps, BadgeTone, BadgeVariant } from './components/ui/badge.js'
 export { BarChart } from './components/ui/bar-chart.js'
@@ -346,31 +341,17 @@ export { DatePicker, DateRangePicker } from './components/ui/date-picker.js'
 export type { DatePickerProps, DateRangePickerProps } from './components/ui/date-picker.js'
 export { DependencyTrace } from './components/ui/dependency-trace.js'
 export type { DependencyTraceProps, TraceConnection, TraceNode, TraceStatus } from './components/ui/dependency-trace.js'
-export { DirectionalTooltip, Tooltip } from './components/ui/directional-tooltip.js'
-export type { DirectionalTooltipProps, TooltipAlign, TooltipProps, TooltipSide } from './components/ui/directional-tooltip.js'
+export { Tooltip } from './components/ui/directional-tooltip.js'
+export type { TooltipAlign, TooltipProps, TooltipSide } from './components/ui/directional-tooltip.js'
 export { DonutChart } from './components/ui/donut-chart.js'
 export type { DonutChartProps, DonutDatum } from './components/ui/donut-chart.js'
 export { DragToConfirm } from './components/ui/drag-to-confirm.js'
-export type {
-  DragConfirmActionType,
-  DragConfirmSize,
-  DragConfirmVariant,
-  DragToConfirmProps,
-} from './components/ui/drag-to-confirm.js'
+export type { DragConfirmActionType, DragConfirmSize, DragToConfirmProps } from './components/ui/drag-to-confirm.js'
 export { DrawCheckbox as Checkbox } from './components/ui/draw-checkbox.js'
 export type { DrawCheckboxProps as CheckboxProps } from './components/ui/draw-checkbox.js'
-export { DynamicIsland, StatusIsland } from './components/ui/dynamic-island.js'
-export type { DynamicIslandProps, DynamicIslandState, StatusIslandProps, StatusIslandState } from './components/ui/dynamic-island.js'
+export { StatusIsland } from './components/ui/dynamic-island.js'
+export type { StatusIslandProps, StatusIslandState } from './components/ui/dynamic-island.js'
 export {
-  Flysheet,
-  FlysheetBody,
-  FlysheetClose,
-  FlysheetContent,
-  FlysheetDescription,
-  FlysheetFooter,
-  FlysheetHeader,
-  FlysheetTitle,
-  FlysheetTrigger,
   Sheet,
   SheetBody,
   SheetClose,
@@ -382,13 +363,6 @@ export {
   SheetTrigger,
 } from './components/ui/flysheet.js'
 export type {
-  FlysheetCloseReason,
-  FlysheetContentProps,
-  FlysheetPadding,
-  FlysheetProps,
-  FlysheetSide,
-  FlysheetSize,
-  FlysheetType,
   SheetBodyProps,
   SheetCloseProps,
   SheetCloseReason,
@@ -465,8 +439,8 @@ export { ScrollProgressNav } from './components/ui/scroll-progress-nav.js'
 export type { NavSectionItem, ScrollProgressNavProps } from './components/ui/scroll-progress-nav.js'
 export { SelectionBasket } from './components/ui/selection-basket.js'
 export type { SelectionActionItem, SelectionBasketProps } from './components/ui/selection-basket.js'
-export { Dialog, SettleModal } from './components/ui/settle-modal.js'
-export type { DialogProps, SettleModalProps } from './components/ui/settle-modal.js'
+export { Dialog } from './components/ui/settle-modal.js'
+export type { DialogProps } from './components/ui/settle-modal.js'
 export { Sidebar, SidebarTrigger, useSidebar } from './components/ui/sidebar.js'
 export type {
   SidebarBadgeTone,
@@ -483,36 +457,26 @@ export type {
   SkeletonRevealProps,
   SkeletonTextProps,
 } from './components/ui/skeleton.js'
-export { ComparisonTable, SmartComparison } from './components/ui/smart-comparison.js'
+export { ComparisonTable } from './components/ui/smart-comparison.js'
 export type {
   ComparisonCategory,
   ComparisonFeature,
   ComparisonPlan,
   ComparisonTableProps,
-  SmartComparisonProps,
 } from './components/ui/smart-comparison.js'
-export { Accordion, SmoothAccordion } from './components/ui/smooth-accordion.js'
-export type { AccordionItem, AccordionProps, SmoothAccordionProps } from './components/ui/smooth-accordion.js'
+export { Accordion } from './components/ui/smooth-accordion.js'
+export type { AccordionItem, AccordionProps } from './components/ui/smooth-accordion.js'
 export { SplitButton } from './components/ui/split-button.js'
 export type { SplitButtonOption, SplitButtonProps, SplitButtonSize } from './components/ui/split-button.js'
 export { SpotlightSearch } from './components/ui/spotlight-search.js'
 export type { SpotlightSearchItem, SpotlightSearchProps } from './components/ui/spotlight-search.js'
-export { SelectMenu, SpringSelect } from './components/ui/spring-select.js'
-export type { SelectMenuOption, SelectMenuProps, SpringSelectOption, SpringSelectProps } from './components/ui/spring-select.js'
+export { SelectMenu } from './components/ui/spring-select.js'
+export type { SelectMenuOption, SelectMenuProps } from './components/ui/spring-select.js'
 export { StatCard, StatGrid } from './components/ui/stat-card.js'
 export type { StatCardProps, StatGridProps } from './components/ui/stat-card.js'
 export { StepPanels, Stepper } from './components/ui/stepper.js'
 export type { Step, StepPanelsProps, StepperProps } from './components/ui/stepper.js'
-export { StretchSwitch } from './components/ui/stretch-switch.js'
-export type { StretchSwitchProps } from './components/ui/stretch-switch.js'
 export { UndoToast } from './components/ui/undo-toast.js'
-export type { UndoToastPosition, UndoToastProps, UndoToastVariant } from './components/ui/undo-toast.js'
-export { Toast, VelocityToast } from './components/ui/velocity-toast.js'
-export type {
-  ToastPosition,
-  ToastProps,
-  VelocityToastAction,
-  VelocityToastPosition,
-  VelocityToastProps,
-  VelocityToastVariant,
-} from './components/ui/velocity-toast.js'
+export type { UndoToastPosition, UndoToastProps } from './components/ui/undo-toast.js'
+export { Toast } from './components/ui/velocity-toast.js'
+export type { ToastPosition, ToastProps } from './components/ui/velocity-toast.js'

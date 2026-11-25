@@ -285,10 +285,6 @@ describe('the sidebar in French', () => {
   })
 })
 
-// What the package says of a former name, once, in development.
-const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
-const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
-
 describe('the rail, held', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -321,37 +317,5 @@ describe('the rail, held', () => {
     expect(window.localStorage.getItem('test.rail')).toBeNull()
     rerender(<Sidebar sections={SECTIONS} activeId="orders" collapsed collapsedStorageKey="test.rail" onCollapsedChange={changed} />)
     expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
-  })
-})
-
-describe('a badge in a former tone', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  it('says nothing of the tones of today', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    render(<Sidebar sections={SECTIONS} activeId="orders" />)
-    expect(deprecations(warn)).toHaveLength(0)
-  })
-
-  it('reads negative as danger, said once in development', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const sections = [
-      {
-        items: [
-          { id: 'system', label: 'System', href: '/system', children: [{ id: 'disk', label: 'Disk', href: '/system/disk', badge: 'Critical', badgeTone: 'negative' as const }] },
-          { id: 'api', label: 'API', href: '/api', badge: 'Down', badgeTone: 'negative' as const },
-        ],
-      },
-    ]
-    const { rerender } = render(<Sidebar sections={sections} activeId="disk" />)
-    rerender(<Sidebar sections={[...sections]} activeId="disk" />)
-
-    expect(screen.getByText('Down')).toHaveClass('text-negative')
-    expect(screen.getByText('Critical')).toHaveClass('text-negative')
-    const said = deprecations(warn)
-    expect(said).toHaveLength(1)
-    expect(String(said[0][0])).toContain(`(Sidebar's badgeTone="negative": danger)`)
   })
 })

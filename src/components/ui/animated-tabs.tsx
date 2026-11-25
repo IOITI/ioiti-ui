@@ -2,12 +2,8 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// ioiti-ui: held by its caller or by itself, as every control (useControllableState); a former name said once, in
-// development (deprecated).
+// ioiti-ui: held by its caller or by itself, as every control (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
-import { deprecated } from '../../lib/deprecated.js';
-// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
-import { renamed } from '../../lib/renamed.js';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -26,17 +22,13 @@ export interface TabItem {
   href?: string;
 }
 
-// ioiti-ui: named after its role, `Tabs` (EasyUI's `AnimatedTabs`, its former name: at the end of the file).
+// ioiti-ui: named after its role, `Tabs` (EasyUI's `AnimatedTabs`, its former name, removed in 1.0).
 export interface TabsProps {
   tabs: TabItem[];
   /** ioiti-ui: the id of the tab shown, held by the page (told of each change by `onChange`). */
   value?: string;
   /** ioiti-ui: the id of the tab shown first, the tabs holding it then; the first tab by default. */
   defaultValue?: string;
-  /** @deprecated Use `defaultValue`. Removed in 1.0. */
-  defaultTab?: string;
-  /** @deprecated Use `value`. Removed in 1.0. */
-  activeTab?: string;
   onChange?: (tabId: string) => void;
   className?: string;
   tabsContainerClassName?: string;
@@ -54,8 +46,6 @@ export const Tabs: React.FC<TabsProps> = ({
   tabs,
   value,
   defaultValue,
-  defaultTab,
-  activeTab: formerValue,
   onChange,
   className,
   tabsContainerClassName,
@@ -67,15 +57,9 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
-  // ioiti-ui: `value` and `defaultValue`, as every control; `activeTab` and `defaultTab`, their former names, read where
-  // they alone are given. A default is the first tab shown only: EasyUI's showed it again whenever it changed.
-  if (formerValue !== undefined) deprecated('animated-tabs-active-tab', 'Tabs');
-  if (defaultTab !== undefined) deprecated('animated-tabs-default-tab', 'Tabs');
-  const [activeTab, handleTabClick] = useControllableState<string>(
-    value ?? formerValue,
-    (defaultValue ?? defaultTab) || tabs[0]?.id || '',
-    onChange
-  );
+  // ioiti-ui: `value` and `defaultValue`, as every control, where EasyUI's said `activeTab` and `defaultTab`. A default
+  // is the first tab shown only: EasyUI's showed it again whenever it changed.
+  const [activeTab, handleTabClick] = useControllableState<string>(value, defaultValue || tabs[0]?.id || '', onChange);
   const uniqueId = React.useId();
   const indicatorLayoutId = customLayoutId || `active-tab-indicator-${uniqueId}`;
 
@@ -217,10 +201,3 @@ export const Tabs: React.FC<TabsProps> = ({
     </div>
   );
 };
-
-// ioiti-ui: EasyUI's names, until 1.0: the former name draws the tabs, and says once, in development, that it is
-// deprecated (renamed).
-/** @deprecated Use `Tabs`. Removed in 1.0. */
-export const AnimatedTabs = renamed(Tabs, 'AnimatedTabs');
-/** @deprecated Use `TabsProps`. Removed in 1.0. */
-export type AnimatedTabsProps = TabsProps;

@@ -4,10 +4,12 @@ import { describe, expect, it } from 'vitest'
 
 import { DEPRECATIONS } from '../lib/deprecations.js'
 import { rulesOf } from './rules.js'
+import { REMOVED } from './table.js'
 import { rewrite } from './transform.js'
 
 // The list as it is, and a component renamed, whatever the list holds when the test runs.
 const rules = rulesOf({
+  ...REMOVED,
   ...DEPRECATIONS,
   'test-renamed': { kind: 'export', old: 'SettleModal', new: 'Dialog', since: '0.31.0' },
   'test-renamed-props': { kind: 'export', old: 'SettleModalProps', new: 'DialogProps', since: '0.31.0' },

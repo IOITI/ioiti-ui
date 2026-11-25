@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { ChevronsUpDown, Pencil } from 'lucide-react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { ButtonLink } from './ButtonLink.js'
 import { Button } from './ui/button.js'
@@ -45,5 +45,48 @@ describe('Button', () => {
     expect(screen.getByRole('link', { name: 'Orders' }).querySelector('svg')!.parentElement).toHaveClass(
       "[&>svg:not([class*='size-'])]:size-3.5",
     )
+  })
+})
+
+describe('ButtonLink', () => {
+  it('leads where its href says, a button that cannot be pressed with nowhere to go, in the tone of its variant', () => {
+    render(
+      <>
+        <ButtonLink href="/orders/new">New order</ButtonLink>
+        <ButtonLink href={null}>Nowhere</ButtonLink>
+        <ButtonLink href="/orders/7" variant="danger">
+          Cancel order
+        </ButtonLink>
+        <ButtonLink href={null} variant="danger">
+          Nothing to cancel
+        </ButtonLink>
+      </>,
+    )
+    expect(screen.getByRole('link', { name: 'New order' })).toHaveAttribute('href', '/orders/new')
+    expect(screen.getByRole('button', { name: 'Nowhere' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Cancel order' })).toHaveClass('text-negative')
+    expect(screen.getByRole('button', { name: 'Nothing to cancel' })).toHaveClass('text-negative')
+  })
+
+  it('is on its way while pending: a spinner, said busy, and a click that does nothing more', () => {
+    const clicked = vi.fn()
+    render(
+      <>
+        <ButtonLink href="/sign-in/gitea" reloadDocument pending onClick={clicked}>
+          Gitea
+        </ButtonLink>
+        <ButtonLink href={null} pending>
+          Nowhere
+        </ButtonLink>
+      </>,
+    )
+    const link = screen.getByRole('link', { name: 'Gitea' })
+    expect(link).toHaveAttribute('aria-busy', 'true')
+    expect(link).toHaveAttribute('aria-disabled', 'true')
+    expect(link.querySelector('svg')).toHaveClass('motion-safe:animate-spin')
+    // Cancelled: the browser is on its way already.
+    expect(fireEvent.click(link)).toBe(false)
+    expect(clicked).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'Nowhere' })).toHaveAttribute('aria-busy', 'true')
   })
 })

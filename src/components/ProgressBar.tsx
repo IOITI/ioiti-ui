@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { cn } from '../lib/utils.js'
 import { useLinkComponent } from './link-context.js'
 import { useFormat } from './locale-context.js'
-import { METER_FILL, METER_TRACK, meterTone } from './meter-tones.js'
+import { METER_FILL, METER_TRACK } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 
 /** The props of `ProgressBar`. */
@@ -34,7 +34,6 @@ export function ProgressBar({ label, value, max = 100, valueText, tone = 'neutra
   const known = value !== undefined && Number.isFinite(value)
   const ratio = known ? Math.min(Math.max(value / max, 0), 1) : 0
   const said = known ? (valueText ?? formatPercent(Math.round(ratio * 100), false, 0)) : valueText
-  const drawn = meterTone(tone, 'ProgressBar')
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <div className="flex items-baseline justify-between gap-3 text-xs">
@@ -54,16 +53,16 @@ export function ProgressBar({ label, value, max = 100, valueText, tone = 'neutra
         aria-valuemax={known ? max : undefined}
         aria-valuenow={known ? value : undefined}
         aria-valuetext={said}
-        className={cn('w-full overflow-hidden rounded-full', size === 'sm' ? 'h-1' : 'h-1.5', METER_TRACK[drawn])}
+        className={cn('w-full overflow-hidden rounded-full', size === 'sm' ? 'h-1' : 'h-1.5', METER_TRACK[tone])}
       >
         {known ? (
           <div
-            className={cn('h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-soft', METER_FILL[drawn])}
+            className={cn('h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-soft', METER_FILL[tone])}
             style={{ width: `${ratio * 100}%` }}
           />
         ) : (
           // Working, for how long no one knows: the fill breathes (still where motion is reduced).
-          <div className={cn('h-full w-full rounded-full opacity-60 animate-pulse', METER_FILL[drawn])} />
+          <div className={cn('h-full w-full rounded-full opacity-60 animate-pulse', METER_FILL[tone])} />
         )}
       </div>
     </div>
@@ -117,11 +116,11 @@ export function BarList({ items, label, max, format, className }: BarListProps) 
               )}
             </span>
             <span className="text-right tabular-nums text-foreground">{write(item.value)}</span>
-            <span aria-hidden className={cn('col-span-2 h-1.5 overflow-hidden rounded-full', METER_TRACK[meterTone(item.tone ?? 'neutral', 'BarList')])}>
+            <span aria-hidden className={cn('col-span-2 h-1.5 overflow-hidden rounded-full', METER_TRACK[item.tone ?? 'neutral'])}>
               <span
                 className={cn(
                   'block h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-soft',
-                  METER_FILL[meterTone(item.tone ?? 'neutral', 'BarList')],
+                  METER_FILL[item.tone ?? 'neutral'],
                 )}
                 style={{ width: `${ratio * 100}%` }}
               />

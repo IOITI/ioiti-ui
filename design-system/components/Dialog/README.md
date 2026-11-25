@@ -2,7 +2,7 @@
 
 A dialog, in four widths (and a full one, for two things side by side): it settles in from what opened it, keeps the focus, and gives it back.
 
-**You provide** `open` / `onOpenChange` (or `defaultOpen`, the dialog then closing itself), `onClose` (told too as it closes), `title`, `description`, the content as `children`, `footer` (the buttons); `size` (`sm` · `md` · `lg` · `xl` · `full`, `md` by default); `closeOnBackdrop` (`true`), `showCloseButton` (`true`; formerly `hideCloseButton`, the other way round).
+**You provide** `open` / `onOpenChange` (or `defaultOpen`, the dialog then closing itself), `onClose` (told too as it closes), `title`, `description`, the content as `children`, `footer` (the buttons); `size` (`sm` · `md` · `lg` · `xl` · `full`, `md` by default); `closeOnBackdrop` (`true`), `showCloseButton` (`true`).
 
 ```tsx
 <Dialog open={open} onOpenChange={setOpen} title="Rename the project"
@@ -15,7 +15,7 @@ A dialog, in four widths (and a full one, for two things side by side): it settl
 - One dialog at a time, drawn in the document's body; a click outside closes it (`closeOnBackdrop`).
 - The footer is on the right: a ghost Cancel, then the one primary button. To confirm what cannot be undone, `ConfirmAction` (built on it). A record beside the page is a `Sheet`.
 - It draws with `surface`, `border`, `text-primary`, `text-secondary`, `shadow-elevated` and `radius-2xl`, over a black scrim at 50%; under glass, `glass-float` over `glass-scrim`.
-- Formerly `SettleModal`: that name still draws it until 1.0, and says so once in development.
+- Formerly `SettleModal`, removed in 1.0: `npx ioiti-ui-codemod` rewrites it.
 
 ## Accessibility
 

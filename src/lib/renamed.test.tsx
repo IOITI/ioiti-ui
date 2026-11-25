@@ -5,6 +5,19 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { renamed } from './renamed.js'
 
+// The list is empty from 1.0 until a minor version renames again: these tests give their own former name.
+vi.mock('./deprecations.js', () => ({
+  DEPRECATIONS: {
+    'test-former': { kind: 'export', old: 'FormerChoices', new: 'Choices', since: '1.1.0' },
+    'test-said': { kind: 'export', old: 'SaidChoices', new: 'Choices', since: '1.1.0' },
+  },
+}))
+
+/** Former names of the list, as a minor version fills it (their type is the list's: none in 1.0). A warning is said once
+ * a name: the test that hears it has one of its own. */
+const FORMER = 'FormerChoices' as never
+const SAID = 'SaidChoices' as never
+
 const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
 
 /** From now on, what the package says of a deprecated name given. */
@@ -35,7 +48,7 @@ function Choices<T extends string>({ options, onChoose, ref }: { options: readon
 
 describe('a component under its former name', () => {
   it('draws the component, with the props it is given, its ref too', () => {
-    const Former = renamed(Choices, 'SpringSelect')
+    const Former = renamed(Choices, FORMER)
     vi.spyOn(console, 'warn').mockImplementation(() => {})
     const { container: today } = render(<Choices options={['solo', 'team']} />)
     const ref = createRef<HTMLUListElement>()
@@ -50,23 +63,23 @@ describe('a component under its former name', () => {
 
   it('says once, in development, the former name and what replaces it', () => {
     const said = watchWarnings()
-    const Former = renamed(Choices, 'SettleModal')
+    const Former = renamed(Choices, SAID)
     const { rerender } = render(<Former options={['solo']} />)
     rerender(<Former options={['team']} />)
     render(<Former options={['solo']} />)
 
     expect(said()).toHaveLength(1)
-    expect(said()[0]).toContain('(SettleModal: Dialog)')
+    expect(said()[0]).toContain('(SaidChoices: Choices)')
   })
 
   it('is named by its former name', () => {
-    const Former = renamed(Choices, 'SmoothAccordion')
-    expect((Former as { displayName?: string }).displayName).toBe('SmoothAccordion')
+    const Former = renamed(Choices, FORMER)
+    expect((Former as { displayName?: string }).displayName).toBe('FormerChoices')
     expect(Former).not.toBe(Choices)
   })
 
   it('keeps the generics of the component it draws, and takes only a former name the package lists', () => {
-    const Former = renamed(Choices, 'AnimatedTabs')
+    const Former = renamed(Choices, FORMER)
     vi.spyOn(console, 'warn').mockImplementation(() => {})
     const chosen: string[] = []
     // `option` is the options' type ('solo' | 'team'), as with the component itself.
@@ -81,7 +94,7 @@ describe('a component under its former name', () => {
   it('is the component itself in production, which says nothing', () => {
     vi.stubEnv('NODE_ENV', 'production')
     const said = watchWarnings()
-    const Former = renamed(Choices, 'DynamicIsland')
+    const Former = renamed(Choices, FORMER)
     render(<Former options={['solo']} />)
 
     expect(Former).toBe(Choices)

@@ -447,18 +447,9 @@ describe('a sheet’s focus, kept as every layer keeps it', () => {
   })
 })
 
-// What the package says of a former name, once, in development.
-const DEPRECATED = /^ioiti-ui: a name or a value the package deprecated/
-const deprecations = (warn: { mock: { calls: unknown[][] } }) => warn.mock.calls.filter(([message]) => DEPRECATED.test(String(message)))
-
 describe('a sheet’s close button', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  it('is there unless showCloseButton is false, nothing said of it', async () => {
+  it('is there unless showCloseButton is false', async () => {
     const user = userEvent.setup()
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const { unmount } = render(<Order />)
     await user.click(opener())
     expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
@@ -468,24 +459,6 @@ describe('a sheet’s close button', () => {
     await user.click(opener())
     expect(screen.getByRole('dialog', { name: 'Order 2026-0042' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
-    expect(deprecations(warn)).toHaveLength(0)
-  })
-
-  it('still takes showClose, said once in development, showCloseButton over it', async () => {
-    const user = userEvent.setup()
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { unmount } = render(<Order showClose={false} />)
-    await user.click(opener())
-    expect(screen.getByRole('dialog', { name: 'Order 2026-0042' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
-    const said = deprecations(warn)
-    expect(said).toHaveLength(1)
-    expect(String(said[0][0])).toContain("(SheetContent's showClose: showCloseButton)")
-    unmount()
-
-    render(<Order showClose={false} showCloseButton />)
-    await user.click(opener())
-    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
   })
 })
 

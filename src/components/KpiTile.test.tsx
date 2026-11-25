@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { formatMoney } from '../lib/format.js'
 import { fr } from '../locales/fr.js'
@@ -43,10 +43,6 @@ describe('a tile with its change', () => {
 })
 
 describe('a tile that needs attention', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   it('says why in a word, its tone faint behind it, and has no glow', () => {
     const { container } = render(<KpiTile label="Disk" value="91%" tone="warning" toneLabel="Near the limit" />)
     const tile = container.firstElementChild!
@@ -56,24 +52,11 @@ describe('a tile that needs attention', () => {
   })
 
   it('is drawn in the negative colour where it is in danger', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const { container } = render(<KpiTile label="Failed payments" value="12" tone="danger" toneLabel="Failing" />)
     const tile = container.firstElementChild!
     expect(screen.getByText('Failing')).toHaveClass('text-negative')
     expect(tile).toHaveClass('border-negative/40', '[--glass-tile-glow:transparent]')
     expect(tile.querySelector('[aria-hidden].bg-negative\\/5')).not.toBeNull()
-    expect(warn).not.toHaveBeenCalled()
-  })
-
-  it('reads negative, its former name, as danger, and says once in development that it is deprecated', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { container, rerender } = render(<KpiTile label="Refunds" value="7" tone="negative" toneLabel="Above usual" />)
-    expect(screen.getByText('Above usual')).toHaveClass('text-negative')
-    expect(container.firstElementChild).toHaveClass('border-negative/40')
-    rerender(<KpiTile label="Refunds" value="8" tone="negative" toneLabel="Above usual" />)
-    expect(warn).toHaveBeenCalledTimes(1)
-    expect(String(warn.mock.calls[0][0])).toMatch(/^ioiti-ui: a name or a value the package deprecated/)
-    expect(String(warn.mock.calls[0][0])).toContain(`(KpiTile's tone="negative": danger)`)
   })
 })
 

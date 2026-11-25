@@ -2,7 +2,7 @@
 
 A link whose page is previewed on hover, on keyboard focus and on a first tap, without leaving the page; a second tap, or a click, follows it. `PeekCard` puts the same card on any other trigger.
 
-**You provide** for `PeekLink`: `href` (formerly `to`), `content` (a function drawing the card), the words as `children`, `className`; `openOnTap` (`false`: a tap follows the link at once); `aria-label`. For `PeekCard`: one element as `children`, `renderContent`; `href` and `hrefLabel` (`Open` by default, in IoitiProvider's language) for the card's own link; `placement` (`auto` · `top` · `bottom`); `delay` (ms, `200`); `openOnTap`.
+**You provide** for `PeekLink`: `href`, `content` (a function drawing the card), the words as `children`, `className`; `openOnTap` (`false`: a tap follows the link at once); `aria-label`. For `PeekCard`: one element as `children`, `renderContent`; `href` and `hrefLabel` (`Open` by default, in IoitiProvider's language) for the card's own link; `placement` (`auto` · `top` · `bottom`); `delay` (ms, `200`); `openOnTap`.
 
 ```tsx
 <PeekLink href="/invoices/2026-0042" content={() => <InvoicePreview />}>Invoice 2026-0042</PeekLink>

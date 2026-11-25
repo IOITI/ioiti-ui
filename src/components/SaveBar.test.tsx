@@ -105,4 +105,10 @@ describe('SaveBar', () => {
     expect(saved).toBe(0)
     expect(screen.getByRole('alert')).toHaveTextContent('1 field holds a value that cannot be used.')
   })
+
+  it('says its save on its way while it is pending, Discard not pressed meanwhile', () => {
+    render(<SaveBar open onSave={() => {}} onDiscard={() => {}} pending />)
+    expect(screen.getByRole('button', { name: 'Saving' })).toHaveAttribute('aria-busy', 'true')
+    expect(screen.getByRole('button', { name: 'Discard' })).toBeDisabled()
+  })
 })

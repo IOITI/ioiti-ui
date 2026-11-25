@@ -87,17 +87,6 @@ const choices: CategoryInfo = {
       ],
     },
     {
-      slug: 'stretch-switch',
-      name: 'StretchSwitch',
-      names: ['StretchSwitch'],
-      deprecated: 'Switch',
-      keywords: ['toggle', 'switch', 'on off'],
-      examples: [
-        { id: 'notify', title: 'A setting turned', description: 'A switch whose thumb stretches as it is pressed, then snaps to its side; a press on its label turns it too.' },
-        { id: 'disabled', title: 'Disabled', description: 'On or off, it cannot be turned: its description says why.' },
-      ],
-    },
-    {
       slug: 'slider',
       name: 'Slider',
       names: ['Slider', 'RangeSlider'],

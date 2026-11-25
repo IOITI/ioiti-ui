@@ -89,7 +89,7 @@ export const DrawCheckbox = forwardRef<HTMLInputElement, DrawCheckboxProps>(
             checked={currentChecked}
             disabled={disabled}
             onChange={handleChange}
-            // ioiti-ui: named by its label and described by its description, as `stretch-switch`: the
+            // ioiti-ui: named by its label and described by its description, as the form's `Switch`: the
             // <label> holds both, which made one name of them.
             aria-labelledby={label ? `${inputId}-label` : undefined}
             aria-describedby={description ? `${inputId}-description` : undefined}

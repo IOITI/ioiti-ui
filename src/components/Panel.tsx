@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 
-import { deprecated } from '../lib/deprecated.js'
 import { cn } from '../lib/utils.js'
 import type { Crumb } from '../shell/navigation.js'
 import { usePageName, useTabTitle } from '../shell/page-trail-context.js'
@@ -20,8 +19,6 @@ export interface PanelProps {
    * @default 'regular'
    */
   density?: 'regular' | 'compact'
-  /** @deprecated Use `density="compact"`. Removed in 1.0. */
-  dense?: boolean
   children: ReactNode
 }
 
@@ -30,10 +27,7 @@ export interface PanelProps {
  * place it is given: in a grid's column or a row, what it holds (a line that does not wrap, a wide table)
  * is laid out in its width, cut short or scrolled in its own frame, rather than widening the column.
  */
-export function Panel({ id, title, description, action, className, bodyClassName, density, dense, children }: PanelProps) {
-  // Its former name read as today's, said once in development.
-  if (dense !== undefined) deprecated('panel-dense', 'Panel')
-  const compact = (density ?? (dense ? 'compact' : 'regular')) === 'compact'
+export function Panel({ id, title, description, action, className, bodyClassName, density = 'regular', children }: PanelProps) {
   return (
     <section
       id={id}
@@ -51,7 +45,7 @@ export function Panel({ id, title, description, action, className, bodyClassName
           {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
         </header>
       )}
-      <div className={cn('p-5', compact && 'pt-2', bodyClassName)}>{children}</div>
+      <div className={cn('p-5', density === 'compact' && 'pt-2', bodyClassName)}>{children}</div>
     </section>
   )
 }

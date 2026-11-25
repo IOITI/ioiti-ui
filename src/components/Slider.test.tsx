@@ -34,6 +34,12 @@ describe('Slider', () => {
     await user.type(field, '90')
     expect(screen.getByRole('slider', { name: 'Delay' })).toHaveValue('90')
   })
+
+  it('is named by aria-label where its label is not text, its field beside it too', () => {
+    render(<Slider label={<b>Risk</b>} aria-label="Risk per trade" defaultValue={2} showInput />)
+    expect(screen.getByRole('slider', { name: 'Risk per trade' })).toBeInTheDocument()
+    expect(screen.getByRole('spinbutton', { name: 'Risk per trade' })).toBeInTheDocument()
+  })
 })
 
 describe('RangeSlider', () => {
@@ -49,6 +55,12 @@ describe('RangeSlider', () => {
     fireEvent.change(to, { target: { value: '60' } })
     expect(changed).toHaveBeenLastCalledWith([80, 80])
     expect(to).toHaveAttribute('aria-valuetext', '80 €')
+  })
+
+  it('is named by aria-label where its label is not text, each end with it', () => {
+    render(<RangeSlider label={<b>Price</b>} aria-label="Price" />)
+    expect(screen.getByRole('slider', { name: 'Price, from' })).toBeInTheDocument()
+    expect(screen.getByRole('slider', { name: 'Price, to' })).toBeInTheDocument()
   })
 })
 
