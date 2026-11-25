@@ -1,8 +1,6 @@
 import {
   Badge,
   ButtonLink,
-  formatDay,
-  formatMoney,
   KpiGrid,
   KpiTile,
   Meter,
@@ -15,12 +13,15 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
+  useFormat,
 } from 'ioiti-ui'
 import { ArrowRight } from 'lucide-react'
 
-import { ITEMS, STATUS_LABEL } from '../data'
+import { BUDGET, ITEMS, STATUS_LABEL } from '../data'
 
 export function HomePage() {
+  // Amounts, percentages and days as the locale IoitiProvider is given writes them (src/main.tsx).
+  const { formatDay, formatMoney, formatPercent } = useFormat()
   const open = ITEMS.filter((item) => item.status !== 'done')
   const total = ITEMS.reduce((sum, item) => sum + item.amount, 0)
   return (
@@ -38,8 +39,8 @@ export function HomePage() {
       <KpiGrid>
         <KpiTile label="Open items" value={open.length} hint={`of ${ITEMS.length} this month`} />
         <KpiTile label="Total amount" value={formatMoney(total, 'EUR')} hint="Every item of the month" />
-        <KpiTile label="Budget used" value="62%" hint="of 16,000.00 €">
-          <Meter ratio={0.62} tone="warning" label="Budget used" scale={['0', '16,000 €']} />
+        <KpiTile label="Budget used" value={formatPercent(BUDGET.used * 100, false, 0)} hint={`of ${formatMoney(BUDGET.amount, 'EUR')}`}>
+          <Meter ratio={BUDGET.used} tone="warning" label="Budget used" scale={['0', formatMoney(BUDGET.amount, 'EUR')]} />
         </KpiTile>
         <KpiTile label="Sync" value={<StatusBadge status="ok" />} hint="Last run at 09:30" />
       </KpiGrid>

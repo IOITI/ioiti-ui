@@ -14,6 +14,17 @@ Panels side by side or one over the other, each sized by the handle between them
 </ResizablePanels>
 ```
 
-- On a focused handle the arrows move it 2%, 10% with Shift; Home and End go to the ends; Enter folds a `collapsible` panel away and back. A double click puts the first sizes back. To a screen reader it is a separator with its value.
+- A double click on a handle puts the first sizes back.
 - The handle is a 1px line in `border`, `border-hover` under the pointer, `brand` while dragged under an accent. A panel's content scrolls inside it.
 - Under `stackBelow` the handles go and the panels stack, each at its own height.
+
+## Accessibility
+
+Each handle is a stop of the keyboard: a separator named after the panel before it ("Resize the editor", from its `label`), which says that panel's share, in percent, and its bounds.
+
+| Key | What it does |
+|---|---|
+| →, ← | Side by side: the handle 2% to the right, or to the left; 10% with Shift |
+| ↓, ↑ | One over the other: the handle 2% down, or up; 10% with Shift |
+| Home, End | The panel before it at its smallest, at its largest |
+| Enter | Folds a `collapsible` panel beside it away, and back |

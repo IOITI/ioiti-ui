@@ -12,3 +12,12 @@ What a control means, or why it is disabled: shown on hover, on keyboard focus a
 
 - Never a `title` attribute: it shows on no phone, no keyboard and no disabled control.
 - One short sentence; what the control does is its own label, the hint says what more there is to know.
+
+## Accessibility
+
+Its words are its control's description, read with the control whether the hint shows or not. With `wrap`, the wrapper is a stop of the keyboard, for a control that takes no focus (a disabled one): its hint is still reached.
+
+| Key | What it does |
+|---|---|
+| Tab | Onto the control, or its wrapper: shows the hint. Away: hides it |
+| Escape | Hides it, the focus staying where it is |

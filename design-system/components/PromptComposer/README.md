@@ -10,6 +10,16 @@ A request to an assistant: a field that grows with its text, sent with Enter, st
   suggestions={[{ label: 'Summarise', prompt: 'Summarise October in three lines.' }]} />
 ```
 
-- Enter sends, Shift+Enter breaks a line; on a touch screen Enter breaks a line and the button sends. A suggestion fills the field, to be read before it is sent.
+- On a touch screen Enter breaks a line and the button sends. A suggestion fills the field, to be read before it is sent.
 - The frame is `surface` with a `border` (`border-hover` with the focus), `radius-2xl`; the send button `primary`, the accent's fill where one is chosen.
 - `floating` lifts it with `shadow-elevated` over what scrolls under it, with no band behind it; `glass-float` under glass.
+
+## Accessibility
+
+Its field is named by `label` (out of sight with `hideLabel`, still said), and said invalid past `maxLength`; its suggestions and what it goes with are groups of buttons, named so ("Requests to start from", "Attached"). Send is a button, its reason in a `Hint` while it cannot send; Stop takes its place while the answer comes.
+
+| Key | What it does |
+|---|---|
+| Enter | Sends the request |
+| Shift+Enter | Breaks a line |
+| ⌘V (Ctrl+V) | Pasted files are handed over (`onFiles`) |

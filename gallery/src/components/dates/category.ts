@@ -7,6 +7,15 @@ const dates: CategoryInfo = {
   label: 'Dates and time',
   icon: CalendarDays,
   summary: 'A day, a range of days or of time, a moment said from now, the time elsewhere: weeks start on the locale’s day and days are written as it writes them, IoitiProvider’s (Monday and 14 Oct 2026 in en-GB, the default).',
+  choose: {
+    heading: 'Which picker?',
+    rows: [
+      { family: 'calendar', when: 'A day or a range, chosen in a month always in sight.' },
+      { family: 'date-picker', when: 'A day or a range in a form: a field that opens its calendar.' },
+      { family: 'date-range-filter', when: 'The days a page is filtered by: the ranges asked for first, as buttons, a calendar for any other.' },
+      { family: 'time-range-picker', when: 'A range of time said from now (“Last 24 hours”), which stays true as time goes by, refreshed by a press or on a timer.' },
+    ],
+  },
   families: [
     {
       slug: 'calendar',

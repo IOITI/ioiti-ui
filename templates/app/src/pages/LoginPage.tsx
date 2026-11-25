@@ -32,6 +32,7 @@ export function LoginPage() {
                 id="password"
                 type="password"
                 autoComplete="current-password"
+                // oxlint-disable-next-line jsx-a11y/no-autofocus -- a page that is only this form: its field takes the focus
                 autoFocus
                 showPasswordToggle
                 value={password}

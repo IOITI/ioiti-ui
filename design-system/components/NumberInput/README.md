@@ -11,3 +11,14 @@ A number to type, or to change with the arrow keys (ten at a time with Shift) an
 ```
 
 - What is typed stays until the field is left, read as the locale writes numbers and as people type them ("1 234,5" and "1234.5" in French; "1,500" is 1500 in English, "1,5" 1.5); it is shown again in the locale ("1234,5" in French), and keeps to its bounds.
+
+## Accessibility
+
+A spin button named by its label, which says its value with its unit ("500 €") and its bounds. Its − and + are the pointer's: no stop of the keyboard, nor a second control to hear, the arrow keys doing their work.
+
+| Key | What it does |
+|---|---|
+| ↑, ↓ | One `step` more, or less, within `min` and `max` |
+| Shift+↑, Shift+↓ | Ten steps more, or less |
+| Page Up, Page Down | Ten steps more, or less |
+| Home, End | `min`, `max`, where it has them |

@@ -10,6 +10,18 @@ Several values from a list, each a chip in the field: typing filters the list; o
 </Field>
 ```
 
-- The arrows move in the list, Enter ticks or unticks, Escape closes it, Backspace in an empty field removes the last chip.
 - A `Field`'s label, around it or beside it (`htmlFor`), names the field typed into, and a click on the label leads there, never to a chip. One value from a list is a `Select` or a `Combobox`.
 - The field has the look of the form's `Input`, its border the accent's `brand` in focus; the list floats in the document's body, `surface` ground, `border`, `radius-xl`, `glass-float` under glass.
+
+## Accessibility
+
+Its field is a combobox named by its label, which keeps the focus and says the option the arrows are on, ticked or not, under its group's name; past `max`, the list says so. The chips are read before the field, their × no stop of the keyboard: the keys untick a value in the list, or take the last one back with Backspace. Clear, a button after the field, empties it.
+
+| Key | What it does |
+|---|---|
+| Tab | Into the field: opens the list. Out of it: closes the list |
+| Letters | Typed: filter the list |
+| ↓, ↑ | Open the list; open, the next option or the one before, round from the last to the first |
+| Enter | Ticks the option, or unticks it, the list staying open; with `onCreateOption`, makes a value of what is typed |
+| Backspace | In an empty field: removes the last value |
+| Escape | Closes the list; closed, empties what was typed |

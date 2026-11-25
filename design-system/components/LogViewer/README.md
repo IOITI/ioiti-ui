@@ -9,5 +9,15 @@ A job's output as it is written (a build, a deploy, an import): numbered lines, 
 ```
 
 - A line's level is read from its words (ERROR, WARN, INFO, a traceback): an error in `negative`, a warning in `warning`, each marked at its edge, info's edge in `info`. Set in `mono` on `surface`, `radius-xl`.
-- In the search, Enter goes to the next line found, Shift+Enter to the one before. Scrolled up, "Jump to the end" follows the newest line again.
+- Scrolled up, "Jump to the end" follows the newest line again.
 - Only the lines in sight are drawn: a log of a hundred thousand lines scrolls as one of a hundred. Code to read is a `CodeBlock`.
+
+## Accessibility
+
+A region named by its `label`. Its lines are a log a screen reader reads when asked, not as it grows, and a stop of the keyboard whose keys scroll it. The search says where it is ("3 of 12", "No match"); Wrap long lines says whether it is on.
+
+| Key | What it does |
+|---|---|
+| Enter, Shift+Enter | In the search: the next line found, the one before |
+| ↓, ↑, Page Down, Page Up, Home, End | On the lines: scroll them |
+| Tab | From the search through its buttons, then onto the lines |

@@ -15,3 +15,12 @@ Where things went, stage after stage: each stage's count and its share of the fi
 - The stages take `chart-funnel-1…5`, one hue from strong to light (the accent's own ramp with one); a sixth stage keeps the fifth's colour. What is lost between two stages is a fading band, its share in `negative`.
 - Above it: the share that went all the way, and the biggest drop, named by its `dropLabel`.
 - The up and down arrows read a stage (its count, its share, what it lost), Escape leaves; a table gives screen readers every figure.
+
+## Accessibility
+
+An image named by its `aria-label` (how many stages, from the first to the last, without one) and a stop of the keyboard: its arrows move the stage its tooltip shows, for the eye. A screen reader reads every stage in a table out of sight instead.
+
+| Key | What it does |
+|---|---|
+| ↓, ↑ | The next stage, or the one before |
+| Escape | Hides the tooltip |

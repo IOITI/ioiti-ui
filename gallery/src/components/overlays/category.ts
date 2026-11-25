@@ -7,6 +7,19 @@ const overlays: CategoryInfo = {
   label: 'Overlays',
   icon: Layers,
   summary: 'What floats over the page, from a hint to a dialog: drawn in the document’s body, kept on the screen, closed by Escape or a press elsewhere.',
+  choose: {
+    heading: 'Which layer?',
+    rows: [
+      { family: 'hint', when: 'What a control means, or why it is disabled, in place of a `title`.' },
+      { family: 'tooltip', when: 'The tooltip a `Hint` draws: alone, for a delay, an alignment or an arrow of its own.' },
+      { family: 'peek-link', when: 'A preview of where a link leads, without leaving the page.' },
+      { family: 'popover', when: 'Filters or a few settings beside their button, the page still in use.' },
+      { family: 'dropdown-menu', when: 'The actions on a thing, behind a button or at the pointer.' },
+      { family: 'dialog', when: 'A decision, or a short form, that holds the page until it is answered. What cannot be undone: a [ConfirmAction](/components/actions/confirm-action).' },
+      { family: 'sheet', when: 'A record or a form from a side of the page, over it or beside it.' },
+      { family: 'product-tour', when: 'A walk through a page, one part at a time.' },
+    ],
+  },
   families: [
     {
       slug: 'hint',

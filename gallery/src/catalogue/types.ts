@@ -45,6 +45,21 @@ export interface FamilyInfo {
   single?: string
 }
 
+/** A row of a category's "Which one?": one of its families, and when it is the one to use. */
+export interface ChoiceRow {
+  /** The family's slug, in this category. */
+  family: string
+  /** When to use it, in a line of Markdown: what another category holds instead is a link to its page. */
+  when: string
+}
+
+/** Where a category's families answer the same need in different ways: which to use, a table on its page. */
+export interface Choose {
+  /** Its heading: "Which button?". */
+  heading: string
+  rows: ChoiceRow[]
+}
+
 /** A group of families, in the sidebar under Components, and a page that shows each of them once. */
 export interface CategoryInfo {
   slug: string
@@ -52,6 +67,8 @@ export interface CategoryInfo {
   icon: LucideIcon
   /** What it holds, in a sentence. */
   summary: string
+  /** Which of its families to use, where several answer the same need: drawn after its summary. */
+  choose?: Choose
   families: FamilyInfo[]
 }
 

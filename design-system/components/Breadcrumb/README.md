@@ -9,3 +9,7 @@ Where a page is, from Home; too many steps fold into "…". The top bar draws on
 ```
 
 - In the shell the trail is built from the menu and `PageHeader`'s `parents`: do not add a second breadcrumb to a page.
+
+## Accessibility
+
+A navigation landmark ("Breadcrumb") of the browser's own links, the page shown said current; "…" is a button ("Show hidden pages") that shows the steps it folds, the focus going to the first of them.

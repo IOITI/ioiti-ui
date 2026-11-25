@@ -4,6 +4,7 @@ import {
   BookOpen,
   ChartPie,
   ClipboardList,
+  History,
   Inbox,
   Languages,
   LayoutDashboard,
@@ -22,6 +23,7 @@ import type { ReactNode } from 'react'
 import { CATEGORIES, categoryPath, COMPONENTS_PATH, familyPath } from './catalogue/catalogue'
 import { ComponentIndex } from './catalogue/ComponentIndex'
 import type { CategoryInfo, FamilyInfo } from './catalogue/types'
+import { Changelog } from './pages/Changelog'
 import { ChartColours } from './pages/ChartColours'
 import { Colours } from './pages/Colours'
 import { Conventions } from './pages/Conventions'
@@ -51,6 +53,7 @@ export interface GalleryPage extends MenuEntry<Section> {
 
 const OVERVIEW: GalleryPage[] = [
   { id: '/', path: '/', label: 'Getting started', section: 'Overview', icon: <BookOpen />, element: <GettingStarted /> },
+  { id: '/changelog', path: '/changelog', label: 'Changelog', section: 'Overview', icon: <History />, element: <Changelog /> },
   { id: COMPONENTS_PATH, path: COMPONENTS_PATH, label: 'All components', section: 'Overview', icon: <LayoutGrid />, element: <ComponentIndex /> },
 ]
 

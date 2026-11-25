@@ -1,0 +1,31 @@
+name: CI
+
+# Every push to main and every pull request: the application installed as package-lock.json holds it, then checked.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Read-only: the checks change nothing.
+permissions:
+  contents: read
+
+# A pull request's run is cancelled by the next push to it; main's runs each go to the end (the run's own id).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+# The actions are pinned to a commit (the version beside it).
+jobs:
+  check:
+    name: Lint, types, tests, the build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check

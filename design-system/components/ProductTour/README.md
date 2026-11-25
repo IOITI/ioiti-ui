@@ -11,5 +11,16 @@ A walk through a page, one part at a time: the page dims around each part, scrol
 ]} />
 ```
 
-- Opened from a button the user presses ("Take the tour of this page"). The focus goes to Next; the arrows move, Escape ends it, Tab stays in its card, and the focus comes back where it was.
+- Opened from a button the user presses ("Take the tour of this page").
 - The scrim is black at 50% (`glass-scrim` under glass); the card is `surface` with `border`, `radius-2xl`, `glass-float` under glass. The current step's dot is `foreground`, the accent's `brand` under an accent.
+
+## Accessibility
+
+Its card is a modal dialog named by the step's title, whose words are said as each step comes. The focus goes to Next (Done on the last step), Tab stays in the card, and the focus comes back where it was once the tour ends. Its dots are buttons named by their step ("Go to step 2"), the current one marked.
+
+| Key | What it does |
+|---|---|
+| →, ← | The next step, or the one before; past the last, the tour ends |
+| Tab, Shift+Tab | Round the card's buttons: Skip, the steps, Back, Next |
+| Enter, Space | Presses the button that has the focus (Next, as the tour opens) |
+| Escape | Ends the tour |

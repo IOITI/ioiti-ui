@@ -19,4 +19,15 @@ The application's menu, beside the page from 768px up and a drawer below: its se
 - Folded to the rail, an entry with children shows its pages in a menu beside it (its own page first, unless a child is at its address), the page shown marked; it keeps the pill while it holds the page shown.
 - A section placed at the foot (`place: 'footer'`) is drawn above Collapse, without a heading: a page the reader goes to now and then, the documentation.
 - Beside the page it is `glass-bar` under glass; the drawer is `glass-float`, closed by a choice, Escape, its close button, its scrim or a swipe.
-- The drawer is a dialog: opened, the focus goes to the page shown in it, Tab stays in it, and closed it goes back to the button that opened it, which says whether it is open (`aria-expanded`, `aria-controls` its `drawerId`: `AppShell` gives both).
+
+## Accessibility
+
+A navigation landmark ("Main"): each entry a link (a button, without `href`), the page shown said current. An entry that opens on its children, its chevron beside a link, and a folded section's heading are buttons that say whether they are open; folded to the rail, an entry is named by its label and its badge, and one with children opens its pages in a `DropdownMenu`. The drawer is a dialog ("Navigation"): opened, the focus goes to the page shown in it, Tab stays in it, and closed it goes back to the button that opened it, which says whether it is open (`aria-expanded`, `aria-controls` its `drawerId`: `AppShell` gives both). Collapse says its keys (`aria-keyshortcuts`).
+
+| Key | What it does |
+|---|---|
+| ⌘B (Ctrl+B) | Folds it to the rail, and back; below 768px, opens the drawer |
+| Tab, Shift+Tab | Through its entries, their chevrons and its sections' headings |
+| Enter | On an entry that is a link: follows it (in the drawer, closing it) |
+| Enter, Space | On a button: opens an entry or a section, or closes it; in the rail, opens an entry's pages |
+| Escape | Closes the drawer |

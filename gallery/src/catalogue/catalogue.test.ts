@@ -7,9 +7,10 @@ import * as adapter from 'ioiti-ui/react-router'
 import ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
+import { KEYBOARD_FAMILIES, NATIVE_FAMILIES } from './accessibility'
 import { CATEGORIES, exampleKey, FAMILIES, ORDER, readmeOf } from './catalogue'
 import { FORMER_ADDRESSES, movedTo } from './legacy'
-import { blocks, summaryOf } from './markdown-blocks'
+import { blocks, summaryOf, type Block } from './markdown-blocks'
 import { COMPONENT_PROPS } from './props'
 import type { Entry, Examples } from './types'
 
@@ -107,7 +108,7 @@ describe('the catalogue', () => {
     expect(missing, `families without design-system/components/<Name>/README.md`).toEqual([])
     for (const { family } of FAMILIES) {
       const readme = readmeOf(family)!
-      expect(blocks(readme)[0], family.name).toEqual({ type: 'title', text: family.name })
+      expect(blocks(readme)[0], family.name).toEqual({ type: 'title', level: 1, text: family.name })
       expect(summaryOf(readme), family.name).not.toBe('')
     }
   })
@@ -150,5 +151,65 @@ describe('the catalogue', () => {
   it('has the props of each component (npm run props)', () => {
     const names = FAMILIES.flatMap(({ family }) => family.names)
     expect(names.filter((name) => !COMPONENT_PROPS[name])).toEqual([])
+  })
+})
+
+/** A section of guidelines: its blocks under `## <heading>`, to the next heading of its level or above. */
+function sectionOf(readme: string, heading: string): Block[] | undefined {
+  const all = blocks(readme)
+  const start = all.findIndex((block) => block.type === 'title' && block.level === 2 && block.text === heading)
+  if (start === -1) return undefined
+  const after = all.slice(start + 1)
+  const end = after.findIndex((block) => block.type === 'title' && block.level <= 2)
+  return end === -1 ? after : after.slice(0, end)
+}
+
+type TableBlock = Extract<Block, { type: 'table' }>
+
+describe('the guidelines and the choices', () => {
+  it('say how each interactive family is used without a mouse: what a screen reader hears, then its keys', () => {
+    const listed: string[] = [...KEYBOARD_FAMILIES, ...NATIVE_FAMILIES]
+    const names = new Set(FAMILIES.map(({ family }) => family.name))
+    expect(listed.filter((name) => !names.has(name)), 'listed, and no family').toEqual([])
+    expect(listed.filter((name, index) => listed.indexOf(name) !== index), 'listed twice').toEqual([])
+    for (const { family } of FAMILIES) {
+      const section = sectionOf(readmeOf(family)!, 'Accessibility')
+      if (!listed.includes(family.name)) {
+        // A family given the section is listed in accessibility.ts, which holds it to it.
+        expect(section, `${family.name}: an Accessibility section that accessibility.ts does not list`).toBeUndefined()
+        continue
+      }
+      expect(section, `${family.name}: no ## Accessibility`).toBeDefined()
+      expect(section!.some((block) => block.type === 'paragraph'), `${family.name}: what a screen reader hears`).toBe(true)
+      const tables = section!.filter((block): block is TableBlock => block.type === 'table')
+      if (NATIVE_FAMILIES.includes(family.name)) {
+        expect(tables, `${family.name}: the browser's own controls, said in a sentence`).toEqual([])
+        continue
+      }
+      expect(tables, `${family.name}: a table of its keys`).toHaveLength(1)
+      const [table] = tables
+      expect(table.head, family.name).toEqual(['Key', 'What it does'])
+      expect(table.rows.length, family.name).toBeGreaterThan(0)
+      for (const row of table.rows) expect(row.every((cell) => cell.trim() !== ''), `${family.name}: ${row.join(' | ')}`).toBe(true)
+    }
+  })
+
+  it('say which of a category’s families to use: its own, each once, none deprecated, each link to a family’s page', () => {
+    const paths = new Set(FAMILIES.map(({ path }) => path))
+    for (const category of CATEGORIES) {
+      if (!category.choose) continue
+      const { heading, rows } = category.choose
+      expect(heading.trim(), category.slug).not.toBe('')
+      expect(rows.length, category.slug).toBeGreaterThanOrEqual(2)
+      const slugs = rows.map((row) => row.family)
+      expect(slugs.filter((slug, index) => slugs.indexOf(slug) !== index), `${category.slug}: named twice`).toEqual([])
+      for (const row of rows) {
+        const family = category.families.find((each) => each.slug === row.family)
+        expect(family, `${category.slug}: ${row.family}, none of its families`).toBeDefined()
+        expect(family?.deprecated, `${category.slug}: ${row.family}, deprecated`).toBeUndefined()
+        expect(row.when.trim(), `${category.slug}: ${row.family}`).not.toBe('')
+        for (const [, href] of row.when.matchAll(/\]\(([^)\s]+)\)/g)) expect(paths.has(href), `${category.slug}: ${href}`).toBe(true)
+      }
+    }
   })
 })

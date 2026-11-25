@@ -7,6 +7,19 @@ const forms: CategoryInfo = {
   label: 'Forms',
   icon: TextCursorInput,
   summary: 'A label over each field, its hint under it, its error in the negative colour: fields that take text, numbers, codes and files, and the form they are sent in.',
+  choose: {
+    heading: 'Which field?',
+    rows: [
+      { family: 'input', when: 'A line of text: a name, an address, an amount, a password, a search.' },
+      { family: 'textarea', when: 'Several lines: a note, a message.' },
+      { family: 'number-input', when: 'A number with its unit and its bounds, stepped with the arrow keys too.' },
+      { family: 'select', when: 'One value from a short list, in the system’s own list: at home on a phone.' },
+      { family: 'combobox', when: 'One value from a list long enough to search. Options with a second line and no search: a [SelectMenu](/components/choices/select-menu); several values, a [MultiSelect](/components/choices/multi-select).' },
+      { family: 'otp-input', when: 'A one-time code, a box per digit.' },
+      { family: 'inline-edit', when: 'A value edited alone, where it is shown: a name, a title.' },
+      { family: 'file-upload', when: 'Files, each followed to what it became.' },
+    ],
+  },
   families: [
     {
       slug: 'field',

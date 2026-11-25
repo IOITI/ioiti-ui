@@ -7,6 +7,19 @@ const feedback: CategoryInfo = {
   label: 'Feedback',
   icon: MessageSquareText,
   summary: 'What the application says back: a message in the page, a state in a word, a toast for what was just done. Always a word with a colour.',
+  choose: {
+    heading: 'Which message?',
+    rows: [
+      { family: 'alert', when: 'A message in the page, there until it is dealt with; danger and warning read out at once.' },
+      { family: 'toast', when: 'What was just done, a moment at the bottom of the screen, from `useToast()`.' },
+      { family: 'undo-toast', when: 'A removal that can still be undone, in place of a question before it.' },
+      { family: 'status-island', when: 'What is live, everywhere: a pill in the top bar that opens over the page.' },
+      { family: 'status-badge', when: 'The state of something running, in a word, as a health check reports it.' },
+      { family: 'badge', when: 'A short state or a count, beside what it describes.' },
+      { family: 'request-status', when: 'Something asked, followed to its outcome.' },
+      { family: 'check-list', when: 'Checks, and what each found.' },
+    ],
+  },
   families: [
     {
       slug: 'alert',

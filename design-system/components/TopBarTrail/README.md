@@ -14,3 +14,7 @@ Where the page is, in the top bar of every page: Home, the section, the entry of
 - Whole on a wide screen while it fits the room the top bar leaves it (the page's own name may be cut short, not the steps before it); otherwise its last two steps; on a phone, the step before the page alone, a link back.
 - A section has no page: its step is no link. A section without a heading, or a menu with `trailSections: false`, has no step at all.
 - An entry under another (`parent`) goes through it. Until a deeper page has said its name, its step is `…`.
+
+## Accessibility
+
+A navigation landmark ("Breadcrumb") of the browser's own links, the page shown said current. The whole trail, where it does not fit, is still laid out to be measured, out of sight and out of reach of the keyboard and of screen readers: they reach the steps shown.

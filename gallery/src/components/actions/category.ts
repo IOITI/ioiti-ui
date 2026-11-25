@@ -7,6 +7,19 @@ const actions: CategoryInfo = {
   label: 'Actions',
   icon: MousePointerClick,
   summary: 'What does something is a button; what leads somewhere is a link, even when it looks like a button.',
+  choose: {
+    heading: 'Which button?',
+    rows: [
+      { family: 'button', when: 'It does something on the page: primary for the one thing a page or a dialog is for, outline or ghost for the others, danger for what removes.' },
+      { family: 'button-link', when: 'It leads to another page, drawn as a button: a link all the same, opened in another tab with ⌘ or Ctrl.' },
+      { family: 'icon-button', when: 'An icon says it where words have no room: the top bar, a row of a table. Named in words for screen readers.' },
+      { family: 'split-button', when: 'One action asked most, and its variants behind a chevron. Actions of their own on a thing are a [DropdownMenu](/components/overlays/dropdown-menu).' },
+      { family: 'copy-button', when: 'A value to copy, saying it did.' },
+      { family: 'export-button', when: 'The rows a page shows, saved as a CSV file.' },
+      { family: 'confirm-action', when: 'What matters, or cannot be undone: a dialog that says what will happen, then a slide (a plain button, to pause).' },
+      { family: 'drag-to-confirm', when: 'The slide alone, outside a dialog.' },
+    ],
+  },
   families: [
     {
       slug: 'button',

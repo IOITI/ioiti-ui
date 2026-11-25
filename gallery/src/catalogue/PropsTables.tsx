@@ -1,7 +1,7 @@
 import { Badge, Code, Disclosure, EmptyText, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
 
 import { InlineMarkdown } from './Markdown'
-import { COMPONENT_PROPS, type ComponentProps, type Inherits } from './props'
+import { COMPONENT_PROPS, type ComponentProps, type Inherits, type Prop } from './props'
 
 /** "…and the attributes of `<button>`": what a component takes from elsewhere, in a line. */
 function InheritedLine({ inherits }: { inherits: Inherits }) {
@@ -37,6 +37,61 @@ function InheritedLine({ inherits }: { inherits: Inherits }) {
   )
 }
 
+function PropRows({ label, props }: { label: string; props: Prop[] }) {
+  return (
+    <Table density="dense" aria-label={label}>
+      <TableHead>
+        <TableRow>
+          <TableHeaderCell>Prop</TableHeaderCell>
+          <TableHeaderCell>Type</TableHeaderCell>
+          <TableHeaderCell>Default</TableHeaderCell>
+          <TableHeaderCell>What it does</TableHeaderCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {props.map((prop) => (
+          <TableRow key={prop.name}>
+            <TableCell className="align-top whitespace-nowrap">
+              <span className="inline-flex items-center gap-2">
+                <Code>{prop.name}</Code>
+                {prop.required && (
+                  <Badge tone="warning" variant="outline">
+                    required
+                  </Badge>
+                )}
+                {prop.deprecated && (
+                  <Badge tone="danger" variant="outline">
+                    deprecated
+                  </Badge>
+                )}
+              </span>
+            </TableCell>
+            <TableCell className="align-top whitespace-normal">
+              <div className="flex max-w-xs flex-wrap gap-1 [&_code]:whitespace-normal [&_code]:break-words">
+                {prop.values ? prop.values.map((value) => <Code key={value}>{`'${value}'`}</Code>) : <Code>{prop.type}</Code>}
+              </div>
+            </TableCell>
+            <TableCell className="align-top">{prop.default !== undefined ? <Code>{prop.default}</Code> : <span className="text-muted-foreground">–</span>}</TableCell>
+            <TableCell className="min-w-64 align-top whitespace-normal text-muted-foreground">
+              {/* A deprecated prop says first what replaces it (its tag's words), then what it does. */}
+              {prop.deprecated ? (
+                <p className="text-foreground">
+                  <InlineMarkdown text={prop.deprecated} />
+                </p>
+              ) : null}
+              {prop.description ? <InlineMarkdown text={prop.description} /> : null}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+
+/** "2 deprecated props". */
+const deprecatedCount = (count: number) => `${count} deprecated prop${count === 1 ? '' : 's'}`
+
+/** A component's props: those of today in the open, the deprecated ones folded under how many there are. */
 function PropsTable({ name, component }: { name: string; component: ComponentProps }) {
   if (!component.props.length) {
     return component.inherits ? (
@@ -45,55 +100,17 @@ function PropsTable({ name, component }: { name: string; component: ComponentPro
       <EmptyText>{name} takes no props.</EmptyText>
     )
   }
+  const current = component.props.filter((prop) => !prop.deprecated)
+  const deprecated = component.props.filter((prop) => prop.deprecated)
   return (
     <div className="space-y-3">
-      <Table density="dense" aria-label={`The props of ${name}`}>
-        <TableHead>
-          <TableRow>
-            <TableHeaderCell>Prop</TableHeaderCell>
-            <TableHeaderCell>Type</TableHeaderCell>
-            <TableHeaderCell>Default</TableHeaderCell>
-            <TableHeaderCell>What it does</TableHeaderCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {component.props.map((prop) => (
-            <TableRow key={prop.name}>
-              <TableCell className="align-top whitespace-nowrap">
-                <span className="inline-flex items-center gap-2">
-                  <Code>{prop.name}</Code>
-                  {prop.required && (
-                    <Badge tone="warning" variant="outline">
-                      required
-                    </Badge>
-                  )}
-                  {prop.deprecated && (
-                    <Badge tone="danger" variant="outline">
-                      deprecated
-                    </Badge>
-                  )}
-                </span>
-              </TableCell>
-              <TableCell className="align-top whitespace-normal">
-                <div className="flex max-w-xs flex-wrap gap-1 [&_code]:whitespace-normal [&_code]:break-words">
-                  {prop.values ? prop.values.map((value) => <Code key={value}>{`'${value}'`}</Code>) : <Code>{prop.type}</Code>}
-                </div>
-              </TableCell>
-              <TableCell className="align-top">{prop.default !== undefined ? <Code>{prop.default}</Code> : <span className="text-muted-foreground">–</span>}</TableCell>
-              <TableCell className="min-w-64 align-top whitespace-normal text-muted-foreground">
-                {/* A deprecated prop says first what replaces it (its tag's words), then what it does. */}
-                {prop.deprecated ? (
-                  <p className="text-foreground">
-                    <InlineMarkdown text={prop.deprecated} />
-                  </p>
-                ) : null}
-                {prop.description ? <InlineMarkdown text={prop.description} /> : null}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      {component.inherits && <InheritedLine inherits={component.inherits} />}
+      {current.length > 0 && <PropRows label={`The props of ${name}`} props={current} />}
+      {component.inherits && <InheritedLine inherits={current.length > 0 ? component.inherits : { ...component.inherits, count: 0 }} />}
+      {deprecated.length > 0 && (
+        <Disclosure summary={deprecatedCount(deprecated.length)}>
+          <PropRows label={`The deprecated props of ${name}`} props={deprecated} />
+        </Disclosure>
+      )}
     </div>
   )
 }

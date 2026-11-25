@@ -17,3 +17,13 @@ One of two to five choices shown at once, each with its words: options given as 
 - Its name for a screen reader comes from around it: a `fieldset` and its `legend`, or the label of a `Field` or a `FormItem`, which names the group and none of its radios.
 - Each group has a `name` of its own: the dot slides from one choice to the next of the same name.
 - Checked, its ring and its dot are `primary` (ink), the accent's `brand` with one. Short choices in a row are a `SegmentedControl`; more than five, a `Select`.
+
+## Accessibility
+
+A radio group named by what is around it; each choice is the browser's own radio, named by its words and its description, said checked or not. The group is one stop of the keyboard.
+
+| Key | What it does |
+|---|---|
+| Tab | Onto the choice made (the first, while none is); again, out of the group |
+| ↓, →, ↑, ← | The next choice or the one before, chosen at once; past the last, the first again |
+| Space | Chooses the radio that has the focus |

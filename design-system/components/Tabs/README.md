@@ -11,3 +11,14 @@ Views of one thing as tabs: one stop of the keyboard, whose arrows, Home and End
 
 - A tab whose view has an address (`?tab=`) is a link (`href`): it can be opened in another tab.
 - Formerly `AnimatedTabs`: that name still draws it until 1.0, and says so once in development.
+
+## Accessibility
+
+Tabs that switch views are a tab list named by `label`, each tab said selected or not; with `renderContent`, the view is a panel named by its tab, a stop of the keyboard after them. Tabs with an `href` are links instead, the one shown said current, each a stop of its own.
+
+| Key | What it does |
+|---|---|
+| Tab | Onto the tab chosen; from it, into its panel |
+| →, ← | The next tab, or the one before, chosen at once; past the last, the first again |
+| Home, End | The first tab, the last |
+| Enter | On a tab that is a link: follows it |

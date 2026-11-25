@@ -29,3 +29,14 @@ What was expected as ranges that widen, and what happened over them: a simulatio
 - Bands take the charts' muted colour, one over the other deepening it; the lines take the series colour, or the compare colours when there are more.
 - A line stops where its values stop (`null`): the actual line ends at the last place known.
 - The pointer or the arrow keys read a place, each line's value and each band's range there; a table gives screen readers every place. Its legend shows and hides a line or a band, one kept shown.
+
+## Accessibility
+
+Each chart, `LineChart` and `FanChart`, is an image named by its `aria-label` ("Line chart of Delay" without one) and a stop of the keyboard: its arrows move the moment its tooltip shows, for the eye. A screen reader reads every figure in a table out of sight instead, captioned by its `aria-label`. The legend's items are buttons, pressed while what they stand for shows.
+
+| Key | What it does |
+|---|---|
+| →, ← | The next moment (a place, in a `FanChart`), or the one before |
+| Page Up, Page Down | A tenth of the moments on, or back |
+| Home, End | The first moment, the last |
+| Escape | Hides the tooltip |

@@ -16,3 +16,13 @@ Days on a calendar, or weekday by hour: signed values take two scales (gains in 
 - One scale is `chart-series` in four steps of strength (the accent's with one); signed values take `chart-gain-1…4` and `chart-loss-1…4`, given as `diverging`. A cell with nothing is a faint grey.
 - Above the grid, the total (or `summary`) and the best and worst cell (the peak, on one scale); below it, the legend's steps between its two words.
 - The arrow keys move from cell to cell and Escape leaves; a cell's figure, with its `detail`, is in a tooltip and said to screen readers. Narrow, it drops its oldest weeks before a cell gets smaller than `minCell`.
+
+## Accessibility
+
+An image named by its `aria-label` (its summary, without one) and a stop of the keyboard: its arrows go from cell to cell, from the first of its newest column, each cell said as it is reached (its day or its hour, its figure, its `detail`).
+
+| Key | What it does |
+|---|---|
+| ←, → | The column before, the next: a week, or an hour |
+| ↑, ↓ | The row above, below: a day of the week, or a row of `rowLabels` |
+| Escape | Hides the tooltip |

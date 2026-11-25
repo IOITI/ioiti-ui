@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // What is outright wrong (correctness): JavaScript's, TypeScript's, React's (its hooks, the keys of a list), a
+  // screen reader's and a keyboard's (jsx-a11y), the tests' (Vitest). As errors: `npm run lint` fails on any.
+  "plugins": ["react", "typescript", "oxc", "jsx-a11y", "vitest"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    // Hooks called at the top of a component or a hook, in the same order at every render.
+    "react/rules-of-hooks": "error",
+    // A file of components exports components only: React Refresh keeps their state as the code changes.
+    "react/only-export-components": ["error", { "allowConstantExport": true }],
+    // A link says where it leads ("All items"), never "click here".
+    "jsx-a11y/anchor-ambiguous-text": "error"
+  },
+  "ignorePatterns": ["dist/**"]
+}

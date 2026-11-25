@@ -19,3 +19,6 @@ export const ITEMS: Item[] = [
 ]
 
 export const STATUS_LABEL: Record<ItemStatus, string> = { open: 'Open', review: 'In review', done: 'Done' }
+
+/** The month's budget: its amount, and the share of it used. */
+export const BUDGET = { amount: 16000, used: 0.62 }

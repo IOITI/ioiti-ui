@@ -55,6 +55,7 @@ export const FAMILIES: Family[] = groups.flatMap((group) =>
 
 export const PAGES: GalleryPage[] = [
   { path: '/', label: 'Getting started' },
+  { path: '/changelog', label: 'Changelog' },
   { path: '/components', label: 'All components' },
   ...fixed,
   ...groups.flatMap((group) => [

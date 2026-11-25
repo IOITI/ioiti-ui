@@ -11,4 +11,13 @@ useShortcut('g f', () => navigate('/forms'), { description: 'Go to the forms', g
 
 - Keys without ⌘ or Ctrl wait while text is typed (`allowInInputs` for an editor's own), and every key waits while a dialog is open.
 - A shortcut without a `description` works and is not listed; a `handler` of `null` lists one heard by someone else (a component's own ⌘B).
-- One dialog at a time, keeping the focus: Escape closes it, the focus back on what opened it. `surface`, `radius-2xl`, `shadow-elevated`; groups in `text-secondary`, rows apart by `border`, keys drawn by `Kbd`.
+- One dialog at a time. `surface`, `radius-2xl`, `shadow-elevated`; groups in `text-secondary`, rows apart by `border`, keys drawn by `Kbd`.
+
+## Accessibility
+
+A `Dialog` named by its title ("Keyboard shortcuts"): the focus moves into it, and back to what had it as it closes. Each group is a heading, each shortcut what it does and its keys, said in words ("Command K", "G then O").
+
+| Key | What it does |
+|---|---|
+| ? | Opens it, once a shortcut is listed; not while text is typed, nor while a dialog is open |
+| Escape | Closes it |

@@ -7,6 +7,19 @@ const figures: CategoryInfo = {
   label: 'Figures',
   icon: Gauge,
   summary: 'The figures a page is about: tiles first, each change signed and in the tone of what it means, digits of one width.',
+  choose: {
+    heading: 'Which one?',
+    rows: [
+      { family: 'kpi-tile', when: 'The figures a page is about, in tiles, the lead one twice as wide.' },
+      { family: 'kpi-strip', when: 'Figures that come second, side by side in one panel.' },
+      { family: 'stat-card', when: 'A figure and its line over time, read point by point.' },
+      { family: 'meter', when: 'A ratio against a limit, as a bar: a disk filled, a quota used.' },
+      { family: 'signed-value', when: 'A change with its sign and its tone, in a sentence or a cell.' },
+      { family: 'animated-number', when: 'A figure whose digits roll to each new value.' },
+      { family: 'live-value', when: 'A figure that changes as it is watched, each change shown a moment.' },
+      { family: 'status-history', when: 'A state over time, a block per slot: an uptime.' },
+    ],
+  },
   families: [
     {
       slug: 'kpi-tile',

@@ -18,10 +18,10 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/react-router/` | the adapter for React Router, the only code that imports it |
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
 | `src/codemod/` | the codemod, `npx ioiti-ui-codemod` (Node, its own build: `tsconfig.codemod.json`): an application's code given today's names, from `src/lib/deprecations.ts`, read with the application's TypeScript |
-| `gallery/` | an application made with the package: a page per component, in both themes (`gallery/src/components/<category>/`: its `category.ts`, then a folder per component of one file per example, whose code the page shows; `gallery/src/catalogue/` draws them, with each component's guidelines and props) |
+| `gallery/` | an application made with the package: a page per component, in both themes (`gallery/src/components/<category>/`: its `category.ts`, then a folder per component of one file per example, whose code the page shows; `gallery/src/catalogue/` draws them, with each component's guidelines and props, its source at the tag, the version it shipped in (`gallery/src/since.json`), what it was named before; its Changelog page draws CHANGELOG.md) |
 | `templates/app/` | the starter template an application is copied from |
-| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), a word written in a component (`check-strings.mjs`), the import codemod, the golden reference, the grains, the props, each component's props type and their JSDoc (`props.mjs`; what has none yet, `docs-baseline.json`), the interface's report (`api-report.mjs`) |
-| `design-system/` | the claude.ai Design System artifact's files (`design-system/README.md`); `components/<Name>/README.md` are also the gallery's guidelines |
+| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), a word written in a component (`check-strings.mjs`), the import codemod, the golden reference, the grains, the props, each component's props type and their JSDoc (`props.mjs`; what has none yet, `docs-baseline.json`), the interface's report (`api-report.mjs`), the version each name shipped in (`since.mjs`, run by the release) |
+| `design-system/` | the claude.ai Design System artifact's files (`design-system/README.md`); `components/<Name>/README.md` are also the gallery's guidelines; a card for each component that draws something (`cards.json`, `previews/<Name>.tsx`), the others in `no-card.json`, each with why: `check-docs` holds both |
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
 | `test/size-budget.json` | what an application bundles, gzipped, which `check:package` holds it to |
 | `test/api/` | the interface of each entry as the type checker reads it (`<entry>.api.txt`: `npm run api`), which `npm run lint` holds |
@@ -181,6 +181,11 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   `src/lib/deprecations.ts`) has no family of its own: its new name's says it (`formerly`, its page's former address
   led there by `gallery/src/catalogue/legacy.ts`); a component deprecated for another keeps its family, marked so
   (`deprecated`).
+- **A guideline says what a person does with the keyboard**: an interactive family's README has `## Accessibility`, what
+  a screen reader hears and a table of its keys (`| Key | What it does |`), written from what the code does; a family
+  of native buttons and links says so in a sentence. `gallery/src/catalogue/accessibility.ts` lists both kinds, which
+  the catalogue's test holds. Where a category's families answer one need in different ways, its `category.ts` says
+  which one to choose (`choose`, drawn on its page).
 - **A component and each of its props have a line of JSDoc.** Those without one in 0.31.0 are listed in
   `scripts/docs-baseline.json`, which only shrinks: `props.mjs --check` fails on a new one without JSDoc, and on one
   listed that has it now or is gone (`node scripts/props.mjs --docs-baseline` takes it off and takes nothing in). A
@@ -232,13 +237,17 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   that leaves `/ioiti-ui/`, the path CI publishes `main`'s gallery at on GitHub Pages (`vite build --base`). A
   category's examples are a chunk loaded with its pages (the route's `lazy`): a test waits for the page's heading.
   A former address of the gallery leads where its content went (`gallery/src/catalogue/legacy.ts`).
-- `check:package` installs the packed package into a copy of the template (network for npm), `--keep` keeps
-  it to look at.
+- `check:package` installs the packed package into a copy of the template (network for npm), runs the template's lint
+  and tests, and opens its build in Playwright's Chromium under `vite preview`, with the Content-Security-Policy
+  (`npx playwright install chromium` once); `--keep` keeps it to look at. The template is linted by its own
+  `.oxlintrc.json`, also when the root's oxlint walks into it.
 
 ## Releasing
 
 `dist/` is only in release commits, apart from `main`, whose `package.json` has no scripts: npm then
 installs a tag without building it. `npm run release` makes them; never commit `dist/` on a branch. It names and
-dates what is under `[Unreleased]`, sets the version where the READMEs install it, and releases nothing while a
+dates what is under `[Unreleased]`, sets the version where the READMEs install it, writes the version each exported
+name shipped in (`gallery/src/since.json`, from every tag's `dist/` and the new names), and releases nothing while a
 version the CHANGELOG names before is no tag on origin (`--at <commit>` makes one never made). CI installs each tag
-pushed and makes its GitHub Release from its section (`.github/workflows/verify-release.yml`).
+pushed into the template, which passes its checks, and makes its GitHub Release from its section
+(`.github/workflows/verify-release.yml`).

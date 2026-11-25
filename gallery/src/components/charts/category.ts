@@ -7,6 +7,20 @@ const charts: CategoryInfo = {
   label: 'Charts',
   icon: ChartLine,
   summary: 'Figures over time, by category or as parts of a whole, in the chart colours of both themes: each with a table or a summary for screen readers.',
+  choose: {
+    heading: 'Which chart?',
+    rows: [
+      { family: 'line-chart', when: 'Values over time, up to four series; ranges that widen as they go, a `FanChart`.' },
+      { family: 'live-line-chart', when: 'A value as it arrives, over the last minutes.' },
+      { family: 'bar-chart', when: 'Values by category, side by side or stacked.' },
+      { family: 'bar-list', when: 'Things ranked by a figure, a row each, their labels whole.' },
+      { family: 'donut-chart', when: 'Parts of a whole, or one value against its limit.' },
+      { family: 'funnel-chart', when: 'Where things went, stage after stage, and what each lost.' },
+      { family: 'activity-heatmap', when: 'Days on a calendar, or weekdays by the hour.' },
+      { family: 'sparkline', when: 'A figure’s trend, small and without axes, in a tile or a cell.' },
+      { family: 'dependency-trace', when: 'What calls what, and the health of each.' },
+    ],
+  },
   families: [
     {
       slug: 'line-chart',

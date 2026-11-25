@@ -1,0 +1,8 @@
+{
+ "CodeEditor": "In ioiti-ui/code (CodeMirror), an entry the bundle does not hold: build.mjs bundles src/index.ts alone (window.IoitiUI) and leaves src/code out of bundle.css, and a preview imports from ioiti-ui only.",
+ "DiffEditor": "In ioiti-ui/code (CodeMirror), an entry the bundle does not hold: build.mjs bundles src/index.ts alone (window.IoitiUI) and leaves src/code out of bundle.css, and a preview imports from ioiti-ui only.",
+ "IoitiProvider": "A provider: it draws nothing of its own, only its children, under the theme, the language, the links and the motion it holds.",
+ "RouterErrorPage": "In ioiti-ui/react-router, which the bundle does not hold, and it reads the error of a data router, which a card's frame has not. What it draws is ErrorState and NotFoundState, which have their cards.",
+ "RouterLeaveGuard": "In ioiti-ui/react-router, which the bundle does not hold. It draws nothing until a data router (a card's frame has none) is asked to leave the page, then a dialog that takes the focus, as Dialog's card draws one.",
+ "RouterRoot": "The router's root route, in ioiti-ui/react-router, which the bundle does not hold: it draws its pages and the toasts, nothing of its own, and a card's frame has no router."
+}

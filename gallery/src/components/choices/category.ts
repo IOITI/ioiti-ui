@@ -7,6 +7,18 @@ const choices: CategoryInfo = {
   label: 'Choices',
   icon: ListChecks,
   summary: 'What is chosen rather than typed: a box ticked, a setting turned, one of a few choices, several from a list, a value along a scale.',
+  choose: {
+    heading: 'Which one?',
+    rows: [
+      { family: 'checkbox', when: 'A box ticked, then saved or sent with its form.' },
+      { family: 'switch', when: 'A setting that takes effect as it is turned.' },
+      { family: 'radio-group', when: 'One of two to five choices shown at once, each with words of its own.' },
+      { family: 'segmented-control', when: 'One of two to five short choices in a row: a period, a view of the same figures. Views of one thing, each a panel of its own, are [Tabs](/components/navigation/tabs).' },
+      { family: 'select-menu', when: 'One value from a short list that opens under its button, an option with a second line. A list to search is a [Combobox](/components/forms/combobox); the system’s own list, a [Select](/components/forms/select).' },
+      { family: 'multi-select', when: 'Several values from a list, typed to filter it, each a chip; a tag of one’s own.' },
+      { family: 'slider', when: 'A value along a scale, or a range between two, where its place on the scale says more than its figure.' },
+    ],
+  },
   families: [
     {
       slug: 'checkbox',

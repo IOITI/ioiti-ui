@@ -1,18 +1,22 @@
 // What an application gets when it installs ioiti-ui, checked end to end: the package packed as a
-// release ships it, installed into a copy of the starter template (templates/app), the template
-// built, the result read, and what an application bundles weighed. Run after `npm run build`.
+// release ships it, installed into a copy of the starter template (templates/app), the template's
+// own lint and tests run, the template built, the result read, served by `vite preview` under its
+// Content-Security-Policy and opened in Chromium, and what an application bundles weighed. Run after
+// `npm run build`; Chromium is Playwright's (npx playwright install chromium).
 //
 //   npm run check:package [-- --keep] [-- --update-budget]
 //
 // --keep leaves the temporary folder, and says where; --update-budget writes what was weighed as the new
 // budget (test/size-budget.json), after a change that weighs more on purpose.
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawn } from 'node:child_process'
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { gzipSync } from 'node:zlib'
 
+import { chromium } from '@playwright/test'
 import { build } from 'vite'
 
 import { topLevelBlocks } from './golden-from.mjs'
@@ -34,6 +38,172 @@ function run(command, args, cwd) {
     console.error(`${command} ${args.join(' ')} failed in ${cwd}:\n${error.stdout ?? ''}${error.stderr ?? ''}`)
     throw error
   }
+}
+
+/** A script of the template's own, as an application runs it: whether it passed, and what it said (colours taken out). */
+function attempt(command, args, cwd) {
+  const plain = (text) => String(text ?? '').replace(/\x1b\[[0-9;]*m/g, '')
+  try {
+    return { ok: true, output: plain(execFileSync(command, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })) }
+  } catch (error) {
+    return { ok: false, output: plain(`${error.stdout ?? ''}${error.stderr ?? ''}`) }
+  }
+}
+
+/** What a script said, under its line of the check. */
+function indented(output) {
+  return output
+    .trim()
+    .split('\n')
+    .map((line) => `       ${line}`)
+    .join('\n')
+}
+
+/** Whether this Node meets a range of `engines` as the tools write it (`^22.22.2 || ^24.15.0 || >=26.0.0`). */
+function nodeMeets(range) {
+  const [major, minor, patch] = process.versions.node.split('.').map(Number)
+  return range.split('||').some((wanted) => {
+    const [, operator, ...version] = wanted.trim().match(/^(\^|>=)(\d+)\.(\d+)\.(\d+)$/) ?? []
+    // A range written otherwise is taken as met: the tests then say for themselves whether they run.
+    if (!operator) return true
+    const [a, b, c] = version.map(Number)
+    const order = major - a || minor - b || patch - c
+    return order >= 0 && (operator === '>=' || major === a)
+  })
+}
+
+/** The policy a README recommends: the block of text under its Content-Security-Policy heading. */
+function policyIn(file) {
+  const section = readFileSync(join(root, file), 'utf8').split(/^## Content-Security-Policy$/m)[1] ?? ''
+  return section.match(/^```text\n(.+)\n```$/m)?.[1]
+}
+
+/** The actions a workflow uses, and the commit (or tag) each is pinned to. */
+function actionsIn(file) {
+  return new Map([...readFileSync(join(root, file), 'utf8').matchAll(/^\s*-?\s*uses:\s*([^@\s]+)@(\S+)/gm)].map(([, action, ref]) => [action, ref]))
+}
+
+/** A port nothing listens on, for the server to take (`--strictPort`: one taken meanwhile is said, not replaced). */
+function freePort() {
+  return new Promise((resolve, reject) => {
+    const server = createServer()
+    server.on('error', reject)
+    server.listen(0, '127.0.0.1', () => {
+      const { port } = server.address()
+      server.close(() => resolve(port))
+    })
+  })
+}
+
+/**
+ * The template's build served as `npm run preview` serves it (`vite preview`, its vite.config.ts read, its headers
+ * sent), on a free port: its origin, and `stop`, which the caller runs whatever happens (and this process's exit does,
+ * as a last resort).
+ */
+async function preview(app) {
+  const port = await freePort()
+  const vite = join(app, 'node_modules/vite/bin/vite.js')
+  const server = spawn(process.execPath, [vite, 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
+    cwd: app,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  let said = ''
+  server.stdout.on('data', (chunk) => (said += chunk))
+  server.stderr.on('data', (chunk) => (said += chunk))
+  const exited = new Promise((resolve) => server.once('exit', resolve))
+  const kill = () => server.kill()
+  process.once('exit', kill)
+  const stop = async () => {
+    process.off('exit', kill)
+    if (server.exitCode !== null || server.signalCode !== null) return
+    server.kill()
+    const late = setTimeout(() => server.kill('SIGKILL'), 5000)
+    await exited
+    clearTimeout(late)
+  }
+  const origin = `http://127.0.0.1:${port}`
+  for (const started = Date.now(); ; ) {
+    if (server.exitCode !== null || server.signalCode !== null) {
+      await stop()
+      throw new Error(`vite preview stopped: ${said.trim()}`)
+    }
+    try {
+      const response = await fetch(origin)
+      await response.body?.cancel()
+      if (response.ok) return { origin, stop }
+    } catch {
+      // Not listening yet.
+    }
+    if (Date.now() - started > 30_000) {
+      await stop()
+      throw new Error(`vite preview did not answer within 30 s: ${said.trim()}`)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 200))
+  }
+}
+
+/**
+ * Each address opened in Chromium as a person opens it (a page loaded whole, its policy held: no bypass), and what was
+ * met there: the policy each page came with, the heading of the page drawn, what the policy refused
+ * (`securitypolicyviolation`, heard from the first script on), what the console said wrong or was thrown, the requests
+ * that failed, those to another origin.
+ */
+async function browse(origin, paths) {
+  let browser
+  try {
+    browser = await chromium.launch()
+  } catch (error) {
+    throw new Error(`Chromium did not start (npx playwright install chromium): ${String(error.message ?? error).split('\n')[0]}`)
+  }
+  const drawn = []
+  const policies = []
+  const met = { refused: [], said: [], failed: [], foreign: [] }
+  let at = ''
+  const note = (list, what) => list.push([at, what])
+  try {
+    const context = await browser.newContext()
+    await context.addInitScript(() => {
+      window.refusedByPolicy = []
+      document.addEventListener('securitypolicyviolation', (event) =>
+        window.refusedByPolicy.push(`${event.effectiveDirective} refused ${event.blockedURI || 'inline'}`),
+      )
+    })
+    const page = await context.newPage()
+    page.on('console', (message) => {
+      if (message.type() === 'error') note(met.said, message.text())
+    })
+    page.on('pageerror', (error) => note(met.said, error.message))
+    page.on('requestfailed', (request) => note(met.failed, `${request.url()}: ${request.failure()?.errorText}`))
+    page.on('response', (response) => {
+      if (response.status() >= 400) note(met.failed, `${response.url()}: ${response.status()}`)
+    })
+    page.on('request', (request) => {
+      const url = new URL(request.url())
+      if (/^(?:https?|wss?):$/.test(url.protocol) && url.origin !== origin) note(met.foreign, request.url())
+    })
+    for (const path of paths) {
+      at = path
+      const response = await page.goto(`${origin}${path}`, { waitUntil: 'networkidle' })
+      policies.push(response?.headers()['content-security-policy'] ?? 'none')
+      const heading = page.getByRole('main').getByRole('heading', { level: 1 })
+      try {
+        await heading.waitFor({ timeout: 10_000 })
+        drawn.push(await heading.textContent())
+      } catch {
+        drawn.push(`no heading at ${path}`)
+      }
+      for (const refused of await page.evaluate(() => window.refusedByPolicy)) note(met.refused, refused)
+    }
+  } finally {
+    await browser.close()
+  }
+  // Each fault said once, with the addresses it was met at.
+  const once = (list) => {
+    const where = new Map()
+    for (const [path, what] of list) where.set(what, [...new Set([...(where.get(what) ?? []), path])])
+    return [...where].map(([what, paths]) => `${what} (${paths.join(', ')})`)
+  }
+  return { drawn, policies, refused: once(met.refused), said: once(met.said), failed: once(met.failed), foreign: once(met.foreign) }
 }
 
 function textUnder(folder) {
@@ -237,9 +407,41 @@ try {
   })
   const manifestPath = join(app, 'package.json')
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
+  const engines = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).engines?.node
+  check(
+    manifest.engines?.node === engines,
+    `the template asks for the Node ioiti-ui does (engines: ${manifest.engines?.node}${manifest.engines?.node === engines ? '' : `, where ioiti-ui's is ${engines}`})`,
+  )
   manifest.dependencies['ioiti-ui'] = `file:${join(work, pack.filename)}`
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2))
   run('npm', ['install', '--no-audit', '--no-fund'], app)
+
+  // The template's own checks, as the application runs them (npm run check, its CI): its lint, then its tests, on the
+  // package installed. The tests' jsdom asks for a more recent Node than the oldest an application builds with: on an
+  // older one they are said not to run, not failed.
+  const linted = attempt('npm', ['run', 'lint'], app)
+  check(linted.ok, "the template's lint finds nothing (npm run lint: oxlint, its .oxlintrc.json)")
+  if (!linted.ok) console.log(indented(linted.output))
+  const tooOld = ['vitest', 'jsdom']
+    .map((name) => ({ name, range: JSON.parse(readFileSync(join(app, 'node_modules', name, 'package.json'), 'utf8')).engines?.node }))
+    .find(({ range }) => range && !nodeMeets(range))
+  if (tooOld) console.log(`     the template's tests are not run on Node ${process.versions.node}, older than its ${tooOld.name} asks (${tooOld.range})`)
+  else {
+    const tested = attempt('npm', ['test'], app)
+    const passed = tested.output.match(/Tests\s+(\d+) passed/)?.[1]
+    check(tested.ok, `the template's tests pass (npm test${passed ? `, ${passed} of them` : ''}: its pages through its router, in jsdom)`)
+    if (!tested.ok) console.log(indented(tested.output))
+  }
+  // Its CI pins each action to the commit the repository's own CI does: dependabot moves those, this says when the
+  // template's are left behind.
+  const ours = actionsIn('.github/workflows/ci.yml')
+  const its = actionsIn('templates/app/.github/workflows/ci.yml')
+  const astray = [...its].filter(([action, ref]) => !/^[0-9a-f]{40}$/.test(ref) || ours.get(action) !== ref)
+  check(
+    its.size > 0 && astray.length === 0,
+    `the template's CI pins its actions to the commits the repository's does (${[...its.keys()].join(', ')})${astray.map(([action, ref]) => `; ${action}@${ref}, the repository's ${ours.get(action) ?? 'none'}`).join('')}`,
+  )
+
   // The codemod rewrites a page of deprecated names, and touches nothing else of the template, which writes today's.
   const page = join(app, 'src', 'codemod-archive.tsx')
   writeFileSync(page, CODEMOD_BEFORE)
@@ -284,6 +486,37 @@ try {
     'the theme script written beside the pages is the package\'s',
   )
   check([...html.matchAll(/<script\b[^>]*>/g)].every(([tag]) => /\bsrc=/.test(tag)), 'no inline script (script-src stays at self)')
+
+  // The policy, proven: the build served as `npm run preview` serves it, under the policy its vite.config.ts sends (the
+  // READMEs'), and opened in Chromium as a person opens it. Each page is drawn in its place, the policy refuses nothing,
+  // nothing is said wrong, no request fails or goes elsewhere.
+  try {
+    const policy = policyIn('README.md')
+    const { en } = await import(pathToFileURL(join(app, 'node_modules/ioiti-ui/dist/locales/en.js')).href)
+    const pages = { '/': 'Dashboard', '/items': 'Items', '/no-such-page': en.notFound.pageTitle }
+    const server = await preview(app)
+    try {
+      const met = await browse(server.origin, Object.keys(pages))
+      const others = [...new Set(met.policies.filter((sent) => sent !== policy))]
+      check(
+        Boolean(policy) && policyIn('templates/app/README.md') === policy && others.length === 0,
+        `vite preview sends each page with the Content-Security-Policy README.md and the template's recommend${others.length ? `, not ${others.join(' | ')}` : ''}`,
+      )
+      check(
+        met.drawn.join('|') === Object.values(pages).join('|'),
+        `Chromium opens /, /items and an address of no page, each drawn in its place (${met.drawn.join(', ')})`,
+      )
+      const listed = (faults) => (faults.length ? `: ${faults.join('; ')}` : '')
+      check(met.refused.length === 0, `the policy refuses nothing there (no securitypolicyviolation)${listed(met.refused)}`)
+      check(met.said.length === 0, `nothing is said wrong on the console, nothing thrown${listed(met.said)}`)
+      check(met.failed.length === 0, `no request fails${listed(met.failed)}`)
+      check(met.foreign.length === 0, `no request goes to another origin${listed(met.foreign)}`)
+    } finally {
+      await server.stop()
+    }
+  } catch (error) {
+    check(false, `the template's build, served by vite preview and opened in Chromium: ${String(error.message ?? error).split('\n')[0]}`)
+  }
 
   // The design as the interface it was taken from built it, block by block: the tokens of both
   // themes, the base layer, the focus ring, the fonts (test/golden, from scripts/golden-from.mjs).

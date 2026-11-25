@@ -14,3 +14,15 @@ A range of time as people say it ("Last 24 hours", "Today"), which stays true as
 - `resolveTimeRange(range)` gives the dates it stands for now; `formatTimeRange(range)` says it in words.
 - The timer waits while the page's tab is hidden, and starts again when it is back. `AutoRefresh` says how often ("Every 30 s", "Off"), its icon turning while it runs.
 - A range of whole days, for a report, is a `DateRangeFilter`.
+
+## Accessibility
+
+A group named by its label: the quick select's button ("Quick select"), the range (a button that shows its start and its end, each then a button of its own), then Refresh or Update. The quick select and each end open a `Popover`, a dialog named by what it sets ("The start of the range"); an end's has tabs (Absolute, Relative, Now) over its `Calendar` and its fields. `AutoRefresh` is a button named by how often it refreshes ("Every 30 s"), its fields in a `Popover` too.
+
+| Key | What it does |
+|---|---|
+| Enter, Space | On a button: opens its panel, the focus on its first control |
+| Tab, Shift+Tab | Through a panel's controls; past its ends, closes it, the focus back on its button |
+| ←, → | On an end's tabs: the tab before, the next, chosen at once |
+| ←, →, ↑, ↓, Page Up, Page Down | In the calendar: as in a `Calendar` |
+| Escape | Closes a panel, the focus back on its button |

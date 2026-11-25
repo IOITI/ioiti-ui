@@ -14,3 +14,14 @@ import { DiffEditor } from 'ioiti-ui/code'
 - What was removed is in the loss's tone, what was added in the gain's, each change also underlined: never the colour alone. The header counts the changes; its arrows go from one to the next.
 - `split` aligns the unchanged lines of both; `unified` puts what was removed above what replaced it, for a narrow column or a review.
 - Drawn as `CodeEditor` is: `surface`, a `border`, `radius-xl`. A diff to read only, with no editor loaded, is a `CodeBlock` in `diff`.
+
+## Accessibility
+
+A region named by its `label`; its header says how many changes there are, and its arrows are buttons ("Previous change", "Next change") that put the cursor on one. Each side's text is a stop of the keyboard named by its version ("Rule file: Saved"), the original said read-only. The changed version takes a `CodeEditor`'s keys; the original, its search alone.
+
+| Key | What it does |
+|---|---|
+| Tab, Shift+Tab | From the header's buttons to each side's text, and on: never an indent |
+| ⌘S (Ctrl+S) | Saves the changed version (`onSave`) |
+| ⌘F (Ctrl+F) | Opens the search of the side that has the focus |
+| ⌘Z (Ctrl+Z), ⌘⇧Z (Ctrl+Y) | Undoes, redoes, in the changed version |

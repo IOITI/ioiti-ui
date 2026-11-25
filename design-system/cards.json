@@ -5,6 +5,16 @@
   "height": 480
  },
  {
+  "name": "Sidebar",
+  "group": "Shell",
+  "height": 488
+ },
+ {
+  "name": "TopBarTrail",
+  "group": "Shell",
+  "height": 288
+ },
+ {
   "name": "PageHeader",
   "group": "Shell",
   "height": 184
@@ -22,7 +32,12 @@
  {
   "name": "StateChip",
   "group": "Shell",
-  "height": 96
+  "height": 100
+ },
+ {
+  "name": "StateSummary",
+  "group": "Shell",
+  "height": 320
  },
  {
   "name": "ShortcutsDialog",
@@ -102,17 +117,47 @@
  {
   "name": "Field",
   "group": "Forms",
-  "height": 420
+  "height": 424
+ },
+ {
+  "name": "Form",
+  "group": "Forms",
+  "height": 484
+ },
+ {
+  "name": "Input",
+  "group": "Forms",
+  "height": 272
+ },
+ {
+  "name": "Textarea",
+  "group": "Forms",
+  "height": 220
+ },
+ {
+  "name": "Select",
+  "group": "Forms",
+  "height": 100
+ },
+ {
+  "name": "Combobox",
+  "group": "Forms",
+  "height": 128
  },
  {
   "name": "Checkbox",
   "group": "Forms",
-  "height": 156
+  "height": 160
  },
  {
   "name": "Switch",
   "group": "Forms",
-  "height": 184
+  "height": 192
+ },
+ {
+  "name": "RadioGroup",
+  "group": "Forms",
+  "height": 280
  },
  {
   "name": "SegmentedControl",
@@ -128,6 +173,11 @@
   "name": "NumberInput",
   "group": "Forms",
   "height": 100
+ },
+ {
+  "name": "Calendar",
+  "group": "Forms",
+  "height": 356
  },
  {
   "name": "DatePicker",
@@ -152,7 +202,7 @@
  {
   "name": "StretchSwitch",
   "group": "Forms",
-  "height": 104
+  "height": 108
  },
  {
   "name": "OTPInput",
@@ -222,7 +272,7 @@
  {
   "name": "RequestStatus",
   "group": "Feedback",
-  "height": 356
+  "height": 372
  },
  {
   "name": "Loader",
@@ -292,12 +342,12 @@
  {
   "name": "Tabs",
   "group": "Navigation",
-  "height": 292
+  "height": 296
  },
  {
   "name": "Breadcrumb",
   "group": "Navigation",
-  "height": 108
+  "height": 116
  },
  {
   "name": "Stepper",
@@ -317,7 +367,7 @@
  {
   "name": "SelectionBasket",
   "group": "Navigation",
-  "height": 140
+  "height": 144
  },
  {
   "name": "ScrollProgressNav",
@@ -345,9 +395,19 @@
   "height": 208
  },
  {
+  "name": "Meter",
+  "group": "Data display",
+  "height": 228
+ },
+ {
   "name": "SignedValue",
   "group": "Data display",
   "height": 72
+ },
+ {
+  "name": "AnimatedNumber",
+  "group": "Data display",
+  "height": 76
  },
  {
   "name": "DescriptionList",
@@ -367,7 +427,7 @@
  {
   "name": "DataTable",
   "group": "Data display",
-  "height": 960
+  "height": 972
  },
  {
   "name": "ChangeList",
@@ -412,12 +472,12 @@
  {
   "name": "RecoveryLedger",
   "group": "Data display",
-  "height": 412
+  "height": 432
  },
  {
   "name": "ComparisonTable",
   "group": "Data display",
-  "height": 552
+  "height": 568
  },
  {
   "name": "AIResponse",
@@ -437,7 +497,7 @@
  {
   "name": "WorldClock",
   "group": "Data display",
-  "height": 360
+  "height": 364
  },
  {
   "name": "LineChart",
@@ -493,6 +553,16 @@
   "name": "EmptyState",
   "group": "States",
   "height": 328
+ },
+ {
+  "name": "EmptyText",
+  "group": "States",
+  "height": 200
+ },
+ {
+  "name": "ErrorState",
+  "group": "States",
+  "height": 364
  },
  {
   "name": "QueryState",

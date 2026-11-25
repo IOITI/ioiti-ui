@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   install-the-tag:
-    name: The template installs the tag from GitHub and builds
+    name: The template installs the tag from GitHub, and passes its checks
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -34,7 +34,7 @@ jobs:
           cd "$RUNNER_TEMP/app"
           node -e "const f = 'package.json', p = require('./' + f); p.dependencies['ioiti-ui'] = process.env.DEPENDENCY; require('fs').writeFileSync(f, JSON.stringify(p, null, 2))"
           npm install --no-audit --no-fund
-          npm run build
+          npm run check
           test -f dist/ioiti-theme.js
 
   # The Release says what the CHANGELOG says of the version (scripts/release-notes.mjs), once the tag is known to

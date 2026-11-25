@@ -28,7 +28,7 @@ again. Nothing else needs changing for a release that only changes values.
 | Made by the build, from the code | Written here |
 |---|---|
 | `tokens.json`: every colour, shadow, radius and tracking value, read from `src/styles/` (tokens, theme, design, accents, glass), each theme as the cascade resolves it | `config.json`: each token's note (`notes`, in the order the page shows them), the spacing and the type styles, the fonts, the asset records, the artifact's marker |
-| `components/bundle.js`: `src/index.ts` as one script, `window.IoitiUI` | `cards.json`: the cards, in order, with their group and height |
+| `components/bundle.js`: `src/index.ts` as one script, `window.IoitiUI` | `cards.json`: the cards, in order, with their group and height; `no-card.json`: the components with none, each with the reason |
 | `components/bundle.css`: the design's stylesheets compiled by Tailwind over the components and previews, the values of `tokens.json` taken out (the page declares them) | `previews/<Card>.tsx`: each card's preview, recreating the gallery's demo |
 | `components/lib/`: React and React DOM, from `node_modules` | `components/<Card>/README.md`: each card's guidelines |
 | `components/index.d.ts`: the public modules' declarations | `guide/`: the guide (`README.md`) and the asset groups' notes |
@@ -42,15 +42,21 @@ types), build, check, publish. A preview imports only from `ioiti-ui`, `lucide-r
 `react-dom/client`; it opens nothing that takes the focus on load, and its links go to `#…` (the frame has no
 router).
 
+A component that draws nothing of its own (a provider), or that the bundle does not hold (`ioiti-ui/code`,
+`ioiti-ui/react-router`), has no card: `no-card.json` says why. `scripts/check-docs.mjs` (`npm run lint`) holds every
+folder of `components/` to a card and its preview, or to that reason.
+
 ## The gallery's guidelines
 
 `components/<Name>/README.md` is also what the gallery shows of a component (`gallery/src/catalogue/`): its summary
 under the page's title, its rules under Guidelines (not its "You provide": the gallery's props tables are read from
-the types). Every family of the gallery has one, so some have no card (`CodeEditor`, `DiffEditor`, `Calendar`…): the
-build reads `cards.json` only, and leaves them out.
+the types). Every family of the gallery has one, and a few have no card (`IoitiProvider`, `CodeEditor`…, as
+`no-card.json` lists them): the build reads `cards.json` only, and leaves them out.
 
 ## Assets
 
 The mark (`gallery/public/favicon.svg`) and the gradient accents' grains (`src/styles/grain-*.png`) are uploads of the artifact:
 `config.json` holds their records. A changed file is uploaded again (Claude Code: an asset upload to the
-artifact) and its new id written in `config.json`; the grains' ids are also the ones `bundle.css` loads.
+artifact) and its new id written in `config.json`; the grains' ids are also the ones `bundle.css` loads. The 404's
+folder (`src/styles/not-found-folder.svg`, the mask `finish.css` names beside itself) is no upload: the build serves
+it beside `bundle.css` (`components/not-found-folder.svg`), which names it the same way.

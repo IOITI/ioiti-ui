@@ -10,5 +10,16 @@ A value along a scale (`Slider`), or a range between two (`RangeSlider`), its va
   levels={[{ from: 0, to: 2, tone: 'success' }, { from: 2, to: 3.5, tone: 'warning' }, { from: 3.5, to: 5, tone: 'danger' }]} />
 ```
 
-- It is the browser's range input: arrows, Page Up and Down, Home and End work.
 - A precise value is typed: give it `showInput`, or use a `NumberInput`.
+
+## Accessibility
+
+The browser's range input, named by its label, its value said in words (`format`: "1.5%", not "1.5"). A `RangeSlider` is two of them, its lower thumb then its upper, named by the label and their end ("Price, from", "Price, to"), neither passing the other.
+
+| Key | What it does |
+|---|---|
+| →, ↑ | One `step` more |
+| ←, ↓ | One `step` less |
+| Page Up, Page Down | A tenth of the scale more, or less (a `step` at least) |
+| Home, End | Its least value, its greatest |
+| Tab | From the lower thumb to the upper, then to its field (`showInput`) |

@@ -7,6 +7,19 @@ const tables: CategoryInfo = {
   label: 'Tables and lists',
   icon: Table2,
   summary: 'Records side by side or one after another: tables that scroll in their own frame, terms and their details, changes, steps and versions.',
+  choose: {
+    heading: 'Which one?',
+    rows: [
+      { family: 'table', when: 'A short list of records or figures, to read.' },
+      { family: 'data-table', when: 'Records to search, sort, filter, select and open, a page at a time.' },
+      { family: 'selection-basket', when: 'What a selection of rows can do, while there is one.' },
+      { family: 'description-list', when: 'One record’s terms and their details, or figures side by side.' },
+      { family: 'comparison-table', when: 'Several things side by side, row by row: plans, offers, configurations.' },
+      { family: 'change-list', when: 'What changes, from its value before to its value after.' },
+      { family: 'interactive-timeline', when: 'What happened to something, step by step.' },
+      { family: 'recovery-ledger', when: 'Versions of something, newest first, an earlier one restored.' },
+    ],
+  },
   families: [
     {
       slug: 'table',

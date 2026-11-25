@@ -13,3 +13,7 @@ One value from a short list, in the browser's own select: a status, a carrier, a
 - With no value yet, a first option of value `''`, disabled, asks for a choice ("Choose a carrier").
 - It has the look of the `Input`, a chevron at its end; its list is the system's, at home on a phone.
 - A list to search is a `Combobox`; options with a second line, a `SelectMenu`; several values, a `MultiSelect`.
+
+## Accessibility
+
+The browser's own `<select>`, named by its label and read with its description and its error: its list and its keys are the system's, as every select's on that computer (a letter typed goes to the option it starts).

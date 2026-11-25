@@ -11,3 +11,11 @@ A setting that takes effect when it is turned: on or off, with its label and wha
 - On, the track is `primary` (the accent's `brand` with one). The label says what is on, not "Enable …".
 - In a `Field` or a `FormItem`, the field's label names it and its description and its error are read out with it, as with an `Input`.
 - One of two to five choices that need a description each is a `RadioGroup`; short choices in a row are a `SegmentedControl`.
+
+## Accessibility
+
+A switch (`role="switch"`), said on or off, named by its label and described by its description; a press on them turns it too.
+
+| Key | What it does |
+|---|---|
+| Space, Enter | Turns it on, or off |

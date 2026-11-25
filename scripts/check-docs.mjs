@@ -6,10 +6,13 @@
 //   groups (its category.ts files).
 // - The Tailwind CSS README.md installs is the template's, to the version.
 // - The gallery's pages write no count of looks by hand: they compute it from ACCENTS and MATERIALS.
+// - The design system's cards (design-system/): every component's guidelines (components/<Name>/README.md) have a card
+//   in cards.json and its preview (previews/<Name>.tsx), or the reason it has none in no-card.json (a provider, an
+//   entry the bundle does not hold); every card has its guidelines and its preview, every preview its card.
 // - CHANGELOG.md: its versions newest first, dated, each once; from 0.24.0 their notes in sections, in order, none
 //   empty, Upgrading where something changes; the links at its foot as scripts/changelog.mjs writes them
 //   (`node scripts/check-docs.mjs --fix` writes them).
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -80,6 +83,35 @@ for (const name of readdirSync(join(root, 'gallery/src/pages'))) {
     })
 }
 
+// The design system's cards: a card for every component's guidelines, or the reason it has none.
+const DS = 'design-system'
+const cards = readJson(`${DS}/cards.json`).map((card) => card.name)
+const noCard = readJson(`${DS}/no-card.json`)
+const guidelines = readdirSync(join(root, DS, 'components'), { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+const previews = readdirSync(join(root, DS, 'previews'))
+  .filter((name) => name.endsWith('.tsx'))
+  .map((name) => name.slice(0, -'.tsx'.length))
+for (const name of guidelines) {
+  if (!cards.includes(name) && !(name in noCard)) {
+    problems.push(`${DS}/components/${name}: no card in ${DS}/cards.json, nor the reason it has none in ${DS}/no-card.json`)
+  }
+}
+cards.forEach((name, index) => {
+  if (cards.indexOf(name) !== index) problems.push(`${DS}/cards.json: ${name} is there twice`)
+  if (!existsSync(join(root, DS, 'components', name, 'README.md'))) problems.push(`${DS}/cards.json: ${name} has no guidelines (${DS}/components/${name}/README.md)`)
+  if (!previews.includes(name)) problems.push(`${DS}/cards.json: ${name} has no preview (${DS}/previews/${name}.tsx)`)
+  if (name in noCard) problems.push(`${DS}/no-card.json: ${name} has a card in ${DS}/cards.json`)
+})
+for (const name of previews) {
+  if (!cards.includes(name)) problems.push(`${DS}/previews/${name}.tsx: the preview of no card in ${DS}/cards.json`)
+}
+for (const [name, reason] of Object.entries(noCard)) {
+  if (!guidelines.includes(name)) problems.push(`${DS}/no-card.json: ${name} has no guidelines (${DS}/components/${name}/README.md)`)
+  if (typeof reason !== 'string' || !reason.trim()) problems.push(`${DS}/no-card.json: ${name} says no reason`)
+}
+
 // The CHANGELOG.
 const changelogText = read('CHANGELOG.md')
 const changelog = parseChangelog(changelogText)
@@ -116,5 +148,5 @@ if (problems.length) {
   process.exit(1)
 }
 console.log(
-  `check-docs: the READMEs install v${version}; ${components} components, ${easyUi} of EasyUI's, ${looks} looks, ${groups} groups, as the code has them; the CHANGELOG in order, its links written`,
+  `check-docs: the READMEs install v${version}; ${components} components, ${easyUi} of EasyUI's, ${looks} looks, ${groups} groups, as the code has them; the design system's ${cards.length} cards, and why ${Object.keys(noCard).length} components have none; the CHANGELOG in order, its links written`,
 )

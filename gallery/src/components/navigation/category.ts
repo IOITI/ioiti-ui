@@ -7,6 +7,16 @@ const navigation: CategoryInfo = {
   label: 'Navigation',
   icon: Compass,
   summary: 'Tabs, trails, steps, the parts of a page: what has an address is a link, which a ⌘-click opens in another tab.',
+  choose: {
+    heading: 'Which one?',
+    rows: [
+      { family: 'tabs', when: 'Views of one thing, one shown at a time; a view with an address, a link. Two to five choices that change one view: a [SegmentedControl](/components/choices/segmented-control).' },
+      { family: 'breadcrumb', when: 'Where a page is, from Home, on a page outside the shell; inside it, the top bar draws the trail of every page ([TopBarTrail](/components/shell/top-bar-trail)).' },
+      { family: 'stepper', when: 'A task done in steps, in order.' },
+      { family: 'text-link', when: 'A link made of words: in a sentence, a list, a panel’s way further.' },
+      { family: 'scroll-progress-nav', when: 'The parts of one long page, the one being read marked.' },
+    ],
+  },
   families: [
     {
       slug: 'tabs',

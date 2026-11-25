@@ -299,6 +299,10 @@ const grainsAsBlobs = (css) =>
   })
 write(join(COPY, 'glass.css'), grainsAsBlobs(glassCss.filter(Boolean).join('\n\n')))
 write(join(COPY, 'motion.css'), read(join(STYLES, 'motion.css')))
+// The type and the finish: ioiti-ui's own, no token in them. A file the finish names beside itself (the 404's
+// folder, a mask) is served beside bundle.css, which names it as the finish does (below).
+write(join(COPY, 'type.css'), read(join(STYLES, 'type.css')))
+write(join(COPY, 'finish.css'), read(join(STYLES, 'finish.css')))
 write(join(COPY, 'styles.css'), read(join(STYLES, 'styles.css')))
 const previewsOut = relative(COPY, join(P, 'components'))
 write(
@@ -387,6 +391,8 @@ const SANS = /font-family: 'Geist Variable', [^;]*;/g
 const MONO = /font-family: 'JetBrains Mono Variable', [^;]*;/g
 css = css.replace(/@font-face\s*\{[^}]*\}\s*/g, '').replace(SANS, 'font-family: var(--font-sans);').replace(MONO, 'font-family: var(--font-mono);')
 if (/<\/style/i.test(css)) throw new Error('bundle.css holds </style')
+// What the stylesheets name beside themselves and is no upload (the grains are: /_blob/…), beside bundle.css.
+for (const [, , file] of css.matchAll(/url\((["']?)\.\/([\w.-]+)\1\)/g)) copyFileSync(join(STYLES, file), join(P, 'components', file))
 write(
   join(P, 'components/bundle.css'),
   `/* ioiti-ui ${version}'s stylesheet for the ${config.title}: Tailwind CSS compiled over the components, with the

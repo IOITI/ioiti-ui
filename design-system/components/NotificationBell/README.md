@@ -10,6 +10,17 @@ What happened while the page was open, newest first, each leading to where it is
 ```
 
 - Never "No notifications" before it knows: `loading` shows rows to come, `error` says they could not be read, with a Try again.
-- An entry with an `href` is a link (the application's); followed, it is marked read and the list closes. Its list is a layer of the page, placed under the bell: the focus goes into it; Escape, a press elsewhere or a Tab past its ends closes it and gives the bell the focus back.
+- An entry with an `href` is a link (the application's); followed, it is marked read and the list closes. Its list is a layer of the page, placed under the bell; a press elsewhere closes it.
 - Give each entry a `tone`: an unread one without it is drawn as `danger`, which pulses. An error is `negative`.
 - It sits at the end of the top bar, drawn as an `IconButton`. Under glass its list is `glass-float`.
+
+## Accessibility
+
+The bell is named by what is unread ("3 unread notifications", or "Notifications") and says whether its list is open. The list is a dialog ("Notifications"), not modal, which says it is reading them while `loading`. An entry that leads somewhere is a link; Read all, Close and each entry's Mark as read are buttons.
+
+| Key | What it does |
+|---|---|
+| Enter, Space | On the bell: opens the list, the focus on its first control |
+| Tab, Shift+Tab | Through its buttons and its entries' links; past its ends, closes the list, the focus back on the bell |
+| Enter | On an entry's link: follows it, marks it read and closes the list |
+| Escape | Closes the list, the focus back on the bell |

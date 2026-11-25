@@ -212,8 +212,11 @@ for (const file of STAMPED) {
   writeFileSync(path, readFileSync(path, 'utf8').replace(/(IOITI\/ioiti-ui(?:\/templates\/app)?#)v[0-9A-Za-z.-]*[0-9A-Za-z]/g, `$1${tag}`))
 }
 
+// The version each exported name first shipped in, this one's new names included (the gallery's "Since").
+execFileSync(process.execPath, [join(root, 'scripts/since.mjs'), '--next', version], { cwd: root, stdio: 'inherit' })
+
 // 3. Built, checked, committed.
-const touched = ['CHANGELOG.md', 'package.json', 'templates/app/package.json', ...STAMPED]
+const touched = ['CHANGELOG.md', 'package.json', 'templates/app/package.json', 'gallery/src/since.json', ...STAMPED]
 try {
   npm(root, 'run', 'build')
   if (!skipChecks) {

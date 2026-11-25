@@ -35,11 +35,13 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run build:gallery
+      # check:package opens the template's build in Chromium, under its Content-Security-Policy.
+      - run: npx playwright install --with-deps chromium
       - run: npm run check:package
 
   # The oldest Node an application may build with (package.json's engines): the package builds, and the template
-  # installs it, builds and weighs it there, as an application would. The tests are the package's own and need the
-  # Node of .nvmrc (their jsdom asks for 22.22.2, 24.15 or later): the checks job runs them.
+  # installs it, lints, builds, serves and weighs it there, as an application would. The tests, the package's and the
+  # template's, need a more recent Node (their jsdom asks for 22.22.2, 24.15 or later): the checks job runs them.
   node-22:
     name: An application on Node 22.12, the oldest engines allows
     runs-on: ubuntu-latest
@@ -52,6 +54,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - run: npx playwright install --with-deps chromium
       - run: npm run check:package
 
   # The gallery in real browsers (e2e/): every page loads and logs nothing wrong, axe with the stylesheets in light and

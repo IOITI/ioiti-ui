@@ -11,7 +11,10 @@ Questions and their answers, opened one at a time or several: an answer eases op
 ]} />
 ```
 
-- Each question is a button (`aria-expanded`, and `aria-controls` its answer while it is open), its answer a region named by it: Tab moves between them, Enter or Space opens and closes.
 - One box, hairlines between its items, a `subtitle` in `muted-foreground`; `glass-card` under glass.
 - A single "more" under a figure or a table is a `Disclosure` (the browser's `<details>`, which find in the page opens). Views of one thing, one shown at a time: `Tabs`.
 - Formerly `SmoothAccordion`: that name still draws it until 1.0, and says so once in development.
+
+## Accessibility
+
+Each question is the browser's own button, in a heading with `headingLevel`, saying whether its answer is open (`aria-expanded`, and `aria-controls` its answer while it is); the answer is a region named by it. Tab goes from one question to the next, Enter or Space opens one and closes it.

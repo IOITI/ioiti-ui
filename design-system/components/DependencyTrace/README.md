@@ -15,4 +15,12 @@ What calls what: a node's health is a ring, an icon and a word; tracing one (the
 
 - Health rings: `positive` with ✓, `warning` with !, `negative` with ✕, `chart-muted` with ? or –; a node with no `status` (an outside service) has a `chart-axis` ring. Links are dashed `chart-muted` arrows at rest, solid blue (the accent's `brand` with one) while traced, with their `label`.
 - Nodes without `x` and `y` go round an ellipse. The canvas scales to its container's width; the status bar is `glass-float` under glass.
-- Tab reaches each node and traces it; Enter or Space keeps the trace, as a click does.
+
+## Accessibility
+
+A region named by its `label`. Each node is a stop of the keyboard, a button named by its label and its health ("Billing: Down"), said pressed while its trace is kept; the bar below says what the node traced calls and what calls it, as it changes.
+
+| Key | What it does |
+|---|---|
+| Tab, Shift+Tab | The next node, or the one before, traced as it takes the focus |
+| Enter, Space | Keeps its trace, as a click does; again, lets it go |

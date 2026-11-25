@@ -1,4 +1,4 @@
-import { EmptyText, ExportButton, Field, formatMoney, Input, PageHeader, Panel, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from 'ioiti-ui'
+import { EmptyText, ExportButton, Field, Input, PageHeader, Panel, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, useFormat } from 'ioiti-ui'
 import { useState } from 'react'
 
 import { ITEMS, STATUS_LABEL } from '../data'
@@ -13,6 +13,7 @@ const COLUMNS = [
 ]
 
 export function ItemsPage() {
+  const { formatMoney } = useFormat()
   const [search, setSearch] = useState('')
   const found = ITEMS.filter((item) => `${item.id} ${item.name} ${item.owner}`.toLowerCase().includes(search.trim().toLowerCase()))
   return (

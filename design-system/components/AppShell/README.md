@@ -23,3 +23,14 @@ The frame of every page: the sidebar with the application's menu, the top bar wi
 - A section placed at the foot (`place: 'footer'`) is drawn above Collapse; the trail does not say its heading.
 - A page that throws as it draws shows an `ErrorState` in its place, the sidebar and the top bar kept; another page clears it. `errorFallback` gives another, `false` none (the router's error page, or the application's boundary, catch it then).
 - `pending` while the next page is on its way (`useNavigation().state === 'loading'`): a thin bar under the top bar after a moment, and the page said busy.
+
+## Accessibility
+
+Its first stop of the keyboard is a link, "Skip to the page", shown once it has the focus. The sidebar is the "Main" navigation, the trail the "Breadcrumb" one, the page the main landmark, said busy while the next one is on its way. A page that scrolls and holds no control is a stop of the keyboard itself, its arrows scrolling it.
+
+| Key | What it does |
+|---|---|
+| Tab | From the top of a page: "Skip to the page" first, then the sidebar |
+| Enter | On "Skip to the page": the focus on the page, past the menu |
+| ⌘B (Ctrl+B) | Folds the sidebar to its rail, and back; below 768px, opens its drawer |
+| ? | Lists the keyboard shortcuts (`ShortcutsDialog`), once one is registered with a description |

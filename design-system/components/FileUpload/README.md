@@ -8,7 +8,16 @@ A drop zone for files, each listed with its progress and answered, once done, wi
 <FileUpload multiple sequential uploadHandler={importInvoice} label="Invoices to import" />
 ```
 
-- A press, Enter or Space on the zone opens the system's file chooser. A file larger than `maxSize` is listed with why; an upload that fails says so, with its error's message.
+- A press on the zone opens the system's file chooser. A file larger than `maxSize` is listed with why; an upload that fails says so, with its error's message.
 - A done file's link is drawn by the application's link (`LinkProvider`), or by `linkComponent`.
 - The full-size zone by default; `density="compact"` the inline one, for a form's column.
 - Formerly `AnimatedFileUpload`: that name still draws it until 1.0, and says so once in development.
+
+## Accessibility
+
+The zone is a button named by its words, its limit included. Each file is listed with its state, what went wrong said at once, its retry and its removal buttons named after it ("Remove invoice.pdf").
+
+| Key | What it does |
+|---|---|
+| Enter, Space | On the zone: opens the system's file chooser |
+| Tab | On through the files' links and buttons |

@@ -7,6 +7,19 @@ const states: CategoryInfo = {
   label: 'Loading and empty',
   icon: Hourglass,
   summary: 'Every page waits, comes back empty, fails or names what is not there: the design says each the same way everywhere.',
+  choose: {
+    heading: 'Which one?',
+    rows: [
+      { family: 'loader', when: 'A wait without a known end: a press, a short request.' },
+      { family: 'skeleton', when: 'Content on its way, drawn as high as it will be.' },
+      { family: 'progress-bar', when: 'Work whose progress is known, said in words beside the bar. How much of a limit is used is a [Meter](/components/figures/meter).' },
+      { family: 'query-state', when: 'Data a page fetches: its loading, its failure and a failed refresh, in one.' },
+      { family: 'empty-state', when: 'A page, a panel or a table with nothing to show yet, and the way to something.' },
+      { family: 'empty-text', when: 'Nothing to show, in one quiet line; what went wrong with an action, under its button (`ErrorText`).' },
+      { family: 'error-state', when: 'A page, or a part of one, that failed: what went wrong, and the way on.' },
+      { family: 'not-found-state', when: 'A record that does not exist: its API answered 404.' },
+    ],
+  },
   families: [
     {
       slug: 'loader',

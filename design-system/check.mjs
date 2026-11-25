@@ -44,7 +44,9 @@ css += `:root {\n${rest.join('\n')}\n}\n`
 for (const f of tokens.type.fonts) css += `@font-face { font-family: "${f.family}"; src: url("${join(P, f.file)}") format("woff2"); font-weight: ${f.weight}; font-style: ${f.style}; }\n`
 writeFileSync(join(H, 'tokens.css'), css)
 
-const browser = await chromium.launch()
+// The pages are files. A mask is fetched with CORS (the 404's folder, finish.css's), which a file:// page may not do
+// unless allowed here; a page of the artifact fetches it from its own origin.
+const browser = await chromium.launch({ args: ['--allow-file-access-from-files'] })
 let failed = 0
 for (const card of cards) {
   if (only.length && !only.includes(card.name)) continue

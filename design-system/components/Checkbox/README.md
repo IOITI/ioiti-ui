@@ -10,3 +10,11 @@ A box to tick, its mark drawing itself; indeterminate while some of what it stan
 
 - For a setting that applies at once, use a `Switch`; a checkbox is ticked and then saved or submitted.
 - Checked, it fills with `primary`, the accent's `brand` where one is chosen.
+
+## Accessibility
+
+The browser's own checkbox, named by its label and described by its description: said ticked, not ticked, or mixed while `indeterminate`, and invalid with `error`.
+
+| Key | What it does |
+|---|---|
+| Space | Ticks it, or unticks it |
