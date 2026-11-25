@@ -4,6 +4,7 @@ import { Navigate, useLocation } from 'react-router'
 import { exampleKey, familyPath, summaryOfFamily } from './catalogue'
 import { ExamplePanel } from './ExamplePanel'
 import { movedTo } from './legacy'
+import { Lineage } from './Lineage'
 import { InlineMarkdown } from './Markdown'
 import type { CategoryInfo, Examples } from './types'
 
@@ -31,7 +32,12 @@ export function CategoryPage({ category, examples }: { category: CategoryInfo; e
             example={examples[exampleKey(family, first)]}
             code={false}
             title={<TextLink href={path}>{family.name}</TextLink>}
-            description={<InlineMarkdown text={summaryOfFamily(family)} />}
+            description={
+              <>
+                <InlineMarkdown text={summaryOfFamily(family)} />
+                <Lineage family={family} />
+              </>
+            }
             action={
               <TextLink href={path} variant="quiet">
                 {more === 1 ? 'Its example, code and props' : `All ${more} examples, code and props`}

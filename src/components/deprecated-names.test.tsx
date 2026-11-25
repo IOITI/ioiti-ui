@@ -20,7 +20,7 @@ import { TimeRangePicker } from './TimeRangePicker.js'
 import { ActivityHeatmap } from './ui/activity-heatmap.js'
 import { AdvancedDataTable, DataTable, useDataTable } from './ui/advanced-data-table.js'
 import type { ColumnDef } from './ui/advanced-data-table.js'
-import { AnimatedFileUpload } from './ui/animated-file-upload.js'
+import { FileUpload } from './ui/animated-file-upload.js'
 import { BarChart } from './ui/bar-chart.js'
 import { DonutChart } from './ui/donut-chart.js'
 import { FunnelChart } from './ui/funnel-chart.js'
@@ -398,7 +398,7 @@ describe('a compact layout', () => {
     render(
       <>
         <EmptyState density="compact" title="No run yet" />
-        <AnimatedFileUpload density="compact" />
+        <FileUpload density="compact" />
       </>,
     )
     expect(screen.getByRole('heading', { level: 3, name: 'No run yet' }).parentElement).toHaveClass('py-6')
@@ -414,7 +414,7 @@ describe('a compact layout', () => {
           <p>first row</p>
         </Panel>
         <EmptyState compact title="No run yet" />
-        <AnimatedFileUpload variant="compact" />
+        <FileUpload variant="compact" />
       </>
     )
     const { rerender } = render(formerly)
@@ -425,7 +425,7 @@ describe('a compact layout', () => {
     expect(said()).toHaveLength(3)
     expect(said().join('\n')).toContain(`(Panel's dense: density="compact")`)
     expect(said().join('\n')).toContain(`(EmptyState's compact: density="compact")`)
-    expect(said().join('\n')).toContain(`(AnimatedFileUpload's variant="compact": density="compact")`)
+    expect(said().join('\n')).toContain(`(FileUpload's variant="compact": density="compact")`)
 
     rerender(
       <>
@@ -433,7 +433,7 @@ describe('a compact layout', () => {
           <p>first row</p>
         </Panel>
         <EmptyState density="regular" compact title="No run yet" />
-        <AnimatedFileUpload density="regular" variant="compact" />
+        <FileUpload density="regular" variant="compact" />
       </>,
     )
     expect(panelBody()).not.toHaveClass('pt-2')

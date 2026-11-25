@@ -8,6 +8,10 @@ import { X } from "lucide-react";
 // its own copy is gone. A former name said once, in development (deprecated).
 import { useControllableState } from "../../lib/controllable.js";
 import { deprecated } from "../../lib/deprecated.js";
+// ioiti-ui: the focus kept as every layer keeps it (useFocusScope): its own trap and its list of the sheets open are gone.
+import { useFocusScope } from "../../lib/focus-scope.js";
+// ioiti-ui: the names it had until 0.31.0 kept until 1.0, drawing its parts (renamed).
+import { renamed } from "../../lib/renamed.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { CLOSE_MD, SCRIM } from "../../lib/recipes.js";
 import { useScrollRegion } from "../../lib/scroll-region.js";
@@ -16,9 +20,10 @@ import { cn } from "../../lib/utils.js";
 import { useMessages } from "../locale-context.js";
 
 /*
- * ioiti-ui: EasyUI's sheet, renamed flysheet, with what Elastic UI's flyout (EuiFlyout) does, written
- * here from its documentation: a side sheet's width (three sizes, or pixels, between a minimum and a
- * maximum), which the reader may change by its inner edge or with the arrow keys on it; the page pushed
+ * ioiti-ui: EasyUI's sheet, which this package named Flysheet until 0.31.0 (its parts are Sheet… again, the name of
+ * their role; their former names, at the end of the file, draw them until 1.0), with what Elastic UI's flyout
+ * (EuiFlyout) does, written here from its documentation: a side sheet's width (three sizes, or pixels, between a
+ * minimum and a maximum), which the reader may change by its inner edge or with the arrow keys on it; the page pushed
  * aside rather than covered, from a window wide enough; no backdrop, the page still in use; a child
  * sheet beside its parent, or over it where there is no room; the padding of its parts; its close
  * button outside it; why it closed. Each change is marked.
@@ -31,9 +36,9 @@ const spring = motionTransitions.springSheet;
 const sheetSpring = motionTransitions.springSheet as Record<"stiffness" | "damping", number>;
 const DRAG_RETURN = { bounceStiffness: sheetSpring.stiffness, bounceDamping: sheetSpring.damping };
 
-export type FlysheetSide = "right" | "left" | "top" | "bottom";
+export type SheetSide = "right" | "left" | "top" | "bottom";
 
-// ioiti-ui: a side sheet's width is a style (FlysheetContent's `size`) instead of EasyUI's
+// ioiti-ui: a side sheet's width is a style (SheetContent's `size`) instead of EasyUI's
 // `w-[88vw] max-w-[26rem]`, which stays its default: `md`, and 88% of the window at most.
 const SIDES = {
   right: {
@@ -73,15 +78,15 @@ const SIDES = {
 /* ───────────── ioiti-ui: Elastic's flyout ───────────── */
 
 /** ioiti-ui: a side sheet's width: 22, 26 (EasyUI's) or 40 rem, or pixels. */
-export type FlysheetSize = "sm" | "md" | "lg" | number;
+export type SheetSize = "sm" | "md" | "lg" | number;
 /** ioiti-ui: over the page, or beside it, the page pushed aside (a side sheet, from `pushMinWidth`). */
-export type FlysheetType = "overlay" | "push";
+export type SheetType = "overlay" | "push";
 /** ioiti-ui: the padding of a sheet's header, body and footer. */
-export type FlysheetPadding = "none" | "sm" | "md" | "lg";
+export type SheetPadding = "none" | "sm" | "md" | "lg";
 /** ioiti-ui: why a sheet closed, given to `onOpenChange` with `false`. */
-export type FlysheetCloseReason = "close-button" | "escape" | "outside-click" | "drag" | "trigger" | "parent";
+export type SheetCloseReason = "close-button" | "escape" | "outside-click" | "drag" | "trigger" | "parent";
 
-type Details = { reason: FlysheetCloseReason };
+type Details = { reason: SheetCloseReason };
 
 const SIZES = { sm: 22, md: 26, lg: 40 } as const;
 const MIN_WIDTH = 280;
@@ -92,7 +97,7 @@ const STEP_LARGE = 50;
 /** Tailwind's `lg`: narrower, a pushed page would be too narrow to read. */
 const PUSH_MIN_WIDTH = 1024;
 
-const PADDINGS: Record<FlysheetPadding, { header: string; body: string; footer: string }> = {
+const PADDINGS: Record<SheetPadding, { header: string; body: string; footer: string }> = {
   none: { header: "p-0", body: "p-0", footer: "p-0" },
   sm: { header: "px-4 pb-2 pt-4", body: "px-4 py-2", footer: "px-4 py-3" },
   md: { header: "px-5 pb-3 pt-5", body: "px-5 py-2", footer: "px-5 py-4" },
@@ -100,19 +105,16 @@ const PADDINGS: Record<FlysheetPadding, { header: string; body: string; footer: 
 };
 
 /** The close button outside the panel, on the side facing the page. */
-const OUTSIDE: Record<FlysheetSide, string> = {
+const OUTSIDE: Record<SheetSide, string> = {
   right: "right-full top-3 mr-3",
   left: "left-full top-3 ml-3",
   top: "right-3 top-full mt-3",
   bottom: "bottom-full right-3 mb-3",
 };
 
-const FOCUSABLE =
-  'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
-
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-function toPixels(size: FlysheetSize) {
+function toPixels(size: SheetSize) {
   if (typeof size === "number") return size;
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
   return SIZES[size] * (rem > 0 ? rem : 16);
@@ -155,16 +157,11 @@ function setPush(id: string, side: "left" | "right", width: number | null) {
   if (!total("left") && !total("right")) bodyMargins = null;
 }
 
-// The sheets open, the last one opened last: Escape closes the last that holds the page (modal) or the
-// focus, and only it: a child before its parent, never a sheet leaving the page in use while the focus
-// is on the page.
-interface OpenSheet {
-  modal: () => boolean;
-  contains: (node: Node | null) => boolean;
-}
-const openSheets: OpenSheet[] = [];
-
-/** An Escape meant for what is open in the sheet (a list, a menu, a picker), which closes first. */
+/**
+ * ioiti-ui: an Escape meant for what is open in the sheet (a list, a menu, a picker), which closes first: one drawn by
+ * useAnchoredLayer takes its own before the sheet hears it (useFocusScope listens after it), one drawn by the
+ * application may not.
+ */
 function forPopup(target: EventTarget | null) {
   if (!(target instanceof Element)) return false;
   const expanded =
@@ -194,7 +191,7 @@ interface SheetCtx {
 const SheetContext = React.createContext<SheetCtx | null>(null);
 function useSheet() {
   const ctx = React.useContext(SheetContext);
-  if (!ctx) throw new Error("Flysheet parts must be used inside <Flysheet>");
+  if (!ctx) throw new Error("Sheet parts must be used inside <Sheet>");
   return ctx;
 }
 
@@ -205,27 +202,27 @@ interface Layer {
   /** Where the sheet's children are drawn, in its layer. */
   slot: HTMLDivElement | null;
   panel: HTMLDivElement | null;
-  side: FlysheetSide;
+  side: SheetSide;
   /** From the window's edge to the panel's inner edge, where a child beside it starts. */
   edge: number;
   width: number;
   z: number;
   modal: boolean;
-  padding: FlysheetPadding;
+  padding: SheetPadding;
   setChild: (placement: Placement | null) => void;
 }
 const LayerContext = React.createContext<Layer | null>(null);
 const usePadding = () => PADDINGS[React.useContext(LayerContext)?.padding ?? "md"];
 
-export interface FlysheetProps {
+export interface SheetProps {
   open?: boolean;
   defaultOpen?: boolean;
   /** ioiti-ui: with why it closed (`details.reason`). */
-  onOpenChange?: (open: boolean, details?: { reason: FlysheetCloseReason }) => void;
+  onOpenChange?: (open: boolean, details?: { reason: SheetCloseReason }) => void;
   children: React.ReactNode;
 }
 
-export function Flysheet({ open, defaultOpen = false, onOpenChange, children }: FlysheetProps) {
+export function Sheet({ open, defaultOpen = false, onOpenChange, children }: SheetProps) {
   const [own, setOpen] = useControllableState<boolean, [details?: Details]>(open, defaultOpen, onOpenChange);
   // ioiti-ui: a sheet inside another closes with it, and says so (`parent`).
   const parent = React.useContext(SheetContext);
@@ -247,8 +244,12 @@ export function Flysheet({ open, defaultOpen = false, onOpenChange, children }: 
   return <SheetContext.Provider value={value}>{children}</SheetContext.Provider>;
 }
 
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `SheetTrigger`: a `<button>`'s. */
+export type SheetTriggerProps = React.ComponentProps<"button">;
+
 /** Unstyled button, bring your own classes. ioiti-ui: it closes the sheet too (one that leaves it in reach). */
-export function FlysheetTrigger({ onClick, ...props }: React.ComponentProps<"button">) {
+export function SheetTrigger({ onClick, ...props }: SheetTriggerProps) {
   const { open, setOpen, contentId, pushing } = useSheet();
   return (
     <button
@@ -268,7 +269,11 @@ export function FlysheetTrigger({ onClick, ...props }: React.ComponentProps<"but
   );
 }
 
-export function FlysheetClose({ onClick, ...props }: React.ComponentProps<"button">) {
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `SheetClose`: a `<button>`'s. */
+export type SheetCloseProps = React.ComponentProps<"button">;
+
+export function SheetClose({ onClick, ...props }: SheetCloseProps) {
   const { setOpen } = useSheet();
   return (
     <button
@@ -284,16 +289,16 @@ export function FlysheetClose({ onClick, ...props }: React.ComponentProps<"butto
 
 /* ───────────── content ───────────── */
 
-export interface FlysheetContentProps {
+export interface SheetContentProps {
   /** The side it comes from. A child takes its parent's. */
-  side?: FlysheetSide;
+  side?: SheetSide;
   /** ioiti-ui: a side sheet's width: `sm` (22 rem), `md` (26 rem, EasyUI's) or `lg` (40 rem), or pixels. */
-  size?: FlysheetSize;
+  size?: SheetSize;
   /**
    * ioiti-ui: `push` pushes the page aside (the body's margin) instead of covering it: a side sheet, from a
    * window `pushMinWidth` wide; narrower, it is drawn over the page. Without a backdrop, it leaves the focus free.
    */
-  type?: FlysheetType;
+  type?: SheetType;
   /** ioiti-ui: the window's width from which a `push` sheet pushes the page (1024 px). */
   pushMinWidth?: number;
   /** ioiti-ui: a backdrop, and the focus held in the sheet (true); false leaves the page in use. A child takes its parent's. */
@@ -309,20 +314,20 @@ export interface FlysheetContentProps {
   /** ioiti-ui: the width the reader gave, in pixels. */
   onResize?: (width: number) => void;
   /** ioiti-ui: the padding of its header, body and footer (`md`, EasyUI's). */
-  padding?: FlysheetPadding;
+  padding?: SheetPadding;
   /** ioiti-ui: its close button (true), as every layer names it (`showCloseButton`). */
   showCloseButton?: boolean;
   /** @deprecated Use `showCloseButton`. Removed in 1.0. */
   showClose?: boolean;
   /** ioiti-ui: the close button inside the panel, or outside it, on the side facing the page. */
   closePosition?: "inside" | "outside";
-  /** ioiti-ui: its name, for a sheet without a FlysheetTitle. */
+  /** ioiti-ui: its name, for a sheet without a SheetTitle. */
   "aria-label"?: string;
   className?: string;
   children: React.ReactNode;
 }
 
-export function FlysheetContent({
+export function SheetContent({
   side: sideProp = "right",
   size = "md",
   type = "overlay",
@@ -340,10 +345,10 @@ export function FlysheetContent({
   "aria-label": ariaLabel,
   className,
   children,
-}: FlysheetContentProps) {
+}: SheetContentProps) {
   const { open, setOpen, titleId, descId, hasDesc, contentId, hasTitle } = useSheet();
   // ioiti-ui: `showCloseButton`, as every layer names it; `showClose`, its former name, read where it alone is given.
-  if (showClose !== undefined) deprecated("show-close", "FlysheetContent");
+  if (showClose !== undefined) deprecated("show-close", "SheetContent");
   const withCloseButton = showCloseButton ?? showClose ?? true;
   // ioiti-ui: the sheet this one is a child of, if any: it takes its side and its mode, and is drawn
   // in its layer, beside it while it fits there, over it otherwise.
@@ -395,10 +400,8 @@ export function FlysheetContent({
   const closesOutside = closeOnOutsideClick ?? modal;
   // A pushed sheet is part of the page: it neither slides in nor is dragged away.
   const swipe = !pushing;
-  const modalRef = React.useRef(modal);
   const onResizeRef = React.useRef(onResize);
   React.useEffect(() => {
-    modalRef.current = modal;
     onResizeRef.current = onResize;
   });
 
@@ -420,21 +423,29 @@ export function FlysheetContent({
     return () => host.removeAttribute("inert");
   }, [open, placement, host]);
 
-  // focus in, and back out (ioiti-ui: to what opened it, while the focus is in the sheet, not when the
-  // reader went on in the page; a sheet leaving the page in use takes it when it opens, not with the page)
-  const openAtMount = React.useRef(open);
-  React.useEffect(() => {
-    if (!open || !mounted) return;
-    const holder = () => (isChild ? panelRef.current : rootRef.current);
-    const returnTo = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    if (modalRef.current || !openAtMount.current) holder()?.focus({ preventScroll: true });
-    openAtMount.current = false;
-    return () => {
-      const active = document.activeElement;
-      const inside = !active || active === document.body || !!holder()?.contains(active);
-      if (inside && returnTo?.isConnected) returnTo.focus({ preventScroll: true });
-    };
-  }, [open, mounted, isChild]);
+  // focus in, and back out, and Esc (ioiti-ui: as every layer keeps the focus, useFocusScope, in place of the sheet's
+  // own trap and its list of the sheets open; after the effect above, whose cleanup runs first). In on the sheet itself,
+  // its dialog (a child's panel), not a control in it: Enter does nothing until the reader has chosen one. Back to what
+  // opened it, while the focus is in the sheet, not when the reader went on in the page. A sheet that holds the page
+  // (modal) keeps it, the latest opened keeping it (a child, then its parent: Tab goes round the child alone while it is
+  // open), and Escape closes it wherever the focus is. One leaving the page in use (modal={false}, a pushed sheet) leaves
+  // the focus free: it takes it when it opens, not when it opens with the page, and Escape closes it while the focus is
+  // in it. An Escape meant for what is open in it is left to that.
+  const [openWithPage, setOpenWithPage] = React.useState(open);
+  if (openWithPage && !open) setOpenWithPage(false);
+  const holderRef = isChild ? panelRef : rootRef;
+  useFocusScope(holderRef, {
+    // A child's panel is drawn once its parent's slot is: its scope starts then.
+    active: open && mounted && (!isChild || panel !== null),
+    contain: modal,
+    autoFocus: modal || !openWithPage,
+    initialFocus: () => holderRef.current,
+    onEscape: (e) => {
+      if (forPopup(e.target)) return;
+      e.preventDefault();
+      setOpen(false, { reason: "escape" });
+    },
+  });
 
   // scroll lock (ioiti-ui: while the sheet holds the page)
   React.useEffect(() => {
@@ -447,60 +458,6 @@ export function FlysheetContent({
       document.body.style.overflow = overflow;
       document.body.style.paddingRight = paddingRight;
     };
-  }, [open, mounted, isChild, modal]);
-
-  // Esc (ioiti-ui: the last sheet open that holds the page or the focus, and not what is open in it)
-  React.useEffect(() => {
-    if (!open || !mounted) return;
-    const holder = () => (isChild ? panelRef.current : rootRef.current);
-    const entry: OpenSheet = {
-      modal: () => modalRef.current,
-      contains: (node) => !!node && !!holder()?.contains(node),
-    };
-    openSheets.push(entry);
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape" || e.defaultPrevented || forPopup(e.target)) return;
-      const target = e.target instanceof Node ? e.target : null;
-      const top = [...openSheets].reverse().find((sheet) => sheet.modal() || sheet.contains(target));
-      if (top !== entry) return;
-      e.preventDefault();
-      setOpen(false, { reason: "escape" });
-    };
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      openSheets.splice(openSheets.indexOf(entry), 1);
-    };
-  }, [open, mounted, isChild, setOpen]);
-
-  // ioiti-ui: the focus stays in the sheet and its children, held from the document as settle-modal holds
-  // it (EasyUI trapped it in the panel, which a child beside it is not in).
-  React.useEffect(() => {
-    if (!open || !mounted || isChild || !modal) return;
-    const onKey = (e: KeyboardEvent) => {
-      const box = rootRef.current;
-      if (e.key !== "Tab" || !box) return;
-      const nodes = Array.from(box.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-        (node) => node.tabIndex >= 0 && !node.closest("[inert]")
-      );
-      if (!nodes.length) {
-        e.preventDefault();
-        return;
-      }
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
-      const el = document.activeElement;
-      const outside = !box.contains(el) || el === box;
-      if (e.shiftKey && (outside || el === first)) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && (outside || el === last)) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
   }, [open, mounted, isChild, modal]);
 
   // ioiti-ui: a click on the page closes a sheet that leaves it in use, when asked; not one on its own
@@ -707,7 +664,7 @@ export function FlysheetContent({
     </motion.div>
   );
 
-  // ioiti-ui: the dialog is the layer (as settle-modal's), not the panel: a child drawn beside the panel
+  // ioiti-ui: the dialog is the layer (as Dialog's), not the panel: a child drawn beside the panel
   // is in it too. A pushed sheet is no dialog: a region of the page.
   const content = isChild
     ? parent.slot && createPortal(<AnimatePresence>{open && sheet}</AnimatePresence>, parent.slot)
@@ -753,13 +710,21 @@ export function FlysheetContent({
 
 /* ───────────── layout parts ───────────── */
 
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `SheetHeader`: a `<div>`'s. */
+export type SheetHeaderProps = React.ComponentProps<"div">;
+
 // ioiti-ui: their padding is the sheet's (`padding`).
-export function FlysheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+export function SheetHeader({ className, ...props }: SheetHeaderProps) {
   const pad = usePadding();
   return <div className={cn("flex flex-col gap-1", pad.header, "pr-14", className)} {...props} />;
 }
 
-export function FlysheetTitle({ className, ...props }: React.ComponentProps<"h2">) {
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `SheetTitle`: an `<h2>`'s. */
+export type SheetTitleProps = React.ComponentProps<"h2">;
+
+export function SheetTitle({ className, ...props }: SheetTitleProps) {
   const { titleId, setHasTitle } = useSheet();
   // ioiti-ui: the sheet is named by its title when it has one (EasyUI pointed at an id that might be missing).
   React.useEffect(() => {
@@ -772,7 +737,11 @@ export function FlysheetTitle({ className, ...props }: React.ComponentProps<"h2"
   return <h2 className={cn("text-2xl font-bold tracking-tight", className)} {...props} id={titleId} />;
 }
 
-export function FlysheetDescription({ className, ...props }: React.ComponentProps<"p">) {
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `SheetDescription`: a `<p>`'s. */
+export type SheetDescriptionProps = React.ComponentProps<"p">;
+
+export function SheetDescription({ className, ...props }: SheetDescriptionProps) {
   const { descId, setHasDesc } = useSheet();
   React.useEffect(() => {
     setHasDesc(true);
@@ -799,7 +768,11 @@ function fadeUnderHeader(body: HTMLElement) {
   }
 }
 
-export function FlysheetBody({ className, onScroll, ref, ...props }: React.ComponentProps<"div">) {
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `SheetBody`: a `<div>`'s. */
+export type SheetBodyProps = React.ComponentProps<"div">;
+
+export function SheetBody({ className, onScroll, ref, ...props }: SheetBodyProps) {
   const pad = usePadding();
   const body = React.useRef<HTMLDivElement>(null);
   React.useImperativeHandle(ref, () => body.current as HTMLDivElement);
@@ -832,7 +805,11 @@ export function FlysheetBody({ className, onScroll, ref, ...props }: React.Compo
   );
 }
 
-export function FlysheetFooter({ className, ...props }: React.ComponentProps<"div">) {
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `SheetFooter`: a `<div>`'s. */
+export type SheetFooterProps = React.ComponentProps<"div">;
+
+export function SheetFooter({ className, ...props }: SheetFooterProps) {
   const pad = usePadding();
   return (
     <div
@@ -845,3 +822,38 @@ export function FlysheetFooter({ className, ...props }: React.ComponentProps<"di
     />
   );
 }
+
+// ioiti-ui: the names it had until 0.31.0, until 1.0: each draws its part, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `Sheet`. Removed in 1.0. */
+export const Flysheet = renamed(Sheet, "Flysheet");
+/** @deprecated Use `SheetTrigger`. Removed in 1.0. */
+export const FlysheetTrigger = renamed(SheetTrigger, "FlysheetTrigger");
+/** @deprecated Use `SheetClose`. Removed in 1.0. */
+export const FlysheetClose = renamed(SheetClose, "FlysheetClose");
+/** @deprecated Use `SheetContent`. Removed in 1.0. */
+export const FlysheetContent = renamed(SheetContent, "FlysheetContent");
+/** @deprecated Use `SheetHeader`. Removed in 1.0. */
+export const FlysheetHeader = renamed(SheetHeader, "FlysheetHeader");
+/** @deprecated Use `SheetTitle`. Removed in 1.0. */
+export const FlysheetTitle = renamed(SheetTitle, "FlysheetTitle");
+/** @deprecated Use `SheetDescription`. Removed in 1.0. */
+export const FlysheetDescription = renamed(SheetDescription, "FlysheetDescription");
+/** @deprecated Use `SheetBody`. Removed in 1.0. */
+export const FlysheetBody = renamed(SheetBody, "FlysheetBody");
+/** @deprecated Use `SheetFooter`. Removed in 1.0. */
+export const FlysheetFooter = renamed(SheetFooter, "FlysheetFooter");
+/** @deprecated Use `SheetProps`. Removed in 1.0. */
+export type FlysheetProps = SheetProps;
+/** @deprecated Use `SheetContentProps`. Removed in 1.0. */
+export type FlysheetContentProps = SheetContentProps;
+/** @deprecated Use `SheetCloseReason`. Removed in 1.0. */
+export type FlysheetCloseReason = SheetCloseReason;
+/** @deprecated Use `SheetPadding`. Removed in 1.0. */
+export type FlysheetPadding = SheetPadding;
+/** @deprecated Use `SheetSide`. Removed in 1.0. */
+export type FlysheetSide = SheetSide;
+/** @deprecated Use `SheetSize`. Removed in 1.0. */
+export type FlysheetSize = SheetSize;
+/** @deprecated Use `SheetType`. Removed in 1.0. */
+export type FlysheetType = SheetType;

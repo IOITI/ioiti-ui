@@ -18,7 +18,8 @@ export interface ChartLegendItem {
   shown?: boolean
 }
 
-interface ChartLegendProps {
+/** The props of `ChartLegend`. */
+export interface ChartLegendProps {
   items: ChartLegendItem[]
   /** Makes each item a button that shows or hides its series. The chart decides what it allows (one series left). */
   onToggle?: (index: number) => void

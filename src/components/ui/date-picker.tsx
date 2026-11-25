@@ -13,6 +13,12 @@ import { DISABLED, FLOATING } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 import { Calendar, type CalendarOptions, type DateRange } from "./calendar.js";
 import { useLocale, useMessages } from "../locale-context.js";
+// ioiti-ui: what a Field or a FormItem around it tells it (its id, what describes it, whether it is wrong), its `data-*`
+// attributes, its ref and its value sent with a form (a day as `yyyy-mm-dd`), as a native field takes them.
+import { splitDataAttributes, type DataAttributes } from "../../lib/data-attributes.js";
+import { toIsoDay } from "../../lib/format.js";
+import { useForwardedRef } from "../../lib/refs.js";
+import { useFieldControl } from "../field-context.js";
 
 type Side = "bottom" | "top";
 
@@ -21,11 +27,11 @@ const fmt = (d: Date, locale: string) => new Intl.DateTimeFormat(locale, { dateS
 
 /** ioiti-ui: what names and describes the trigger, and says it is wrong: a Field's, a label's elsewhere. */
 export interface PickerFieldProps {
-  /** The trigger's id, for a `<label htmlFor>` (a Field's `htmlFor`). */
+  /** The trigger's id, for a `<label htmlFor>` (a Field's `htmlFor`); in a FormItem, the item's. */
   id?: string;
   /** Its name, where no label names it. */
   "aria-label"?: string;
-  /** The id of what names it. */
+  /** The id of what names it. A Field's label names it without it. */
   "aria-labelledby"?: string;
   /** Read out with it: what a Field around it says under it (its description, its error). */
   "aria-describedby"?: string;
@@ -33,6 +39,8 @@ export interface PickerFieldProps {
   "aria-invalid"?: boolean | "true" | "false";
   /** The date chosen is wrong (or missing): the trigger's border in the error's colour, and said. */
   error?: boolean;
+  /** Its trigger (the button that shows the day), to focus it. */
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 /* ───────────── shell: trigger + animated popover ───────────── */
@@ -45,6 +53,8 @@ function PickerShell({
   disabled,
   className,
   field,
+  data,
+  sent,
   children,
 }: {
   text: string | null;
@@ -54,15 +64,26 @@ function PickerShell({
   disabled?: boolean;
   className?: string;
   field: PickerFieldProps;
+  // ioiti-ui: its `data-*` attributes, and what a form around it is sent (`name` and its values, a hidden input each).
+  data: DataAttributes;
+  sent?: { name: string; values: string[] };
   children: (api: { close: () => void }) => React.ReactNode;
 }) {
   const [open, setOpen] = React.useState(false);
   // ioiti-ui: the provider's words (IoitiProvider).
   const words = useMessages().date;
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  // ioiti-ui: its trigger given to its caller's ref too.
+  const [triggerRef, setTrigger] = useForwardedRef<HTMLButtonElement>(field.ref);
   const layerRef = React.useRef<HTMLDivElement>(null);
   const timer = React.useRef<number | undefined>(undefined);
-  const invalid = invalidOf(field.error, field["aria-invalid"]);
+  // ioiti-ui: described and marked by a Field or a FormItem around it too, its own props first, its id the one their
+  // label points to: a label names a button by itself (not `aria-labelledby`, whose name would lack the day it shows).
+  const control = useFieldControl({
+    id: field.id,
+    describedBy: field["aria-describedby"],
+    invalid: invalidOf(field.error, field["aria-invalid"]),
+  });
+  const invalid = control.invalid;
 
   // ioiti-ui: a layer in document.body, placed beside its trigger and following it (useAnchoredLayer), its keys its
   // own, the focus in it on the day to choose: EasyUI's was placed by hand inside the picker, which a Field's label
@@ -91,17 +112,18 @@ function PickerShell({
   React.useEffect(() => () => window.clearTimeout(timer.current), []);
 
   return (
-    <div className={cn("relative inline-block w-64 max-w-full", className)}>
+    // ioiti-ui: its `data-*` attributes on its outermost element.
+    <div {...data} className={cn("relative inline-block w-64 max-w-full", className)}>
       <button
-        ref={triggerRef}
-        id={field.id}
+        ref={setTrigger}
+        id={control.id}
         type="button"
         disabled={disabled}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={field["aria-label"]}
         aria-labelledby={field["aria-labelledby"]}
-        aria-describedby={field["aria-describedby"]}
+        aria-describedby={control.describedBy}
         // ioiti-ui: invalid as its Field says, which a screen reader says of it (global in ARIA 1.1, as axe holds it).
         // oxlint-disable-next-line jsx-a11y/role-supports-aria-props -- ARIA 1.2 lists it for fewer roles than readers honour
         aria-invalid={invalid || undefined}
@@ -129,6 +151,10 @@ function PickerShell({
           {text ?? placeholder}
         </span>
       </button>
+      {/* ioiti-ui: its value, sent with the form around it under its `name`. */}
+      {sent?.values.map((each, index) => (
+        <input key={index} type="hidden" name={sent.name} value={each} disabled={disabled} />
+      ))}
 
       {typeof document !== "undefined" &&
         createPortal(
@@ -168,7 +194,8 @@ function PickerShell({
 
 /* ───────────── single date ───────────── */
 
-export interface DatePickerProps extends CalendarOptions, PickerFieldProps {
+// ioiti-ui: its `data-*` attributes on its outermost element, as an element takes them.
+export interface DatePickerProps extends CalendarOptions, PickerFieldProps, DataAttributes {
   value?: Date | null;
   defaultValue?: Date | null;
   onChange?: (date: Date | null) => void;
@@ -179,6 +206,8 @@ export interface DatePickerProps extends CalendarOptions, PickerFieldProps {
   side?: Side | "auto";
   disabled?: boolean;
   className?: string;
+  /** ioiti-ui: the name its day is sent under with a form (a hidden input), as a date field sends it: `yyyy-mm-dd`, empty while none is chosen. */
+  name?: string;
 }
 
 export function DatePicker({
@@ -196,9 +225,13 @@ export function DatePicker({
   "aria-describedby": describedBy,
   "aria-invalid": ariaInvalid,
   error,
-  ...calendar
+  name,
+  ref,
+  ...others
 }: DatePickerProps) {
-  const field = { id, "aria-label": ariaLabel, "aria-labelledby": labelledBy, "aria-describedby": describedBy, "aria-invalid": ariaInvalid, error };
+  // ioiti-ui: its `data-*` attributes apart from its calendar's options.
+  const [data, calendar] = splitDataAttributes(others);
+  const field = { id, "aria-label": ariaLabel, "aria-labelledby": labelledBy, "aria-describedby": describedBy, "aria-invalid": ariaInvalid, error, ref };
   const [date, setDate] = useControllableState<Date | null>(value, defaultValue, onChange);
   // ioiti-ui: the provider's locale and words where the props give none.
   const preferred = useLocale();
@@ -214,6 +247,8 @@ export function DatePicker({
       disabled={disabled}
       className={className}
       field={field}
+      data={data}
+      sent={name ? { name, values: [date ? toIsoDay(date) : ""] } : undefined}
     >
       {({ close }) => (
         <Calendar
@@ -232,7 +267,8 @@ export function DatePicker({
 
 /* ───────────── date range ───────────── */
 
-export interface DateRangePickerProps extends CalendarOptions, PickerFieldProps {
+// ioiti-ui: its `data-*` attributes on its outermost element, as an element takes them.
+export interface DateRangePickerProps extends CalendarOptions, PickerFieldProps, DataAttributes {
   value?: DateRange;
   defaultValue?: DateRange;
   onChange?: (range: DateRange) => void;
@@ -243,6 +279,11 @@ export interface DateRangePickerProps extends CalendarOptions, PickerFieldProps 
   side?: Side | "auto";
   disabled?: boolean;
   className?: string;
+  /**
+   * ioiti-ui: the name its range is sent under with a form: two values, its first day then its last (`yyyy-mm-dd`,
+   * empty while not chosen), a hidden input each with this name.
+   */
+  name?: string;
 }
 
 export function DateRangePicker({
@@ -260,9 +301,13 @@ export function DateRangePicker({
   "aria-describedby": describedBy,
   "aria-invalid": ariaInvalid,
   error,
-  ...calendar
+  name,
+  ref,
+  ...others
 }: DateRangePickerProps) {
-  const field = { id, "aria-label": ariaLabel, "aria-labelledby": labelledBy, "aria-describedby": describedBy, "aria-invalid": ariaInvalid, error };
+  // ioiti-ui: its `data-*` attributes apart from its calendar's options.
+  const [data, calendar] = splitDataAttributes(others);
+  const field = { id, "aria-label": ariaLabel, "aria-labelledby": labelledBy, "aria-describedby": describedBy, "aria-invalid": ariaInvalid, error, ref };
   const [range, setRange] = useControllableState<DateRange>(value, defaultValue, onChange);
   // ioiti-ui: the provider's locale and words where the props give none; the range written as its language writes one.
   const preferred = useLocale();
@@ -281,6 +326,12 @@ export function DateRangePicker({
       disabled={disabled}
       className={cn("w-72", className)}
       field={field}
+      data={data}
+      sent={
+        name
+          ? { name, values: [range.from ? toIsoDay(range.from) : "", range.to ? toIsoDay(range.to) : ""] }
+          : undefined
+      }
     >
       {({ close }) => (
         <Calendar

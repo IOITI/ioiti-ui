@@ -15,6 +15,11 @@ import { useMessages } from './locale-context.js'
 import { ACCENT_SWATCH, MATERIAL_SWATCH } from './look-swatches.js'
 import { useTheme } from './theme-context.js'
 
+/** The props of `LookPicker`. */
+export interface LookPickerProps {
+  className?: string
+}
+
 /**
  * The accent and the material, each person's own (kept in this browser, as the theme is): a button
  * for beside the theme's, `topBarEnd={<><LookPicker /><ThemeToggle /></>}`. Until one is picked, the
@@ -23,7 +28,7 @@ import { useTheme } from './theme-context.js'
  * press elsewhere or a Tab past their ends close them and give the button the focus again. In the menu of
  * the account instead: `UserMenu`'s `appearance` (`useAppearanceItems`). Its words are the provider's language's.
  */
-export function LookPicker({ className }: { className?: string }) {
+export function LookPicker({ className }: LookPickerProps) {
   const { accent, material, setAccent, setMaterial } = useTheme()
   const words = useMessages().look
   const [open, setOpen] = useState(false)

@@ -12,7 +12,8 @@ import { NamedContext, PublisherContext, TabTitleContext, TrailContext, usePageT
 import type { Named } from './page-trail-context.js'
 import { wholeTrailFits } from './trail-fit.js'
 
-interface PageTrailProviderProps {
+/** The props of `PageTrailProvider`. */
+export interface PageTrailProviderProps {
   menu: Menu
   pathname: string
   /** The address's query (`?tab=open`), for a menu whose entries say some. */
@@ -91,6 +92,12 @@ function useWholeTrailFits(room: RefObject<HTMLElement | null>, trail: RefObject
   return fits
 }
 
+/** The props of `TopBarTrail`. */
+export interface TopBarTrailProps {
+  /** The trail's first step: Home (`/`), in the provider's language, by default. */
+  home?: { label: string; href: string }
+}
+
 /**
  * The trail in the top bar: whole on a wide screen, as long as it fits the room the top bar leaves it (the page's
  * own name may be cut short, not the steps before it). Narrower, or where the whole trail does not fit, its last
@@ -99,7 +106,7 @@ function useWholeTrailFits(room: RefObject<HTMLElement | null>, trail: RefObject
  * out, out of sight and of reach, to be measured again. Its first step is `home`: Home (`/`), in the provider's
  * language, by default.
  */
-export function TopBarTrail({ home: givenHome }: { home?: { label: string; href: string } }) {
+export function TopBarTrail({ home: givenHome }: TopBarTrailProps) {
   const Link = useLinkComponent()
   const words = useMessages().shell
   const home = givenHome ?? { label: words.home, href: '/' }

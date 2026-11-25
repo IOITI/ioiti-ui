@@ -80,7 +80,7 @@ export const motionTransitions = {
   } as Transition,
 
   // ioiti-ui: a sheet or the sidebar's drawer sliding in and out, and the sidebar itself (its width,
-  // its pill): near-critical (0.98 to 1.03 apart, flysheet's and the sidebar's own springs were),
+  // its pill): near-critical (0.98 to 1.03 apart, the sheet's and the sidebar's own springs were),
   // settled in about 270 ms, no overshoot.
   springSheet: {
     type: "spring",

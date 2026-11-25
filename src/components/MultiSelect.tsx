@@ -1,15 +1,19 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, ChevronsUpDown, Plus, X } from 'lucide-react'
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
-import type { KeyboardEvent } from 'react'
+import type { KeyboardEvent, Ref } from 'react'
 import { createPortal } from 'react-dom'
 
 import { useAnchoredLayer } from '../lib/anchor.js'
 import { useControllableState } from '../lib/controllable.js'
+import { dataAttributes } from '../lib/data-attributes.js'
+import type { DataAttributes } from '../lib/data-attributes.js'
 import { fieldBorder, invalidOf } from '../lib/field-border.js'
 import { motionTransitions } from '../lib/motion-tokens.js'
 import { CLOSE_SM, FLOATING, MENU_ROW } from '../lib/recipes.js'
+import { useForwardedRef } from '../lib/refs.js'
 import { cn } from '../lib/utils.js'
+import { useFieldControl } from './field-context.js'
 import { Hint } from './Hint.js'
 import { useFormat, useMessages } from './locale-context.js'
 import { Badge } from './ui/badge.js'
@@ -23,15 +27,20 @@ export interface MultiSelectOption {
   disabled?: boolean
 }
 
-interface MultiSelectProps {
+export interface MultiSelectProps extends DataAttributes {
   options: MultiSelectOption[]
   value?: string[]
   defaultValue?: string[]
   onChange?: (value: string[]) => void
   /** Its name for a screen reader, where no `<label htmlFor>` names it. */
   label?: string
-  /** Its field's id, for a `Field htmlFor`. */
+  /** Its field's id (the input's), for a `Field htmlFor`; in a FormItem, the item's. */
   id?: string
+  /**
+   * The name its values are sent under with a form: one each, in the order chosen, a hidden input each with this name;
+   * none while nothing is chosen.
+   */
+  name?: string
   /** What it says while nothing is chosen; the provider's language's by default ("Choose…"). */
   placeholder?: string
   /**
@@ -45,6 +54,10 @@ interface MultiSelectProps {
   max?: number
   disabled?: boolean
   error?: boolean
+  /** Its name, as `label`. */
+  'aria-label'?: string
+  /** The id of what names it (and its list): a heading, a label elsewhere. A Field's label names it without it. */
+  'aria-labelledby'?: string
   /** Read out with it: what a Field around it says under it (its description, its error). */
   'aria-describedby'?: string
   /** Marked invalid, as a Field with an error marks it: drawn as `error`. */
@@ -52,6 +65,8 @@ interface MultiSelectProps {
   /** What the list says when nothing matches; the provider's language's by default ("Nothing matches"). */
   emptyText?: string
   className?: string
+  /** Its field (the input typed into, among the chips), to focus it. */
+  ref?: Ref<HTMLInputElement>
 }
 
 interface Row {
@@ -73,6 +88,7 @@ export function MultiSelect({
   onChange,
   label,
   id,
+  name,
   placeholder,
   onCreateOption,
   maxChips,
@@ -81,20 +97,35 @@ export function MultiSelect({
   error = false,
   emptyText,
   className,
+  'aria-label': ariaLabel,
+  'aria-labelledby': labelledBy,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
+  ref,
+  ...rest
 }: MultiSelectProps) {
   const words = useMessages().select
   const { formatNumber } = useFormat()
-  const invalid = invalidOf(error, ariaInvalid)
+  const ownName = ariaLabel ?? label
+  const listId = useId()
+  const ownId = useId()
+  // Named, described and marked by a Field or a FormItem around it too, its own props first: by its label's words
+  // (aria-labelledby), since a label around it would name the first chip's button, and pass that button its clicks.
+  const control = useFieldControl({
+    id,
+    fallbackId: ownId,
+    labelledBy,
+    named: Boolean(ownName),
+    describedBy,
+    invalid: invalidOf(error, ariaInvalid),
+  })
+  const invalid = control.invalid
   const [chosen, setChosen] = useControllableState(value, defaultValue, onChange)
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
   const [active, setActive] = useState(0)
-  const listId = useId()
-  const ownId = useId()
   const fieldRef = useRef<HTMLDivElement | null>(null)
-  const inputRef = useRef<HTMLInputElement | null>(null)
+  const [inputRef, setInput] = useForwardedRef<HTMLInputElement>(ref)
   const layerRef = useRef<HTMLDivElement | null>(null)
   const layer = useAnchoredLayer({ open, onClose: () => setOpen(false), triggerRef: fieldRef, layerRef, focus: 'keep', offset: 4 })
   // The list as wide as the field, read as it opens.
@@ -167,8 +198,11 @@ export function MultiSelect({
   const shown = maxChips === undefined ? chosen : chosen.slice(0, maxChips)
   const hidden = chosen.slice(shown.length)
 
+  // Its list named as its field is.
+  const named = control.labelledBy ? { 'aria-labelledby': control.labelledBy } : { 'aria-label': ownName }
+
   return (
-    <div className={cn('relative w-full', className)}>
+    <div {...dataAttributes(rest)} className={cn('relative w-full', className)}>
       <div
         ref={fieldRef}
         onClick={() => inputRef.current?.focus()}
@@ -200,17 +234,18 @@ export function MultiSelect({
           </Hint>
         )}
         <input
-          ref={inputRef}
-          id={id ?? ownId}
+          ref={setInput}
+          id={control.id ?? ownId}
           type="text"
           role="combobox"
-          aria-label={label}
+          aria-label={ownName}
+          aria-labelledby={control.labelledBy}
           aria-expanded={open}
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={open && rows.length ? `${listId}-${at}` : undefined}
           aria-invalid={invalid || undefined}
-          aria-describedby={describedBy}
+          aria-describedby={control.describedBy}
           autoComplete="off"
           disabled={disabled}
           value={text}
@@ -246,6 +281,7 @@ export function MultiSelect({
           </span>
         )}
       </div>
+      {name && chosen.map((each) => <input key={each} type="hidden" name={name} value={each} disabled={disabled} />)}
       {typeof document !== 'undefined' &&
         createPortal(
           <AnimatePresence>
@@ -264,7 +300,7 @@ export function MultiSelect({
                     {words.atMost(max)}
                   </p>
                 )}
-                <ul id={listId} role="listbox" aria-multiselectable="true" aria-label={label} className="text-sm">
+                <ul id={listId} role="listbox" aria-multiselectable="true" {...named} className="text-sm">
                   {rows.length === 0 && <li className="px-2.5 py-2 text-xs text-muted-foreground">{emptyText ?? words.nothingMatches}</li>}
                   {groups.map((group) => (
                     <li key={group || '·'} role="presentation">

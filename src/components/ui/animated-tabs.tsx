@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 // development (deprecated).
 import { useControllableState } from '../../lib/controllable.js';
 import { deprecated } from '../../lib/deprecated.js';
+// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
+import { renamed } from '../../lib/renamed.js';
 import { isPlainClick } from '../../lib/links.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
@@ -24,7 +26,8 @@ export interface TabItem {
   href?: string;
 }
 
-export interface AnimatedTabsProps {
+// ioiti-ui: named after its role, `Tabs` (EasyUI's `AnimatedTabs`, its former name: at the end of the file).
+export interface TabsProps {
   tabs: TabItem[];
   /** ioiti-ui: the id of the tab shown, held by the page (told of each change by `onChange`). */
   value?: string;
@@ -47,7 +50,7 @@ export interface AnimatedTabsProps {
   label?: string;
 }
 
-export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
+export const Tabs: React.FC<TabsProps> = ({
   tabs,
   value,
   defaultValue,
@@ -66,8 +69,8 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
   const LinkComponent = useLinkComponent(linkComponent);
   // ioiti-ui: `value` and `defaultValue`, as every control; `activeTab` and `defaultTab`, their former names, read where
   // they alone are given. A default is the first tab shown only: EasyUI's showed it again whenever it changed.
-  if (formerValue !== undefined) deprecated('animated-tabs-active-tab', 'AnimatedTabs');
-  if (defaultTab !== undefined) deprecated('animated-tabs-default-tab', 'AnimatedTabs');
+  if (formerValue !== undefined) deprecated('animated-tabs-active-tab', 'Tabs');
+  if (defaultTab !== undefined) deprecated('animated-tabs-default-tab', 'Tabs');
   const [activeTab, handleTabClick] = useControllableState<string>(
     value ?? formerValue,
     (defaultValue ?? defaultTab) || tabs[0]?.id || '',
@@ -214,3 +217,10 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({
     </div>
   );
 };
+
+// ioiti-ui: EasyUI's names, until 1.0: the former name draws the tabs, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `Tabs`. Removed in 1.0. */
+export const AnimatedTabs = renamed(Tabs, 'AnimatedTabs');
+/** @deprecated Use `TabsProps`. Removed in 1.0. */
+export type AnimatedTabsProps = TabsProps;

@@ -52,10 +52,11 @@ const layout: CategoryInfo = {
       ],
     },
     {
-      slug: 'smooth-accordion',
-      name: 'SmoothAccordion',
-      names: ['SmoothAccordion'],
-      keywords: ['faq', 'accordion', 'questions', 'collapse'],
+      slug: 'accordion',
+      name: 'Accordion',
+      names: ['Accordion'],
+      formerly: ['SmoothAccordion'],
+      keywords: ['faq', 'questions', 'collapse'],
       examples: [
         { id: 'one-at-a-time', title: 'One at a time', description: 'Questions and their answers: opening one closes the other. A subtitle says more of a question.' },
         { id: 'several', title: 'Several open', description: 'allowMultiple: each opens and closes on its own, for answers compared side by side; defaultValue opens a few at first.' },

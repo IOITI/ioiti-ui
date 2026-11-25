@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { IoitiProvider } from './IoitiProvider.js'
 import { ShortcutsDialog } from './ShortcutsDialog.js'
 import { useShortcut } from './shortcuts-context.js'
-import { SettleModal } from './ui/settle-modal.js'
+import { Dialog } from './ui/settle-modal.js'
 
 function Page({ go, search }: { go: () => void; search: () => void }) {
   useShortcut('g o', go, { description: 'Go to the orders', group: 'Navigation' })
@@ -48,9 +48,9 @@ describe('keyboard shortcuts', () => {
     render(
       <IoitiProvider>
         <Page go={go} search={() => {}} />
-        <SettleModal open onClose={() => {}} title="Edit">
+        <Dialog open onClose={() => {}} title="Edit">
           <p>Inside</p>
-        </SettleModal>
+        </Dialog>
       </IoitiProvider>,
     )
     await user.keyboard('go')

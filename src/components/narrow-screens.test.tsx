@@ -13,7 +13,7 @@ import { AIAgentActivity } from './ui/ai-agent-activity.js'
 import { AIResponse, AIResponseThinking } from './ui/ai-response.js'
 import { AdvancedDataTable } from './ui/advanced-data-table.js'
 import type { ColumnDef } from './ui/advanced-data-table.js'
-import { AnimatedTabs } from './ui/animated-tabs.js'
+import { Tabs } from './ui/animated-tabs.js'
 import { BarChart } from './ui/bar-chart.js'
 import { DonutChart } from './ui/donut-chart.js'
 import { FunnelChart } from './ui/funnel-chart.js'
@@ -171,7 +171,7 @@ describe('on a narrow screen, no part is wider than its place', () => {
 
   it('a row of tabs that does not fit scrolls in itself, each name on one line', () => {
     render(
-      <AnimatedTabs
+      <Tabs
         label="Views of the asset"
         tabs={['Chart', 'Statistics', 'Data quality', 'Trades', 'Details'].map((label) => ({ id: label, label, content: <p>{label}</p> }))}
       />,

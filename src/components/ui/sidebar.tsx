@@ -376,8 +376,12 @@ export function Sidebar({
   );
 }
 
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `SidebarTrigger`: a `<button>`'s. */
+export type SidebarTriggerProps = React.ComponentProps<"button">;
+
 /** Put anywhere (e.g. your top bar). Only visible below md. ioiti-ui: named in the provider's language ("Open navigation"). */
-export function SidebarTrigger({ className, ...props }: React.ComponentProps<"button">) {
+export function SidebarTrigger({ className, ...props }: SidebarTriggerProps) {
   const words = useMessages().shell;
   return (
     <button

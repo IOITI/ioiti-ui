@@ -28,11 +28,19 @@ const HEALTH_WORD = {
   disabled: 'healthDisabled',
 } as const satisfies Record<HealthStatus, string>
 
+/** The props of `StatusBadge`. */
+export interface StatusBadgeProps {
+  /** The state it shows, in its tone and with its word. */
+  status: HealthStatus
+  /** Another word for it than the provider's language's. */
+  label?: string
+}
+
 /**
  * A state: always a word next to the colour, never the colour alone; the provider's language's ("Up", "Degraded",
  * "Down", "Unknown", "Disabled") unless `label` says another.
  */
-export function StatusBadge({ status, label }: { status: HealthStatus; label?: string }) {
+export function StatusBadge({ status, label }: StatusBadgeProps) {
   const words = useMessages().status
   return (
     <Badge tone={HEALTH_TONE[status]} dot={status !== 'disabled'}>
@@ -47,19 +55,8 @@ const TONE_TEXT: Record<SignTone, string> = {
   neutral: 'text-foreground/80',
 }
 
-/**
- * A gain or a loss, a change: signed, so the sign carries the meaning and the colour repeats it. Written as the
- * provider's locale writes an amount or a percentage ("+€12.40"; "+12,40 €" in French).
- */
-export function SignedValue({
-  value,
-  kind,
-  currency,
-  className,
-  animate = false,
-  stale = false,
-  staleLabel: givenStaleLabel,
-}: {
+/** The props of `SignedValue`. */
+export interface SignedValueProps {
   value: number | null | undefined
   kind: 'money' | 'percent'
   /** For money: the currency's code (EUR by default). */
@@ -74,7 +71,21 @@ export function SignedValue({
   stale?: boolean
   /** The word a screen reader hears for a stale figure; the provider's language's by default ("stale"). */
   staleLabel?: string
-}) {
+}
+
+/**
+ * A gain or a loss, a change: signed, so the sign carries the meaning and the colour repeats it. Written as the
+ * provider's locale writes an amount or a percentage ("+€12.40"; "+12,40 €" in French).
+ */
+export function SignedValue({
+  value,
+  kind,
+  currency,
+  className,
+  animate = false,
+  stale = false,
+  staleLabel: givenStaleLabel,
+}: SignedValueProps) {
   const { formatMoney, formatPercent } = useFormat()
   const words = useMessages().status
   const staleLabel = givenStaleLabel ?? words.stale
@@ -98,7 +109,8 @@ export function SignedValue({
   )
 }
 
-interface QueryStateProps {
+/** The props of `QueryState`. */
+export interface QueryStateProps {
   isPending: boolean
   error: Error | null
   /** There is data from an earlier fetch: keep showing it and report the failure above it. */

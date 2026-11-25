@@ -17,7 +17,7 @@ import { CLOSE_SM, PRESSABLE, TOAST, TONE_TEXT } from '../../lib/recipes.js';
 // ioiti-ui: its words in the provider's language; a toast without a title said to its developer.
 import { devWarn } from '../../lib/dev.js';
 import { useMessages } from '../locale-context.js';
-// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md), as VelocityToast's; its former
+// ioiti-ui: its tone, the package's word for a status (StatusTone, docs/conventions.md), as Toast's; its former
 // `variant` read as one (toastTone).
 import type { StatusTone } from '../../lib/tones.js';
 import { toastTone } from '../toast-context.js';
@@ -75,11 +75,11 @@ export interface UndoToastProps {
   icon?: React.ReactNode;
   /** Custom class name */
   className?: string;
-  /** ioiti-ui: classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom (as velocity-toast's). */
+  /** ioiti-ui: classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom (as Toast's). */
   wrapperClassName?: string;
 }
 
-// ioiti-ui: the action beside a toast's words, the same as VelocityToast's: a small button raised on the toast.
+// ioiti-ui: the action beside a toast's words, the same as Toast's: a small button raised on the toast.
 const TOAST_ACTION_CLASS =
   'inline-flex shrink-0 items-center gap-1 px-2.5 py-1 rounded-md border border-border bg-surface-raised text-sm font-medium text-foreground transition-[color,background-color,border-color,scale] hover:bg-surface-hover hover:border-border-hover focus-ring';
 
@@ -238,7 +238,7 @@ export const UndoToast: React.FC<UndoToastProps> = ({
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsPaused(false);
             }}
-            // ioiti-ui: a toast's surface (recipes.ts), as VelocityToast's; glass under the glass material (glass-float).
+            // ioiti-ui: a toast's surface (recipes.ts), as Toast's; glass under the glass material (glass-float).
             className={cn(
               TOAST,
               'pointer-events-auto relative overflow-hidden p-4 min-w-[280px] sm:min-w-[340px] max-w-md font-sans select-none',

@@ -15,6 +15,11 @@ import { DISABLED, FLOATING, MENU_ROW } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
 // ioiti-ui: its words in the provider's language (`select`).
 import { useMessages } from "../locale-context.js";
+// ioiti-ui: what a Field or a FormItem around it tells it (its id, its label, what describes it, whether it is wrong),
+// its `data-*` attributes and its ref, as a native control takes them.
+import { dataAttributes, type DataAttributes } from "../../lib/data-attributes.js";
+import { useForwardedRef } from "../../lib/refs.js";
+import { useFieldControl } from "../field-context.js";
 
 // ioiti-ui: the design's spring for what moves within a layer (springSnappy), not one written here.
 const spring = motionTransitions.springSnappy;
@@ -28,7 +33,8 @@ export interface ComboboxOption {
   disabled?: boolean;
 }
 
-export interface ComboboxProps {
+// ioiti-ui: its `data-*` attributes on its outermost element, as an element takes them.
+export interface ComboboxProps extends DataAttributes {
   options: ComboboxOption[];
   value?: string | null;
   defaultValue?: string | null;
@@ -46,9 +52,11 @@ export interface ComboboxProps {
   disabled?: boolean;
   className?: string;
   "aria-label"?: string;
-  /** ioiti-ui: the trigger's id, for a `<label htmlFor>`. */
+  /** ioiti-ui: the trigger's id, for a `<label htmlFor>`; in a FormItem, the item's. */
   id?: string;
-  /** ioiti-ui: the id of what names it. */
+  /** ioiti-ui: the name its value is sent under with a form (a hidden input): the option chosen's, empty while none is. */
+  name?: string;
+  /** ioiti-ui: the id of what names it (and its search, its list). A Field's label names it without it. */
   "aria-labelledby"?: string;
   /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
   "aria-describedby"?: string;
@@ -56,6 +64,8 @@ export interface ComboboxProps {
   "aria-invalid"?: boolean | "true" | "false";
   /** ioiti-ui: the choice is wrong (or missing): the trigger's border in the error's colour, and said. */
   error?: boolean;
+  /** ioiti-ui: its trigger (the button that shows the value), to focus it. */
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 const filterOptions = (options: ComboboxOption[], q: string) =>
@@ -90,11 +100,24 @@ export function Combobox({
   className,
   "aria-label": ariaLabel,
   id,
-  "aria-labelledby": labelledBy,
-  "aria-describedby": describedBy,
+  name: formName,
+  "aria-labelledby": ownLabelledBy,
+  "aria-describedby": ownDescribedBy,
   "aria-invalid": ariaInvalid,
   error,
+  ref,
+  ...rest
 }: ComboboxProps) {
+  // ioiti-ui: named, described and marked by a Field or a FormItem around it too, its own props first: by its label's
+  // words (aria-labelledby), which name its search and its list as well.
+  const control = useFieldControl({
+    id,
+    labelledBy: ownLabelledBy,
+    named: Boolean(ariaLabel),
+    describedBy: ownDescribedBy,
+    invalid: invalidOf(error, ariaInvalid),
+  });
+  const labelledBy = control.labelledBy;
   // ioiti-ui: its words in the provider's language, its own props given over them.
   const words = useMessages().select;
   const placeholder = givenPlaceholder ?? words.placeholder;
@@ -104,10 +127,11 @@ export function Combobox({
   if (onValueChange !== undefined) deprecated("combobox-on-value-change", "Combobox");
   const [selected, setSelected] = useControllableState<string | null>(value, defaultValue, onChange ?? onValueChange);
   const [open, setOpen] = React.useState(false);
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  // ioiti-ui: its trigger given to its caller's ref too.
+  const [triggerRef, setTrigger] = useForwardedRef<HTMLButtonElement>(ref);
   const layerRef = React.useRef<HTMLDivElement>(null);
   const listId = React.useId();
-  const invalid = invalidOf(error, ariaInvalid);
+  const invalid = control.invalid;
 
   // ioiti-ui: a layer in document.body, placed beside its trigger and following it (useAnchoredLayer), its keys its
   // own: EasyUI's was placed by hand inside the combobox, cut by a parent that hides what overflows it.
@@ -136,10 +160,11 @@ export function Combobox({
   const current = options.find((o) => o.value === selected);
 
   return (
-    <div className={cn("relative w-64", className)}>
+    // ioiti-ui: its `data-*` attributes on its outermost element.
+    <div {...dataAttributes(rest)} className={cn("relative w-64", className)}>
       <button
-        ref={triggerRef}
-        id={id}
+        ref={setTrigger}
+        id={control.id}
         type="button"
         role="combobox"
         aria-expanded={open}
@@ -147,7 +172,7 @@ export function Combobox({
         // ioiti-ui: named by its label when it has one (a wrapping <label>, or htmlFor), not by its placeholder.
         aria-label={ariaLabel}
         aria-labelledby={labelledBy}
-        aria-describedby={describedBy}
+        aria-describedby={control.describedBy}
         aria-invalid={invalid || undefined}
         aria-controls={open ? listId : undefined}
         disabled={disabled}
@@ -185,6 +210,8 @@ export function Combobox({
         </span>
         <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
       </button>
+      {/* ioiti-ui: the value, sent with the form around it under `name`. */}
+      {formName && <input type="hidden" name={formName} value={selected ?? ""} disabled={disabled} />}
 
       {typeof document !== "undefined" &&
         createPortal(

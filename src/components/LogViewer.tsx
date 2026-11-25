@@ -30,7 +30,8 @@ const LEVEL_EDGE: Record<LogLevel, string> = {
   info: 'shadow-[inset_2px_0_0_var(--info)]',
 }
 
-interface LogViewerProps {
+/** The props of `LogViewer`. */
+export interface LogViewerProps {
   /** The lines, oldest first; a job's output grows by lines appended. */
   lines?: readonly string[]
   /** Or the whole text, cut at its line breaks. */

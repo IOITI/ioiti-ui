@@ -7,7 +7,8 @@ export interface DescriptionItem {
   details: ReactNode
 }
 
-interface DescriptionListProps {
+/** The props of `DescriptionList`. */
+export interface DescriptionListProps {
   items: DescriptionItem[]
   /**
    * `rows`: each term and its details on one line, the details at the end (a summary, a card).

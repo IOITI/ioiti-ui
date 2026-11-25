@@ -1,6 +1,6 @@
 import type { MessageKit } from '../../lib/messages.js'
 
-/** AnimatedFileUpload. */
+/** FileUpload. */
 export const upload = {
   /** "Drop files here": the drop zone's title, where the application gives none. */
   dropTitle: 'Drop files here',

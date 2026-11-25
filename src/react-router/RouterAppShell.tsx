@@ -4,7 +4,8 @@ import { Outlet, useLocation } from 'react-router'
 import { AppShell } from '../shell/AppShell.js'
 import type { AppShellProps } from '../shell/AppShell.js'
 
-type RouterAppShellProps<S extends string> = Omit<AppShellProps<S>, 'pathname' | 'hash' | 'search' | 'children'> & {
+/** The props of `RouterAppShell`. */
+export type RouterAppShellProps<S extends string = string> = Omit<AppShellProps<S>, 'pathname' | 'hash' | 'search' | 'children'> & {
   /** The page; the router's child routes (`<Outlet />`) by default. */
   children?: ReactNode
 }

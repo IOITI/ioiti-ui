@@ -68,7 +68,8 @@ describe('a field in error', () => {
     expect(cities).toHaveAttribute('aria-invalid', 'true')
     expect(cities).toHaveAccessibleDescription('Where it is sold Choose one')
     hasErrorBorderOnly(cities.parentElement!)
-    const code = screen.getByRole('group', { name: 'One-time passcode' })
+    // Named by its Field's label, over the provider's words.
+    const code = screen.getByRole('group', { name: 'Code' })
     expect(code).toHaveAccessibleDescription('The code has 6 digits')
     for (const box of within(code).getAllByRole('textbox')) {
       expect(box).toHaveAttribute('aria-invalid', 'true')

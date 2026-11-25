@@ -302,7 +302,15 @@ export function StatCard({
   );
 }
 
-export function StatGrid({ children, className = "" }: { children: ReactNode; className?: string }) {
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `StatGrid`. */
+export interface StatGridProps {
+  /** The cards: StatCard's. */
+  children: ReactNode;
+  className?: string;
+}
+
+export function StatGrid({ children, className = "" }: StatGridProps) {
   return (
     <div
       className={`grid gap-3 sm:gap-4 ${className}`}

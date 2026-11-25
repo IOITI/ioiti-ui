@@ -1,4 +1,4 @@
-import { Button, ChangeList, SettleModal, useFormat, useToast } from 'ioiti-ui'
+import { Button, ChangeList, Dialog, useFormat, useToast } from 'ioiti-ui'
 import { useState } from 'react'
 
 export default function ChangeListBeforeConfirming() {
@@ -24,7 +24,7 @@ export default function ChangeListBeforeConfirming() {
       <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
         Review the changes
       </Button>
-      <SettleModal
+      <Dialog
         open={open}
         onClose={() => setOpen(false)}
         title="Apply 3 changes"
@@ -41,7 +41,7 @@ export default function ChangeListBeforeConfirming() {
         }
       >
         <ChangeList label="Changes to apply" numeric changes={changes} />
-      </SettleModal>
+      </Dialog>
     </>
   )
 }

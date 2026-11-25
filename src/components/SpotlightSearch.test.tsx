@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Receipt } from 'lucide-react'
 import { useRef, useState, useSyncExternalStore } from 'react'
@@ -9,7 +9,8 @@ import { fr } from '../locales/fr.js'
 import { IoitiProvider } from './IoitiProvider.js'
 import { LinkProvider } from './LinkProvider.js'
 import { useShortcutRegistry } from './shortcuts-context.js'
-import { SettleModal } from './ui/settle-modal.js'
+import { Sheet, SheetBody, SheetContent } from './ui/flysheet.js'
+import { Dialog } from './ui/settle-modal.js'
 import { SpotlightSearch } from './ui/spotlight-search.js'
 import type { SpotlightSearchItem } from './ui/spotlight-search.js'
 
@@ -270,11 +271,11 @@ describe('SpotlightSearch', () => {
       const [palette, setPalette] = useState(false)
       return (
         <>
-          <SettleModal open={modal} onClose={() => setModal(false)} title="Edit">
+          <Dialog open={modal} onClose={() => setModal(false)} title="Edit">
             <button type="button" onClick={() => setPalette(true)}>
               Attach
             </button>
-          </SettleModal>
+          </Dialog>
           <SpotlightSearch open={palette} onOpenChange={setPalette} items={ITEMS} label="Attach" />
         </>
       )
@@ -289,6 +290,70 @@ describe('SpotlightSearch', () => {
     await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Attach' })).toBeNull())
     expect(screen.getByRole('dialog', { name: 'Edit' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Attach' })).toHaveFocus()
+  })
+
+  it('keeps its keys from a sheet under it as well: Tab round its own controls, its Escape closing it alone, the focus back in the sheet', async () => {
+    const user = userEvent.setup()
+    const onSheetChange = vi.fn()
+    function Both() {
+      const [palette, setPalette] = useState(false)
+      return (
+        <>
+          <Sheet defaultOpen onOpenChange={onSheetChange}>
+            <SheetContent aria-label="Order 2026-0042">
+              <SheetBody>
+                <button type="button" onClick={() => setPalette(true)}>
+                  Attach
+                </button>
+              </SheetBody>
+            </SheetContent>
+          </Sheet>
+          <SpotlightSearch open={palette} onOpenChange={setPalette} items={ITEMS} label="Attach" footer={<button type="button">Done</button>} />
+        </>
+      )
+    }
+    render(<Both />)
+    const attach = await screen.findByRole('button', { name: 'Attach' })
+    await user.click(attach)
+    const field = screen.getByRole('combobox', { name: 'Search' })
+    await waitFor(() => expect(field).toHaveFocus())
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Done' })).toHaveFocus()
+    await user.tab()
+    expect(field).toHaveFocus()
+    await user.tab({ shift: true })
+    expect(screen.getByRole('button', { name: 'Done' })).toHaveFocus()
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Attach' })).toBeNull())
+    expect(onSheetChange).not.toHaveBeenCalled()
+    expect(attach).toHaveFocus()
+    // Then the sheet's own Escape.
+    await user.keyboard('{Escape}')
+    expect(onSheetChange).toHaveBeenCalledWith(false, { reason: 'escape' })
+  })
+
+  it('brings Tab back into its field from outside it, and hears its Escape wherever the focus is', async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    render(
+      <>
+        <button type="button">On the page</button>
+        <SpotlightSearch open onOpenChange={onOpenChange} items={ITEMS} label="Go to" />
+      </>,
+    )
+    const field = screen.getByRole('combobox', { name: 'Search' })
+    await waitFor(() => expect(field).toHaveFocus())
+    const page = screen.getByRole('button', { name: 'On the page' })
+    act(() => page.focus())
+    await user.tab()
+    expect(field).toHaveFocus()
+    // Before the palette in the page's order: Shift+Tab, which would go further back, comes round into it too.
+    act(() => page.focus())
+    await user.tab({ shift: true })
+    expect(field).toHaveFocus()
+    act(() => page.focus())
+    await user.keyboard('{Escape}')
+    expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
   it('leaves the keys that compose a character to the composition (an IME)', () => {

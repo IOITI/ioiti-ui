@@ -66,36 +66,47 @@ export type { HealthStatus } from './lib/health.js'
 
 // What an application puts around its pages.
 export { IoitiProvider } from './components/IoitiProvider.js'
+export type { IoitiProviderProps } from './components/IoitiProvider.js'
 export { useFormat, useLocale, useMessages } from './components/locale-context.js'
 export type { BoundMessages, LocaleState, MessagesOverride } from './components/locale-context.js'
 export { useAppName } from './components/app-context.js'
 export { LinkProvider } from './components/LinkProvider.js'
+export type { LinkProviderProps } from './components/LinkProvider.js'
 export { useLinkComponent, useNavigateTo } from './components/link-context.js'
 export type { NavigateTo } from './components/link-context.js'
 export { LookPicker } from './components/LookPicker.js'
+export type { LookPickerProps } from './components/LookPicker.js'
 export { ThemeProvider } from './components/ThemeProvider.js'
+export type { ThemeProviderProps } from './components/ThemeProvider.js'
 export { ThemeToggle } from './components/ThemeToggle.js'
+export type { ThemeToggleProps } from './components/ThemeToggle.js'
 export { useTheme } from './components/theme-context.js'
 export type { ThemeState } from './components/theme-context.js'
 export { UserMenu } from './components/UserMenu.js'
+export type { UserMenuProps } from './components/UserMenu.js'
 export { useAppearanceItems } from './components/appearance.js'
 export { ToastProvider } from './components/ToastProvider.js'
+export type { ToastProviderProps } from './components/ToastProvider.js'
 export { useToast } from './components/toast-context.js'
 export type { ShowToast, ToastAction, ToastMessage } from './components/toast-context.js'
 
 // The shell: the frame of every page, its menu, the trail of the top bar, the page's name.
 export { AppBrand, AppShell, SidebarFooterButton } from './shell/AppShell.js'
-export type { AppShellProps } from './shell/AppShell.js'
+export type { AppBrandProps, AppShellProps, SidebarFooterButtonProps } from './shell/AppShell.js'
 export { AuthLayout } from './shell/AuthLayout.js'
+export type { AuthLayoutProps } from './shell/AuthLayout.js'
 export { SignInProviders } from './components/SignInProviders.js'
-export type { SignInProvider } from './components/SignInProviders.js'
+export type { SignInProvider, SignInProvidersProps } from './components/SignInProviders.js'
 export { NotFoundPage, NotFoundState } from './shell/NotFoundState.js'
-export type { NotFoundStateProps } from './shell/NotFoundState.js'
+export type { NotFoundPageProps, NotFoundStateProps } from './shell/NotFoundState.js'
 export { ErrorState } from './shell/ErrorState.js'
 export type { ErrorStateProps } from './shell/ErrorState.js'
 export { PageTrailProvider, TopBarTrail } from './shell/PageTrail.js'
+export type { PageTrailProviderProps, TopBarTrailProps } from './shell/PageTrail.js'
 export { StateChip } from './shell/StateChip.js'
+export type { StateChipProps } from './shell/StateChip.js'
 export { StateSummary } from './shell/StateSummary.js'
+export type { StateSummaryProps } from './shell/StateSummary.js'
 export { gravestTone } from './shell/state-summary.js'
 export type { StateItem, StateTone } from './shell/state-summary.js'
 export { DEFAULT_HOME, PAGE_NOT_FOUND, UNNAMED, menuEntry, menuSections, sidebarSections, trailFor } from './shell/navigation.js'
@@ -105,88 +116,129 @@ export { useMainScroll } from './components/main-scroll-context.js'
 
 // The blocks pages are made of.
 export { AttachmentChip } from './components/AttachmentChip.js'
+export type { AttachmentChipProps } from './components/AttachmentChip.js'
 export { Avatar, AvatarGroup } from './components/Avatar.js'
+export type { AvatarGroupProps, AvatarProps } from './components/Avatar.js'
 export { ButtonLink } from './components/ButtonLink.js'
+export type { ButtonLinkProps } from './components/ButtonLink.js'
 export { ChangeList } from './components/ChangeList.js'
-export type { Change, ChangeGroup } from './components/ChangeList.js'
+export type { Change, ChangeGroup, ChangeListProps } from './components/ChangeList.js'
 export { ChartLegend } from './components/ChartLegend.js'
-export type { ChartLegendItem } from './components/ChartLegend.js'
+export type { ChartLegendItem, ChartLegendProps } from './components/ChartLegend.js'
 export type { ChartDetail } from './lib/chart-details.js'
 export { CheckIcon, CheckList } from './components/CheckList.js'
+export type { CheckIconProps, CheckListProps } from './components/CheckList.js'
 export { Code, CodeBlock } from './components/CodeBlock.js'
+export type { CodeBlockProps, CodeProps } from './components/CodeBlock.js'
 export type { CodeLanguage, CodeToken, CodeTokenKind } from './lib/highlight.js'
 export { ConfirmAction } from './components/ConfirmAction.js'
+export type { ConfirmActionProps } from './components/ConfirmAction.js'
 export { CopyButton } from './components/CopyButton.js'
+export type { CopyButtonProps } from './components/CopyButton.js'
 export { CopyChip } from './components/CopyChip.js'
+export type { CopyChipProps } from './components/CopyChip.js'
 export { DateRangeFilter } from './components/DateRangeFilter.js'
-export type { DateRangePreset } from './components/DateRangeFilter.js'
+export type { DateRangeFilterProps, DateRangePreset } from './components/DateRangeFilter.js'
 export { DescriptionList } from './components/DescriptionList.js'
-export type { DescriptionItem } from './components/DescriptionList.js'
+export type { DescriptionItem, DescriptionListProps } from './components/DescriptionList.js'
 export { Disclosure } from './components/Disclosure.js'
+export type { DisclosureProps } from './components/Disclosure.js'
 export { ContextMenu, DropdownMenu } from './components/DropdownMenu.js'
 export type {
+  ContextMenuProps,
   DropdownMenuAction,
   DropdownMenuCheckbox,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLink,
+  DropdownMenuProps,
   DropdownMenuRadioGroup,
   DropdownMenuSeparator,
   DropdownMenuSubmenu,
 } from './components/DropdownMenu.js'
 export { ExportButton } from './components/ExportButton.js'
+export type { ExportButtonProps } from './components/ExportButton.js'
 export { EmptyState } from './components/EmptyState.js'
+export type { EmptyStateProps } from './components/EmptyState.js'
 export { ErrorBoundary } from './components/ErrorBoundary.js'
 export type { ErrorBoundaryProps, ErrorFallbackProps } from './components/ErrorBoundary.js'
 export { useErrorReporter } from './components/error-context.js'
 export type { ErrorReport, ErrorReporter } from './components/error-context.js'
 export { EmptyText, ErrorText } from './components/messages.js'
+export type { EmptyTextProps, ErrorTextProps } from './components/messages.js'
 export { Field } from './components/Field.js'
+export type { FieldProps } from './components/Field.js'
 export { Hint } from './components/Hint.js'
+export type { HintProps } from './components/Hint.js'
 export { IconButton } from './components/IconButton.js'
+export type { IconButtonProps } from './components/IconButton.js'
 export { InlineEdit } from './components/InlineEdit.js'
+export type { InlineEditProps } from './components/InlineEdit.js'
 export { Kbd } from './components/Kbd.js'
+export type { KbdProps } from './components/Kbd.js'
 export { KpiGrid, KpiTile, Meter } from './components/KpiTile.js'
-export type { KpiTileProps } from './components/KpiTile.js'
+export type { KpiGridProps, KpiTileProps, MeterProps } from './components/KpiTile.js'
 export type { GoodWhen } from './lib/change.js'
 export { KpiStrip } from './components/KpiStrip.js'
 export type { KpiStripItem, KpiStripProps } from './components/KpiStrip.js'
 export { LiveValue } from './components/LiveValue.js'
+export type { LiveValueProps } from './components/LiveValue.js'
 export type { MeterTone } from './components/meter-tones.js'
 export { FanChart } from './components/FanChart.js'
 export type { FanBand, FanChartProps, FanLine, FanMarker, FanPoint, FanReference } from './components/FanChart.js'
 export { LineChart } from './components/LineChart.js'
 export type { LineChartProps, LineMarker, LinePoint, LineReference, LineSeries } from './components/LineChart.js'
 export { LogViewer } from './components/LogViewer.js'
+export type { LogViewerProps } from './components/LogViewer.js'
 export type { LogLevel } from './lib/log.js'
 export { PageHeader, Panel, PanelInset } from './components/Panel.js'
+export type { PageHeaderProps, PanelInsetProps, PanelProps } from './components/Panel.js'
 export { MultiSelect } from './components/MultiSelect.js'
-export type { MultiSelectOption } from './components/MultiSelect.js'
+export type { MultiSelectOption, MultiSelectProps } from './components/MultiSelect.js'
 export { NumberInput } from './components/NumberInput.js'
+export type { NumberInputProps } from './components/NumberInput.js'
 export { PeekLink } from './components/PeekLink.js'
+export type { PeekLinkProps } from './components/PeekLink.js'
 export { Popover } from './components/Popover.js'
+export type { PopoverProps } from './components/Popover.js'
 export { PromptComposer } from './components/PromptComposer.js'
+export type { PromptComposerProps } from './components/PromptComposer.js'
 export { BarList, ProgressBar } from './components/ProgressBar.js'
 export { RelativeTime } from './components/RelativeTime.js'
-export type { BarListItem } from './components/ProgressBar.js'
+export type { RelativeTimeProps } from './components/RelativeTime.js'
+export type { BarListItem, BarListProps, ProgressBarProps } from './components/ProgressBar.js'
 export { QueryState, SignedValue, StatusBadge } from './components/status.js'
+export type { QueryStateProps, SignedValueProps, StatusBadgeProps } from './components/status.js'
 export { StatusHistory } from './components/StatusHistory.js'
 export type { StatusHistoryProps } from './components/StatusHistory.js'
 export type { StatusHistorySlot, StatusHistoryUnit } from './lib/status-history.js'
 export { SaveBar } from './components/SaveBar.js'
+export type { SaveBarProps } from './components/SaveBar.js'
 export { ShortcutsDialog } from './components/ShortcutsDialog.js'
+export type { ShortcutsDialogProps } from './components/ShortcutsDialog.js'
 export { useShortcut } from './components/shortcuts-context.js'
 export { SegmentedControl } from './components/SegmentedControl.js'
 export type { SegmentedControlOption, SegmentedControlProps } from './components/SegmentedControl.js'
 export { RangeSlider, Slider } from './components/Slider.js'
 export { ResizableHandle, ResizablePanel, ResizablePanels } from './components/ResizablePanels.js'
-export type { SliderLevel, SliderTick } from './components/Slider.js'
+export type { ResizableHandleProps, ResizablePanelProps, ResizablePanelsProps } from './components/ResizablePanels.js'
+export type { RangeSliderProps, SliderLevel, SliderProps, SliderTick } from './components/Slider.js'
 export { Sparkline } from './components/Sparkline.js'
+export type { SparklineProps } from './components/Sparkline.js'
 export { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './components/Table.js'
 export { TextLink } from './components/TextLink.js'
+export type { TextLinkProps } from './components/TextLink.js'
 export { AutoRefresh, TimeRangePicker } from './components/TimeRangePicker.js'
-export type { CommonRange, RefreshSettings } from './components/TimeRangePicker.js'
-export type { TableDensity } from './components/Table.js'
+export type { AutoRefreshProps, CommonRange, RefreshSettings, TimeRangePickerProps } from './components/TimeRangePicker.js'
+export type {
+  TableBodyProps,
+  TableCellProps,
+  TableDensity,
+  TableHeadProps,
+  TableHeaderCellProps,
+  TableProps,
+  TableRowProps,
+} from './components/Table.js'
 
 // The components, from EasyUI (src/components/ui/: docs/easyui-changes.md says what was changed).
 export { ActivityHeatmap } from './components/ui/activity-heatmap.js'
@@ -256,21 +308,22 @@ export type {
   AIResponseThinkingProps,
   AIResponseToolsSummaryProps,
 } from './components/ui/ai-response.js'
-export { AirportMatrixClock } from './components/ui/airport-matrix-clock.js'
-export type { AirportMatrixCity, AirportMatrixClockProps } from './components/ui/airport-matrix-clock.js'
+export { AirportMatrixClock, WorldClock } from './components/ui/airport-matrix-clock.js'
+export type { AirportMatrixCity, AirportMatrixClockProps, WorldClockCity, WorldClockProps } from './components/ui/airport-matrix-clock.js'
 export { Alert, AlertDescription, AlertTitle } from './components/ui/alert.js'
-export type { AlertProps, AlertTone } from './components/ui/alert.js'
-export { AnimatedFileUpload } from './components/ui/animated-file-upload.js'
+export type { AlertDescriptionProps, AlertProps, AlertTitleProps, AlertTone } from './components/ui/alert.js'
+export { AnimatedFileUpload, FileUpload } from './components/ui/animated-file-upload.js'
 export type {
   AnimatedFileUploadProps,
+  FileUploadProps,
   FileUploadStatus,
   UploadFileItem,
   UploadResult,
 } from './components/ui/animated-file-upload.js'
 export { AnimatedNumber } from './components/ui/animated-number.js'
 export type { AnimatedNumberProps } from './components/ui/animated-number.js'
-export { AnimatedTabs } from './components/ui/animated-tabs.js'
-export type { AnimatedTabsProps, TabItem } from './components/ui/animated-tabs.js'
+export { AnimatedTabs, Tabs } from './components/ui/animated-tabs.js'
+export type { AnimatedTabsProps, TabItem, TabsProps } from './components/ui/animated-tabs.js'
 export { Badge } from './components/ui/badge.js'
 export type { BadgeProps, BadgeTone, BadgeVariant } from './components/ui/badge.js'
 export { BarChart } from './components/ui/bar-chart.js'
@@ -293,8 +346,8 @@ export { DatePicker, DateRangePicker } from './components/ui/date-picker.js'
 export type { DatePickerProps, DateRangePickerProps } from './components/ui/date-picker.js'
 export { DependencyTrace } from './components/ui/dependency-trace.js'
 export type { DependencyTraceProps, TraceConnection, TraceNode, TraceStatus } from './components/ui/dependency-trace.js'
-export { DirectionalTooltip } from './components/ui/directional-tooltip.js'
-export type { DirectionalTooltipProps, TooltipAlign, TooltipSide } from './components/ui/directional-tooltip.js'
+export { DirectionalTooltip, Tooltip } from './components/ui/directional-tooltip.js'
+export type { DirectionalTooltipProps, TooltipAlign, TooltipProps, TooltipSide } from './components/ui/directional-tooltip.js'
 export { DonutChart } from './components/ui/donut-chart.js'
 export type { DonutChartProps, DonutDatum } from './components/ui/donut-chart.js'
 export { DragToConfirm } from './components/ui/drag-to-confirm.js'
@@ -306,8 +359,8 @@ export type {
 } from './components/ui/drag-to-confirm.js'
 export { DrawCheckbox as Checkbox } from './components/ui/draw-checkbox.js'
 export type { DrawCheckboxProps as CheckboxProps } from './components/ui/draw-checkbox.js'
-export { DynamicIsland } from './components/ui/dynamic-island.js'
-export type { DynamicIslandProps, DynamicIslandState } from './components/ui/dynamic-island.js'
+export { DynamicIsland, StatusIsland } from './components/ui/dynamic-island.js'
+export type { DynamicIslandProps, DynamicIslandState, StatusIslandProps, StatusIslandState } from './components/ui/dynamic-island.js'
 export {
   Flysheet,
   FlysheetBody,
@@ -318,6 +371,15 @@ export {
   FlysheetHeader,
   FlysheetTitle,
   FlysheetTrigger,
+  Sheet,
+  SheetBody,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from './components/ui/flysheet.js'
 export type {
   FlysheetCloseReason,
@@ -327,6 +389,20 @@ export type {
   FlysheetSide,
   FlysheetSize,
   FlysheetType,
+  SheetBodyProps,
+  SheetCloseProps,
+  SheetCloseReason,
+  SheetContentProps,
+  SheetDescriptionProps,
+  SheetFooterProps,
+  SheetHeaderProps,
+  SheetPadding,
+  SheetProps,
+  SheetSide,
+  SheetSize,
+  SheetTitleProps,
+  SheetTriggerProps,
+  SheetType,
 } from './components/ui/flysheet.js'
 export {
   Form,
@@ -343,6 +419,8 @@ export {
   Textarea,
 } from './components/ui/form.js'
 export type {
+  FormControlProps,
+  FormDescriptionProps,
   FormItemProps,
   FormLabelProps,
   FormMessageProps,
@@ -387,10 +465,17 @@ export { ScrollProgressNav } from './components/ui/scroll-progress-nav.js'
 export type { NavSectionItem, ScrollProgressNavProps } from './components/ui/scroll-progress-nav.js'
 export { SelectionBasket } from './components/ui/selection-basket.js'
 export type { SelectionActionItem, SelectionBasketProps } from './components/ui/selection-basket.js'
-export { SettleModal } from './components/ui/settle-modal.js'
-export type { SettleModalProps } from './components/ui/settle-modal.js'
+export { Dialog, SettleModal } from './components/ui/settle-modal.js'
+export type { DialogProps, SettleModalProps } from './components/ui/settle-modal.js'
 export { Sidebar, SidebarTrigger, useSidebar } from './components/ui/sidebar.js'
-export type { SidebarBadgeTone, SidebarChild, SidebarItem, SidebarProps, SidebarSection } from './components/ui/sidebar.js'
+export type {
+  SidebarBadgeTone,
+  SidebarChild,
+  SidebarItem,
+  SidebarProps,
+  SidebarSection,
+  SidebarTriggerProps,
+} from './components/ui/sidebar.js'
 export { Skeleton, SkeletonAvatar, SkeletonReveal, SkeletonText } from './components/ui/skeleton.js'
 export type {
   SkeletonAvatarProps,
@@ -398,28 +483,36 @@ export type {
   SkeletonRevealProps,
   SkeletonTextProps,
 } from './components/ui/skeleton.js'
-export { SmartComparison } from './components/ui/smart-comparison.js'
+export { ComparisonTable, SmartComparison } from './components/ui/smart-comparison.js'
 export type {
   ComparisonCategory,
   ComparisonFeature,
   ComparisonPlan,
+  ComparisonTableProps,
   SmartComparisonProps,
 } from './components/ui/smart-comparison.js'
-export { SmoothAccordion } from './components/ui/smooth-accordion.js'
-export type { AccordionItem, SmoothAccordionProps } from './components/ui/smooth-accordion.js'
+export { Accordion, SmoothAccordion } from './components/ui/smooth-accordion.js'
+export type { AccordionItem, AccordionProps, SmoothAccordionProps } from './components/ui/smooth-accordion.js'
 export { SplitButton } from './components/ui/split-button.js'
 export type { SplitButtonOption, SplitButtonProps, SplitButtonSize } from './components/ui/split-button.js'
 export { SpotlightSearch } from './components/ui/spotlight-search.js'
 export type { SpotlightSearchItem, SpotlightSearchProps } from './components/ui/spotlight-search.js'
-export { SpringSelect } from './components/ui/spring-select.js'
-export type { SpringSelectOption, SpringSelectProps } from './components/ui/spring-select.js'
+export { SelectMenu, SpringSelect } from './components/ui/spring-select.js'
+export type { SelectMenuOption, SelectMenuProps, SpringSelectOption, SpringSelectProps } from './components/ui/spring-select.js'
 export { StatCard, StatGrid } from './components/ui/stat-card.js'
-export type { StatCardProps } from './components/ui/stat-card.js'
+export type { StatCardProps, StatGridProps } from './components/ui/stat-card.js'
 export { StepPanels, Stepper } from './components/ui/stepper.js'
 export type { Step, StepPanelsProps, StepperProps } from './components/ui/stepper.js'
 export { StretchSwitch } from './components/ui/stretch-switch.js'
 export type { StretchSwitchProps } from './components/ui/stretch-switch.js'
 export { UndoToast } from './components/ui/undo-toast.js'
 export type { UndoToastPosition, UndoToastProps, UndoToastVariant } from './components/ui/undo-toast.js'
-export { VelocityToast } from './components/ui/velocity-toast.js'
-export type { VelocityToastAction, VelocityToastPosition, VelocityToastProps, VelocityToastVariant } from './components/ui/velocity-toast.js'
+export { Toast, VelocityToast } from './components/ui/velocity-toast.js'
+export type {
+  ToastPosition,
+  ToastProps,
+  VelocityToastAction,
+  VelocityToastPosition,
+  VelocityToastProps,
+  VelocityToastVariant,
+} from './components/ui/velocity-toast.js'

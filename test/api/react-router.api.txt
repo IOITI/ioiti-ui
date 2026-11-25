@@ -1,0 +1,47 @@
+ioiti-ui/react-router (src/react-router/index.ts): what it exports, and its types, as the type checker reads them.
+Made by npm run api (scripts/api-report.mjs); npm run lint holds it.
+
+component RouterAppShell<S extends string = string>(props: RouterAppShellProps<S>): JSX.Element
+
+type RouterAppShellProps<S extends string = string> = Omit<AppShellProps<S>, "pathname" | "hash" | "search" | "children"> & {
+  children?: ReactNode
+}
+
+component RouterErrorPage(props: RouterErrorPageProps): JSX.Element
+
+interface RouterErrorPageProps {
+  focusOnMount?: boolean
+  report?: boolean
+  signIn?: {
+    href: string
+    label?: string
+  }
+}
+
+component RouterLeaveGuard(props: RouterLeaveGuardProps): JSX.Element | null
+
+interface RouterLeaveGuardProps {
+  allowed?: (pathname: string) => boolean
+  leaveLabel?: string
+  message?: ReactNode
+  stayLabel?: string
+  title?: string
+  when: boolean
+  within?: string
+}
+
+component RouterLink(props: RouterLinkProps): JSX.Element
+
+type RouterLinkProps = ComponentProps<"a">
+
+component RouterRoot(props: RouterRootProps): JSX.Element
+
+interface RouterRootProps {
+  children?: ReactNode
+  toastWrapperClassName?: string
+}
+
+
+// The names the types above use that ioiti-ui/react-router does not export, or not by that name.
+
+AppShellProps: exported by ioiti-ui

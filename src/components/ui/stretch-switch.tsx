@@ -9,34 +9,11 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 // ioiti-ui: what a Field or a FormItem around it tells it (its id, what describes it, whether it is wrong).
 import { invalidOf } from '../../lib/field-border.js';
 import { joinIds, useFieldControl } from '../field-context.js';
-
-export interface StretchSwitchProps {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  disabled?: boolean;
-  onChange?: (checked: boolean) => void;
-  label?: React.ReactNode;
-  description?: string;
-  className?: string;
-  /** ioiti-ui: the switch's id, for a `<label htmlFor>` elsewhere; in a FormItem, the item's, which its FormLabel names. */
-  id?: string;
-  /** ioiti-ui: the name it is sent under with its form while on, as a checkbox is; nothing is sent while off. */
-  name?: string;
-  /** ioiti-ui: what it sends under its `name` while on. */
-  value?: string;
-  /** ioiti-ui: it must be on (`aria-required`): the page checks it, and says so. */
-  required?: boolean;
-  /** ioiti-ui: its name, where no label names it (its own, a Field's, a FormLabel). */
-  'aria-label'?: string;
-  /** ioiti-ui: the id of what names it: a heading, a label elsewhere. */
-  'aria-labelledby'?: string;
-  /** ioiti-ui: the ids of what is read out with it, after its description; a Field or a FormItem around it adds its own. */
-  'aria-describedby'?: string;
-  /** ioiti-ui: marked invalid, as a Field or a FormItem in error marks it. */
-  'aria-invalid'?: boolean | 'true' | 'false';
-  /** ioiti-ui: the switch itself (its button), to focus it. */
-  ref?: React.Ref<HTMLButtonElement>;
-}
+// ioiti-ui: the `data-*` attributes it is given, on its outermost element.
+import { dataAttributes } from '../../lib/data-attributes.js';
+// ioiti-ui: deprecated (0.31.0) for the form's Switch, which takes the same props (SwitchProps): said once, in development.
+import { deprecated } from '../../lib/deprecated.js';
+import type { SwitchProps } from './form.js';
 
 const TRACK_WIDTH = 36; // px (w-9)
 const THUMB_SIZE = 14; // px (h-3.5 w-3.5)
@@ -56,8 +33,10 @@ const TRAVEL = TRACK_WIDTH - THUMB_SIZE - (TRACK_PADDING + TRACK_BORDER) * 2;
  *
  * ioiti-ui: the switch is named by its label and described by its description, so
  * that a screen reader says which setting it is and not only "switch, on".
+ *
+ * @deprecated Use `Switch`, the form's, which takes the same props and is drawn as the design's switch. Removed in 1.0.
  */
-export const StretchSwitch: React.FC<StretchSwitchProps> = ({
+export const StretchSwitch: React.FC<SwitchProps> = ({
   checked,
   defaultChecked = false,
   disabled = false,
@@ -74,7 +53,10 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
   ref,
+  ...rest
 }) => {
+  // ioiti-ui: deprecated for the form's Switch, said once in development.
+  deprecated('stretch-switch-component');
   const [current, setCurrent] = useControllableState(checked, defaultChecked, onChange);
   const id = useId();
   // ioiti-ui: named and described from outside too (`aria-*`, a Field or a FormItem around it), its id from a
@@ -104,6 +86,8 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
 
   return (
     <div
+      // ioiti-ui: its `data-*` attributes, as an element takes them.
+      {...dataAttributes(rest)}
       className={cn(
         'flex items-center justify-between gap-4 select-none',
         // ioiti-ui: disabled, its label and its control at half strength, its description whole: it says why (it was 2:1).
@@ -172,3 +156,7 @@ export const StretchSwitch: React.FC<StretchSwitchProps> = ({
     </div>
   );
 };
+
+// ioiti-ui: its props, the form's Switch's, under their former name until 1.0.
+/** @deprecated Use `SwitchProps`. Removed in 1.0. */
+export type StretchSwitchProps = SwitchProps;

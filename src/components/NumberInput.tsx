@@ -1,18 +1,21 @@
 import { Minus, Plus } from 'lucide-react'
 import { useRef, useState } from 'react'
-import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
+import type { ChangeEvent, KeyboardEvent, ReactNode, Ref } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
+import { dataAttributes } from '../lib/data-attributes.js'
+import type { DataAttributes } from '../lib/data-attributes.js'
 import { fieldBorder, invalidOf } from '../lib/field-border.js'
 import { numberSymbolsOf, parseLocaleNumber } from '../lib/locale.js'
 import type { NumberSymbols } from '../lib/locale.js'
 import { DISABLED, PRESSABLE } from '../lib/recipes.js'
 import { useUnitPadding } from '../lib/unit-padding.js'
 import { cn } from '../lib/utils.js'
+import { useFieldControl } from './field-context.js'
 import { Hint } from './Hint.js'
 import { useLocale, useMessages } from './locale-context.js'
 
-interface NumberInputProps {
+export interface NumberInputProps extends DataAttributes {
   /** The value; `null` (or `NaN`) for none, an empty field. */
   value?: number | null
   defaultValue?: number | null
@@ -31,12 +34,21 @@ interface NumberInputProps {
   suffix?: ReactNode
   /** Its name for a screen reader, where no `<label htmlFor>` names it. */
   label?: string
+  /** Its field's id, for a `<label htmlFor>`; in a FormItem, the item's. */
   id?: string
+  /**
+   * The name its value is sent under with a form (a hidden input): the number as code writes it ("1234.5"), whatever
+   * the locale shows; empty while there is none.
+   */
   name?: string
   placeholder?: string
   disabled?: boolean
   /** A value that is wrong: its border in the negative colour. */
   error?: boolean
+  /** Its name, as `label`. */
+  'aria-label'?: string
+  /** The id of what names it: a heading, a label elsewhere. A Field's label names it without it. */
+  'aria-labelledby'?: string
   /** Read out with it: what a Field around it says under it (its description, its error). */
   'aria-describedby'?: string
   /** Marked invalid, as a Field with an error marks it: drawn as `error`. */
@@ -44,6 +56,8 @@ interface NumberInputProps {
   /** The − and + buttons beside it. */
   steppers?: boolean
   className?: string
+  /** Its field (the input), to focus it. */
+  ref?: Ref<HTMLInputElement>
 }
 
 const decimalsOf = (value: number) => (Number.isInteger(value) ? 0 : (String(value).split('.')[1]?.length ?? 0))
@@ -103,10 +117,17 @@ export function NumberInput({
   error = false,
   steppers = true,
   className,
+  'aria-label': ariaLabel,
+  'aria-labelledby': labelledBy,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
+  ref,
+  ...rest
 }: NumberInputProps) {
-  const invalid = invalidOf(error, ariaInvalid)
+  // Named, described and marked by a Field or a FormItem around it too, its own props first.
+  const ownName = ariaLabel ?? label
+  const control = useFieldControl({ id, labelledBy, named: Boolean(ownName), describedBy, invalid: invalidOf(error, ariaInvalid) })
+  const invalid = control.invalid
   const { locale } = useLocale()
   const words = useMessages().numberInput
   const symbols = numberSymbolsOf(locale)
@@ -176,27 +197,29 @@ export function NumberInput({
   const atMax = max !== undefined && current !== null && current >= max
 
   return (
-    <div className={cn('relative flex w-full items-center', className)}>
+    <div {...dataAttributes(rest)} className={cn('relative flex w-full items-center', className)}>
       {prefix && (
         <span ref={before} aria-hidden className="pointer-events-none absolute left-0 flex h-full items-center pl-3.5 pr-1.5 text-base sm:text-sm text-muted-foreground">
           {prefix}
         </span>
       )}
-      {/* Its input first: a label around it names the field, not a button. */}
+      {/* Its input first: a label around it names the field, not a button. Its text is the locale's, as typed: the
+          value is sent apart, as a number is written in code. */}
       <input
-        id={id}
-        name={name}
+        ref={ref}
+        id={control.id}
         type="text"
         role="spinbutton"
         inputMode={integer ? 'numeric' : 'decimal'}
         autoComplete="off"
-        aria-label={label}
+        aria-label={ownName}
+        aria-labelledby={control.labelledBy}
         aria-valuenow={current ?? undefined}
         aria-valuemin={min}
         aria-valuemax={max}
         aria-valuetext={current === null ? undefined : `${lead}${toText(current)}${unit}`}
         aria-invalid={invalid || undefined}
-        aria-describedby={describedBy}
+        aria-describedby={control.describedBy}
         value={text}
         placeholder={placeholder}
         disabled={disabled}
@@ -244,6 +267,7 @@ export function NumberInput({
             ))}
         </span>
       )}
+      {name && <input type="hidden" name={name} value={current === null ? '' : String(current)} disabled={disabled} />}
     </div>
   )
 }

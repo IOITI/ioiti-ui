@@ -1,6 +1,9 @@
 import type { ComponentProps } from 'react'
 import { Link } from 'react-router'
 
+/** The props of `RouterLink`: an `<a>`'s. */
+export type RouterLinkProps = ComponentProps<'a'>
+
 /**
  * React Router's link for the components that hand their link an `href`, as an `<a>` takes it:
  * `Link` reads `to`, and without it every link would lead to the page already shown.
@@ -10,7 +13,7 @@ import { Link } from 'react-router'
  * shell's page, not the window) and keeps the address's query; the router's link would write
  * `/page#trust`, drop the query and scroll nothing.
  */
-export function RouterLink({ href = '', ...props }: ComponentProps<'a'>) {
+export function RouterLink({ href = '', ...props }: RouterLinkProps) {
   if (href.startsWith('#')) return <a href={href} {...props} />
   return <Link to={href} {...props} />
 }

@@ -1,6 +1,6 @@
 import type { MessageKit } from '../../lib/messages.js'
 
-/** The tables: DataTable, SmartComparison, SelectionBasket, ChangeList, Table. */
+/** The tables: DataTable, ComparisonTable, SelectionBasket, ChangeList, Table. */
 export const table = {
   // DataTable's toolbar.
   /** "Search…": the placeholder of the table's search, and of a filter's list of options. */
@@ -111,7 +111,7 @@ export const table = {
   /** "Share": one of the basket's actions by default. */
   shareAction: 'Share',
 
-  // SmartComparison.
+  // ComparisonTable.
   /** "Feature and plan comparison": the matrix's name, where the application gives none (`label`). */
   comparisonName: 'Feature and plan comparison',
   /** "Feature matrix": the head of the matrix's own column (`matrixTitle`). */

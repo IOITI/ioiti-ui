@@ -28,7 +28,8 @@ function clockFor(time: number): number {
   return SECOND
 }
 
-interface RelativeTimeProps {
+/** The props of `RelativeTime`. */
+export interface RelativeTimeProps {
   /** The moment: a `Date`, milliseconds, or an ISO string. */
   value: Date | number | string
   /** The time zone its full date is written in, in its hint; the browser's otherwise. */

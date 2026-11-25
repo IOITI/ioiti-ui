@@ -11,13 +11,16 @@ import { CLOSE_MD, DIALOG, SCRIM } from '../../lib/recipes.js';
 // development (deprecated).
 import { useControllableState } from '../../lib/controllable.js';
 import { deprecated } from '../../lib/deprecated.js';
+// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
+import { renamed } from '../../lib/renamed.js';
 // ioiti-ui: the focus kept as every layer over the page keeps it; a dialog without a name said to its developer.
 import { devWarn } from '../../lib/dev.js';
 import { useFocusScope } from '../../lib/focus-scope.js';
 // ioiti-ui: its close button named in the provider's language.
 import { useMessages } from '../locale-context.js';
 
-export interface SettleModalProps {
+// ioiti-ui: named after its role, `Dialog` (EasyUI's `SettleModal`, its former name: at the end of the file).
+export interface DialogProps {
   /** ioiti-ui: open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`). */
   open?: boolean;
   /** ioiti-ui: open at first, the dialog holding it then (it closes itself); closed by default. */
@@ -53,7 +56,7 @@ export interface SettleModalProps {
 }
 
 
-const sizeMap: Record<NonNullable<SettleModalProps['size']>, string> = {
+const sizeMap: Record<NonNullable<DialogProps['size']>, string> = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-lg',
@@ -62,7 +65,9 @@ const sizeMap: Record<NonNullable<SettleModalProps['size']>, string> = {
 };
 
 /**
- * SettleModal — Content has a tiny scale + settle instead of a generic fade.
+ * Dialog — Content has a tiny scale + settle instead of a generic fade.
+ *
+ * ioiti-ui: EasyUI's SettleModal, named after its role.
  *
  * ioiti-ui: one calm entrance, the design's: the panel grows from what opened
  * it (0.96 to 1, 6 px of travel, springGentle), without EasyUI's overshoot
@@ -74,7 +79,7 @@ const sizeMap: Record<NonNullable<SettleModalProps['size']>, string> = {
  * inside it). Keyboard focus moves into the dialog when it opens, stays in it,
  * and goes back to where it was when it closes.
  */
-export const SettleModal: React.FC<SettleModalProps> = ({
+export const Dialog: React.FC<DialogProps> = ({
   open: openProp,
   defaultOpen = false,
   onOpenChange,
@@ -99,7 +104,7 @@ export const SettleModal: React.FC<SettleModalProps> = ({
     setOpen(false);
     onClosed?.();
   };
-  if (hideCloseButton !== undefined) deprecated('hide-close-button', 'SettleModal');
+  if (hideCloseButton !== undefined) deprecated('hide-close-button', 'Dialog');
   const withCloseButton = showCloseButton ?? !hideCloseButton;
   const titleId = useId();
   const words = useMessages().dialog;
@@ -231,3 +236,10 @@ export const SettleModal: React.FC<SettleModalProps> = ({
     document.body
   );
 };
+
+// ioiti-ui: EasyUI's names, until 1.0: the former name draws the dialog, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `Dialog`. Removed in 1.0. */
+export const SettleModal = renamed(Dialog, 'SettleModal');
+/** @deprecated Use `DialogProps`. Removed in 1.0. */
+export type SettleModalProps = DialogProps;

@@ -1,0 +1,22 @@
+ioiti-ui/vite (src/vite/index.ts): what it exports, and its types, as the type checker reads them.
+Made by npm run api (scripts/api-report.mjs); npm run lint holds it.
+
+const DEFAULT_THEME_SCRIPT: "ioiti-theme.js"
+
+function ioiti(options?: IoitiPluginOptions): Plugin
+
+interface IoitiPluginOptions {
+  accent?: (typeof ACCENTS)[number]
+  material?: (typeof MATERIALS)[number]
+  themeScript?: string
+  themeStorageKey?: string
+}
+
+
+// The names the types above use that ioiti-ui/vite does not export, or not by that name.
+
+// src/vite/index.ts
+const ACCENTS: readonly ["neutral", "violet", "indigo", "blue", "bloom", "lagoon", "aurora", "dusk", "golden"]
+
+// src/vite/index.ts
+const MATERIALS: readonly ["flat", "glass"]

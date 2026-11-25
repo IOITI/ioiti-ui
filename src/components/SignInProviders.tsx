@@ -29,7 +29,8 @@ export interface SignInProvider {
   hint?: ReactNode
 }
 
-interface SignInProvidersProps {
+/** The props of `SignInProviders`. */
+export interface SignInProvidersProps {
   /** A button the whole width for each, in this order. Without any, the form alone. */
   providers: SignInProvider[]
   /** The form of a password, beside the providers, a line between. */

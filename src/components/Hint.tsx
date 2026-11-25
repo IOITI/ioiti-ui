@@ -1,9 +1,10 @@
 import type { ReactElement, ReactNode } from 'react'
 
-import { DirectionalTooltip } from './ui/directional-tooltip.js'
+import { Tooltip } from './ui/directional-tooltip.js'
 import type { TooltipSide } from './ui/directional-tooltip.js'
 
-interface HintProps {
+/** The props of `Hint`. */
+export interface HintProps {
   content: ReactNode
   children: ReactElement
   side?: TooltipSide
@@ -27,7 +28,7 @@ export function Hint({ content, children, side = 'top', wrap = false, className 
   // chip as wide as the whole value, past a phone's screen.
   const said = content !== null && content !== undefined && content !== false && content !== ''
   return (
-    <DirectionalTooltip content={content} side={side} wrapperClassName={className}>
+    <Tooltip content={content} side={side} wrapperClassName={className}>
       {wrap && said ? (
         // It grows in a wrapper that does (`className="flex w-full"`): a full-width field it holds keeps its width.
         <span tabIndex={0} className="inline-flex min-w-0 grow rounded-md [&>:disabled]:pointer-events-none">
@@ -36,6 +37,6 @@ export function Hint({ content, children, side = 'top', wrap = false, className 
       ) : (
         children
       )}
-    </DirectionalTooltip>
+    </Tooltip>
   )
 }

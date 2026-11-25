@@ -297,11 +297,21 @@ function safeDecode(text: string): string {
   }
 }
 
+/** The props of `AppBrand`. */
+export interface AppBrandProps {
+  /** The application's name; its first letter is the mark where none is given. */
+  name: string
+  /** Under the name, smaller: an environment, a version. */
+  detail?: ReactNode
+  /** The application's mark, beside the name: an icon, a logo. */
+  mark?: ReactNode
+}
+
 /**
  * The application's name at the top of the sidebar, beside its mark; the mark alone once the sidebar is folded.
  * The mark is in the accent, as a filled button is: its gradient and grain where it has them.
  */
-export function AppBrand({ name, detail, mark }: { name: string; detail?: ReactNode; mark?: ReactNode }) {
+export function AppBrand({ name, detail, mark }: AppBrandProps) {
   return (
     <div className="flex items-center gap-3">
       <div className="grid size-7 shrink-0 place-items-center rounded-lg bg-foreground text-xs font-bold text-background accent:bg-brand accent:bg-(image:--brand-fill) accent:text-brand-fill-foreground">
@@ -315,7 +325,8 @@ export function AppBrand({ name, detail, mark }: { name: string; detail?: ReactN
   )
 }
 
-interface SidebarFooterButtonProps extends Omit<ComponentProps<'button'>, 'children'> {
+/** The props of `SidebarFooterButton`. */
+export interface SidebarFooterButtonProps extends Omit<ComponentProps<'button'>, 'children'> {
   /** An icon of lucide-react, as an element: `<LogOut />`. */
   icon: ReactNode
   label: string

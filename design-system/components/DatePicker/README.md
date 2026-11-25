@@ -2,7 +2,7 @@
 
 A day (`DatePicker`) or a range (`DateRangePicker`) from a field and its calendar.
 
-**You provide** `value`, `onChange`, `locale` and `weekStartsOn` where they differ from IoitiProvider's, `minDate` / `maxDate`; `aria-label` (or a `Field` around it, or `id` for its `htmlFor`), `error`.
+**You provide** `value`, `onChange`, `locale` and `weekStartsOn` where they differ from IoitiProvider's, `minDate` / `maxDate`; `aria-label` (or a `Field` or a `FormItem` around it, or `id` for its `htmlFor`), `error`. In a form: `name`, the day sent as a date field sends it (`yyyy-mm-dd`, empty while none is chosen); a range's first day, then its last, under the same name. `ref` (its button), `aria-labelledby`, `aria-describedby`, `aria-invalid`, as a native control takes them.
 
 ```tsx
 <DateRangePicker value={range} onChange={setRange} />

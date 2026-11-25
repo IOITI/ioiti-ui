@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react'
 import { cn } from '../lib/utils.js'
 import { useFormat, useMessages } from './locale-context.js'
 
-interface LiveValueProps {
+/** The props of `LiveValue`. */
+export interface LiveValueProps {
   /** The figure now; `null` (or `NaN`) while there is none. */
   value: number | null
   /** Writes the figure: the provider's number by default, to two decimals unless it is whole ("18,120.50"). */

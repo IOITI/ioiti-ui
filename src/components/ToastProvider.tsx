@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { prepareLiveRegions } from '../lib/announce.js'
 import type { StatusTone } from '../lib/tones.js'
 import { cn } from '../lib/utils.js'
-import { VelocityToast } from './ui/velocity-toast.js'
+import { Toast } from './ui/velocity-toast.js'
 
 import { ToastContext, ToastInsetContext, ToastRegionContext, toastTone } from './toast-context.js'
 import type { ShowToast, ToastMessage } from './toast-context.js'
@@ -28,7 +28,8 @@ function displayTime(toast: QueuedToast, waiting: number): number {
   return waiting > 0 ? 2500 : 4000
 }
 
-interface ToastProviderProps {
+/** The props of `ToastProvider`. */
+export interface ToastProviderProps {
   /**
    * Classes of the toast's frame, to move it: above a bar fixed at the bottom of a page
    * (`bottom-20`), for instance.
@@ -74,7 +75,7 @@ export function ToastProvider({ wrapperClassName, children }: ToastProviderProps
   const lift = Math.max(0, ...Object.values(insets))
   const urgent = current?.tone === 'danger'
   const toast = current && (
-    <VelocityToast
+    <Toast
       key={current.id}
       open={leaving !== current.id}
       onDismiss={() => setLeaving(current.id)}

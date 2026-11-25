@@ -4,20 +4,24 @@ import { memo, useEffect, useId, useMemo, useState, type PointerEvent, type Reac
 import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { SECTION } from '../../lib/recipes.js';
+// ioiti-ui: EasyUI's names kept until 1.0, drawing this one (renamed).
+import { renamed } from '../../lib/renamed.js';
 import { useLocale, useMessages } from '../locale-context.js';
 
 
 // ioiti-ui: the cities are the caller's, each with its IANA zone; EasyUI's list of 32 (five countries, no Paris), its
 // country and city selectors and its add and remove buttons are gone.
-export interface AirportMatrixCity {
+export interface WorldClockCity {
   id: string;
   name: string;
   timeZone: string;
 }
 
-export interface AirportMatrixClockProps {
+// ioiti-ui: named after its role, `WorldClock` (EasyUI's `AirportMatrixClock`, its former name: at the end of the
+// file).
+export interface WorldClockProps {
   /** ioiti-ui: one to five cities, each with its IANA time zone. */
-  cities: AirportMatrixCity[];
+  cities: WorldClockCity[];
   /** ioiti-ui: 24 hours or 12; the provider's clock by default (IoitiProvider's: 24 hours in en-GB and fr-FR, 12 in en-US). */
   format?: '12h' | '24h';
   /** Include seconds in each city time. */
@@ -149,12 +153,12 @@ const MatrixText = memo(function MatrixText({ text, reduceMotion, rebuildId, siz
 });
 
 
-type AirportClockRowData = AirportMatrixCity & { time: ReturnType<typeof formatCityTime> };
+type WorldClockRowData = WorldClockCity & { time: ReturnType<typeof formatCityTime> };
 
-const AirportMatrixClockRow = memo(function AirportMatrixClockRow({
+const WorldClockRow = memo(function WorldClockRow({
   row, rowIndex, rowCount, reduceMotion, size,
 }: {
-  row: AirportClockRowData;
+  row: WorldClockRowData;
   rowIndex: number;
   rowCount: number;
   reduceMotion: boolean;
@@ -183,7 +187,7 @@ const AirportMatrixClockRow = memo(function AirportMatrixClockRow({
   );
 });
 
-export function AirportMatrixClock({
+export function WorldClock({
   cities,
   format,
   showSeconds = false,
@@ -192,7 +196,7 @@ export function AirportMatrixClock({
   footer,
   size = 'md',
   className = '',
-}: AirportMatrixClockProps) {
+}: WorldClockProps) {
   // ioiti-ui: the provider's locale, clock and words where the props give none (null keeps the board without a title).
   const { locale, hourCycle } = useLocale();
   const words = useMessages().clock;
@@ -231,7 +235,7 @@ export function AirportMatrixClock({
         )}
         <ul className="m-0 list-none p-0">
           {rows.map((row, rowIndex) => (
-            <AirportMatrixClockRow key={row.id} row={row} rowIndex={rowIndex} rowCount={rows.length} reduceMotion={reduceMotion} size={size} />
+            <WorldClockRow key={row.id} row={row} rowIndex={rowIndex} rowCount={rows.length} reduceMotion={reduceMotion} size={size} />
           ))}
         </ul>
         {/* ioiti-ui: a light value in front of EasyUI's dark-only footer colours. */}
@@ -247,3 +251,12 @@ export function AirportMatrixClock({
     </section>
   );
 }
+
+// ioiti-ui: EasyUI's names, until 1.0: the former name draws the clock, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `WorldClock`. Removed in 1.0. */
+export const AirportMatrixClock = renamed(WorldClock, 'AirportMatrixClock');
+/** @deprecated Use `WorldClockProps`. Removed in 1.0. */
+export type AirportMatrixClockProps = WorldClockProps;
+/** @deprecated Use `WorldClockCity`. Removed in 1.0. */
+export type AirportMatrixCity = WorldClockCity;

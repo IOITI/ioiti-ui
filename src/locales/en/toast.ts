@@ -1,4 +1,4 @@
-/** The toasts and what says a moment: UndoToast, VelocityToast, DynamicIsland, RequestStatus. */
+/** The toasts and what says a moment: UndoToast, Toast, StatusIsland, RequestStatus. */
 export const toast = {
   /** "Close notification": a toast's close button. */
   close: 'Close notification',
@@ -10,7 +10,7 @@ export const toast = {
   undo: 'Undo',
   /** "Restored successfully": what an UndoToast says once undone, where the application says nothing. */
   restored: 'Restored successfully',
-  /** "Import:": DynamicIsland's name, said to a screen reader before what its pill shows. */
+  /** "Import:": StatusIsland's name, said to a screen reader before what its pill shows. */
   islandName: (label: string) => `${label}:`,
   /** "Close import": the button that closes the opened island, with its name. */
   closeIsland: (label: string) => `Close ${label.toLowerCase()}`,

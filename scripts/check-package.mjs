@@ -95,6 +95,10 @@ const FILES = [
   'dist/styles/not-found-folder.svg',
   'dist/theme.js',
   'dist/vite/index.js',
+  'dist/codemod/cli.js',
+  'dist/codemod/transform.js',
+  'dist/codemod/rules.js',
+  'dist/lib/deprecations.js',
   'dist/vite/index.d.ts',
   'dist/react-router/index.js',
   'dist/react-router/index.d.ts',
@@ -176,6 +180,45 @@ if (!existsSync(join(root, 'dist/index.js'))) {
   process.exit(1)
 }
 
+// The codemod (npx ioiti-ui-codemod), as an application runs it: a page written with names the package deprecated, and
+// the same page as the codemod writes it with today's (CHANGELOG.md, Deprecated). The template's build type-checks it.
+const CODEMOD_BEFORE = `import { Button, Panel, ProgressBar, SettleModal, useToast } from 'ioiti-ui'
+import type { SettleModalProps, Tone } from 'ioiti-ui'
+
+export function Archive({ open, onClose }: Pick<SettleModalProps, 'open' | 'onClose'>) {
+  const toast = useToast()
+  const tone: Tone = 'positive'
+  return (
+    <SettleModal open={open} onClose={onClose} title="Archive the project" hideCloseButton>
+      <Panel title="Storage" dense>
+        <ProgressBar label="Used" value={92} tone="negative" />
+      </Panel>
+      <Button variant="destructive" isLoading onClick={() => toast({ title: tone, variant: 'error' })}>
+        Archive
+      </Button>
+    </SettleModal>
+  )
+}
+`
+const CODEMOD_AFTER = `import { Button, Panel, ProgressBar, Dialog, useToast } from 'ioiti-ui'
+import type { DialogProps, SignTone } from 'ioiti-ui'
+
+export function Archive({ open, onClose }: Pick<DialogProps, 'open' | 'onClose'>) {
+  const toast = useToast()
+  const tone: SignTone = 'positive'
+  return (
+    <Dialog open={open} onClose={onClose} title="Archive the project" showCloseButton={false}>
+      <Panel title="Storage" density="compact">
+        <ProgressBar label="Used" value={92} tone="danger" />
+      </Panel>
+      <Button variant="danger" pending onClick={() => toast({ title: tone, tone: 'danger' })}>
+        Archive
+      </Button>
+    </Dialog>
+  )
+}
+`
+
 const work = mkdtempSync(join(tmpdir(), 'ioiti-ui-check-'))
 try {
   // What a release ships.
@@ -197,8 +240,14 @@ try {
   manifest.dependencies['ioiti-ui'] = `file:${join(work, pack.filename)}`
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2))
   run('npm', ['install', '--no-audit', '--no-fund'], app)
+  // The codemod rewrites a page of deprecated names, and touches nothing else of the template, which writes today's.
+  const page = join(app, 'src', 'codemod-archive.tsx')
+  writeFileSync(page, CODEMOD_BEFORE)
+  const said = run('npx', ['--no-install', 'ioiti-ui-codemod'], app)
+  check(readFileSync(page, 'utf8') === CODEMOD_AFTER, 'the codemod (npx ioiti-ui-codemod) writes a page of deprecated names with today\'s')
+  check(/^Rewrote 1 file; nothing left to look at\.$/m.test(said), `the codemod rewrites that page alone, and leaves nothing to look at${/Rewrote 1 file; nothing/.test(said) ? '' : `:\n${said}`}`)
   run('npm', ['run', 'build'], app)
-  check(true, 'the template installs the packed package and builds')
+  check(true, 'the template installs the packed package and builds (the page the codemod wrote type-checks)')
 
   const dist = join(app, 'dist')
   const assets = readdirSync(join(dist, 'assets'))
@@ -271,10 +320,10 @@ try {
   const { DEV_MESSAGES } = await import(pathToFileURL(join(app, 'node_modules/ioiti-ui/dist/lib/dev-messages.js')).href)
   const kept = Object.values(DEV_MESSAGES).filter((message) => codes['ioiti-ui, whole'].includes(message.slice(0, 40)))
   check(kept.length === 0, `a production build keeps none of what a component says to its developer${kept.length ? `: ${kept.join(' | ')}` : ''}`)
-  const { code: developed } = await bundled(app, work, "export { SettleModal } from 'ioiti-ui'", 'development')
+  const { code: developed } = await bundled(app, work, "export { Dialog } from 'ioiti-ui'", 'development')
   check(
     Object.values(DEV_MESSAGES).some((message) => developed.includes(message.slice(0, 40))),
-    'a development build keeps them (SettleModal says a dialog without a name): the check above reads the right words',
+    'a development build keeps them (Dialog says a dialog without a name): the check above reads the right words',
   )
   // What the package deprecated (src/lib/deprecations.ts) is said in development only: a production build keeps none of
   // the list (its ids), which a development build of a component that warns keeps.

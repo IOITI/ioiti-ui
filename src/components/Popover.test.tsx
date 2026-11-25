@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Popover } from './Popover.js'
 import { SegmentedControl } from './SegmentedControl.js'
 import { Button } from './ui/button.js'
-import { SettleModal } from './ui/settle-modal.js'
+import { Dialog } from './ui/settle-modal.js'
 
 function Filters() {
   return (
@@ -82,9 +82,9 @@ describe('Popover', () => {
     function InDialog() {
       const [open, setOpen] = useState(true)
       return (
-        <SettleModal open={open} onClose={() => setOpen(false)} title="Edit the order">
+        <Dialog open={open} onClose={() => setOpen(false)} title="Edit the order">
           <Filters />
-        </SettleModal>
+        </Dialog>
       )
     }
     render(<InDialog />)

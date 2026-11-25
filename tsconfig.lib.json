@@ -7,5 +7,5 @@
     "types": []
   },
   "include": ["src"],
-  "exclude": ["src/vite", "src/test", "src/**/*.test.ts", "src/**/*.test.tsx"]
+  "exclude": ["src/vite", "src/codemod", "src/test", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }

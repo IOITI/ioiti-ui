@@ -6,7 +6,8 @@ import { cn } from '../lib/utils.js'
 import { useTabTitle } from './page-trail-context.js'
 import { SECTION } from '../lib/recipes.js'
 
-interface AuthLayoutProps {
+/** The props of `AuthLayout`. */
+export interface AuthLayoutProps {
   /** The heading: the application's name. */
   title: string
   /** What signing in asks for. */

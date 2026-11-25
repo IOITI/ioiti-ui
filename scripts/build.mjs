@@ -23,7 +23,7 @@ rmSync(join(root, 'dist'), { recursive: true, force: true })
 
 if (watching) {
   copyAssets()
-  for (const project of ['tsconfig.lib.json', 'tsconfig.vite.json']) {
+  for (const project of ['tsconfig.lib.json', 'tsconfig.vite.json', 'tsconfig.codemod.json']) {
     spawn(process.execPath, [tsc, '-p', project, '--watch', '--preserveWatchOutput'], { cwd: root, stdio: 'inherit' })
   }
   for (const folder of ['src/styles', 'src']) {
@@ -32,7 +32,7 @@ if (watching) {
     })
   }
 } else {
-  for (const project of ['tsconfig.lib.json', 'tsconfig.vite.json']) {
+  for (const project of ['tsconfig.lib.json', 'tsconfig.vite.json', 'tsconfig.codemod.json']) {
     const result = spawnSync(process.execPath, [tsc, '-p', project], { cwd: root, stdio: 'inherit' })
     if (result.status !== 0) process.exit(result.status ?? 1)
   }

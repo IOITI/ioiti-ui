@@ -121,7 +121,7 @@ function staysShown(locator: Locator, ms: number): Promise<boolean> {
 test.describe('the shell', () => {
   test('Tab from the top of a page reaches "Skip to the page" first, shown; Enter moves the focus to the page', { tag: ['@smoke'] }, async ({ page, browserName }) => {
     const { next } = tabKeys(browserName)
-    await visit(page, '/components/choices/spring-select')
+    await visit(page, '/components/choices/select-menu')
     await page.keyboard.press(next)
     const skip = page.getByRole('link', { name: 'Skip to the page' })
     await expect(skip).toBeFocused()
@@ -146,11 +146,11 @@ test.describe('the shell', () => {
     const field = search.getByRole('combobox', { name: 'Search' })
     await expect(field).toBeFocused()
 
-    await page.keyboard.type('SpringSelect')
-    await expect.poll(() => activeOption(field)).toMatch(/^SpringSelect/)
+    await page.keyboard.type('SelectMenu')
+    await expect.poll(() => activeOption(field)).toMatch(/^SelectMenu/)
     await page.keyboard.press('Enter')
-    await expect(page).toHaveURL(/\/components\/choices\/spring-select$/)
-    await expect(page.getByRole('heading', { level: 1, name: 'SpringSelect' })).toBeVisible()
+    await expect(page).toHaveURL(/\/components\/choices\/select-menu$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'SelectMenu' })).toBeVisible()
     await expect(search).toBeHidden()
   })
 
@@ -197,8 +197,8 @@ test.describe('the shell', () => {
 })
 
 test.describe('choosing from a list', () => {
-  test('SpringSelect: the focus stays on its button; ArrowDown opens, the arrows and a letter move, Enter chooses, Escape changes nothing', { tag: ['@smoke'] }, async ({ page }) => {
-    await visit(page, '/components/choices/spring-select')
+  test('SelectMenu: the focus stays on its button; ArrowDown opens, the arrows and a letter move, Enter chooses, Escape changes nothing', { tag: ['@smoke'] }, async ({ page }) => {
+    await visit(page, '/components/choices/select-menu')
     const plan = example(page, 'plan')
     const select = plan.getByRole('combobox', { name: 'Plan' })
     const list = page.getByRole('listbox', { name: 'Plan' })
@@ -472,9 +472,9 @@ test.describe('values along a scale', () => {
 })
 
 test.describe('layers over the page', () => {
-  test('SettleModal: the focus moves in, Tab and Shift+Tab go round it, Escape closes it, the focus back on what opened it', { tag: ['@smoke'] }, async ({ page, browserName }) => {
+  test('Dialog: the focus moves in, Tab and Shift+Tab go round it, Escape closes it, the focus back on what opened it', { tag: ['@smoke'] }, async ({ page, browserName }) => {
     const { next, back } = tabKeys(browserName)
-    await visit(page, '/components/overlays/settle-modal')
+    await visit(page, '/components/overlays/dialog')
     const opener = example(page, 'form').getByRole('button', { name: 'Rename' })
     await opener.focus()
     await page.keyboard.press('Enter')
@@ -505,9 +505,9 @@ test.describe('layers over the page', () => {
     await expect(opener).toBeFocused()
   })
 
-  test('Flysheet: the focus moves into the sheet, Tab and Shift+Tab go round it, Escape closes it, the focus back on its trigger', async ({ page, browserName }) => {
+  test('Sheet: the focus moves into the sheet, Tab and Shift+Tab go round it, Escape closes it, the focus back on its trigger', async ({ page, browserName }) => {
     const { next, back } = tabKeys(browserName)
-    await visit(page, '/components/overlays/flysheet')
+    await visit(page, '/components/overlays/sheet')
     const trigger = example(page, 'record').getByRole('button', { name: 'Order 2026-0042' })
     await trigger.focus()
     await page.keyboard.press('Enter')

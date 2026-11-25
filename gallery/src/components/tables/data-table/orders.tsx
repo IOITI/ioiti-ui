@@ -61,7 +61,7 @@ export default function DataTableOrders() {
       )}
       selectionBasket={{
         noun: ['order', 'orders'],
-        actions: [{ id: 'compare', label: 'Compare', icon: <GitCompare className="size-3.5" />, href: '/components/tables/smart-comparison' }],
+        actions: [{ id: 'compare', label: 'Compare', icon: <GitCompare className="size-3.5" />, href: '/components/tables/comparison-table' }],
       }}
     />
   )

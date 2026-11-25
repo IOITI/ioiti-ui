@@ -27,7 +27,7 @@ export default function SelectionBasketInline() {
             id: 'compare',
             label: 'Compare',
             icon: <GitCompare className="size-3.5" />,
-            href: '/components/tables/smart-comparison',
+            href: '/components/tables/comparison-table',
             // Disabled, it says why.
             disabled: selected < 2 || selected > 4,
             title: 'Two to four runs can be compared',

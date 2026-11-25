@@ -29,3 +29,13 @@ describe('a link to a part of a former page', () => {
     await screen.findAllByRole('heading', { level: 1, name: 'Tables and lists' }, { timeout: 10_000 })
   }, A_PAGE)
 })
+
+describe('a component’s former address', () => {
+  it('leads to its page under the name of its role, at the same example', async () => {
+    const router = renderAt('/components/overlays/settle-modal#form')
+    await screen.findAllByRole('heading', { level: 1, name: 'Dialog' }, { timeout: 10_000 })
+    expect(router.state.location.pathname).toBe('/ioiti-ui/components/overlays/dialog')
+    expect(router.state.location.hash).toBe('#form')
+    expect(screen.queryByText('Formerly SettleModal')).not.toBeNull()
+  }, A_PAGE)
+})

@@ -1,5 +1,4 @@
 import {
-  AirportMatrixClock,
   Badge,
   Button,
   KpiGrid,
@@ -21,6 +20,7 @@ import {
   TableRow,
   TextLink,
   useFormat,
+  WorldClock,
 } from 'ioiti-ui'
 import type { HealthStatus } from 'ioiti-ui'
 
@@ -65,7 +65,7 @@ export function DashboardPattern() {
         actions={
           <>
             <div className="hidden sm:block">
-              <AirportMatrixClock
+              <WorldClock
                 size="sm"
                 title={null}
                 cities={[

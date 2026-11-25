@@ -812,6 +812,67 @@ otherwise).
   value). `isLoading`, EasyUI's name, is read as it and said once in development; removed in 1.0.
 - `animated-file-upload` (0.30.0): `density="compact"` draws the inline zone. EasyUI's `variant="compact"` is read as it
   and said once in development; removed in 1.0. `density="regular"` wins over it.
+- `settle-modal` (0.31.0): exported as `Dialog`, the name of its role, its props as `DialogProps`; `SettleModal` and
+  `SettleModalProps`, EasyUI's, are deprecated: drawn as it, said once in development, removed in 1.0.
+- `flysheet` (0.31.0): exported as `Sheet`, the name of its role, its parts and types with it (`SheetTrigger`,
+  `SheetContent`, `SheetTitle`…, `SheetProps`, `SheetSide`…); `Flysheet` and its parts, the names this package gave
+  EasyUI's sheet, are deprecated: each drawn as its part, said once in development, removed in 1.0.
+- `spring-select` (0.31.0): exported as `SelectMenu`, the name of its role (`SelectMenuProps`, `SelectMenuOption`);
+  `SpringSelect`, EasyUI's, is deprecated: drawn as it, said once in development, removed in 1.0.
+- `velocity-toast` (0.31.0): exported as `Toast`, the name of its role (`ToastProps`, `ToastPosition`), its action
+  useToast()'s `ToastAction`, the same shape; `VelocityToast`, EasyUI's, is deprecated: drawn as it, said once in
+  development, removed in 1.0 (`VelocityToastAction` with it).
+- `smooth-accordion` (0.31.0): exported as `Accordion`, the name of its role (`AccordionProps`); `SmoothAccordion`,
+  EasyUI's, is deprecated: drawn as it, said once in development, removed in 1.0.
+- `directional-tooltip` (0.31.0): exported as `Tooltip`, the name of its role (`TooltipProps`), and drawn by it in
+  `selection-basket`; `DirectionalTooltip`, EasyUI's, is deprecated: drawn as it, said once in development, removed in
+  1.0.
+- `animated-tabs` (0.31.0): exported as `Tabs`, the name of its role (`TabsProps`); `AnimatedTabs`, EasyUI's, is
+  deprecated: drawn as it, said once in development, removed in 1.0.
+- `animated-file-upload` (0.31.0): exported as `FileUpload`, the name of its role (`FileUploadProps`);
+  `AnimatedFileUpload`, EasyUI's, is deprecated: drawn as it, said once in development, removed in 1.0.
+- `airport-matrix-clock` (0.31.0): exported as `WorldClock`, the name of its role (`WorldClockProps`, `WorldClockCity`);
+  `AirportMatrixClock`, EasyUI's, is deprecated: drawn as it, said once in development, removed in 1.0.
+- `smart-comparison` (0.31.0): exported as `ComparisonTable`, the name of its role (`ComparisonTableProps`);
+  `SmartComparison`, EasyUI's, is deprecated: drawn as it, said once in development, removed in 1.0.
+- `dynamic-island` (0.31.0): exported as `StatusIsland`, the name of its role (`StatusIslandProps`,
+  `StatusIslandState`); `DynamicIsland`, EasyUI's, is deprecated: drawn as it, said once in development, removed in 1.0.
+- `stretch-switch` (0.31.0): deprecated for the form's `Switch`, which takes the same props (`StretchSwitchProps` is
+  `SwitchProps`): still drawn as it was, said once in development, removed in 1.0.
+- `form` (0.31.0): `RadioGroup` is named by the label of a `Field` or a `FormItem` around it (`aria-labelledby`: a label
+  names no group), which points to its id (its own in a `Field`), so that it names none of its radios and passes them no
+  click; their description and error describe it and mark it; it takes a `ref` (the group) and `data-*` attributes.
+  `Switch` takes `data-*` attributes. `FormLabel` has an id of its own in a `FormItem`, which names a control a label
+  cannot: a group, a slider.
+- `combobox` (0.31.0): takes `name` (its value sent with a form, a hidden input, empty while none is chosen), `ref` (its
+  button) and `data-*` attributes; a `Field`'s or a `FormItem`'s label names it, its search and its list
+  (`aria-labelledby`), and their description and error describe it and mark it, its id the item's in a `FormItem`.
+- `spring-select` (0.31.0): takes `ref` (its button) and `data-*` attributes; named, described and marked by a `Field`
+  or a `FormItem` around it too, its own `label` first, its id the item's in a `FormItem`.
+- `stretch-switch` (0.31.0): takes `data-*` attributes, on its outermost element.
+- `date-picker` (0.31.0): `DatePicker` and `DateRangePicker` take `name` (the day sent as a date field sends it,
+  `yyyy-mm-dd`, a hidden input; a range's first day, then its last, under the same name), `ref` (its button) and
+  `data-*` attributes; described and marked by a `FormItem` too, its id the item's.
+- `otp-input` (0.31.0): takes `name` (its digits sent, a hidden input), `ref` (its first box), `aria-labelledby` and
+  `data-*` attributes; the label of a `Field` or a `FormItem` around it names the group, over the provider's words, and
+  a `FormItem`'s id goes to its first box.
+- `flysheet` (0.31.0): the focus kept as every layer keeps it (`useFocusScope`, `src/lib/focus-scope.ts`), its own trap
+  and its list of the sheets open gone. A sheet with a backdrop holds the page: the focus moved in on its dialog, kept
+  in by Tab, given back to what opened it, Escape closing it wherever the focus is. A child keeps the focus while it is
+  open, then its parent again: Tab goes round the child alone (it went round the child and its parent beside it, which
+  stays in reach of the pointer). One without a backdrop (`modal={false}`, a pushed sheet) is a scope that holds no page
+  (`contain: false`): the focus free, taken as it opens (not as it opens with the page), its Escape heard while the
+  focus is in it. An Escape meant for a list or a menu open in it is still left to it.
+- `spotlight-search` (0.31.0): the focus kept as every layer over the page keeps it (`useFocusScope`), its own trap gone:
+  in its field as it opens, kept in by Tab from the page too, given back to what opened it as it leaves; Escape (back
+  from a list, then closed) heard wherever the focus is. Tab and Escape reach the document, where the latest layer
+  opened keeps them (a dialog or a sheet under it hears neither); its other keys stay its own (`stopPropagation`).
+- `product-tour` (0.31.0): the focus kept as every layer over the page keeps it (`useFocusScope`), its own trap gone: on
+  Next once its card is placed, kept in the card by Tab (every control in it, where its trap knew its buttons alone),
+  given back to what had it as it ends, unless it went elsewhere meanwhile; Escape ends it (`dismiss`). A dialog opened
+  over it keeps the keys: its Escape closes it alone, and the arrows move no step while it is open.
+- `alert`, `form`, `flysheet`, `sidebar`, `stat-card` (0.31.0): the props of their parts named and exported, as every
+  component's (`AlertTitleProps`, `FormControlProps`, `SheetBodyProps`…, `SidebarTriggerProps`, `StatGridProps`).
 
 ## ioiti-ui's own changes
 

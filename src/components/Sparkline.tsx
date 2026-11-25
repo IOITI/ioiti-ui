@@ -10,7 +10,8 @@ import { useFormat, useMessages } from './locale-context.js'
 /** Its size where it fits; narrower where it does not (a tile on a phone), its height with it: never past its box. */
 const FIT = 'block h-auto max-w-full'
 
-interface SparklineProps {
+/** The props of `Sparkline`. */
+export interface SparklineProps {
   values: number[]
   /** A line (the default), or bars from zero: a gain up, a loss down. */
   variant?: 'line' | 'bars'

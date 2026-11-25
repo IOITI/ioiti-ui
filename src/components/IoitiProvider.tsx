@@ -18,7 +18,8 @@ import type { LocaleValue, MessagesOverride } from './locale-context.js'
 import { createShortcutRegistry, ShortcutsContext } from './shortcuts-context.js'
 import { ThemeProvider } from './ThemeProvider.js'
 
-interface IoitiProviderProps {
+/** The props of `IoitiProvider`. */
+export interface IoitiProviderProps {
   /** The application's name, which ends the title of every tab ("Orders · My App"). */
   appName?: string
   /**

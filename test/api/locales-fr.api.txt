@@ -1,0 +1,9 @@
+ioiti-ui/locales/fr (src/locales/fr.ts): what it exports, and its types, as the type checker reads them.
+Made by npm run api (scripts/api-report.mjs); npm run lint holds it.
+
+const fr: Messages
+
+
+// The names the types above use that ioiti-ui/locales/fr does not export, or not by that name.
+
+Messages: exported by ioiti-ui

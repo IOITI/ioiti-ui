@@ -5,9 +5,10 @@ import { useMessages } from './locale-context.js'
 import { Alert, AlertDescription } from './ui/alert.js'
 import { Button } from './ui/button.js'
 import { DragToConfirm } from './ui/drag-to-confirm.js'
-import { SettleModal } from './ui/settle-modal.js'
+import { Dialog } from './ui/settle-modal.js'
 
-interface ConfirmActionProps {
+/** The props of `ConfirmAction`. */
+export interface ConfirmActionProps {
   /** Open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`). */
   open?: boolean
   /** Open at first, the dialog holding it then (Cancel and Escape close it); closed by default. */
@@ -74,7 +75,7 @@ export function ConfirmAction({
     onClose?.()
   }
   return (
-    <SettleModal
+    <Dialog
       open={shown}
       onOpenChange={(next) => {
         if (!next && !pending) close()
@@ -122,6 +123,6 @@ export function ConfirmAction({
           />
         )}
       </div>
-    </SettleModal>
+    </Dialog>
   )
 }

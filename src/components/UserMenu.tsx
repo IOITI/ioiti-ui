@@ -9,7 +9,8 @@ import { DropdownMenu } from './DropdownMenu.js'
 import type { DropdownMenuItem } from './DropdownMenu.js'
 import { useMessages } from './locale-context.js'
 
-interface UserMenuProps {
+/** The props of `UserMenu`. */
+export interface UserMenuProps {
   /** Who is signed in: beside the avatar from 640 px up, and its initials where there is no picture. */
   name: string
   /** A second line, under the name: their role ("Analyst"), their team. */

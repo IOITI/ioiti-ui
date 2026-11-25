@@ -12,4 +12,4 @@ What changes, each from its value before to its value after: a configuration abo
 ```
 
 - The label in `text-secondary`, the value before struck through in `text-muted`, the value after in `text-primary`; rows apart by `border`.
-- Show it before a change is confirmed (in a `SettleModal`), or after, to say what was done. A history of versions is a `RecoveryLedger`.
+- Show it before a change is confirmed (in a `Dialog`), or after, to say what was done. A history of versions is a `RecoveryLedger`.

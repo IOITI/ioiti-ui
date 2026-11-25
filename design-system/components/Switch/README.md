@@ -2,7 +2,7 @@
 
 A setting that takes effect when it is turned: on or off, with its label and what it does.
 
-**You provide** `label`, `description`, `checked` / `defaultChecked`, `onChange`, `disabled`. In a form: `name`, sent while on as a checkbox is (its `value`, `on` by default), `required`. Without a label of its own: `aria-label`, or a `Field` or a `FormItem` around it. `id`, `ref` (its button).
+**You provide** `label`, `description`, `checked` / `defaultChecked`, `onChange`, `disabled`. In a form: `name`, sent while on as a checkbox is (its `value`, `on` by default), `required`. Without a label of its own: `aria-label` / `aria-labelledby`, or a `Field` or a `FormItem` around it. `id`, `ref` (its button), `aria-describedby`, `aria-invalid`, as a native control takes them.
 
 ```tsx
 <Switch label="Weekly summary" description="Every Monday, by email" checked={weekly} onChange={setWeekly} />

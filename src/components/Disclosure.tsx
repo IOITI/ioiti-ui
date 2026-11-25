@@ -4,7 +4,8 @@ import type { MouseEvent, ReactNode, SyntheticEvent } from 'react'
 import { useControllableState } from '../lib/controllable.js'
 import { cn } from '../lib/utils.js'
 
-interface DisclosureProps {
+/** The props of `Disclosure`. */
+export interface DisclosureProps {
   /** What it holds, in a few words: always shown. */
   summary: ReactNode
   children: ReactNode
@@ -19,7 +20,7 @@ interface DisclosureProps {
 /**
  * More, shown on demand: the figures of a chart as a table, the details of a request, what a setting does.
  * The browser's own `<details>`: find in the page opens it on what it finds. For a list of sections, one
- * open at a time, `SmoothAccordion`.
+ * open at a time, `Accordion`.
  */
 export function Disclosure({ summary, children, open, defaultOpen = false, onOpenChange, variant = 'plain', className }: DisclosureProps) {
   const [current, setCurrent] = useControllableState(open, defaultOpen, onOpenChange)

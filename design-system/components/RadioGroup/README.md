@@ -2,7 +2,7 @@
 
 One of two to five choices shown at once, each with its words: options given as data (`RadioGroup`), or its items laid out by hand (`RadioGroupItem`).
 
-**You provide** for `RadioGroup`: `name`, `options` (`[{ value, label, description?, disabled? }]`), `value` / `defaultValue`, `onChange` (the value), its name (`aria-label`, or `aria-labelledby` the id of what asks the question); or `RadioGroupItem`s as children. For `RadioGroupItem`: `name`, `value`, `label`, `description`, `checked`, `onChange`, `disabled`.
+**You provide** for `RadioGroup`: `name` (what a form sends the value chosen under, as radios do), `options` (`[{ value, label, description?, disabled? }]`), `value` / `defaultValue`, `onChange` (the value), its name (a `Field` or a `FormItem` around it, `aria-label`, or `aria-labelledby` the id of what asks the question); or `RadioGroupItem`s as children. `id`, `ref` (the group), `aria-describedby`, `aria-invalid`, as a `fieldset` takes them. For `RadioGroupItem`: `name`, `value`, `label`, `description`, `checked`, `onChange`, `disabled`.
 
 ```tsx
 <fieldset>
@@ -14,6 +14,6 @@ One of two to five choices shown at once, each with its words: options given as 
 </fieldset>
 ```
 
-- Its name for a screen reader comes from around it: a `fieldset` and its `legend`.
+- Its name for a screen reader comes from around it: a `fieldset` and its `legend`, or the label of a `Field` or a `FormItem`, which names the group and none of its radios.
 - Each group has a `name` of its own: the dot slides from one choice to the next of the same name.
 - Checked, its ring and its dot are `primary` (ink), the accent's `brand` with one. Short choices in a row are a `SegmentedControl`; more than five, a `Select`.

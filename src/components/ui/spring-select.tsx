@@ -9,6 +9,8 @@ import { ChevronDown, Check } from 'lucide-react';
 import { useAnchoredLayer } from '../../lib/anchor.js';
 // ioiti-ui: held by its caller or by itself, as every control (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
+// ioiti-ui: EasyUI's names kept until 1.0, drawing this one (renamed).
+import { renamed } from '../../lib/renamed.js';
 import { fieldBorder, invalidOf } from '../../lib/field-border.js';
 import { fold } from '../../lib/search.js';
 import { cn } from '../../lib/utils.js';
@@ -16,17 +18,24 @@ import { motionTransitions } from '../../lib/motion-tokens.js';
 import { DISABLED, FLOATING, MENU_ROW } from '../../lib/recipes.js';
 // ioiti-ui: its words in the provider's language (`select`).
 import { useMessages } from '../locale-context.js';
+// ioiti-ui: what a Field or a FormItem around it tells it (its id, its label, what describes it, whether it is wrong),
+// its `data-*` attributes and its ref, as a native control takes them.
+import { dataAttributes, type DataAttributes } from '../../lib/data-attributes.js';
+import { useForwardedRef } from '../../lib/refs.js';
+import { useFieldControl } from '../field-context.js';
 
-export interface SpringSelectOption {
+// ioiti-ui: named after its role, `SelectMenu` (EasyUI's `SpringSelect`, its former name: at the end of the file).
+export interface SelectMenuOption {
   value: string;
   label: string;
   disabled?: boolean;
   description?: string;
 }
 
-export interface SpringSelectProps {
+// ioiti-ui: its `data-*` attributes on its outermost element, as an element takes them.
+export interface SelectMenuProps extends DataAttributes {
   /** Option list */
-  options: SpringSelectOption[];
+  options: SelectMenuOption[];
   /** Currently selected value (controlled) */
   value?: string;
   /** Default selected value (uncontrolled) */
@@ -43,18 +52,20 @@ export interface SpringSelectProps {
   error?: string;
   /** Custom class name for the root */
   className?: string;
-  /** ioiti-ui: the trigger's id, for a `<label htmlFor>` (a `Field htmlFor`). */
+  /** ioiti-ui: the trigger's id, for a `<label htmlFor>` (a `Field htmlFor`); in a FormItem, the item's. */
   id?: string;
-  /** ioiti-ui: the value is sent with the form around it under this name (a hidden input). */
+  /** ioiti-ui: the value is sent with the form around it under this name (a hidden input), empty while none is chosen. */
   name?: string;
   /** ioiti-ui: its name, where no `label` is shown. */
   'aria-label'?: string;
-  /** ioiti-ui: the id of what names it, in place of its `label`. */
+  /** ioiti-ui: the id of what names it, in place of its `label`. A Field's label names it without it. */
   'aria-labelledby'?: string;
   /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
   'aria-describedby'?: string;
   /** ioiti-ui: marked invalid, as a Field with an error marks it: drawn as `error`. */
   'aria-invalid'?: boolean | 'true' | 'false';
+  /** ioiti-ui: its trigger (the button that shows the value), to focus it. */
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 // ioiti-ui: APG's select-only combobox: PageUp and PageDown move ten options, the letters typed within half a second
@@ -63,7 +74,7 @@ const PAGE = 10;
 const TYPED_FOR = 500;
 
 /** ioiti-ui: the enabled option at `from` or past it going `way`, else the nearest the other way; -1 when none is. */
-function enabledFrom(options: SpringSelectOption[], from: number, way: 1 | -1): number {
+function enabledFrom(options: SelectMenuOption[], from: number, way: 1 | -1): number {
   const start = Math.min(Math.max(from, 0), options.length - 1);
   for (const step of [way, -way]) {
     for (let i = start; i >= 0 && i < options.length; i += step) {
@@ -78,7 +89,7 @@ function enabledFrom(options: SpringSelectOption[], from: number, way: 1 | -1): 
  * or the same again and again) goes on from the active option to the next it starts, round the list; more letters
  * stay on the active option while it starts so. -1 when none does.
  */
-function typedOption(options: SpringSelectOption[], typed: string, active: number): number {
+function typedOption(options: SelectMenuOption[], typed: string, active: number): number {
   const search = fold(typed).text;
   const letter = [...search].every((character) => character === search[0]) ? search[0] : undefined;
   const first = letter ? active + 1 : Math.max(active, 0);
@@ -90,7 +101,8 @@ function typedOption(options: SpringSelectOption[], typed: string, active: numbe
 }
 
 /**
- * SpringSelect — The dropdown menu follows the trigger with a tiny spring.
+ * SelectMenu — The dropdown menu follows the trigger with a tiny spring. ioiti-ui: EasyUI's SpringSelect, named after
+ * its role.
  * On open, the menu slides down with a slight overshoot; the chevron rotates
  * a hair past 180° before settling. Closing is a smooth ease-back.
  *
@@ -101,7 +113,7 @@ function typedOption(options: SpringSelectOption[], typed: string, active: numbe
  * (the arrows, Home, End, PageUp, PageDown, letters typed) and choose (Enter, Space, Alt+ArrowUp, Tab), the option
  * they are on its `aria-activedescendant`.
  */
-export const SpringSelect: React.FC<SpringSelectProps> = ({
+export const SelectMenu: React.FC<SelectMenuProps> = ({
   options,
   value,
   defaultValue,
@@ -117,17 +129,29 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   'aria-labelledby': ariaLabelledBy,
   'aria-describedby': ariaDescribedBy,
   'aria-invalid': ariaInvalid,
+  ref,
+  ...rest
 }) => {
   // ioiti-ui: its placeholder the provider's language's, unless one is given.
   const words = useMessages().select;
   const placeholder = givenPlaceholder ?? words.placeholder;
   const generatedId = useId();
   const rootId = `spring-select-${generatedId}`;
-  // ioiti-ui: what the combobox points to: its label, its list and each option, its error. The trigger's id may be given.
-  const triggerId = id ?? `${rootId}-trigger`;
   const labelId = `${rootId}-label`;
   const listId = `${rootId}-listbox`;
   const errorId = `${rootId}-error`;
+  // ioiti-ui: named, described and marked by a Field or a FormItem around it too, its own props first (its `label`,
+  // what it is given), its id the one their label points to.
+  const control = useFieldControl({
+    id,
+    fallbackId: `${rootId}-trigger`,
+    labelledBy: ariaLabelledBy ?? (label ? labelId : undefined),
+    named: Boolean(ariaLabel),
+    describedBy: [ariaDescribedBy, error ? errorId : undefined].filter(Boolean).join(' ') || undefined,
+    invalid: invalidOf(error, ariaInvalid),
+  });
+  // ioiti-ui: what the combobox points to: its label, its list and each option, its error. The trigger's id may be given.
+  const triggerId = control.id ?? `${rootId}-trigger`;
   const optionId = (idx: number) => `${rootId}-option-${idx}`;
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useControllableState<string | undefined>(
@@ -138,7 +162,8 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   // ioiti-ui: the list as wide as the trigger, read as it opens (inside the root, it took the root's width).
   const [width, setWidth] = useState<number>();
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  // ioiti-ui: its trigger given to its caller's ref too.
+  const [triggerRef, setTrigger] = useForwardedRef<HTMLButtonElement>(ref);
   // ioiti-ui: the layer in document.body, and the list in it, which scrolls.
   const layerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -146,13 +171,14 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   const typed = useRef({ text: '', timer: 0 });
 
   const currentOption = options.find((o) => o.value === current);
-  // ioiti-ui: wrong by its `error`, or by `aria-invalid` (a Field's).
-  const invalid = invalidOf(error, ariaInvalid);
+  // ioiti-ui: wrong by its `error`, or by `aria-invalid` (a Field's, a FormItem's).
+  const invalid = control.invalid;
   // ioiti-ui: the option the keys are on: never one gone from the list, nor one that cannot be chosen.
   const active = options[activeIndex] && !options[activeIndex].disabled ? activeIndex : -1;
-  // ioiti-ui: named by what it is given, else by its label; described by a Field's words, then its error.
-  const labelledBy = ariaLabelledBy ?? (label ? labelId : undefined);
-  const describedBy = [ariaDescribedBy, error ? errorId : undefined].filter(Boolean).join(' ') || undefined;
+  // ioiti-ui: named by what it is given, else by its label, else by its field's; described by a Field's words, then
+  // its error.
+  const labelledBy = control.labelledBy;
+  const describedBy = control.describedBy;
 
   // ioiti-ui: disabled while it is open, it closes.
   if (disabled && open) setOpen(false);
@@ -194,12 +220,12 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   };
 
   // ioiti-ui: told of a change only, as a select's `change`: the option chosen again (or left by Tab) says nothing.
-  const choose = (opt: SpringSelectOption) => {
+  const choose = (opt: SelectMenuOption) => {
     if (opt.value === current) return;
     setCurrent(opt.value);
   };
 
-  const handleSelect = (opt: SpringSelectOption, idx: number) => {
+  const handleSelect = (opt: SelectMenuOption, idx: number) => {
     if (opt.disabled) return;
     choose(opt);
     setOpen(false);
@@ -299,7 +325,8 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
   };
 
   return (
-    <div className={cn('relative w-full', className)} id={rootId}>
+    // ioiti-ui: its `data-*` attributes on its outermost element.
+    <div {...dataAttributes(rest)} className={cn('relative w-full', className)} id={rootId}>
       {label && (
         <label
           // ioiti-ui: what names the combobox (aria-labelledby). A click on it gives the trigger the focus, as a select's
@@ -318,7 +345,7 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
       )}
 
       <button
-        ref={triggerRef}
+        ref={setTrigger}
         id={triggerId}
         type="button"
         // ioiti-ui: a combobox (APG's select-only): its list, and the option the keys are on while it is open, pointed
@@ -470,3 +497,12 @@ export const SpringSelect: React.FC<SpringSelectProps> = ({
     </div>
   );
 };
+
+// ioiti-ui: EasyUI's names, until 1.0: the former name draws the select, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `SelectMenu`. Removed in 1.0. */
+export const SpringSelect = renamed(SelectMenu, 'SpringSelect');
+/** @deprecated Use `SelectMenuProps`. Removed in 1.0. */
+export type SpringSelectProps = SelectMenuProps;
+/** @deprecated Use `SelectMenuOption`. Removed in 1.0. */
+export type SpringSelectOption = SelectMenuOption;

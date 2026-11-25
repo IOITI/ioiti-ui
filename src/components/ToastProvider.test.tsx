@@ -8,7 +8,7 @@ import { IoitiProvider } from './IoitiProvider.js'
 import { LinkProvider } from './LinkProvider.js'
 import { useToast } from './toast-context.js'
 import { ToastProvider } from './ToastProvider.js'
-import { VelocityToast } from './ui/velocity-toast.js'
+import { Toast } from './ui/velocity-toast.js'
 
 let show: ReturnType<typeof useToast>
 
@@ -214,12 +214,12 @@ describe("a toast's tone, and its former variant", () => {
   it('is drawn by its tone, the icon its own, nothing said of a name deprecated', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const icon = (frame: HTMLElement) => frame.querySelector('.size-8 > svg')
-    const { rerender } = render(<VelocityToast open title="Could not print the labels" tone="danger" />)
+    const { rerender } = render(<Toast open title="Could not print the labels" tone="danger" />)
     expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
     expect(icon(screen.getByRole('alert'))).toHaveClass('text-negative')
-    rerender(<VelocityToast open title="Labels printed" tone="success" />)
+    rerender(<Toast open title="Labels printed" tone="success" />)
     expect(icon(screen.getByRole('status'))).toHaveClass('text-positive')
-    rerender(<VelocityToast open title="Draft saved" />)
+    rerender(<Toast open title="Draft saved" />)
     expect(icon(screen.getByRole('status'))).toHaveClass('text-muted-foreground')
     renderProvider()
     act(() => show({ title: 'Saved', tone: 'success' }))
@@ -237,16 +237,16 @@ describe("a toast's tone, and its former variant", () => {
     expect(String(warn.mock.calls[0][0])).toContain("(useToast's variant: tone, its values too: default is neutral, error is danger)")
   })
 
-  it("reads VelocityToast's variant as its tone, the tone given over it, and says so once", () => {
+  it("reads Toast's variant as its tone, the tone given over it, and says so once", () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { rerender } = render(<VelocityToast open title="Could not print the labels" variant="error" />)
+    const { rerender } = render(<Toast open title="Could not print the labels" variant="error" />)
     expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
-    rerender(<VelocityToast open title="Could not print the labels" variant="default" />)
+    rerender(<Toast open title="Could not print the labels" variant="default" />)
     expect(screen.getByRole('status')).toHaveTextContent('Could not print the labels')
-    rerender(<VelocityToast open title="Could not print the labels" variant="default" tone="danger" />)
+    rerender(<Toast open title="Could not print the labels" variant="default" tone="danger" />)
     expect(screen.getByRole('alert')).toHaveTextContent('Could not print the labels')
     expect(warn).toHaveBeenCalledTimes(1)
-    expect(String(warn.mock.calls[0][0])).toContain("(VelocityToast's variant: tone, its values too: default is neutral, error is danger)")
+    expect(String(warn.mock.calls[0][0])).toContain("(Toast's variant: tone, its values too: default is neutral, error is danger)")
   })
 })
 
@@ -266,7 +266,7 @@ describe('a toast in a language', () => {
 
     render(
       <IoitiProvider messages={{ toast: { close: 'Dismiss' } }}>
-        <VelocityToast open title="Export ready" />
+        <Toast open title="Export ready" />
       </IoitiProvider>,
     )
     expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument()

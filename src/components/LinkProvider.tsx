@@ -4,7 +4,8 @@ import type { ElementType, ReactNode } from 'react'
 import { LinkContext } from './link-context.js'
 import type { NavigateTo } from './link-context.js'
 
-interface LinkProviderProps {
+/** The props of `LinkProvider`. */
+export interface LinkProviderProps {
   /**
    * What draws a link, given `href` and the props of an `<a>`: the router's (`RouterLink` of
    * `ioiti-ui/react-router`). A plain `<a>` without one.

@@ -20,7 +20,7 @@ export default function SelectionBasketActions() {
         onSelectAll={() => setSelected(selected === 40 ? 0 : 40)}
         actions={[
           { id: 'send', label: 'Send for signature', icon: <Send className="size-3.5" />, variant: 'primary', onClick: act('Sent') },
-          { id: 'compare', label: 'Compare', icon: <GitCompare className="size-3.5" />, href: '/components/tables/smart-comparison' },
+          { id: 'compare', label: 'Compare', icon: <GitCompare className="size-3.5" />, href: '/components/tables/comparison-table' },
           { id: 'archive', label: 'Archive', icon: <Archive className="size-3.5" />, onClick: act('Archived') },
           { id: 'delete', label: 'Delete', icon: <Trash2 className="size-3.5" />, variant: 'danger', onClick: act('Deleted') },
         ]}

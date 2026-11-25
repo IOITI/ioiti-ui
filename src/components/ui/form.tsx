@@ -25,6 +25,8 @@ import {
 } from '../field-context.js';
 // ioiti-ui: the password toggle's words in the provider's language (`field`).
 import { useMessages } from '../locale-context.js';
+// ioiti-ui: the `data-*` attributes a control is given, on its outermost element, as an element takes them.
+import { dataAttributes, type DataAttributes } from '../../lib/data-attributes.js';
 
 /* ==========================================================================
    1. Form Root & Layout Items
@@ -72,14 +74,18 @@ export interface FormLabelProps extends React.LabelHTMLAttributes<HTMLLabelEleme
 }
 
 export const FormLabel = forwardRef<HTMLLabelElement, FormLabelProps>(
-  ({ className, required, children, htmlFor, ...props }, ref) => {
+  ({ className, required, children, htmlFor, id, ...props }, ref) => {
     // ioiti-ui: it names its FormItem's control by the id the control is drawn with, its own or the item's, unless
     // given `htmlFor` (EasyUI's named nothing without it); no `for` while no control says it is there, so that a label
     // around a control of its own still names that one.
     const field = useFieldContext();
+    // ioiti-ui: its id (its own in a FormItem, unless given one) names, by `aria-labelledby`, a control a label cannot
+    // name: a group of radios, a slider.
+    const ownId = useFieldPartId('label', id);
     return (
       <label
         ref={ref}
+        id={ownId}
         htmlFor={htmlFor ?? field?.controlId}
         className={cn(
           'block text-xs font-semibold text-foreground select-none',
@@ -95,7 +101,11 @@ export const FormLabel = forwardRef<HTMLLabelElement, FormLabelProps>(
 );
 FormLabel.displayName = 'FormLabel';
 
-export const FormControl = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `FormControl`: a `<div>`'s. */
+export type FormControlProps = React.HTMLAttributes<HTMLDivElement>;
+
+export const FormControl = forwardRef<HTMLDivElement, FormControlProps>(
   ({ className, children, ...props }, ref) => {
     // ioiti-ui: its control, one from elsewhere too (which cannot read its FormItem), is given the item's id where it
     // has none, what describes it (`aria-describedby`) and `aria-invalid`; the package's read them from the item as
@@ -111,7 +121,11 @@ export const FormControl = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLD
 );
 FormControl.displayName = 'FormControl';
 
-export const FormDescription = forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `FormDescription`: a `<p>`'s. */
+export type FormDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>;
+
+export const FormDescription = forwardRef<HTMLParagraphElement, FormDescriptionProps>(
   ({ className, id, ...props }, ref) => {
     // ioiti-ui: its id (its own in a FormItem, unless given one) describes its FormItem's control.
     const ownId = useFieldPartId('description', id);
@@ -428,7 +442,8 @@ export interface RadioOption {
   disabled?: boolean;
 }
 
-export interface RadioGroupProps {
+export interface RadioGroupProps extends DataAttributes {
+  /** ioiti-ui: the name its radios are sent under with their form: the value of the one chosen, nothing while none is. */
   name: string;
   value?: string;
   defaultValue?: string;
@@ -436,16 +451,18 @@ export interface RadioGroupProps {
   onChange?: (value: string) => void;
   className?: string;
   children?: React.ReactNode;
-  /** ioiti-ui: the group's id, for a `<label htmlFor>`… or `aria-labelledby` elsewhere. */
+  /** ioiti-ui: the group's id, for a `<label htmlFor>`… or `aria-labelledby` elsewhere; in a FormItem, the item's. */
   id?: string;
   /** ioiti-ui: its name, the question its choices answer, where no element names it (`aria-labelledby`). */
   'aria-label'?: string;
-  /** ioiti-ui: the id of what names it: a heading, a Field's label. */
+  /** ioiti-ui: the id of what names it: a heading. A Field's label or a FormItem's FormLabel names it without it. */
   'aria-labelledby'?: string;
-  /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
+  /** ioiti-ui: read out with it: what a Field or a FormItem around it says under it (its description, its error). */
   'aria-describedby'?: string;
-  /** ioiti-ui: marked invalid, as a Field with an error marks it. */
+  /** ioiti-ui: marked invalid, as a Field or a FormItem in error marks it. */
   'aria-invalid'?: boolean | 'true' | 'false';
+  /** ioiti-ui: the group (its `radiogroup` element), which holds its radios. */
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 export const RadioGroup: React.FC<RadioGroupProps> = ({
@@ -461,18 +478,33 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   'aria-labelledby': labelledBy,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
+  ref,
+  ...rest
 }) => {
   const [current, handleSelect] = useControllableState(value, defaultValue || '', onChange);
+  // ioiti-ui: named, described and marked by a Field or a FormItem around it too: by its label's words
+  // (aria-labelledby: a label names no group), the label pointing to the group's id, so that it names no radio of it.
+  const groupId = useId();
+  const control = useFieldControl({
+    id,
+    fallbackId: groupId,
+    labelledBy,
+    named: Boolean(ariaLabel),
+    describedBy,
+    invalid: invalidOf(undefined, ariaInvalid),
+  });
 
   return (
     // ioiti-ui: named, as a group of choices must be (EasyUI's could not be): by its label, or by what it points to.
     <div
+      ref={ref}
       role="radiogroup"
-      id={id}
+      id={control.id}
       aria-label={ariaLabel}
-      aria-labelledby={labelledBy}
-      aria-describedby={describedBy}
-      aria-invalid={invalidOf(undefined, ariaInvalid) || undefined}
+      aria-labelledby={control.labelledBy}
+      aria-describedby={control.describedBy}
+      aria-invalid={control.invalid || undefined}
+      {...dataAttributes(rest)}
       className={cn('space-y-2', className)}
     >
       {options.length > 0
@@ -573,7 +605,8 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
    7. Switch / Toggle Component
    ========================================================================== */
 
-export interface SwitchProps {
+// ioiti-ui: its `data-*` attributes on its outermost element, as an element takes them.
+export interface SwitchProps extends DataAttributes {
   checked?: boolean;
   defaultChecked?: boolean;
   disabled?: boolean;
@@ -618,6 +651,7 @@ export const Switch: React.FC<SwitchProps> = ({
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
   ref,
+  ...rest
 }) => {
   const [current, setCurrent] = useControllableState(checked, defaultChecked, onChange);
   // ioiti-ui: named by its label and described by its description, as StretchSwitch: a screen reader said only
@@ -638,7 +672,8 @@ export const Switch: React.FC<SwitchProps> = ({
 
   return (
     // ioiti-ui: disabled, its label and its control at half strength, its description whole: it says why (it was 2:1).
-    <div className={cn('flex items-center justify-between gap-4 select-none', disabled && 'cursor-not-allowed', className)}>
+    // Its `data-*` attributes on it.
+    <div {...dataAttributes(rest)} className={cn('flex items-center justify-between gap-4 select-none', disabled && 'cursor-not-allowed', className)}>
       {(label || description) && (
         <div
           className="text-left cursor-pointer"

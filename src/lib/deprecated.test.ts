@@ -21,9 +21,9 @@ describe('a deprecated name given', () => {
   it('names a value with its prop, and what changes with it', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     deprecated('meter-tone-negative', 'ProgressBar')
-    deprecated('hide-close-button', 'SettleModal')
+    deprecated('hide-close-button', 'Dialog')
     expect(warn.mock.calls[0][0]).toContain(`(ProgressBar's tone="negative": danger)`)
-    expect(warn.mock.calls[1][0]).toContain(`(SettleModal's hideCloseButton: showCloseButton, the other way round`)
+    expect(warn.mock.calls[1][0]).toContain(`(Dialog's hideCloseButton: showCloseButton, the other way round`)
   })
 
   it('says nothing in production', () => {

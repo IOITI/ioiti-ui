@@ -4,9 +4,10 @@ import { useControllableState } from '../lib/controllable.js'
 import { Kbd } from './Kbd.js'
 import { useMessages } from './locale-context.js'
 import { useShortcut, useShortcutRegistry } from './shortcuts-context.js'
-import { SettleModal } from './ui/settle-modal.js'
+import { Dialog } from './ui/settle-modal.js'
 
-interface ShortcutsDialogProps {
+/** The props of `ShortcutsDialog`. */
+export interface ShortcutsDialogProps {
   /** Open, held by the page (told of each change by `onOpenChange`). */
   open?: boolean
   /** Open at first, the dialog holding it then; closed by default. */
@@ -60,7 +61,7 @@ export function ShortcutsDialog({ open, defaultOpen = false, onOpenChange, title
   const again = words.showAgain(KEYS_MARK).split(KEYS_MARK)
 
   return (
-    <SettleModal open={shown} onOpenChange={setShown} title={title} size="md">
+    <Dialog open={shown} onOpenChange={setShown} title={title} size="md">
       <div className="flex flex-col gap-5">
         {Array.from(groups.entries()).map(([group, shortcuts]) => (
           <section key={group}>
@@ -89,6 +90,6 @@ export function ShortcutsDialog({ open, defaultOpen = false, onOpenChange, title
           </p>
         )}
       </div>
-    </SettleModal>
+    </Dialog>
   )
 }

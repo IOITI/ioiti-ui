@@ -1,4 +1,4 @@
-import { AnimatedTabs, AppShell, isPlainClick, LinkProvider, PageHeader, useNavigateTo } from 'ioiti-ui'
+import { AppShell, isPlainClick, LinkProvider, PageHeader, Tabs, useNavigateTo } from 'ioiti-ui'
 import type { Menu } from 'ioiti-ui'
 import { BookOpen, LayoutDashboard, Rocket } from 'lucide-react'
 import { useCallback, useState } from 'react'
@@ -48,7 +48,7 @@ export default function AppShellTabsAndFoot() {
           {pathname === '/ops' ? (
             <>
               <PageHeader title="Deployments" description="Its tabs are in the query: the sidebar and the trail follow them." />
-              <AnimatedTabs
+              <Tabs
                 label="Deployments"
                 tabs={[
                   { id: 'jobs', label: 'Jobs', href: '/ops' },

@@ -7,7 +7,8 @@ import { useFormat } from './locale-context.js'
 import { METER_FILL, METER_TRACK, meterTone } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
 
-interface ProgressBarProps {
+/** The props of `ProgressBar`. */
+export interface ProgressBarProps {
   /** What is under way: "Importing the files". */
   label: ReactNode
   /** Done so far, out of `max`. None for work whose length is not known: the bar then says it is working. */
@@ -77,7 +78,8 @@ export interface BarListItem {
   tone?: MeterTone
 }
 
-interface BarListProps {
+/** The props of `BarList`. */
+export interface BarListProps {
   items: BarListItem[]
   /** The list's name for a screen reader. */
   label?: string

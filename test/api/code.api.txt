@@ -1,0 +1,54 @@
+ioiti-ui/code (src/code/index.ts): what it exports, and its types, as the type checker reads them.
+Made by npm run api (scripts/api-report.mjs); npm run lint holds it.
+
+interface CodeDiagnostic {
+  column?: number
+  line: number
+  message: string
+  severity?: "error" | "warning"
+}
+
+component CodeEditor(props: CodeEditorProps): JSX.Element
+
+type CodeEditorLanguage = "toml" | "yaml" | "json" | "markdown" | "python" | "text"
+
+interface CodeEditorProps {
+  autoFocus?: boolean
+  className?: string
+  diagnostics?: readonly CodeDiagnostic[]
+  label: string
+  language?: CodeEditorLanguage
+  lineNumbers?: boolean
+  maxHeight?: number | string
+  minHeight?: number | string
+  onChange?: (value: string) => void
+  onSave?: (value: string) => void
+  placeholder?: string
+  readOnly?: boolean
+  value: string
+  wrap?: boolean
+}
+
+component DiffEditor(props: DiffEditorProps): JSX.Element
+
+interface DiffEditorProps {
+  actions?: ReactNode
+  className?: string
+  collapseUnchanged?: boolean | {
+    margin?: number
+    minSize?: number
+  }
+  diagnostics?: readonly CodeDiagnostic[]
+  label: string
+  language?: CodeEditorLanguage
+  layout?: "split" | "unified"
+  maxHeight?: number | string
+  modified: string
+  modifiedLabel?: string
+  onChange?: (value: string) => void
+  onSave?: (value: string) => void
+  original: string
+  originalLabel?: string
+  readOnly?: boolean
+  wrap?: boolean
+}

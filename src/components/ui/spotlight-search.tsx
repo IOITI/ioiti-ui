@@ -4,8 +4,9 @@ import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } f
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useIsPresent, useReducedMotionConfig } from 'framer-motion';
 import { AlertCircle, Check, ChevronLeft, ChevronRight, History, Loader2, Search } from 'lucide-react';
-import { focusables } from '../../lib/anchor.js';
 import { useControllableState } from '../../lib/controllable.js';
+// ioiti-ui: the focus kept as every layer over the page keeps it (useFocusScope): its own trap is gone.
+import { useFocusScope } from '../../lib/focus-scope.js';
 import { matchesStroke, parseKeys } from '../../lib/keys.js';
 import { isPlainClick } from '../../lib/links.js';
 import { matchRanges, rank, searchIndex, searchWords } from '../../lib/search.js';
@@ -182,7 +183,6 @@ function Marked({ text, words }: { text: string; words: string[] }) {
 
 /** ioiti-ui: the palette's own props, its defaults given: what an opening of it draws. */
 interface PaletteProps {
-  layerRef: React.RefObject<HTMLDivElement | null>;
   close: () => void;
   items: SpotlightSearchItem[];
   placeholder: string;
@@ -246,25 +246,6 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   // is open (its own too: pressed in it, the palette closes itself). EasyUI's listened to the window, Ctrl on a Mac too.
   useShortcut('mod+k', () => setOpen(true), { enabled: enableGlobalShortcut, description: label, group: shortcuts.navigation });
 
-  // ioiti-ui: what had the focus before, read before the field takes it (a layout effect), given it back as it
-  // closes, while the focus is in the palette (not when what an entry did took it elsewhere) and where it is still
-  // in the page: after the commit (an effect's cleanup), as React gives the focus back to the field in it.
-  const layerRef = useRef<HTMLDivElement>(null);
-  const opener = useRef<HTMLElement | null>(null);
-  useLayoutEffect(() => {
-    if (isOpen) opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-  }, [isOpen]);
-  useEffect(() => {
-    if (!isOpen) return;
-    return () => {
-      const back = opener.current;
-      opener.current = null;
-      const active = document.activeElement;
-      const inside = !active || active === document.body || !!layerRef.current?.contains(active);
-      if (inside && back?.isConnected) back.focus({ preventScroll: true });
-    };
-  }, [isOpen]);
-
   // ioiti-ui: in document.body, as every dialog: drawn where it is used (a top bar), it was held by whatever makes
   // that place a stacking context or the containing block of what is fixed (a blur, a filter, a transform): the
   // page was drawn over it, its scrim and its frame cut to the bar.
@@ -276,7 +257,6 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
       {isOpen && (
         <Palette
           key="palette"
-          layerRef={layerRef}
           close={close}
           items={items ?? NO_ITEMS}
           placeholder={placeholder}
@@ -306,7 +286,6 @@ export const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
 
 /** ioiti-ui: the palette while it is open (and while it leaves). */
 function Palette({
-  layerRef,
   close,
   items,
   placeholder,
@@ -356,14 +335,13 @@ function Palette({
   const scrollRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // ioiti-ui: as it opens, its field takes the focus, its caller is told that nothing is typed (the entries of a
-  // search made before go), and the page under it holds still (as SettleModal's).
+  // ioiti-ui: as it opens, its caller is told that nothing is typed (the entries of a search made before go), and the
+  // page under it holds still (as Dialog's); its field takes the focus (useFocusScope, below).
   const told = useRef(onQueryChange);
   useEffect(() => {
     told.current = onQueryChange;
   });
   useEffect(() => {
-    inputRef.current?.focus({ preventScroll: true });
     told.current?.('');
     const overflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -556,35 +534,35 @@ function Palette({
     setActiveKey(row.key);
   };
 
-  // ioiti-ui: Tab and Shift+Tab go round what the palette holds (its field, its footer's buttons): the focus stays in it.
-  const cycle = (event: React.KeyboardEvent) => {
-    event.preventDefault();
-    const stops = dialogRef.current ? focusables(dialogRef.current) : [];
-    if (stops.length === 0) return;
-    const at = stops.indexOf(document.activeElement as HTMLElement);
-    const next = event.shiftKey ? (at <= 0 ? stops.length - 1 : at - 1) : (at + 1) % stops.length;
-    stops[next].focus();
-  };
+  // ioiti-ui: the focus as every layer over the page keeps it (useFocusScope), in place of its own trap: in its field as
+  // it opens; kept in it by Tab and Shift+Tab, round its field and its own buttons (a press elsewhere than on a control
+  // leaving it in the field: keepFocus, below); given back to what had it as it leaves, while it is in the palette (not
+  // when what an entry did took it elsewhere), after the commit (an effect's cleanup: React gives the focus back to the
+  // field in it during one). Escape goes back from a list, then closes it. The latest layer opened keeps both keys: a
+  // dialog under it hears neither; leaving, it hears nothing more.
+  useFocusScope(dialogRef, {
+    active: present,
+    initialFocus: () => inputRef.current,
+    onEscape: (event) => {
+      event.preventDefault();
+      if (scope) {
+        back();
+        inputRef.current?.focus({ preventScroll: true });
+      } else finish();
+    },
+  });
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    // ioiti-ui: its keys are its own: none reaches a dialog under it (its Escape, its Tab) nor the application's
-    // shortcuts; and a key that composes a character (an IME's Enter, its Escape) is the composition's.
+    // ioiti-ui: Tab and Escape are its scope's (useFocusScope, which leaves the keys that compose a character to the
+    // composition). Its other keys are its own: none reaches a dialog under it nor the application's shortcuts; and a
+    // key that composes a character (an IME's Enter) is the composition's.
+    if (event.key === 'Tab' || event.key === 'Escape') return;
     event.stopPropagation();
     if (!present || event.nativeEvent.isComposing || event.keyCode === 229) return;
-    // ioiti-ui: Escape goes back from a list, then closes; ⌘K closes from anywhere.
-    if (event.key === 'Escape' && scope) {
-      event.preventDefault();
-      back();
-      inputRef.current?.focus({ preventScroll: true });
-      return;
-    }
-    if (event.key === 'Escape' || matchesStroke(event, CLOSE_KEYS)) {
+    // ioiti-ui: ⌘K closes it from anywhere.
+    if (matchesStroke(event, CLOSE_KEYS)) {
       event.preventDefault();
       finish();
-      return;
-    }
-    if (event.key === 'Tab') {
-      cycle(event);
       return;
     }
     // ioiti-ui: the list's keys in its field only: Enter on a button of the footer is the button's.
@@ -767,7 +745,6 @@ function Palette({
   return (
     // ioiti-ui: kept above the page while a page changes, as every layer over it (over-page, motion.css).
     <div
-      ref={layerRef}
       className={cn(
         'fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 font-sans select-none over-page',
         !present && 'pointer-events-none'

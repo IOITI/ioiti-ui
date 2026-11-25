@@ -16,7 +16,8 @@ import { useLinkComponent } from '../link-context.js';
 // ioiti-ui: its words in the provider's language (`table`), its count in its locale.
 import { useFormat, useMessages } from '../locale-context.js';
 import type { BoundMessages } from '../locale-context.js';
-import { DirectionalTooltip } from './directional-tooltip.js';
+// ioiti-ui: the tooltip by the name of its role (Tooltip, EasyUI's DirectionalTooltip).
+import { Tooltip } from './directional-tooltip.js';
 import { Hint } from '../Hint.js';
 
 export interface SelectionActionItem {
@@ -184,7 +185,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
                 if (!action.title) return <React.Fragment key={action.id}>{control}</React.Fragment>;
                 // ioiti-ui: a disabled control takes neither focus nor pointer: a wrapper takes them for its tooltip.
                 return (
-                  <DirectionalTooltip key={action.id} content={action.title} side="top">
+                  <Tooltip key={action.id} content={action.title} side="top">
                     {action.disabled ? (
                       <span tabIndex={0} className="inline-flex rounded-lg [&>:disabled]:pointer-events-none">
                         {control}
@@ -192,7 +193,7 @@ export const SelectionBasket: React.FC<SelectionBasketProps> = ({
                     ) : (
                       control
                     )}
-                  </DirectionalTooltip>
+                  </Tooltip>
                 );
               })}
             </div>

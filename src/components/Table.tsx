@@ -15,11 +15,14 @@ export type TableDensity = 'regular' | 'compact' | 'dense'
 const DensityContext = createContext<TableDensity>('regular')
 const PartContext = createContext<'head' | 'body'>('body')
 
-interface TableProps extends ComponentProps<'table'> {
+/** The props of `Table`. */
+export interface TableProps extends ComponentProps<'table'> {
   density?: TableDensity
   /** The classes of the frame that scrolls sideways (`hidden sm:block`). */
   wrapperClassName?: string
 }
+
+const TABLE = { regular: 'w-full text-left text-sm', compact: 'w-full text-left text-xs', dense: 'w-full whitespace-nowrap text-sm' }
 
 /**
  * A plain table of records or figures, as the pages write them: it scrolls sideways inside its own
@@ -29,8 +32,6 @@ interface TableProps extends ComponentProps<'table'> {
  * While it scrolls and its cells hold no control, the frame is a stop of the keyboard, a region named
  * as the table is ("Table" in the provider's language, where it has no name).
  */
-const TABLE = { regular: 'w-full text-left text-sm', compact: 'w-full text-left text-xs', dense: 'w-full whitespace-nowrap text-sm' }
-
 export function Table({ density = 'regular', wrapperClassName, className, children, ...props }: TableProps) {
   const frame = useRef<HTMLDivElement>(null)
   const unnamed = useMessages().table.region
@@ -47,7 +48,10 @@ export function Table({ density = 'regular', wrapperClassName, className, childr
   )
 }
 
-export function TableHead({ className, children, ...props }: ComponentProps<'thead'>) {
+/** The props of `TableHead`: a `<thead>`'s. */
+export type TableHeadProps = ComponentProps<'thead'>
+
+export function TableHead({ className, children, ...props }: TableHeadProps) {
   const density = useContext(DensityContext)
   return (
     <thead className={cn(density !== 'dense' && 'text-muted-foreground', density === 'regular' && 'text-xs', className)} {...props}>
@@ -56,7 +60,10 @@ export function TableHead({ className, children, ...props }: ComponentProps<'the
   )
 }
 
-export function TableBody({ className, children, ...props }: ComponentProps<'tbody'>) {
+/** The props of `TableBody`: a `<tbody>`'s. */
+export type TableBodyProps = ComponentProps<'tbody'>
+
+export function TableBody({ className, children, ...props }: TableBodyProps) {
   const density = useContext(DensityContext)
   return (
     <tbody className={cn(density !== 'dense' ? 'divide-y divide-border/40' : 'tabular-nums', className)} {...props}>
@@ -65,7 +72,10 @@ export function TableBody({ className, children, ...props }: ComponentProps<'tbo
   )
 }
 
-export function TableRow({ className, ...props }: ComponentProps<'tr'>) {
+/** The props of `TableRow`: a `<tr>`'s. */
+export type TableRowProps = ComponentProps<'tr'>
+
+export function TableRow({ className, ...props }: TableRowProps) {
   const density = useContext(DensityContext)
   const part = useContext(PartContext)
   const dense = density === 'dense' && (part === 'head' ? 'text-xs text-muted-foreground' : 'border-t border-border/40')
@@ -78,8 +88,11 @@ interface CellProps {
   children?: ReactNode
 }
 
+/** The props of `TableHeaderCell`: a `<th>`'s, and whether it heads figures. */
+export type TableHeaderCellProps = CellProps & ComponentProps<'th'>
+
 /** A column's heading in the head; a row's own heading (its first cell) in the body. */
-export function TableHeaderCell({ numeric = false, className, scope, ...props }: CellProps & ComponentProps<'th'>) {
+export function TableHeaderCell({ numeric = false, className, scope, ...props }: TableHeaderCellProps) {
   const density = useContext(DensityContext)
   const part = useContext(PartContext)
   return (
@@ -95,7 +108,10 @@ export function TableHeaderCell({ numeric = false, className, scope, ...props }:
   )
 }
 
-export function TableCell({ numeric = false, className, ...props }: CellProps & ComponentProps<'td'>) {
+/** The props of `TableCell`: a `<td>`'s, and whether it holds a figure. */
+export type TableCellProps = CellProps & ComponentProps<'td'>
+
+export function TableCell({ numeric = false, className, ...props }: TableCellProps) {
   const density = useContext(DensityContext)
   return (
     <td

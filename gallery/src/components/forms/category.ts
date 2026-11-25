@@ -14,7 +14,7 @@ const forms: CategoryInfo = {
       names: ['Field'],
       keywords: ['label', 'hint', 'description', 'error', 'form field'],
       examples: [
-        { id: 'controls', title: 'A control under its label', description: 'The way the pages put a control under its label: an Input, a Select, a Textarea; a Combobox takes its label beside it (htmlFor), since a label around it would pass the clicks of its options on to it.' },
+        { id: 'controls', title: 'A control under its label', description: 'The way the pages put a control under its label, every control of the package: a field, a list, a switch, radios and segments, a slider, a day, a code, a value edited in place, a range of time. Each is named by its label, a group by the label’s words; a Combobox takes its label beside it (htmlFor), since a label around it would pass the clicks of its options on to it.' },
         { id: 'description-and-error', title: 'What it is for, what is wrong', description: 'What the value is for goes under it, read out with the field, which the label alone names. An error says how to put it right, and goes once it is right.' },
         { id: 'narrow', title: 'In a narrow column', description: 'A label or a description longer than its column wraps; the control keeps the column’s width (a phone, a side panel).' },
       ],
@@ -108,9 +108,10 @@ const forms: CategoryInfo = {
       ],
     },
     {
-      slug: 'animated-file-upload',
-      name: 'AnimatedFileUpload',
-      names: ['AnimatedFileUpload'],
+      slug: 'file-upload',
+      name: 'FileUpload',
+      names: ['FileUpload'],
+      formerly: ['AnimatedFileUpload'],
       keywords: ['file', 'drop zone', 'drag and drop', 'import', 'attachment'],
       examples: [
         { id: 'sequential', title: 'One file after the other', description: 'A drop zone: the files are handled one after the other here, each answered with a link to what it became.' },

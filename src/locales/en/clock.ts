@@ -1,6 +1,6 @@
 import type { MessageKit } from '../../lib/messages.js'
 
-/** AirportMatrixClock. */
+/** WorldClock. */
 export const clock = {
   /** "World clock": the board's heading, where it is given none. */
   title: 'World clock',

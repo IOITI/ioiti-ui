@@ -2,6 +2,7 @@ import { CodeBlock, EmptyText, PageHeader, Panel, ScrollProgressNav, TextLink, u
 
 import { categoryPath, exampleKey, importLine, readmeOf, summaryOfFamily } from './catalogue'
 import { ExamplePanel } from './ExamplePanel'
+import { Lineage } from './Lineage'
 import { Guidelines, InlineMarkdown } from './Markdown'
 import { PropsTables } from './PropsTables'
 import type { CategoryInfo, Examples, FamilyInfo } from './types'
@@ -27,7 +28,12 @@ export function FamilyPage({ category, family, examples }: FamilyPageProps) {
     <>
       <PageHeader
         title={family.name}
-        description={<InlineMarkdown text={summaryOfFamily(family)} />}
+        description={
+          <>
+            <InlineMarkdown text={summaryOfFamily(family)} />
+            <Lineage family={family} />
+          </>
+        }
         actions={
           <TextLink href={categoryPath(category)} variant="quiet">
             All of {category.label.toLowerCase()}

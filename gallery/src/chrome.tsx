@@ -8,8 +8,8 @@ import type { GalleryLanguage } from './language-context'
 import { PAGES } from './routes'
 
 /**
- * What ⌘K finds: the pages, the categories, then each component by its name, its parts and what it does, then
- * each example (`#its-part` of its component's page).
+ * What ⌘K finds: the pages, the categories, then each component by its name, its parts, its former names and what it
+ * does, then each example (`#its-part` of its component's page).
  */
 const ITEMS = [
   ...PAGES.filter((page) => !page.family).map((page) => ({
@@ -25,7 +25,7 @@ const ITEMS = [
     title: family.name,
     category: 'Components',
     description: plainSummary(family),
-    keywords: [...family.names, ...(family.keywords ?? []), category.label],
+    keywords: [...family.names, ...(family.formerly ?? []), ...(family.keywords ?? []), category.label],
     href: path,
   })),
   ...FAMILIES.flatMap(({ family, path }) =>

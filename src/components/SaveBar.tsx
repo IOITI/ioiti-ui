@@ -11,7 +11,8 @@ import { useMessages } from './locale-context.js'
 import { ToastInsetContext } from './toast-context.js'
 import { Button } from './ui/button.js'
 
-interface SaveBarProps {
+/** The props of `SaveBar`. */
+export interface SaveBarProps {
   /** Shown while there is something to save. */
   open: boolean
   /** What there is to save: "3 unsaved changes"; the provider's language's "Unsaved changes" by default. */

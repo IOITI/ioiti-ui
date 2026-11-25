@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useRef, useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -7,6 +7,7 @@ import { fr } from '../locales/fr.js'
 import { IoitiProvider } from './IoitiProvider.js'
 import { ProductTour } from './ui/product-tour.js'
 import type { TourCloseReason } from './ui/product-tour.js'
+import { Dialog } from './ui/settle-modal.js'
 
 function Tour({ onClose }: { onClose?: (reason: TourCloseReason) => void }) {
   const [open, setOpen] = useState(false)
@@ -70,6 +71,68 @@ describe('ProductTour', () => {
     await user.keyboard('{Escape}')
     expect(closed).toHaveBeenCalledWith('dismiss')
     await waitFor(() => expect(start).toHaveFocus())
+  })
+
+  it('keeps the focus in its card from the page too, round it both ways, and leaves its keys to a dialog opened over it', async () => {
+    const user = userEvent.setup()
+    function Over() {
+      const [open, setOpen] = useState(true)
+      const [news, setNews] = useState(false)
+      return (
+        <>
+          <button type="button">On the page</button>
+          <ProductTour
+            open={open}
+            onClose={() => setOpen(false)}
+            steps={[
+              {
+                title: 'Welcome',
+                body: (
+                  <button type="button" onClick={() => setNews(true)}>
+                    What is new
+                  </button>
+                ),
+              },
+              { title: 'That is all', body: 'Have a good day.' },
+            ]}
+          />
+          <Dialog open={news} onOpenChange={setNews} title="New this month" />
+        </>
+      )
+    }
+    render(<Over />)
+    const card = await screen.findByRole('dialog', { name: 'Welcome' })
+    const next = screen.getByRole('button', { name: 'Next' })
+    const skip = screen.getByRole('button', { name: 'Skip' })
+    await waitFor(() => expect(next).toHaveFocus())
+    // Next is its last stop, Skip its first: round the card both ways.
+    await user.tab()
+    expect(skip).toHaveFocus()
+    await user.tab({ shift: true })
+    expect(next).toHaveFocus()
+    // From the page, both keys bring the focus back into the card.
+    const page = screen.getByRole('button', { name: 'On the page' })
+    act(() => page.focus())
+    await user.tab()
+    expect(skip).toHaveFocus()
+    act(() => page.focus())
+    await user.tab({ shift: true })
+    expect(next).toHaveFocus()
+
+    // A dialog opened from a step keeps the keys while it is open: its Escape closes it alone, the arrows move no
+    // step, and the focus goes back into the card.
+    const news = screen.getByRole('button', { name: 'What is new' })
+    await user.click(news)
+    expect(screen.getByRole('dialog', { name: 'New this month' })).toHaveFocus()
+    await user.keyboard('{ArrowRight}')
+    expect(card).toHaveTextContent('1 of 2')
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'New this month' })).toBeNull())
+    expect(news).toHaveFocus()
+    expect(screen.getByRole('dialog', { name: 'Welcome' })).toBeInTheDocument()
+    // The tour's keys again.
+    await user.keyboard('{ArrowRight}')
+    expect(await screen.findByRole('dialog', { name: 'That is all' })).toBeInTheDocument()
   })
 
   it('says it is done on its last step', async () => {

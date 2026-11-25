@@ -6,7 +6,8 @@ import type { CsvColumn } from '../lib/csv.js'
 import { toIsoDay } from '../lib/format.js'
 import { useMessages } from './locale-context.js'
 
-interface ExportButtonProps<T> {
+/** The props of `ExportButton`. */
+export interface ExportButtonProps<T> {
   /** File name without date or extension, e.g. "orders": the day of the export is added ("orders-2026-10-26.csv"). */
   name: string
   rows: readonly T[]

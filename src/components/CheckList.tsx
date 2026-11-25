@@ -10,8 +10,16 @@ const LOOK: Record<CheckState, { icon: typeof CircleCheck; className: string; sa
   open: { icon: CircleDashed, className: 'text-muted-foreground', said: 'Not checked' },
 }
 
+/** The props of `CheckIcon`. */
+export interface CheckIconProps {
+  /** The outcome it draws: passed, failed or open. */
+  state: CheckState
+  /** Named for a screen reader; not where what it stands beside says it already. */
+  named?: boolean
+}
+
 /** A check's outcome as an icon, named for a screen reader unless what it stands beside says it already. */
-export function CheckIcon({ state, named = true }: { state: CheckState; named?: boolean }) {
+export function CheckIcon({ state, named = true }: CheckIconProps) {
   const Icon = LOOK[state].icon
   return (
     <Icon
@@ -22,21 +30,22 @@ export function CheckIcon({ state, named = true }: { state: CheckState; named?: 
   )
 }
 
+/** The props of `CheckList`. */
+export interface CheckListProps<T extends Check = Check> {
+  /** The checks, in the order shown: each its label, its outcome and what it found. */
+  checks: readonly T[]
+  /** The list's name for a screen reader: "Checks of the release". */
+  label: string
+  /** Where a check leads, to what says more of it; `null` where it leads nowhere. */
+  hrefOf?: (check: T) => string | null
+  className?: string
+}
+
 /**
  * Checks and what each found, an icon telling passed, failed and open apart (and
  * named for a screen reader). A check with an address leads to what says more of it.
  */
-export function CheckList<T extends Check>({
-  checks,
-  label,
-  hrefOf,
-  className,
-}: {
-  checks: readonly T[]
-  label: string
-  hrefOf?: (check: T) => string | null
-  className?: string
-}) {
+export function CheckList<T extends Check>({ checks, label, hrefOf, className }: CheckListProps<T>) {
   const Link = useLinkComponent()
   return (
     <ul className={cn('grid gap-x-6 gap-y-2.5 text-sm', className)} aria-label={label}>

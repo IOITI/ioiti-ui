@@ -9,10 +9,11 @@ const navigation: CategoryInfo = {
   summary: 'Tabs, trails, steps, the parts of a page: what has an address is a link, which a ⌘-click opens in another tab.',
   families: [
     {
-      slug: 'animated-tabs',
-      name: 'AnimatedTabs',
-      names: ['AnimatedTabs'],
-      keywords: ['tabs', 'tablist', 'views', 'pill'],
+      slug: 'tabs',
+      name: 'Tabs',
+      names: ['Tabs'],
+      formerly: ['AnimatedTabs'],
+      keywords: ['tablist', 'views', 'pill'],
       examples: [
         { id: 'views', title: 'Views of one thing', description: 'A tablist and its panel, named by the tab shown: one stop of the keyboard, whose arrows, Home and End move and choose. A badge counts what a view holds.' },
         { id: 'variants', title: 'Variants', description: 'default for a page’s views; pill, rounded, for a short choice over a chart or a list (glass is drawn as the pill). The background slides to the tab chosen.' },

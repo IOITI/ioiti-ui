@@ -14,6 +14,8 @@ import {
 
 // ioiti-ui: held by its caller or by itself, as every layer (useControllableState).
 import { useControllableState } from "../../lib/controllable.js";
+// ioiti-ui: the focus kept as every layer over the page keeps it (useFocusScope): its own trap is gone.
+import { currentFocusScope, useFocusScope } from "../../lib/focus-scope.js";
 import { motionTransitions } from "../../lib/motion-tokens.js";
 import { DIALOG, SCRIM_FILL } from "../../lib/recipes.js";
 import { cn } from "../../lib/utils.js";
@@ -230,7 +232,6 @@ export function ProductTour({
   const dirRef = useRef(1);
   const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const roRef = useRef<ResizeObserver | null>(null);
-  const prevFocus = useRef<Element | null>(null);
 
   const cardRef = useRef<HTMLDivElement>(null);
   const regionRef = useRef<HTMLDivElement>(null);
@@ -406,31 +407,13 @@ export function ProductTour({
     };
   }, [open]);
 
-  // Keyboard: ← → navigate, Esc closes. ioiti-ui: and Tab stays in the card, as in a dialog (SettleModal's
-  // way): the page is not made inert, which would take the toasts with it, or the tour itself.
+  // Keyboard: ← → navigate (ioiti-ui: while the tour keeps the focus, not a dialog opened over it), Esc closes
+  // (ioiti-ui: its scope's, below).
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Tab") {
-        const card = cardRef.current;
-        const stops = card ? Array.from(card.querySelectorAll<HTMLElement>("button:not([disabled])")) : [];
-        if (!stops.length) return;
-        const first = stops[0];
-        const last = stops[stops.length - 1];
-        const outside = !card?.contains(document.activeElement);
-        if (e.shiftKey && (outside || document.activeElement === first)) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && (outside || document.activeElement === last)) {
-          e.preventDefault();
-          first.focus();
-        }
-        return;
-      }
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose("dismiss");
-      } else if (e.key === "ArrowRight") {
+      if (e.defaultPrevented || !cardRef.current || currentFocusScope() !== cardRef.current) return;
+      if (e.key === "ArrowRight") {
         e.preventDefault();
         go(index + 1);
       } else if (e.key === "ArrowLeft") {
@@ -443,15 +426,18 @@ export function ProductTour({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, index]);
 
-  // Focus: into the card when ready, back to where it was on close
-  useEffect(() => {
-    if (!open) return;
-    prevFocus.current = document.activeElement;
-    return () => (prevFocus.current as HTMLElement | null)?.focus?.({ preventScroll: true });
-  }, [open]);
-  useEffect(() => {
-    if (open && ready) nextRef.current?.focus({ preventScroll: true });
-  }, [open, ready]);
+  // Focus: into the card when ready, back to where it was on close (ioiti-ui: as every layer over the page keeps it,
+  // useFocusScope, in place of its own trap: on Next once the card is placed; kept in the card by Tab, from wherever it
+  // is, the latest layer opened keeping it; given back to what had it, unless it went elsewhere meanwhile. Escape ends
+  // the tour (`dismiss`). The page is not made inert, which would take the toasts with it, or the tour itself.)
+  useFocusScope(cardRef, {
+    active: open && ready,
+    initialFocus: () => nextRef.current,
+    onEscape: (e) => {
+      e.preventDefault();
+      onClose("dismiss");
+    },
+  });
 
   if (!mounted) return null;
   const isLast = index === steps.length - 1;

@@ -38,8 +38,8 @@ import { PeekCard } from './ui/peek-card.js'
 import { ScrollProgressNav } from './ui/scroll-progress-nav.js'
 import { SelectionBasket } from './ui/selection-basket.js'
 import { SkeletonReveal } from './ui/skeleton.js'
-import { SmartComparison } from './ui/smart-comparison.js'
-import { SpringSelect } from './ui/spring-select.js'
+import { ComparisonTable } from './ui/smart-comparison.js'
+import { SelectMenu } from './ui/spring-select.js'
 import { Stepper } from './ui/stepper.js'
 
 /** French's no-break spaces (before a colon, inside guillemets, between groups of digits) read as spaces. */
@@ -228,7 +228,7 @@ describe('the tables in French', () => {
         features: [{ id: 'sso', name: 'SSO', description: 'Connexion unique', values: { base: false, pro: true } }],
       },
     ]
-    render(<SmartComparison plans={plans} categories={categories} />, { wrapper: French })
+    render(<ComparisonTable plans={plans} categories={categories} />, { wrapper: French })
 
     expect(screen.getByRole('table', { name: 'Comparaison des fonctionnalités et des offres' })).toBeInTheDocument()
     expect(screen.getByText('Matrice des fonctionnalités')).toBeInTheDocument()
@@ -243,7 +243,7 @@ describe('the tables in French', () => {
   })
 
   it('count one row of a comparison in the singular in English too', () => {
-    render(<SmartComparison plans={[{ id: 'a', name: 'A', tagline: '', price: '1' }]} categories={[{ id: 'c', title: 'C', features: [{ id: 'f', name: 'F', values: { a: true } }] }]} />)
+    render(<ComparisonTable plans={[{ id: 'a', name: 'A', tagline: '', price: '1' }]} categories={[{ id: 'c', title: 'C', features: [{ id: 'f', name: 'F', values: { a: true } }] }]} />)
     expect(screen.getByText('1 specification')).toBeInTheDocument()
   })
 
@@ -339,12 +339,12 @@ describe('the selects in French', () => {
     expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent('Paris et Lille')
   })
 
-  it('Combobox and SpringSelect say their placeholders, their search and what it does not find', async () => {
+  it('Combobox and SelectMenu say their placeholders, their search and what it does not find', async () => {
     const user = userEvent.setup()
     render(
       <>
         <Combobox aria-label="Transporteur" options={[{ value: 'poste', label: 'La Poste' }]} />
-        <SpringSelect aria-label="Pays" options={[{ value: 'fr', label: 'France' }]} />
+        <SelectMenu aria-label="Pays" options={[{ value: 'fr', label: 'France' }]} />
       </>,
       { wrapper: French },
     )
@@ -362,7 +362,7 @@ describe('the selects in French', () => {
     render(
       <>
         <MultiSelect label="Cities" options={CITIES} />
-        <SpringSelect aria-label="Country" options={[{ value: 'fr', label: 'France' }]} />
+        <SelectMenu aria-label="Country" options={[{ value: 'fr', label: 'France' }]} />
       </>,
       { wrapper: Own },
     )

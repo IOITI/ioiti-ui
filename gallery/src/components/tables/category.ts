@@ -59,9 +59,10 @@ const tables: CategoryInfo = {
       ],
     },
     {
-      slug: 'smart-comparison',
-      name: 'SmartComparison',
-      names: ['SmartComparison'],
+      slug: 'comparison-table',
+      name: 'ComparisonTable',
+      names: ['ComparisonTable'],
+      formerly: ['SmartComparison'],
       keywords: ['compare', 'plans', 'pricing', 'matrix'],
       examples: [
         { id: 'plans', title: 'Plans compared', description: 'Plans side by side, row by row, in categories: a search over the rows and “Differences only”. The featured plan is set apart; below 640 px one plan is shown at a time.' },

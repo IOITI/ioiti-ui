@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { NotFoundState } from '../shell/NotFoundState.js'
 import { AIAgentActivity } from './ui/ai-agent-activity.js'
 import { Alert } from './ui/alert.js'
-import { AnimatedTabs } from './ui/animated-tabs.js'
+import { Tabs } from './ui/animated-tabs.js'
 import { AdvancedDataTable } from './ui/advanced-data-table.js'
 import { ScrollProgressNav } from './ui/scroll-progress-nav.js'
 
@@ -204,7 +204,7 @@ describe('what draws no ring of its own, and blurs nothing', () => {
     render(
       <>
         <Alert dismissible>Saved</Alert>
-        <AnimatedTabs variant="glass" label="Period" tabs={[{ id: 'day', label: 'Day' }, { id: 'week', label: 'Week' }]} />
+        <Tabs variant="glass" label="Period" tabs={[{ id: 'day', label: 'Day' }, { id: 'week', label: 'Week' }]} />
       </>,
     )
     expect(screen.getByRole('button', { name: 'Dismiss' }).className).not.toMatch(/focus-visible:ring/)

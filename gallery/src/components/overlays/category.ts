@@ -21,10 +21,11 @@ const overlays: CategoryInfo = {
       ],
     },
     {
-      slug: 'directional-tooltip',
-      name: 'DirectionalTooltip',
-      names: ['DirectionalTooltip'],
-      keywords: ['tooltip', 'arrow', 'placement'],
+      slug: 'tooltip',
+      name: 'Tooltip',
+      names: ['Tooltip'],
+      formerly: ['DirectionalTooltip'],
+      keywords: ['arrow', 'placement'],
       examples: [
         { id: 'sides', title: 'Its sides', description: 'The tooltip under Hint: on the side asked, or the other one when there is no room, its arrow on its trigger. Hint is what pages use.' },
         { id: 'align', title: 'Aligned on its trigger', description: 'Along the side it is on: on the trigger’s start, its centre or its end.' },
@@ -66,10 +67,11 @@ const overlays: CategoryInfo = {
       ],
     },
     {
-      slug: 'settle-modal',
-      name: 'SettleModal',
-      names: ['SettleModal'],
-      keywords: ['dialog', 'modal', 'popup'],
+      slug: 'dialog',
+      name: 'Dialog',
+      names: ['Dialog'],
+      formerly: ['SettleModal'],
+      keywords: ['modal', 'popup'],
       examples: [
         { id: 'sizes', title: 'Its widths', description: 'Four widths, and a full one for two things side by side. It settles in from what opened it, keeps the focus, and gives it back.' },
         { id: 'form', title: 'A form', description: 'One field and what is wrong with it; the primary button submits the form, busy until the answer comes.' },
@@ -77,10 +79,11 @@ const overlays: CategoryInfo = {
       ],
     },
     {
-      slug: 'flysheet',
-      name: 'Flysheet',
-      names: ['Flysheet', 'FlysheetTrigger', 'FlysheetContent', 'FlysheetHeader', 'FlysheetTitle', 'FlysheetDescription', 'FlysheetBody', 'FlysheetFooter', 'FlysheetClose'],
-      keywords: ['sheet', 'drawer', 'side panel', 'flyout'],
+      slug: 'sheet',
+      name: 'Sheet',
+      names: ['Sheet', 'SheetTrigger', 'SheetContent', 'SheetHeader', 'SheetTitle', 'SheetDescription', 'SheetBody', 'SheetFooter', 'SheetClose'],
+      formerly: ['Flysheet', 'FlysheetTrigger', 'FlysheetContent', 'FlysheetHeader', 'FlysheetTitle', 'FlysheetDescription', 'FlysheetBody', 'FlysheetFooter', 'FlysheetClose'],
+      keywords: ['drawer', 'side panel', 'flyout'],
       examples: [
         { id: 'record', title: 'A record beside the page', description: 'From the right, widened by its edge or the arrow keys on it; a child sheet beside its parent, or over it on a narrow screen.' },
         { id: 'sides', title: 'From each side', description: 'From the left for filters, the close button outside; from the top or the bottom, swiped away on a touch screen.' },

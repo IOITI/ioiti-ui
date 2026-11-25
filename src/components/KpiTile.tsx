@@ -102,7 +102,8 @@ export function KpiTile({ label, value, hint, change, goodWhen, changeFormat, le
   )
 }
 
-interface MeterProps {
+/** The props of `Meter`. */
+export interface MeterProps {
   /** 0 to 1. */
   ratio: number
   tone?: MeterTone
@@ -150,7 +151,8 @@ const COLUMNS = {
   6: 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-6',
 }
 
-interface KpiGridProps {
+/** The props of `KpiGrid`. */
+export interface KpiGridProps {
   /** How many tiles side by side on a wide screen (1280 px; three from 1024 for five or six): four by default. */
   columns?: 2 | 3 | 4 | 5 | 6
   /**

@@ -147,8 +147,8 @@ function Moments() {
 }
 
 const FAMILIES = [
-  { family: 'A dialog', what: 'SettleModal, ConfirmAction', arriving: 'springGentle, from what opened it', leaving: 'easeExit' },
-  { family: 'A sheet, the drawer', what: 'Flysheet, the sidebar on a phone', arriving: 'springSheet, from its side', leaving: 'springSheet, back to its side' },
+  { family: 'A dialog', what: 'Dialog, ConfirmAction', arriving: 'springGentle, from what opened it', leaving: 'easeExit' },
+  { family: 'A sheet, the drawer', what: 'Sheet, the sidebar on a phone', arriving: 'springSheet, from its side', leaving: 'springSheet, back to its side' },
   { family: 'A scrim', what: 'Behind a dialog, a sheet, the drawer, the palette', arriving: 'easeFast', leaving: 'easeExit' },
   { family: 'What floats', what: 'Popovers, menus, the palette, tooltips, peek cards', arriving: 'springSnappy', leaving: 'easeExit' },
   { family: 'A toast, a bar', what: 'The toasts, the selection basket', arriving: 'springSnappy, from the edge it leaves by', leaving: 'easeExit' },

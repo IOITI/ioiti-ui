@@ -11,12 +11,17 @@ import { useTheme } from './theme-context.js'
 
 const ICONS = { system: Monitor, light: Sun, dark: Moon }
 
+/** The props of `ThemeToggle`. */
+export interface ThemeToggleProps {
+  className?: string
+}
+
 /**
  * One button for three states: follow the system, light, dark. Its icon is the
  * state it is in, and its label says both that and what a press does, since an
  * icon alone cannot ("Theme: follows the system (dark now). Press for always light."), in the provider's language.
  */
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const { preference, theme, setPreference } = useTheme()
   const words = useMessages().look
   const Icon = ICONS[preference]

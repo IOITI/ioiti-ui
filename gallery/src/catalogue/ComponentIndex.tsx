@@ -4,10 +4,12 @@ import { useSearchParams } from 'react-router'
 
 import { CATEGORIES, categoryPath, FAMILIES, plainSummary, type Placed } from './catalogue'
 
-/** Whether every word asked for is in what a family is called, holds, or does. */
+/** Whether every word asked for is in what a family is called (or was), holds, or does. */
 function matches(placed: Placed, words: string[]) {
   const { family, category } = placed
-  const text = [family.name, ...family.names, ...(family.keywords ?? []), category.label, plainSummary(family)].join(' ').toLowerCase()
+  const text = [family.name, ...family.names, ...(family.formerly ?? []), ...(family.keywords ?? []), category.label, plainSummary(family)]
+    .join(' ')
+    .toLowerCase()
   return words.every((word) => text.includes(word))
 }
 
@@ -74,6 +76,8 @@ export function ComponentIndex() {
                     {family.names.length > 1 && (
                       <p className="truncate text-xs text-muted-foreground">With {family.names.slice(1).join(', ')}</p>
                     )}
+                    {family.formerly && <p className="truncate text-xs text-muted-foreground">Formerly {family.formerly.join(', ')}</p>}
+                    {family.deprecated && <p className="truncate text-xs text-muted-foreground">Deprecated: use {family.deprecated}</p>}
                   </li>
                 ))}
             </ul>

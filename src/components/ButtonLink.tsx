@@ -7,7 +7,8 @@ import { useLinkComponent } from './link-context.js'
 import { Button, BUTTON_LABEL_CLASS, buttonClassName, buttonIconClassName } from './ui/button.js'
 import type { ButtonSize, ButtonVariant } from './ui/button.js'
 
-interface ButtonLinkProps extends Omit<ComponentProps<'a'>, 'href' | 'className'> {
+/** The props of `ButtonLink`. */
+export interface ButtonLinkProps extends Omit<ComponentProps<'a'>, 'href' | 'className'> {
   /**
    * Where it leads. Nothing (`null`, or none given): a button that cannot be pressed, there being nowhere to go (no day
    * before the first).

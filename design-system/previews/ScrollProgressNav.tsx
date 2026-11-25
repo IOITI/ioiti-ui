@@ -1,4 +1,4 @@
-import { AnimatedTabs, Breadcrumb, Panel, ScrollProgressNav, SelectionBasket, SmoothAccordion, Stepper } from 'ioiti-ui'
+import { Accordion, Breadcrumb, Panel, ScrollProgressNav, SelectionBasket, Stepper, Tabs } from 'ioiti-ui'
 import { Trash2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -28,8 +28,8 @@ function Preview() {
     <div className="space-y-2 p-5">
       <div ref={page} className="relative h-80 space-y-4 overflow-y-auto rounded-2xl border border-border/70 p-4">
         <ScrollProgressNav sections={PARTS} mode="sticky" containerRef={page} label="On this page" />
-        <Panel id="tabs" className="scroll-mt-16" title="AnimatedTabs" description="Views of one thing: a tablist, its panel named by the tab shown, one stop of the keyboard.">
-          <AnimatedTabs variant="pill" renderContent={false} label="Period" tabs={[{ id: 'day', label: 'Day' }, { id: 'week', label: 'Week' }, { id: 'month', label: 'Month' }]} />
+        <Panel id="tabs" className="scroll-mt-16" title="Tabs" description="Views of one thing: a tablist, its panel named by the tab shown, one stop of the keyboard.">
+          <Tabs variant="pill" renderContent={false} label="Period" tabs={[{ id: 'day', label: 'Day' }, { id: 'week', label: 'Week' }, { id: 'month', label: 'Month' }]} />
         </Panel>
         <Panel id="breadcrumb" className="scroll-mt-16" title="Breadcrumb" description="Where a page is, from Home: the top bar has one on every page.">
           <Breadcrumb items={[{ label: 'Home', href: '#' }, { label: 'Components', href: '#' }, { label: 'Navigation' }]} />
@@ -37,8 +37,8 @@ function Preview() {
         <Panel id="stepper" className="scroll-mt-16" title="Stepper and StepPanels" description="A task in steps: a step done can be gone back to.">
           <Stepper steps={STEPS} current={step} onStepChange={setStep} />
         </Panel>
-        <Panel id="accordion" className="scroll-mt-16" title="SmoothAccordion" description="Questions and their answers, opened one at a time or several.">
-          <SmoothAccordion
+        <Panel id="accordion" className="scroll-mt-16" title="Accordion" description="Questions and their answers, opened one at a time or several.">
+          <Accordion
             items={[
               { id: 'returns', title: 'Can an order be returned?', content: 'Within 30 days, in its box.' },
               { id: 'delivery', title: 'How long is a delivery?', content: 'Three to five working days.' },

@@ -19,6 +19,8 @@ import {
 import { cn } from '../../lib/utils.js';
 // ioiti-ui: its former value said once in development.
 import { deprecated } from '../../lib/deprecated.js';
+// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
+import { renamed } from '../../lib/renamed.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, TONE_LINE, TONE_SOFT } from '../../lib/recipes.js';
 import { useLinkComponent } from '../link-context.js';
@@ -43,7 +45,9 @@ export interface UploadFileItem {
 /** ioiti-ui: what an upload handler may answer: where its result is opened. */
 export type UploadResult = { href: string; label: string } | void;
 
-export interface AnimatedFileUploadProps {
+// ioiti-ui: named after its role, `FileUpload` (EasyUI's `AnimatedFileUpload`, its former name: at the end of the
+// file).
+export interface FileUploadProps {
   /** Allow multiple files selection and upload */
   multiple?: boolean;
   /** Accepted MIME types or extensions (e.g., "image/*,application/pdf" or [".png", ".jpg"]) */
@@ -117,7 +121,7 @@ const getFileIcon = (fileName: string, mimeType: string) => {
   return FileIcon;
 };
 
-export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
+export const FileUpload: React.FC<FileUploadProps> = ({
   multiple = true,
   accept,
   maxSize = 25 * 1024 * 1024, // 25MB default
@@ -366,7 +370,7 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
   };
 
   // ioiti-ui: its former value read as today's, said once in development.
-  if (variant === 'compact') deprecated('upload-variant-compact', 'AnimatedFileUpload');
+  if (variant === 'compact') deprecated('upload-variant-compact', 'FileUpload');
   const isCompact = (density ?? (variant === 'compact' ? 'compact' : 'regular')) === 'compact';
 
   return (
@@ -590,3 +594,10 @@ export const AnimatedFileUpload: React.FC<AnimatedFileUploadProps> = ({
     </div>
   );
 };
+
+// ioiti-ui: EasyUI's names, until 1.0: the former name draws the upload, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `FileUpload`. Removed in 1.0. */
+export const AnimatedFileUpload = renamed(FileUpload, 'AnimatedFileUpload');
+/** @deprecated Use `FileUploadProps`. Removed in 1.0. */
+export type AnimatedFileUploadProps = FileUploadProps;

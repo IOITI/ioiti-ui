@@ -5,7 +5,8 @@ import { useScrollRegion } from '../lib/scroll-region.js'
 import { cn } from '../lib/utils.js'
 import { useMessages } from './locale-context.js'
 
-interface ResizablePanelProps {
+/** The props of `ResizablePanel`. */
+export interface ResizablePanelProps {
   /** Its share of the room at first, in percent: the shares of all the panels make 100. */
   defaultSize: number
   /** The least share it keeps, in percent (unless collapsed). */
@@ -29,7 +30,8 @@ export function ResizablePanel(props: ResizablePanelProps): ReactElement | null 
   return null
 }
 
-interface ResizableHandleProps {
+/** The props of `ResizableHandle`. */
+export interface ResizableHandleProps {
   /**
    * What it resizes, for a screen reader: "Resize the editor". By default, in the provider's language, "Resize" and the
    * panel before it's `label` ("the editor"), or "Resize" alone.
@@ -43,7 +45,8 @@ export function ResizableHandle(props: ResizableHandleProps): ReactElement | nul
   return null
 }
 
-interface ResizablePanelsProps {
+/** The props of `ResizablePanels`. */
+export interface ResizablePanelsProps {
   /** Side by side (`horizontal`) or one over the other (`vertical`). */
   direction?: 'horizontal' | 'vertical'
   /** Every panel's share, in percent, once a handle has moved them. */

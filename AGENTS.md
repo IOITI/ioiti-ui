@@ -17,12 +17,14 @@ components, an application shell, for Tailwind CSS 4. Installed by applications 
 | `src/locales/` | the words the package says: English's catalogue (`en.ts`, a file per namespace in `en/`), the one every language is typed after, and French's (`fr.ts`, `fr/`); the entries `ioiti-ui/locales/en` and `ioiti-ui/locales/fr` |
 | `src/react-router/` | the adapter for React Router, the only code that imports it |
 | `src/vite/` | the Vite plugin (Node: no DOM types there) |
+| `src/codemod/` | the codemod, `npx ioiti-ui-codemod` (Node, its own build: `tsconfig.codemod.json`): an application's code given today's names, from `src/lib/deprecations.ts`, read with the application's TypeScript |
 | `gallery/` | an application made with the package: a page per component, in both themes (`gallery/src/components/<category>/`: its `category.ts`, then a folder per component of one file per example, whose code the page shows; `gallery/src/catalogue/` draws them, with each component's guidelines and props) |
 | `templates/app/` | the starter template an application is copied from |
-| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), a word written in a component (`check-strings.mjs`), the import codemod, the golden reference, the grains, the props (`props.mjs`) |
+| `scripts/` | build, release (`release.mjs`; the CHANGELOG read and written, `changelog.mjs`; a Release's notes, `release-notes.mjs`), the package, source and docs checks (`check-docs.mjs`: what the docs count and install), a word written in a component (`check-strings.mjs`), the import codemod, the golden reference, the grains, the props, each component's props type and their JSDoc (`props.mjs`; what has none yet, `docs-baseline.json`), the interface's report (`api-report.mjs`) |
 | `design-system/` | the claude.ai Design System artifact's files (`design-system/README.md`); `components/<Name>/README.md` are also the gallery's guidelines |
 | `test/golden/` | blocks of the original design's built CSS, which an application's build must hold |
 | `test/size-budget.json` | what an application bundles, gzipped, which `check:package` holds it to |
+| `test/api/` | the interface of each entry as the type checker reads it (`<entry>.api.txt`: `npm run api`), which `npm run lint` holds |
 | `test/a11y.ts` | axe in the tests (`expectAccessible`), shared by the package's tests and the gallery's |
 | `e2e/` | the gallery in real browsers (Playwright): its pages, axe with the stylesheets, the keyboard, motion, its screenshots (`e2e/__screenshots__`, made by CI) |
 
@@ -34,6 +36,8 @@ Node 24: `source ~/.nvm/nvm.sh && nvm use 24` first (the default Node of this Ma
 npm run lint && npm run typecheck && npm test && npm run build && npm run build:gallery && npm run check:package
 npm run gallery                    # http://localhost:5180, on src/
 npm run props                      # gallery/src/props.json, after a change of a component's props (lint checks it)
+npm run api                        # test/api/<entry>.api.txt, after a change of the interface on purpose (lint checks it)
+node scripts/props.mjs --docs-baseline   # scripts/docs-baseline.json, once a component or a prop it lists is documented
 npm run release -- 0.2.0           # docs/releasing.md; pushing is the user's
 npm run check:package -- --update-budget   # test/size-budget.json, after a change that weighs more on purpose
 npm run e2e                        # the gallery built, in Chromium: pages, axe with CSS, the keyboard, motion
@@ -118,11 +122,19 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   `defaultValue`, `onChange` for a value, `open`, `defaultOpen`, `onOpenChange` for what opens, held by
   `useControllableState` (`src/lib/controllable.ts`), never by hand; `loading` for content not there yet, `pending` for
   an action under way; `aria-*` as ARIA writes them; `href` for a link; `showCloseButton`; `density="compact"`; a
-  state's tone a `StatusTone`, a figure's a `SignTone` (`src/lib/tones.ts`).
+  state's tone a `StatusTone`, a figure's a `SignTone` (`src/lib/tones.ts`). A component is named by its role
+  (`Dialog`, `Sheet`), never by how it moves. A control takes what a native one does (`id` and `ref` on what takes the
+  focus, `name` sent by a form, a hidden input where it has none of its own, `aria-label|labelledby|describedby|invalid`,
+  `className` and `data-*` on its outermost element), and reads the Field or FormItem around it (`useFieldControl`,
+  `src/components/field-context.ts`), its own props first.
 - **A deprecation** goes through `src/lib/deprecations.ts` (the old name, what replaces it, since when), `@deprecated`
   on the old prop (the props tables mark it; `props.mjs --check` refuses a retired name not so marked), `deprecated(id)`
   when it is given (once, in development: a production build keeps none of it, `check:package`), and a line of the
-  CHANGELOG's Deprecated section (`check-docs`). It is removed only in a major (1.0).
+  CHANGELOG's Deprecated section (`check-docs`). A component renamed keeps its former name as
+  `renamed(Component, 'Former')` (`src/lib/renamed.ts`: the component itself in production), its id never its file's
+  name (a bundle names its modules after their files). The codemod (`src/codemod`, `npx ioiti-ui-codemod`) rewrites an
+  application from the same list: a deprecation it cannot rewrite alone (`hideCloseButton` turned the other way round)
+  is taught to it (`SPECIAL`, `src/codemod/rules.ts`), with a test. It is removed only in a major (1.0).
 - **A word the package says comes from its catalogue** (`src/locales/en/<namespace>.ts`, French in `src/locales/fr/`):
   a component says it with `useMessages()`, never written in its code (`check-strings` fails on one; `// i18n-exempt:
   <why>` for what is no word to translate: a brand, a code, a symbol). A word added in English is added in French in the
@@ -138,9 +150,11 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
   `ErrorState` of a page), `RouterErrorPage` on the router's routes; an error is told to the application once
   (`reportOnce`, `src/components/error-context.ts`: IoitiProvider's `onError`), its kind read by `src/lib/errors.ts`.
   The details of an error show in development only.
-- **One dialog at a time**, in `document.body`, keeping the focus. A layer that holds the page (a dialog, the
-  sidebar's drawer: `aria-modal`) keeps it with `useFocusScope` (`src/lib/focus-scope.ts`): moved in, kept in by Tab,
-  given back, the latest opened keeping it; no trap written by hand.
+- **One dialog at a time**, in `document.body`, keeping the focus. A layer that holds the page (a dialog, a sheet with
+  a backdrop, the sidebar's drawer: `aria-modal`; the palette, a tour) keeps it with `useFocusScope`
+  (`src/lib/focus-scope.ts`): moved in, kept in by Tab, given back, the latest opened keeping it; a layer beside the
+  page (a sheet without a backdrop) is a scope that holds none (`contain: false`: Tab free, its Escape heard from within);
+  no trap written by hand.
 - **What is said to a screen reader once something happened** goes through a live region there before its words:
   `announce` (`src/lib/announce.ts`, polite or assertive, in the dialog that keeps the focus), or a frame of its own
   that stays (the toasts', `ToastProvider`'s two regions). Never a region drawn with its words.
@@ -156,11 +170,21 @@ E2E_SOURCE=1 E2E_PORT=4181 npm run e2e -- a11y.spec   # on the source (vite's de
 - **No name of the original application** (WATA, its broker) in `src/`, `gallery/` or `templates/`: the docs
   say where it comes from, the code does not. `check-source` holds it.
 - **Every export is a decision**: `src/index.ts` names each one; `src/index.test.ts` snapshots the list
-  (`npx vitest run -u` on purpose, and a line of CHANGELOG.md). Every component belongs to one family of the
+  (`npx vitest run -u` on purpose, and a line of CHANGELOG.md), `test/api/` the types of every entry (`npm run api` on
+  purpose, the same line). A component's props type is exported by its entry beside it, as `<Name>Props` (a part that
+  takes an element's attributes, a named type of them: `TableRowProps = ComponentProps<'tr'>`), with a line of JSDoc;
+  a former name needs none (`props.mjs --check`). Every component belongs to one family of the
   gallery (`gallery/src/components/<category>/category.ts`, its `names`), which has its guidelines
   (`design-system/components/<Name>/README.md`), two examples at least that import it, as an application would
   (`scripts/check-source.mjs` holds their imports), and its props (`npm run props`):
-  `gallery/src/catalogue/catalogue.test.ts` fails otherwise.
+  `gallery/src/catalogue/catalogue.test.ts` fails otherwise. A former name kept until 1.0 (an `export` of
+  `src/lib/deprecations.ts`) has no family of its own: its new name's says it (`formerly`, its page's former address
+  led there by `gallery/src/catalogue/legacy.ts`); a component deprecated for another keeps its family, marked so
+  (`deprecated`).
+- **A component and each of its props have a line of JSDoc.** Those without one in 0.31.0 are listed in
+  `scripts/docs-baseline.json`, which only shrinks: `props.mjs --check` fails on a new one without JSDoc, and on one
+  listed that has it now or is gone (`node scripts/props.mjs --docs-baseline` takes it off and takes nothing in). A
+  prop's JSDoc is its description, or its `@deprecated` tag.
 - **A component exports components only** (fast refresh): constants and helpers go in a `.ts` beside it
   (`lib/health.ts`, `link-context.ts`).
 - **The link drawn from context** is flagged by oxlint's `react/static-components`: disable it on that line

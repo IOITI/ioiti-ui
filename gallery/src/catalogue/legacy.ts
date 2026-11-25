@@ -1,6 +1,7 @@
 /**
  * Where the gallery's former pages went: until 0.18 a page held a whole group of components, each a part of it
- * (`/components/data#kpi`); each now has a page of its own. A link to a former part leads to that page.
+ * (`/components/data#kpi`); each now has a page of its own. A link to a former part leads to that page. Until 0.31, a
+ * component copied from EasyUI kept EasyUI's name, and its page's address that name (RENAMED, below).
  */
 const MOVED: Record<string, Record<string, string>> = {
   shell: {
@@ -32,7 +33,7 @@ const MOVED: Record<string, Record<string, string>> = {
     field: 'forms/field',
     form: 'forms/form',
     checkbox: 'choices/checkbox',
-    choices: 'choices/spring-select',
+    choices: 'choices/select-menu',
     'inline-edit': 'forms/inline-edit',
     'multi-select': 'choices/multi-select',
     number: 'forms/number-input',
@@ -41,7 +42,7 @@ const MOVED: Record<string, Record<string, string>> = {
     'time-range': 'dates/time-range-picker',
     otp: 'forms/otp-input',
     dates: 'dates/date-picker',
-    upload: 'forms/animated-file-upload',
+    upload: 'forms/file-upload',
   },
   feedback: {
     alert: 'feedback/alert',
@@ -57,22 +58,22 @@ const MOVED: Record<string, Record<string, string>> = {
     checks: 'feedback/check-list',
   },
   overlays: {
-    tooltip: 'overlays/directional-tooltip',
+    tooltip: 'overlays/tooltip',
     peek: 'overlays/peek-link',
     popover: 'overlays/popover',
     menu: 'overlays/dropdown-menu',
     tour: 'overlays/product-tour',
-    dialog: 'overlays/settle-modal',
-    flysheet: 'overlays/flysheet',
+    dialog: 'overlays/dialog',
+    flysheet: 'overlays/sheet',
     bell: 'top-bar/notification-bell',
     spotlight: 'top-bar/spotlight-search',
-    island: 'feedback/dynamic-island',
+    island: 'feedback/status-island',
   },
   navigation: {
-    tabs: 'navigation/animated-tabs',
+    tabs: 'navigation/tabs',
     breadcrumb: 'navigation/breadcrumb',
     stepper: 'navigation/stepper',
-    accordion: 'layout/smooth-accordion',
+    accordion: 'layout/accordion',
     basket: 'tables/selection-basket',
     progress: 'navigation/scroll-progress-nav',
   },
@@ -94,14 +95,14 @@ const MOVED: Record<string, Record<string, string>> = {
     signed: 'figures/signed-value',
     timeline: 'tables/interactive-timeline',
     ledger: 'tables/recovery-ledger',
-    comparison: 'tables/smart-comparison',
+    comparison: 'tables/comparison-table',
     agent: 'ai/ai-agent-activity',
     response: 'ai/ai-response',
     thinking: 'ai/ai-response',
     'response-parts': 'ai/ai-response',
     composer: 'ai/prompt-composer',
     'attachment-chip': 'ai/attachment-chip',
-    clock: 'dates/airport-matrix-clock',
+    clock: 'dates/world-clock',
   },
   charts: {
     sparkline: 'charts/sparkline',
@@ -127,11 +128,39 @@ const MOVED: Record<string, Record<string, string>> = {
 export const GONE: Record<string, string> = { '/components/data': '/components/tables' }
 
 /**
+ * The components given the name of their role in 0.31.0 (their former names still work until 1.0: FamilyInfo's
+ * `formerly`): a page's former address, in its category, and its address now. Its examples kept their anchors.
+ */
+const RENAMED: Record<string, string> = {
+  'overlays/settle-modal': 'overlays/dialog',
+  'overlays/flysheet': 'overlays/sheet',
+  'choices/spring-select': 'choices/select-menu',
+  'feedback/velocity-toast': 'feedback/toast',
+  'layout/smooth-accordion': 'layout/accordion',
+  'overlays/directional-tooltip': 'overlays/tooltip',
+  'navigation/animated-tabs': 'navigation/tabs',
+  'forms/animated-file-upload': 'forms/file-upload',
+  'dates/airport-matrix-clock': 'dates/world-clock',
+  'tables/smart-comparison': 'tables/comparison-table',
+  'feedback/dynamic-island': 'feedback/status-island',
+}
+
+/** The former addresses of the components renamed, each a route of its own (router.tsx), and where each leads. */
+export const FORMER_ADDRESSES: { from: string; to: string }[] = Object.entries(RENAMED).map(([from, to]) => ({
+  from: `/components/${from}`,
+  to: `/components/${to}`,
+}))
+
+/**
  * Where a link to a former page's part leads now (`/components/data#kpi`), when it is one: a category kept its
- * former page's address, and a part of it that is one of its components stays where it is.
+ * former page's address, and a part of it that is one of its components stays where it is. A component's former
+ * address leads to its page, at the same example (`/components/overlays/settle-modal#form`).
  */
 export function movedTo(pathname: string, hash: string): string | undefined {
-  const page = pathname.replace(/\/+$/, '').match(/^\/components\/([^/]+)$/)?.[1]
+  const path = pathname.replace(/\/+$/, '')
+  const family = path.match(/^\/components\/([^/]+\/[^/]+)$/)?.[1]
+  if (family && RENAMED[family]) return `/components/${RENAMED[family]}${hash}`
+  const page = path.match(/^\/components\/([^/]+)$/)?.[1]
   const part = decodeURIComponent(hash.replace(/^#/, ''))
   if (!page) return undefined
   const moved = part ? MOVED[page]?.[part] : undefined

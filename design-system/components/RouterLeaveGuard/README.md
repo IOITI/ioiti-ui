@@ -11,4 +11,4 @@ Asks before a page is left with changes not saved: another page of the applicati
 
 - A change of the query or of the part shown is no leaving. Nothing listens while `when` is false.
 - It needs a data router (`createBrowserRouter`), whose navigations can wait; it is in `ioiti-ui/react-router`.
-- The dialog is a small `SettleModal`: Leave is destructive, Stay the primary button; Escape stays.
+- It asks in a small `Dialog`: Leave is destructive, Stay the primary button; Escape stays.

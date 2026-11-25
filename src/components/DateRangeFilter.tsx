@@ -14,7 +14,8 @@ export interface DateRangePreset {
 /** The days of the presets offered by default, each named in the provider's words ("7 days": `date.lastDays`). */
 const PRESET_DAYS = [7, 30, 90]
 
-interface DateRangeFilterProps {
+/** The props of `DateRangeFilter`. */
+export interface DateRangeFilterProps {
   value: DateRange
   onChange: (range: DateRange) => void
   /** The ranges offered first; the last 7, 30 and 90 days by default ("7 days", in the provider's words). */

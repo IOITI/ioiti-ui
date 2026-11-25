@@ -12,4 +12,4 @@ More, shown on demand: the figures of a chart as a table, the details of a reque
 
 - The summary in `text-secondary` (`text-primary` on hover) after a chevron that turns; the box `border`, `radius-xl`.
 - Its height follows what it holds, in 300ms on the design's soft curve; at once where motion is reduced.
-- For a list of sections, one open at a time, use `SmoothAccordion`.
+- For a list of sections, one open at a time, use `Accordion`.

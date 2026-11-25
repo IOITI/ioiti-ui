@@ -13,7 +13,8 @@ const LOOK = {
   quiet: 'text-xs text-muted-foreground hover:text-foreground accent:hover:text-brand-text',
 }
 
-interface TextLinkProps extends Omit<ComponentProps<'a'>, 'href'> {
+/** The props of `TextLink`. */
+export interface TextLinkProps extends Omit<ComponentProps<'a'>, 'href'> {
   /** Where it leads. */
   href?: string
   /** @deprecated Use `href`. Removed in 1.0. */

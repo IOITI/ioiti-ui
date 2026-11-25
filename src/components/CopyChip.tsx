@@ -3,7 +3,8 @@ import { CopyButton } from './CopyButton.js'
 import { Hint } from './Hint.js'
 import { useMessages } from './locale-context.js'
 
-interface CopyChipProps {
+/** The props of `CopyChip`. */
+export interface CopyChipProps {
   /** What is shown and copied: a reference, a key, an address. */
   value: string
   /** What it is, for its button, in the provider's language: "the key" makes "Copy the key". */

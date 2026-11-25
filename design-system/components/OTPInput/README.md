@@ -2,7 +2,7 @@
 
 A one-time code, one box per digit: a password manager's or a phone's autofill fills every box, as a paste does.
 
-**You provide** `aria-label` ("One-time code"), `length` (6 by default), `value` / `defaultValue`, `onChange`, `onComplete` (the code, once every box is filled); `id` for a `<label htmlFor>`, `className` for the row (`grid grid-cols-6 gap-2`), `boxClassName`, `disabled`, `autoFocus`, `error` (every box's border in `negative`; a `Field` with an error gives it).
+**You provide** `aria-label` ("One-time code"; a `Field` or a `FormItem` around it names it), `length` (6 by default), `value` / `defaultValue`, `onChange`, `onComplete` (the code, once every box is filled); `id` for a `<label htmlFor>` (its first box's), `className` for the row (`grid grid-cols-6 gap-2`), `boxClassName`, `disabled`, `autoFocus`, `error` (every box's border in `negative`; a `Field` with an error gives it). In a form: `name`, its digits sent. `ref` (its first box), `aria-labelledby`, `aria-describedby`, `aria-invalid`, as a native control takes them.
 
 ```tsx
 <OTPInput length={6} aria-label="One-time code" className="grid grid-cols-6 gap-2" onComplete={verify} />

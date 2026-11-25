@@ -63,9 +63,10 @@ const dates: CategoryInfo = {
       ],
     },
     {
-      slug: 'airport-matrix-clock',
-      name: 'AirportMatrixClock',
-      names: ['AirportMatrixClock'],
+      slug: 'world-clock',
+      name: 'WorldClock',
+      names: ['WorldClock'],
+      formerly: ['AirportMatrixClock'],
       keywords: ['world clock', 'time zones', 'departures board'],
       examples: [
         { id: 'cities', title: 'Several cities', description: 'The time of a few cities, as a departures board; a row’s characters flip under the pointer.' },

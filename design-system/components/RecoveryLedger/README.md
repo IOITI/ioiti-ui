@@ -9,6 +9,6 @@ Versions of something, newest first: the current one marked, an earlier one open
   restoreLabel="Restore" onRestore={(id) => askBeforeRestoring(id)} entries={versions} />
 ```
 
-- The ledger restores nothing itself: `onRestore` opens the page's confirmation (a `SettleModal`), which restores.
+- The ledger restores nothing itself: `onRestore` opens the page's confirmation (a `Dialog`), which restores.
 - The current entry is marked in green; an entry with `details` opens under its card. An entry with `restorable: false` has no restore button.
 - Give the words where the catalogue's do not fit: they are "Recovery ledger", "Revert", "Current head" and "N snapshots" by default ("1 snapshot"), in the language of IoitiProvider, in sentence case.

@@ -77,10 +77,11 @@ const feedback: CategoryInfo = {
       ],
     },
     {
-      slug: 'velocity-toast',
-      name: 'VelocityToast',
-      names: ['VelocityToast'],
-      keywords: ['toast', 'controlled', 'progress'],
+      slug: 'toast',
+      name: 'Toast',
+      names: ['Toast'],
+      formerly: ['VelocityToast'],
+      keywords: ['controlled', 'progress'],
       examples: [
         { id: 'controlled', title: 'Driven by the page', description: 'The toast under useToast(), for a page that shows and hides it itself: open and onDismiss, its bar running out.' },
         { id: 'positions', title: 'Positions', description: 'Bottom centre by default, where pages put no control; the corners and the top for a page whose bottom is taken.' },
@@ -99,9 +100,10 @@ const feedback: CategoryInfo = {
       ],
     },
     {
-      slug: 'dynamic-island',
-      name: 'DynamicIsland',
-      names: ['DynamicIsland'],
+      slug: 'status-island',
+      name: 'StatusIsland',
+      names: ['StatusIsland'],
+      formerly: ['DynamicIsland'],
       keywords: ['island', 'pill', 'live', 'top bar'],
       examples: [
         { id: 'top-bar', title: 'In a top bar', description: 'A pill that keeps its place in the top bar and grows into an island over the page: what is live, everywhere.' },

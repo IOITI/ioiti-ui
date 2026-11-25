@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { MultiSelect } from './MultiSelect.js'
 import type { MultiSelectOption } from './MultiSelect.js'
-import { SettleModal } from './ui/settle-modal.js'
+import { Dialog } from './ui/settle-modal.js'
 
 const CITIES: MultiSelectOption[] = [
   { value: 'lyon', label: 'Lyon', group: 'France' },
@@ -82,9 +82,9 @@ describe('MultiSelect', () => {
   it('closes its list on Escape, not the dialog around it', async () => {
     const user = userEvent.setup()
     render(
-      <SettleModal open onClose={() => {}} title="Send to">
+      <Dialog open onClose={() => {}} title="Send to">
         <MultiSelect label="Cities" options={CITIES} />
-      </SettleModal>,
+      </Dialog>,
     )
     await user.click(screen.getByRole('combobox', { name: 'Cities' }))
     expect(screen.getByRole('listbox')).toBeInTheDocument()

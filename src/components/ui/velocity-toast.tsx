@@ -13,13 +13,18 @@ import { useLinkComponent } from '../link-context.js';
 // ioiti-ui: its close button named in the provider's language.
 import { useMessages } from '../locale-context.js';
 import { ToastRegionContext, toastTone } from '../toast-context.js';
+// ioiti-ui: its action, what useToast() is given (ToastAction, the same shape); EasyUI's names kept until 1.0, drawing
+// this one (renamed).
+import type { ToastAction } from '../toast-context.js';
+import { renamed } from '../../lib/renamed.js';
 
 /**
  * @deprecated Use `StatusTone`, which `tone` takes. Removed in 1.0. ioiti-ui: the values of the former `variant`, read as
  * a tone's (`default` as `neutral`, `error` as `danger`).
  */
 export type VelocityToastVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
-export type VelocityToastPosition =
+// ioiti-ui: named after its role, `Toast` (EasyUI's `VelocityToast`, its former name: at the end of the file).
+export type ToastPosition =
   | 'top-left'
   | 'top-center'
   | 'top-right'
@@ -27,14 +32,7 @@ export type VelocityToastPosition =
   | 'bottom-center'
   | 'bottom-right';
 
-/** ioiti-ui: what the toast leads on to: a link (`href`) or a button (`onClick`); using it closes the toast. */
-export interface VelocityToastAction {
-  label: string;
-  href?: string;
-  onClick?: () => void;
-}
-
-export interface VelocityToastProps {
+export interface ToastProps {
   open: boolean;
   onDismiss?: () => void;
   title: string;
@@ -49,7 +47,7 @@ export interface VelocityToastProps {
    * @deprecated Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`.
    */
   variant?: VelocityToastVariant;
-  position?: VelocityToastPosition;
+  position?: ToastPosition;
   showProgress?: boolean;
   icon?: React.ReactNode;
   className?: string;
@@ -59,13 +57,16 @@ export interface VelocityToastProps {
   wrapperStyle?: React.CSSProperties;
   /** ioiti-ui: once it has left, its exit played: a queue shows the next one then (ToastProvider). */
   onExitComplete?: () => void;
-  /** ioiti-ui: one thing to do from the toast, beside its words: a link or a button. Using it closes the toast. */
-  action?: VelocityToastAction;
+  /**
+   * ioiti-ui: one thing to do from the toast, beside its words: a link (`href`) or a button (`onClick`). Using it closes
+   * the toast.
+   */
+  action?: ToastAction;
   /** ioiti-ui: what draws the action's link; the application's (LinkProvider) by default. */
   linkComponent?: React.ElementType;
 }
 
-const positionClasses: Record<VelocityToastPosition, string> = {
+const positionClasses: Record<ToastPosition, string> = {
   'top-left': 'top-5 left-5 items-start',
   'top-center': 'top-5 left-1/2 -translate-x-1/2 items-center',
   'top-right': 'top-5 right-5 items-end',
@@ -96,7 +97,7 @@ const toneIcon = (tone: StatusTone, custom?: React.ReactNode) => {
 };
 
 /**
- * VelocityToast — Enters with velocity and settles; the progress bar
+ * Toast — Enters with velocity and settles; the progress bar
  * responds naturally (animates from 100 -> 0 with a slight ease-in so the
  * last 10% feels like the toast is "deciding" to close).
  *
@@ -104,8 +105,10 @@ const toneIcon = (tone: StatusTone, custom?: React.ReactNode) => {
  * container slides in with a slightly higher initial velocity (initial y
  * offset 18px) that settles through a snappy spring, giving the toast a
  * feeling of motion.
+ *
+ * ioiti-ui: EasyUI's VelocityToast, named after its role.
  */
-export const VelocityToast: React.FC<VelocityToastProps> = ({
+export const Toast: React.FC<ToastProps> = ({
   open,
   onDismiss,
   title,
@@ -125,7 +128,7 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
   linkComponent,
 }) => {
   // ioiti-ui: its tone, `neutral` by default; its former `variant` read as one, said once in development.
-  const tone = toastTone(givenTone, variant, 'VelocityToast');
+  const tone = toastTone(givenTone, variant, 'Toast');
   // ioiti-ui: the application's link (LinkProvider) unless one is given.
   const LinkComponent = useLinkComponent(linkComponent);
   const words = useMessages().toast;
@@ -303,3 +306,14 @@ export const VelocityToast: React.FC<VelocityToastProps> = ({
     </div>
   );
 };
+
+// ioiti-ui: EasyUI's names, until 1.0: the former name draws the toast, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `Toast`. Removed in 1.0. */
+export const VelocityToast = renamed(Toast, 'VelocityToast');
+/** @deprecated Use `ToastProps`. Removed in 1.0. */
+export type VelocityToastProps = ToastProps;
+/** @deprecated Use `ToastPosition`. Removed in 1.0. */
+export type VelocityToastPosition = ToastPosition;
+/** @deprecated Use `ToastAction`, what useToast() is given too. Removed in 1.0. */
+export type VelocityToastAction = ToastAction;

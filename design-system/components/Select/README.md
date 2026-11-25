@@ -12,4 +12,4 @@ One value from a short list, in the browser's own select: a status, a carrier, a
 
 - With no value yet, a first option of value `''`, disabled, asks for a choice ("Choose a carrier").
 - It has the look of the `Input`, a chevron at its end; its list is the system's, at home on a phone.
-- A list to search is a `Combobox`; options with a second line, a `SpringSelect`; several values, a `MultiSelect`.
+- A list to search is a `Combobox`; options with a second line, a `SelectMenu`; several values, a `MultiSelect`.

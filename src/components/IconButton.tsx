@@ -4,7 +4,8 @@ import { PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
 import { Hint } from './Hint.js'
 
-interface IconButtonProps extends Omit<ComponentProps<'button'>, 'children' | 'aria-label'> {
+/** The props of `IconButton`. */
+export interface IconButtonProps extends Omit<ComponentProps<'button'>, 'children' | 'aria-label'> {
   /** What it does, in words: an icon alone says nothing to a screen reader. */
   label: string
   /** An icon of lucide-react, as an element: `<Search />`. */

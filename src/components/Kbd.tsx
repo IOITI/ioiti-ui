@@ -4,7 +4,8 @@ import { keyLabels } from '../lib/keys.js'
 import { cn } from '../lib/utils.js'
 import { useMessages } from './locale-context.js'
 
-interface KbdProps {
+/** The props of `Kbd`. */
+export interface KbdProps {
   /**
    * The keys of a shortcut, as `useShortcut` takes them: `mod+k` (⌘K on an Apple computer, Ctrl K
    * elsewhere), `shift+?`, `g o` (G, then O).

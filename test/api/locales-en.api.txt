@@ -1,0 +1,827 @@
+ioiti-ui/locales/en (src/locales/en.ts): what it exports, and its types, as the type checker reads them.
+Made by npm run api (scripts/api-report.mjs); npm run lint holds it.
+
+const en: {
+  format: {
+    milliseconds: string
+    seconds: string
+    minutes: string
+    hours: string
+    days: string
+    future: (duration: string) => string
+    past: (duration: string) => string
+    bytes: string
+    kilobytes: string
+    megabytes: string
+    gigabytes: string
+  }
+  date: {
+    previousMonth: string
+    nextMonth: string
+    pickerDialog: string
+    datePlaceholder: string
+    rangePlaceholder: string
+    range: ({…}: {
+      from: string
+      to?: string
+    }) => string
+    lastDays: (count: number, {…}: MessageKit) => string
+    allTime: string
+    customRange: string
+  }
+  heatmap: {
+    unit: (count: number, {…}: MessageKit) => string
+    less: string
+    more: string
+    summaryPerWeek: ({…}: {
+      total: string
+      unit: string
+    }) => string
+    summaryLastYear: ({…}: {
+      total: string
+      unit: string
+    }) => string
+    summaryLastMonths: ({…}: {
+      total: string
+      unit: string
+      months: number
+    }, {…}: MessageKit) => string
+    summaryLastWeeks: ({…}: {
+      total: string
+      unit: string
+      weeks: number
+    }, {…}: MessageKit) => string
+    best: ({…}: {
+      title: string
+      value: string
+    }) => string
+    worst: ({…}: {
+      title: string
+      value: string
+    }) => string
+    peak: ({…}: {
+      title: string
+      value: string
+    }) => string
+    hourCell: ({…}: {
+      day: string
+      hour: string
+    }) => string
+    label: (summary: string) => string
+    status: ({…}: {
+      title: string
+      value: string
+    }) => string
+  }
+  timeRange: {
+    today: string
+    yesterday: string
+    todaySoFar: string
+    thisWeek: string
+    thisWeekSoFar: string
+    lastWeek: string
+    thisMonth: string
+    thisMonthSoFar: string
+    lastMonth: string
+    thisYear: string
+    thisYearSoFar: string
+    lastSpan: (span: Span, kit: MessageKit) => string
+    nextSpan: (span: Span, kit: MessageKit) => string
+    now: string
+    ago: (span: Span, kit: MessageKit) => string
+    later: (span: Span, kit: MessageKit) => string
+    rounded: ({…}: {
+      moved: string
+      unit: TimeUnit
+    }) => string
+    ends: ({…}: {
+      from: string
+      to: string
+    }) => string
+    arrow: string
+    showEnds: string
+    quickSelect: string
+    beforeOrAfterNow: string
+    lastOption: string
+    nextOption: string
+    howMany: string
+    unit: string
+    unitOption: ({…}: Span, _kit: MessageKit) => string
+    apply: string
+    commonlyUsed: string
+    recentlyUsed: string
+    startOfRange: string
+    endOfRange: string
+    startTabs: string
+    endTabs: string
+    absolute: string
+    relative: string
+    nowTab: string
+    time: string
+    agoOption: string
+    fromNowOption: string
+    roundTo: (unit: TimeUnit) => string
+    nowExplained: string
+    setStartToNow: string
+    setEndToNow: string
+    update: string
+    refresh: string
+    refreshing: string
+    autoRefresh: string
+    refreshOff: string
+    refreshEvery: ({…}: {
+      count: number
+      unit: "s" | "m" | "h"
+    }, {…}: MessageKit) => string
+    refreshInterval: string
+    refreshUnit: string
+    startRefresh: string
+    stopRefresh: string
+  }
+  chart: {
+    noData: string
+    tableCaption: string
+    seriesLegend: string
+    legend: string
+    detailsColumn: string
+    total: string
+    namedValue: ({…}: {
+      name: string
+      value: string
+    }) => string
+    lineChartName: (series: readonly string[], _kit: MessageKit) => string
+    timeColumn: string
+    fanChartName: (lines: readonly string[], _kit: MessageKit) => string
+    placeColumn: string
+    bandRange: ({…}: {
+      low: string
+      high: string
+    }) => string
+    barChartName: ({…}: {
+      series: readonly string[]
+      count: number
+    }, {…}: MessageKit) => string
+    categoryColumn: string
+    donutChartName: (total: string) => string
+    gaugeChartName: (total: string) => string
+    otherSegment: string
+    segmentColumn: string
+    valueColumn: string
+    shareColumn: string
+    funnelChartName: ({…}: {
+      count: number
+      first: string
+      last: string
+    }, {…}: MessageKit) => string
+    funnelTableCaption: string
+    conversionSummary: string
+    biggestDrop: string
+    funnelCounted: string
+    shareOfFirstStage: string
+    lossToNextStage: string
+    noLoss: string
+    stageColumn: string
+    firstStageShareColumn: string
+    previousPeriod: string
+    statCardName: ({…}: {
+      name: string
+      value: string
+      direction: "up" | "down" | "flat"
+      change: string
+    }) => string
+    trendName: ({…}: {
+      name: string
+      first: string
+      last: string
+    }) => string
+    trendPoint: (index: number) => string
+    sparklineSummary: ({…}: {
+      first: string
+      last: string
+      high: string
+      low: string
+    }) => string
+    liveChartName: ({…}: {
+      span: string
+      value?: string
+      unit: string
+    }) => string
+    liveWindow: (span: string) => string
+    pauseLive: string
+    resumeLive: string
+    live: string
+    paused: string
+    livePausedStatus: string
+    now: string
+    beforeNow: (span: string) => string
+  }
+  clock: {
+    title: string
+    name: string
+    cities: (count: number, {…}: MessageKit) => string
+    timeZones: string
+    row: ({…}: {
+      time: string
+      city: string
+    }) => string
+  }
+  ledger: {
+    title: string
+    count: (count: number, {…}: MessageKit) => string
+    restore: string
+    restoreEntry: ({…}: {
+      restore: string
+      action: string
+    }) => string
+    current: string
+    changes: string
+  }
+  log: {
+    empty: string
+    search: (label: string) => string
+    searchPlaceholder: string
+    matchPosition: ({…}: {
+      index: number
+      count: number
+    }) => string
+    noMatch: string
+    previousMatch: string
+    previousMatchHint: (keys: string) => string
+    nextMatch: string
+    nextMatchHint: (keys: string) => string
+    wrap: string
+    wrapped: string
+    unwrapped: string
+    copy: string
+    download: string
+    downloadAs: (name: string) => string
+    dropped: (count: number, {…}: MessageKit) => string
+    jumpToEnd: string
+  }
+  numberInput: {
+    decrease: string
+    increase: string
+    rangeFrom: (label: string) => string
+    rangeTo: (label: string) => string
+    rangeValue: ({…}: {
+      from: string
+      to: string
+    }) => string
+    rangeName: string
+    changeNone: string
+    changeUp: (figure: string) => string
+    changeDown: (figure: string) => string
+  }
+  table: {
+    searchPlaceholder: string
+    selectedCount: (count: number, {…}: MessageKit) => string
+    showAsTable: string
+    showAsCards: string
+    columnsShown: string
+    columns: string
+    bulkSelected: (count: number, {…}: MessageKit) => string
+    exportAction: string
+    deleteAction: string
+    filters: string
+    filterOption: ({…}: {
+      column: string
+      option: string
+    }) => string
+    filterChosen: ({…}: {
+      chosen: number
+      count: number
+    }, {…}: MessageKit) => string
+    filterOptionCount: (count: number, {…}: MessageKit) => string
+    filterBy: (column: string) => string
+    searchOptions: (column: string) => string
+    noOptionMatches: string
+    optionRows: (count: number, {…}: MessageKit) => string
+    clear: string
+    clearFilters: string
+    emptyTitle: string
+    noMatchTitle: string
+    noMatchText: string
+    loadFailed: string
+    loadingRecords: string
+    selectAll: string
+    selectRow: (name: string) => string
+    selectRowById: (id: string) => string
+    openRow: (name: string) => string
+    closeRow: (name: string) => string
+    expandRow: string
+    collapseRow: string
+    loading: string
+    showing: ({…}: {
+      range: string
+      total: string
+      count: number
+    }, {…}: MessageKit) => string
+    rowsPerPageLabel: string
+    rowsPerPage: string
+    firstPage: string
+    previousPage: string
+    nextPage: string
+    lastPage: string
+    basketToolbar: string
+    basketSelected: (count: number, {…}: MessageKit) => string
+    basketSelectedNoun: ({…}: {
+      count: number
+      noun: readonly [string, string]
+    }, {…}: MessageKit) => string
+    basketSelectAll: (count: number, {…}: MessageKit) => string
+    basketSelectNone: string
+    basketClear: string
+    moveAction: string
+    shareAction: string
+    comparisonName: string
+    comparisonMatrix: string
+    comparisonCount: (count: number, {…}: MessageKit) => string
+    comparisonSearch: string
+    comparisonDifferences: string
+    comparisonEmpty: string
+    comparisonAction: string
+    comparisonInfo: (feature: string) => string
+    comparisonPlan: (plan: string) => string
+    changeNew: string
+    changeRemoved: string
+    changeFrom: string
+    changeTo: string
+    region: string
+  }
+  select: {
+    placeholder: string
+    search: string
+    noResults: string
+    choosePlaceholder: string
+    nothingMatches: string
+    removeChoice: (label: string) => string
+    hiddenChoices: (labels: readonly string[], _kit: MessageKit) => string
+    clear: string
+    atMost: (max: number, {…}: MessageKit) => string
+    create: (text: string) => string
+  }
+  field: {
+    save: string
+    saving: string
+    cancel: string
+    addValue: string
+    edit: (label: string) => string
+    saveFailed: string
+    unsavedChanges: string
+    discard: string
+    showPassword: string
+    hidePassword: string
+    otpName: string
+    otpDigit: ({…}: {
+      index: number
+      count: number
+    }, {…}: MessageKit) => string
+    copy: string
+    copyNamed: (what: string) => string
+    copied: string
+    copyFailed: string
+    copyCode: string
+    code: string
+    exportCsv: string
+  }
+  status: {
+    healthOk: string
+    healthWarning: string
+    healthDown: string
+    healthUnknown: string
+    healthDisabled: string
+    stale: string
+    loadFailed: string
+    refreshFailed: string
+    historyEmpty: string
+    historyUp: ({…}: {
+      count: number
+      unit?: Unit
+    }, {…}: MessageKit) => string
+    historyState: ({…}: {
+      status: Exclude<HealthStatus, "ok">
+      count: number
+      unit?: Unit
+      times: readonly string[]
+      upSaid: boolean
+    }, {…}: MessageKit) => string
+    historyMore: (count: number, {…}: MessageKit) => string
+    historyName: ({…}: {
+      label: string
+      summary: string
+    }) => string
+    remove: string
+    dismiss: string
+    loadingName: string
+    loading: string
+    progress: string
+    stepCompleted: string
+  }
+  layout: {
+    panel: string
+    resize: string
+    resizePanel: (panel: string) => string
+    contents: string
+    sectionMenu: string
+    backToTop: string
+    dependencyGraph: string
+    nodeStatus: ({…}: {
+      name: string
+      status: string
+    }) => string
+    traceStatus: (status: string) => string
+    traceCalls: (names: readonly string[], _kit: MessageKit) => string
+    traceCalledBy: (names: readonly string[], _kit: MessageKit) => string
+    traceHint: string
+    connections: (count: number, {…}: MessageKit) => string
+    timelineItem: ({…}: {
+      title: string
+      status: string
+    }) => string
+    timelineCompleted: string
+    timelineInProgress: string
+    timelinePending: string
+    timelineFailed: string
+    timelineWarning: string
+    copyCommit: string
+    copyCommitNamed: (hash: string) => string
+    commitCopied: string
+    open: string
+    people: string
+    peopleList: (names: readonly string[], _kit: MessageKit) => string
+    morePeople: (names: readonly string[], {…}: MessageKit) => string
+  }
+  shell: {
+    skipToPage: string
+    navigation: string
+    openNavigation: string
+    closeNavigation: string
+    mainNavigation: string
+    pagesUnder: (entry: string) => string
+    collapse: string
+    collapseTarget: string
+    expand: string
+    expandSidebar: string
+    unseenCounts: string
+    unseenWarning: string
+    unseenWrong: string
+    entryWithBadge: ({…}: {
+      entry: string
+      badge: string
+    }) => string
+    breadcrumb: string
+    showHiddenPages: string
+    home: string
+    pageNotFound: string
+    account: string
+    signOut: string
+    singleSignOn: string
+    signInDivider: string
+    state: string
+    allGood: string
+    stateButton: ({…}: {
+      label: string
+      state: string
+    }) => string
+    stateLead: ({…}: {
+      lead: string
+      counts: string
+    }) => string
+    stateCounts: ({…}: StateCounts, {…}: MessageKit) => string
+  }
+  look: {
+    theme: string
+    system: string
+    light: string
+    dark: string
+    systemNow: (theme: Theme) => string
+    themeButton: ({…}: {
+      state: string
+      press: string
+    }) => string
+    followsSystem: (theme: Theme) => string
+    alwaysLight: string
+    alwaysDark: string
+    pressToFollowSystem: string
+    pressForLight: string
+    pressForDark: string
+    accentAndMaterial: string
+    lookName: ({…}: {
+      accent: string
+      material: string
+    }) => string
+    lookDescription: ({…}: {
+      accent: string
+      material: string
+    }) => string
+    accent: string
+    material: string
+    accentNeutral: string
+    accentViolet: string
+    accentIndigo: string
+    accentBlue: string
+    accentBloom: string
+    accentLagoon: string
+    accentAurora: string
+    accentDusk: string
+    accentGolden: string
+    materialFlat: string
+    materialGlass: string
+  }
+  error: {
+    otherPage: string
+    otherPart: string
+    otherRetry: string
+    otherWait: string
+    offlinePage: string
+    offlinePart: string
+    offlineRetry: string
+    offlineWait: string
+    chunkPage: string
+    chunkPart: string
+    chunkReload: string
+    tryAgain: string
+    reload: string
+    backToHome: string
+    details: string
+  }
+  notFound: {
+    pageTitle: string
+    pageDescription: string
+    backToHome: string
+    previousPage: string
+    title: string
+    description: string
+    errorBadge: (code: string) => string
+    errorHeading: ({…}: {
+      code: string
+      title: string
+    }) => string
+    goHome: string
+    goBack: string
+    helpfulLinks: string
+    suggestions: string
+    illustration: string
+  }
+  router: {
+    signInTitle: string
+    signInDescription: string
+    signIn: string
+    forbiddenTitle: string
+    forbiddenDescription: string
+    leaveTitle: string
+    leaveMessage: string
+    stay: string
+    leave: string
+  }
+  shortcuts: {
+    title: string
+    general: string
+    navigation: string
+    showShortcuts: string
+    showAgain: (keys: string) => string
+    toggleSidebar: string
+  }
+  keys: {
+    ctrl: string
+    alt: string
+    shift: string
+    meta: string
+    command: string
+    control: string
+    option: string
+    enter: string
+    escape: string
+    escapeSpoken: string
+    tab: string
+    space: string
+    backspace: string
+    delete: string
+    deleteSpoken: string
+    arrowUp: string
+    arrowDown: string
+    arrowLeft: string
+    arrowRight: string
+    pageUp: string
+    pageUpSpoken: string
+    pageDown: string
+    pageDownSpoken: string
+    home: string
+    end: string
+    then: string
+  }
+  code: {
+    original: string
+    modified: string
+    side: ({…}: {
+      label: string
+      version: string
+    }) => string
+    changes: (count: number, {…}: MessageKit) => string
+    previousChange: string
+    nextChange: string
+    find: string
+    replace: string
+    findNext: string
+    findPrevious: string
+    selectMatches: string
+    matchCase: string
+    regexp: string
+    byWord: string
+    replaceMatch: string
+    replaceAll: string
+    close: string
+    currentMatch: string
+    onLine: string
+    replacedMatches: string
+    replacedMatchOnLine: string
+    goToLine: string
+    go: string
+    controlCharacter: string
+    selectionDeleted: string
+    foldedLines: string
+    unfoldedLines: string
+    foldedTo: string
+    foldedCode: string
+    unfold: string
+    foldLine: string
+    unfoldLine: string
+    diagnostics: string
+    noDiagnostics: string
+    unchangedLines: string
+    accept: string
+    reject: string
+    revertChunk: string
+  }
+  ai: {
+    linkBlocked: string
+    emailHost: string
+    table: string
+    plainText: string
+    assistant: string
+    streaming: string
+    thinking: string
+    stopped: string
+    generating: string
+    unfinished: string
+    unfinishedReason: string
+    tryAgain: string
+    idle: string
+    sources: string
+    toolsUsed: (count: number, {…}: MessageKit) => string
+    toolSuccess: string
+    toolRunning: string
+    toolError: string
+    copied: string
+    copy: string
+    responseCopied: string
+    copyResponse: string
+    regenerate: string
+    regenerateResponse: string
+    goodResponse: string
+    poorResponse: string
+    response: string
+    activityTitle: string
+    activityRunning: string
+    stepsDone: ({…}: {
+      done: number
+      count: number
+    }, {…}: MessageKit) => string
+    notStarted: string
+    expandAll: string
+    collapseAll: string
+    codeSnippet: string
+    noActivity: string
+    inputLabel: string
+    outputLabel: string
+    notesLabel: string
+    metadataEntry: (key: string) => string
+    send: string
+    stop: string
+    suggestions: string
+    attachments: string
+    attachmentPreparing: string
+    removeAttachment: (label: string) => string
+  }
+  upload: {
+    dropTitle: string
+    dropSubtitle: string
+    upTo: (size: string) => string
+    label: string
+    ready: string
+    processing: string
+    uploading: (progress: string) => string
+    files: (count: number, {…}: MessageKit) => string
+    clearCompleted: string
+    tooLarge: (size: string) => string
+    failed: string
+    retry: (name: string) => string
+    remove: (name: string) => string
+  }
+  notification: {
+    notifications: string
+    unread: (count: number, {…}: MessageKit) => string
+    overflow: (most: number, {…}: MessageKit) => string
+    newCount: (count: number, {…}: MessageKit) => string
+    markAllRead: string
+    readAll: string
+    close: string
+    loading: string
+    empty: string
+    readFailed: string
+    tryAgain: string
+    markRead: string
+    markNotificationRead: string
+  }
+  search: {
+    label: string
+    placeholder: string
+    search: string
+    searchIn: (list: string) => string
+    back: string
+    backFrom: (list: string) => string
+    close: string
+    recent: string
+    recentSearches: string
+    opensList: string
+    searching: string
+    results: ({…}: {
+      count: number
+      more: number
+    }, {…}: MessageKit) => string
+    inList: ({…}: {
+      list: string
+      results: string
+    }) => string
+    noResultsFor: (query: string) => string
+    more: (count: number, {…}: MessageKit) => string
+    failed: string
+    tryAgain: string
+  }
+  tour: {
+    position: ({…}: {
+      step: number
+      count: number
+    }, {…}: MessageKit) => string
+    skip: string
+    goToStep: (step: number, {…}: MessageKit) => string
+    back: string
+    next: string
+    done: string
+  }
+  toast: {
+    close: string
+    undoTitle: string
+    undoDescription: string
+    undo: string
+    restored: string
+    islandName: (label: string) => string
+    closeIsland: (label: string) => string
+    dismiss: string
+    copyReference: ({…}: {
+      label: string
+      value: string
+    }) => string
+  }
+  dialog: {
+    close: string
+    resize: string
+    width: (pixels: number, {…}: MessageKit) => string
+    content: string
+    cancel: string
+    working: string
+    done: string
+    slideToConfirm: string
+    confirmed: string
+  }
+}
+
+type Messages = typeof en
+
+
+// The names the types above use that ioiti-ui/locales/en does not export, or not by that name.
+
+MessageKit: exported by ioiti-ui
+
+// src/locales/en/timeRange.ts
+type Span = {
+  count: number
+  unit: TimeUnit
+}
+
+// src/locales/en/shell.ts
+type StateCounts = {
+  danger: number
+  warning: number
+  success: number
+}
+
+Theme: exported by ioiti-ui
+
+TimeUnit: exported by ioiti-ui
+
+// src/locales/en/status.ts
+type Unit = {
+  one: string
+  other: string
+}

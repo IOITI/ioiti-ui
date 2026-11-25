@@ -4,9 +4,10 @@ import { useBlocker } from 'react-router'
 
 import { useMessages } from '../components/locale-context.js'
 import { Button } from '../components/ui/button.js'
-import { SettleModal } from '../components/ui/settle-modal.js'
+import { Dialog } from '../components/ui/settle-modal.js'
 
-interface RouterLeaveGuardProps {
+/** The props of `RouterLeaveGuard`. */
+export interface RouterLeaveGuardProps {
   /** Whether leaving the page would lose something: changes not saved. */
   when: boolean
   /**
@@ -71,7 +72,7 @@ function Guard({ within, allowed, title, message, stayLabel, leaveLabel }: Guard
   )
 
   return (
-    <SettleModal
+    <Dialog
       open={blocked}
       onClose={() => blocker.reset?.()}
       title={title}

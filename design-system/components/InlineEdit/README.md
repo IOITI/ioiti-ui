@@ -2,7 +2,7 @@
 
 A value edited where it is shown, a name or a title: it reads as text, a click or Enter turns it into a field, Enter saves and Escape gives up.
 
-**You provide** `value`, `onSave` (may return a Promise: nothing or `true` for done, `false` to stay in the field, words for what went wrong), `label` (what the value is, for a screen reader); `variant` (`text` by default · `title`), `as` (`h1` · `h2` · `h3` · `h4` · `p` · `span`), `validate` (words for what is wrong, before saving), `placeholder`, `readOnly`.
+**You provide** `value`, `onSave` (may return a Promise: nothing or `true` for done, `false` to stay in the field, words for what went wrong), `label` (what the value is, for a screen reader; a `Field` or a `FormItem` around it says it without); `variant` (`text` by default · `title`), `as` (`h1` · `h2` · `h3` · `h4` · `p` · `span`), `validate` (words for what is wrong, before saving), `placeholder`, `readOnly`. In a form: `name`, the value saved (not one being typed). `id`, `ref` (its button, then its field), `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-invalid`, as a native control takes them.
 
 ```tsx
 <InlineEdit label="Name of the project" variant="title" value={name}

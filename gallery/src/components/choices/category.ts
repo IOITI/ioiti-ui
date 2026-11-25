@@ -64,9 +64,10 @@ const choices: CategoryInfo = {
       ],
     },
     {
-      slug: 'spring-select',
-      name: 'SpringSelect',
-      names: ['SpringSelect'],
+      slug: 'select-menu',
+      name: 'SelectMenu',
+      names: ['SelectMenu'],
+      formerly: ['SpringSelect'],
       keywords: ['select', 'dropdown', 'listbox'],
       examples: [
         { id: 'plan', title: 'A short list, described', description: 'One value from a short list that springs open under its button, each option with a second line; one not possible stays in the list.' },
@@ -77,6 +78,7 @@ const choices: CategoryInfo = {
       slug: 'stretch-switch',
       name: 'StretchSwitch',
       names: ['StretchSwitch'],
+      deprecated: 'Switch',
       keywords: ['toggle', 'switch', 'on off'],
       examples: [
         { id: 'notify', title: 'A setting turned', description: 'A switch whose thumb stretches as it is pressed, then snaps to its side; a press on its label turns it too.' },

@@ -22,7 +22,8 @@ const PILL: Record<StateTone, string> = {
   ok: 'text-muted-foreground hover:bg-surface-hover hover:text-foreground aria-expanded:bg-surface-hover',
 }
 
-interface StateSummaryProps {
+/** The props of `StateSummary`. */
+export interface StateSummaryProps {
   /** The states, each while it applies; the quiet ones too (all is well, a fallback), said once it is opened. */
   items: StateItem[]
   /**

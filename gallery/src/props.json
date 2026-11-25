@@ -1,4 +1,56 @@
 {
+ "Accordion": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/smooth-accordion.tsx",
+  "props": [
+   {
+    "name": "items",
+    "type": "AccordionItem[]",
+    "required": true
+   },
+   {
+    "name": "allowMultiple",
+    "type": "boolean",
+    "default": "false"
+   },
+   {
+    "name": "value",
+    "type": "string[]",
+    "description": "The ids of the items open, held by the page (told of each change by `onChange`)."
+   },
+   {
+    "name": "defaultValue",
+    "type": "string[]",
+    "description": "The ids of the items open at first, the accordion holding them then; none by default."
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string[]) => void",
+    "description": "Told of the ids of the items open, at each opening and closing."
+   },
+   {
+    "name": "defaultOpen",
+    "type": "string[]",
+    "deprecated": "Use `defaultValue`. Removed in 1.0."
+   },
+   {
+    "name": "headingLevel",
+    "type": "2 | 3 | 4 | 5 | 6",
+    "values": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6"
+    ],
+    "description": "Each question in a heading of this level, which a screen reader lists with the page's own (none by default); drawn as without it."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
  "ActivityHeatmap": {
   "entry": "ioiti-ui",
   "file": "src/components/ui/activity-heatmap.tsx",
@@ -631,64 +683,6 @@
    }
   ]
  },
- "AirportMatrixClock": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/airport-matrix-clock.tsx",
-  "props": [
-   {
-    "name": "cities",
-    "type": "AirportMatrixCity[]",
-    "required": true,
-    "description": "One to five cities, each with its IANA time zone."
-   },
-   {
-    "name": "format",
-    "type": "'12h' | '24h'",
-    "values": [
-     "12h",
-     "24h"
-    ],
-    "description": "24 hours or 12; the provider's clock by default (IoitiProvider's: 24 hours in en-GB and fr-FR, 12 in en-US)."
-   },
-   {
-    "name": "showSeconds",
-    "type": "boolean",
-    "default": "false",
-    "description": "Include seconds in each city time."
-   },
-   {
-    "name": "updateInterval",
-    "type": "number",
-    "default": "1000",
-    "description": "Refresh cadence in milliseconds. Defaults to one second."
-   },
-   {
-    "name": "title",
-    "type": "string | null",
-    "description": "The board's heading (\"World clock\" by default, in the provider's words: `clock.title`); null for none."
-   },
-   {
-    "name": "footer",
-    "type": "ReactNode",
-    "description": "The board's last line, in the caller's words (\"3 cities / IANA time zones\" by default, in the provider's)."
-   },
-   {
-    "name": "size",
-    "type": "'md' | 'sm'",
-    "values": [
-     "md",
-     "sm"
-    ],
-    "default": "'md'",
-    "description": "'sm', a board for the side of a page's header (EasyUI's characters are up to 20 px wide)."
-   },
-   {
-    "name": "className",
-    "type": "string",
-    "default": "''"
-   }
-  ]
- },
  "Alert": {
   "entry": "ioiti-ui",
   "file": "src/components/ui/alert.tsx",
@@ -750,132 +744,6 @@
    "count": 280,
    "element": "p"
   }
- },
- "AnimatedFileUpload": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/animated-file-upload.tsx",
-  "props": [
-   {
-    "name": "multiple",
-    "type": "boolean",
-    "default": "true",
-    "description": "Allow multiple files selection and upload"
-   },
-   {
-    "name": "accept",
-    "type": "string | string[]",
-    "description": "Accepted MIME types or extensions (e.g., \"image/*,application/pdf\" or [\".png\", \".jpg\"])"
-   },
-   {
-    "name": "maxSize",
-    "type": "number",
-    "default": "25 * 1024 * 1024",
-    "description": "Maximum file size in bytes (e.g., 10 * 1024 * 1024 for 10MB)"
-   },
-   {
-    "name": "maxFiles",
-    "type": "number",
-    "default": "10",
-    "description": "Maximum number of files allowed when multiple is true"
-   },
-   {
-    "name": "dropTitle",
-    "type": "string",
-    "description": "Custom label for primary drop title. ioiti-ui: \"Drop files here\" in the provider's language by default."
-   },
-   {
-    "name": "dropSubtitle",
-    "type": "string",
-    "description": "Custom label for secondary browse action. ioiti-ui: \"or browse from your device\" in the provider's language by default."
-   },
-   {
-    "name": "density",
-    "type": "'regular' | 'compact'",
-    "values": [
-     "regular",
-     "compact"
-    ],
-    "default": "'regular'",
-    "description": "`compact`: the inline zone, for a form's column (EasyUI's `variant=\"compact\"`); the full-size one by default."
-   },
-   {
-    "name": "variant",
-    "type": "'standard' | 'compact'",
-    "values": [
-     "standard",
-     "compact"
-    ],
-    "default": "'standard'",
-    "description": "Layout mode: standard full-size. ioiti-ui: `compact` is deprecated: use `density=\"compact\"`, removed in 1.0."
-   },
-   {
-    "name": "disabled",
-    "type": "boolean",
-    "default": "false",
-    "description": "Disabled state"
-   },
-   {
-    "name": "initialFiles",
-    "type": "UploadFileItem[]",
-    "description": "Initial files list for controlled or default showcase"
-   },
-   {
-    "name": "onFilesSelected",
-    "type": "(files: File[]) => void",
-    "description": "Callback fired when files are dropped or selected"
-   },
-   {
-    "name": "onUploadComplete",
-    "type": "(file: UploadFileItem) => void",
-    "description": "Callback fired when a file upload completes"
-   },
-   {
-    "name": "uploadHandler",
-    "type": "( file: UploadFileItem, onProgress: (progress: number) => void ) => Promise<UploadResult>",
-    "description": "Custom upload simulation or upload handler returning a promise. ioiti-ui: it may answer with a link."
-   },
-   {
-    "name": "arrange",
-    "type": "(files: File[]) => Promise<File[]>",
-    "description": "The order the files are handled in (EasyUI's: as dropped); read before they are listed."
-   },
-   {
-    "name": "sequential",
-    "type": "boolean",
-    "default": "false",
-    "description": "One file after the other, each when the one before has ended (EasyUI's started them all at once)."
-   },
-   {
-    "name": "workingLabel",
-    "type": "string",
-    "description": "What a file on its way says: \"Uploading 42%\" in the provider's language by default (EasyUI's \"Uploading N%\")."
-   },
-   {
-    "name": "doneLabel",
-    "type": "string",
-    "description": "What a file uploaded says: \"Ready\" in the provider's language by default."
-   },
-   {
-    "name": "linkComponent",
-    "type": "ElementType",
-    "description": "What draws a done file's link; the application's (LinkProvider) by default."
-   },
-   {
-    "name": "label",
-    "type": "string",
-    "description": "The name of its file input, what a test or a script finds it by: \"Upload files\" in the provider's language by default."
-   },
-   {
-    "name": "onRemove",
-    "type": "(file: UploadFileItem) => void",
-    "description": "A file taken off the list by its Remove (the application forgets what it did with it)."
-   },
-   {
-    "name": "className",
-    "type": "string",
-    "description": "Custom class name"
-   }
-  ]
  },
  "AnimatedNumber": {
   "entry": "ioiti-ui",
@@ -947,79 +815,6 @@
    }
   ]
  },
- "AnimatedTabs": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/animated-tabs.tsx",
-  "props": [
-   {
-    "name": "tabs",
-    "type": "TabItem[]",
-    "required": true
-   },
-   {
-    "name": "value",
-    "type": "string",
-    "description": "The id of the tab shown, held by the page (told of each change by `onChange`)."
-   },
-   {
-    "name": "defaultValue",
-    "type": "string",
-    "description": "The id of the tab shown first, the tabs holding it then; the first tab by default."
-   },
-   {
-    "name": "defaultTab",
-    "type": "string",
-    "deprecated": "Use `defaultValue`. Removed in 1.0."
-   },
-   {
-    "name": "activeTab",
-    "type": "string",
-    "deprecated": "Use `value`. Removed in 1.0."
-   },
-   {
-    "name": "onChange",
-    "type": "(tabId: string) => void"
-   },
-   {
-    "name": "className",
-    "type": "string"
-   },
-   {
-    "name": "tabsContainerClassName",
-    "type": "string"
-   },
-   {
-    "name": "renderContent",
-    "type": "boolean",
-    "default": "true"
-   },
-   {
-    "name": "layoutId",
-    "type": "string"
-   },
-   {
-    "name": "variant",
-    "type": "'default' | 'glass' | 'pill'",
-    "values": [
-     "default",
-     "glass",
-     "pill"
-    ],
-    "default": "'default'",
-    "description": "`default`, a row under a line; `pill`, a rounded track; `glass`, the same as `pill` (kept for EasyUI's)."
-   },
-   {
-    "name": "linkComponent",
-    "type": "ElementType",
-    "description": "What draws a tab that has an `href`; the application's link (LinkProvider) by default, else `a`."
-   },
-   {
-    "name": "label",
-    "type": "string",
-    "description": "The tabs' name for a screen reader: \"Views of the order\"."
-   }
-  ]
- },
  "AppBrand": {
   "entry": "ioiti-ui",
   "file": "src/shell/AppShell.tsx",
@@ -1027,15 +822,18 @@
    {
     "name": "name",
     "type": "string",
-    "required": true
+    "required": true,
+    "description": "The application's name; its first letter is the mark where none is given."
    },
    {
     "name": "detail",
-    "type": "ReactNode"
+    "type": "ReactNode",
+    "description": "Under the name, smaller: an environment, a version."
    },
    {
     "name": "mark",
-    "type": "ReactNode"
+    "type": "ReactNode",
+    "description": "The application's mark, beside the name: an icon, a logo."
    }
   ]
  },
@@ -1966,12 +1764,14 @@
      "fail",
      "open"
     ],
-    "required": true
+    "required": true,
+    "description": "The outcome it draws: passed, failed or open."
    },
    {
     "name": "named",
     "type": "boolean",
-    "default": "true"
+    "default": "true",
+    "description": "Named for a screen reader; not where what it stands beside says it already."
    }
   ]
  },
@@ -1982,16 +1782,19 @@
    {
     "name": "checks",
     "type": "readonly T[]",
-    "required": true
+    "required": true,
+    "description": "The checks, in the order shown: each its label, its outcome and what it found."
    },
    {
     "name": "label",
     "type": "string",
-    "required": true
+    "required": true,
+    "description": "The list's name for a screen reader: \"Checks of the release\"."
    },
    {
     "name": "hrefOf",
-    "type": "(check: T) => string | null"
+    "type": "(check: T) => string | null",
+    "description": "Where a check leads, to what says more of it; `null` where it leads nowhere."
    },
    {
     "name": "className",
@@ -2006,7 +1809,8 @@
    {
     "name": "children",
     "type": "ReactNode",
-    "required": true
+    "required": true,
+    "description": "The code: a name, a value, a key."
    },
    {
     "name": "className",
@@ -2244,12 +2048,17 @@
    {
     "name": "id",
     "type": "string",
-    "description": "The trigger's id, for a `<label htmlFor>`."
+    "description": "The trigger's id, for a `<label htmlFor>`; in a FormItem, the item's."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name its value is sent under with a form (a hidden input): the option chosen's, empty while none is."
    },
    {
     "name": "aria-labelledby",
     "type": "string",
-    "description": "The id of what names it."
+    "description": "The id of what names it (and its search, its list). A Field's label names it without it."
    },
    {
     "name": "aria-describedby",
@@ -2265,8 +2074,88 @@
     "name": "error",
     "type": "boolean",
     "description": "The choice is wrong (or missing): the trigger's border in the error's colour, and said."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLButtonElement>",
+    "description": "Its trigger (the button that shows the value), to focus it."
    }
   ]
+ },
+ "ComparisonTable": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/smart-comparison.tsx",
+  "props": [
+   {
+    "name": "plans",
+    "type": "ComparisonPlan[]",
+    "required": true,
+    "default": "[]"
+   },
+   {
+    "name": "categories",
+    "type": "ComparisonCategory[]",
+    "required": true,
+    "default": "[]"
+   },
+   {
+    "name": "defaultPlanId",
+    "type": "string"
+   },
+   {
+    "name": "enableSearch",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "enableDiffFilter",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "What the matrix is called, for screen readers; the provider's language's by default (\"Feature and plan comparison\")."
+   },
+   {
+    "name": "matrixTitle",
+    "type": "string",
+    "description": "The head of the matrix's own column; the provider's language's by default (\"Feature matrix\")."
+   },
+   {
+    "name": "countLabel",
+    "type": "(count: number) => string",
+    "description": "Its count of rows, under that head; the provider's language's by default (\"12 specifications\", \"1 specification\")."
+   },
+   {
+    "name": "searchPlaceholder",
+    "type": "string",
+    "description": "The search's placeholder and name; the provider's language's by default (\"Filter capabilities…\")."
+   },
+   {
+    "name": "diffLabel",
+    "type": "string",
+    "description": "The button that leaves out the rows alike; the provider's language's by default (\"Differences only\")."
+   },
+   {
+    "name": "emptyText",
+    "type": "string",
+    "description": "What the matrix says when nothing is left; the provider's language's by default (\"No features match your current search or difference filters.\")."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws a plan's link; the application's (LinkProvider) by default."
+   }
+  ],
+  "inherits": {
+   "count": 277,
+   "element": "div"
+  }
  },
  "ConfirmAction": {
   "entry": "ioiti-ui",
@@ -2722,6 +2611,11 @@
     "type": "string"
    },
    {
+    "name": "name",
+    "type": "string",
+    "description": "The name its day is sent under with a form (a hidden input), as a date field sends it: `yyyy-mm-dd`, empty while none is chosen."
+   },
+   {
     "name": "defaultMonth",
     "type": "Date"
    },
@@ -2759,7 +2653,7 @@
    {
     "name": "id",
     "type": "string",
-    "description": "The trigger's id, for a `<label htmlFor>` (a Field's `htmlFor`)."
+    "description": "The trigger's id, for a `<label htmlFor>` (a Field's `htmlFor`); in a FormItem, the item's."
    },
    {
     "name": "aria-label",
@@ -2769,7 +2663,7 @@
    {
     "name": "aria-labelledby",
     "type": "string",
-    "description": "The id of what names it."
+    "description": "The id of what names it. A Field's label names it without it."
    },
    {
     "name": "aria-describedby",
@@ -2785,6 +2679,11 @@
     "name": "error",
     "type": "boolean",
     "description": "The date chosen is wrong (or missing): the trigger's border in the error's colour, and said."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLButtonElement>",
+    "description": "Its trigger (the button that shows the day), to focus it."
    }
   ]
  },
@@ -2877,6 +2776,11 @@
     "type": "string"
    },
    {
+    "name": "name",
+    "type": "string",
+    "description": "The name its range is sent under with a form: two values, its first day then its last (`yyyy-mm-dd`, empty while not chosen), a hidden input each with this name."
+   },
+   {
     "name": "defaultMonth",
     "type": "Date"
    },
@@ -2914,7 +2818,7 @@
    {
     "name": "id",
     "type": "string",
-    "description": "The trigger's id, for a `<label htmlFor>` (a Field's `htmlFor`)."
+    "description": "The trigger's id, for a `<label htmlFor>` (a Field's `htmlFor`); in a FormItem, the item's."
    },
    {
     "name": "aria-label",
@@ -2924,7 +2828,7 @@
    {
     "name": "aria-labelledby",
     "type": "string",
-    "description": "The id of what names it."
+    "description": "The id of what names it. A Field's label names it without it."
    },
    {
     "name": "aria-describedby",
@@ -2940,6 +2844,11 @@
     "name": "error",
     "type": "boolean",
     "description": "The date chosen is wrong (or missing): the trigger's border in the error's colour, and said."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLButtonElement>",
+    "description": "Its trigger (the button that shows the day), to focus it."
    }
   ]
  },
@@ -3066,6 +2975,93 @@
    }
   ]
  },
+ "Dialog": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/settle-modal.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean",
+    "description": "Open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`)."
+   },
+   {
+    "name": "defaultOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Open at first, the dialog holding it then (it closes itself); closed by default."
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean) => void",
+    "description": "Told of every change, whoever holds it: `false` when Escape, its backdrop or its × closes it."
+   },
+   {
+    "name": "onClose",
+    "type": "() => void",
+    "description": "Told when Escape, its backdrop or its × closes it."
+   },
+   {
+    "name": "title",
+    "type": "ReactNode"
+   },
+   {
+    "name": "description",
+    "type": "ReactNode"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode"
+   },
+   {
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "Footer area (typically action buttons)"
+   },
+   {
+    "name": "showCloseButton",
+    "type": "boolean",
+    "description": "Its close (×) button, in the top-right (true), as every layer names it."
+   },
+   {
+    "name": "hideCloseButton",
+    "type": "boolean",
+    "deprecated": "Use `showCloseButton`. Removed in 1.0. The other way round: `hideCloseButton` is `showCloseButton={false}`."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, for a dialog without a `title`: a screen reader says \"dialog\" and nothing else without one. In development, a dialog with neither says so in the console."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it, where that is not its `title` (a heading of its own in `children`)."
+   },
+   {
+    "name": "closeOnBackdrop",
+    "type": "boolean",
+    "default": "true",
+    "description": "Click on backdrop closes the modal (default true)"
+   },
+   {
+    "name": "size",
+    "type": "'sm' | 'md' | 'lg' | 'xl' | 'full'",
+    "values": [
+     "sm",
+     "md",
+     "lg",
+     "xl",
+     "full"
+    ],
+    "default": "'md'",
+    "description": "Maximum width of the modal (Tailwind class). ioiti-ui: `xl` for a form with rows of fields, `full` for what is read side by side (two versions of a script)."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
  "DiffEditor": {
   "entry": "ioiti-ui/code",
   "file": "src/code/DiffEditor.tsx",
@@ -3166,80 +3162,6 @@
    {
     "name": "className",
     "type": "string"
-   }
-  ]
- },
- "DirectionalTooltip": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/directional-tooltip.tsx",
-  "props": [
-   {
-    "name": "children",
-    "type": "ReactElement",
-    "required": true,
-    "description": "Trigger element(s)"
-   },
-   {
-    "name": "content",
-    "type": "ReactNode",
-    "required": true,
-    "description": "Tooltip content"
-   },
-   {
-    "name": "side",
-    "type": "TooltipSide",
-    "values": [
-     "top",
-     "right",
-     "bottom",
-     "left"
-    ],
-    "default": "'top'",
-    "description": "Preferred side; may be flipped if there's no space (auto by default)"
-   },
-   {
-    "name": "align",
-    "type": "TooltipAlign",
-    "values": [
-     "start",
-     "center",
-     "end"
-    ],
-    "default": "'center'",
-    "description": "Alignment along the side"
-   },
-   {
-    "name": "delayDuration",
-    "type": "number",
-    "default": "150",
-    "description": "Delay before showing, in ms"
-   },
-   {
-    "name": "showArrow",
-    "type": "boolean",
-    "default": "true",
-    "description": "Whether to show an arrow"
-   },
-   {
-    "name": "offset",
-    "type": "number",
-    "default": "8",
-    "description": "Offset from the trigger in px"
-   },
-   {
-    "name": "className",
-    "type": "string"
-   },
-   {
-    "name": "wrapperClassName",
-    "type": "string",
-    "description": "The classes of the span around the trigger (a full-width field keeps its width)."
-   },
-   {
-    "name": "forceOpen",
-    "type": "boolean",
-    "default": "false",
-    "description": "Force the tooltip to always be visible (for design previews)"
    }
   ]
  },
@@ -3532,55 +3454,6 @@
    }
   ]
  },
- "DynamicIsland": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/dynamic-island.tsx",
-  "props": [
-   {
-    "name": "compact",
-    "type": "ReactNode",
-    "required": true,
-    "description": "What the pill shows, collapsed: the whole pill opens the island."
-   },
-   {
-    "name": "children",
-    "type": "ReactNode",
-    "required": true,
-    "description": "What the island shows, opened."
-   },
-   {
-    "name": "label",
-    "type": "string",
-    "required": true,
-    "description": "The name of the pill and of the opened island, for screen readers."
-   },
-   {
-    "name": "defaultState",
-    "type": "DynamicIslandState",
-    "values": [
-     "collapsed",
-     "expanded"
-    ],
-    "default": "'collapsed'"
-   },
-   {
-    "name": "state",
-    "type": "DynamicIslandState",
-    "values": [
-     "collapsed",
-     "expanded"
-    ]
-   },
-   {
-    "name": "onStateChange",
-    "type": "(state: DynamicIslandState) => void"
-   },
-   {
-    "name": "className",
-    "type": "string"
-   }
-  ]
- },
  "EmptyState": {
   "entry": "ioiti-ui",
   "file": "src/components/EmptyState.tsx",
@@ -3651,7 +3524,8 @@
    {
     "name": "children",
     "type": "ReactNode",
-    "required": true
+    "required": true,
+    "description": "What it says: \"No run yet.\""
    }
   ]
  },
@@ -3770,7 +3644,8 @@
    {
     "name": "children",
     "type": "ReactNode",
-    "required": true
+    "required": true,
+    "description": "What went wrong: \"The run could not be stopped.\""
    }
   ]
  },
@@ -3934,212 +3809,131 @@
    }
   ]
  },
- "Flysheet": {
+ "FileUpload": {
   "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
+  "file": "src/components/ui/animated-file-upload.tsx",
   "props": [
    {
-    "name": "open",
-    "type": "boolean"
-   },
-   {
-    "name": "defaultOpen",
-    "type": "boolean",
-    "default": "false"
-   },
-   {
-    "name": "onOpenChange",
-    "type": "(open: boolean, details?: { reason: FlysheetCloseReason }) => void",
-    "description": "With why it closed (`details.reason`)."
-   },
-   {
-    "name": "children",
-    "type": "ReactNode",
-    "required": true
-   }
-  ]
- },
- "FlysheetBody": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
-  "props": [],
-  "inherits": {
-   "count": 280,
-   "element": "div"
-  }
- },
- "FlysheetClose": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
-  "props": [],
-  "inherits": {
-   "count": 290,
-   "element": "button"
-  }
- },
- "FlysheetContent": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
-  "props": [
-   {
-    "name": "side",
-    "type": "FlysheetSide",
-    "values": [
-     "right",
-     "left",
-     "top",
-     "bottom"
-    ],
-    "default": "\"right\"",
-    "description": "The side it comes from. A child takes its parent's."
-   },
-   {
-    "name": "size",
-    "type": "FlysheetSize",
-    "default": "\"md\"",
-    "description": "A side sheet's width: `sm` (22 rem), `md` (26 rem, EasyUI's) or `lg` (40 rem), or pixels."
-   },
-   {
-    "name": "type",
-    "type": "FlysheetType",
-    "values": [
-     "overlay",
-     "push"
-    ],
-    "default": "\"overlay\"",
-    "description": "`push` pushes the page aside (the body's margin) instead of covering it: a side sheet, from a window `pushMinWidth` wide; narrower, it is drawn over the page. Without a backdrop, it leaves the focus free."
-   },
-   {
-    "name": "pushMinWidth",
-    "type": "number",
-    "default": "PUSH_MIN_WIDTH",
-    "description": "The window's width from which a `push` sheet pushes the page (1024 px)."
-   },
-   {
-    "name": "modal",
+    "name": "multiple",
     "type": "boolean",
     "default": "true",
-    "description": "A backdrop, and the focus held in the sheet (true); false leaves the page in use. A child takes its parent's."
+    "description": "Allow multiple files selection and upload"
    },
    {
-    "name": "closeOnOutsideClick",
-    "type": "boolean",
-    "description": "A click outside closes the sheet: true when it is modal (on its backdrop), false otherwise."
+    "name": "accept",
+    "type": "string | string[]",
+    "description": "Accepted MIME types or extensions (e.g., \"image/*,application/pdf\" or [\".png\", \".jpg\"])"
    },
    {
-    "name": "resizable",
+    "name": "maxSize",
+    "type": "number",
+    "default": "25 * 1024 * 1024",
+    "description": "Maximum file size in bytes (e.g., 10 * 1024 * 1024 for 10MB)"
+   },
+   {
+    "name": "maxFiles",
+    "type": "number",
+    "default": "10",
+    "description": "Maximum number of files allowed when multiple is true"
+   },
+   {
+    "name": "dropTitle",
+    "type": "string",
+    "description": "Custom label for primary drop title. ioiti-ui: \"Drop files here\" in the provider's language by default."
+   },
+   {
+    "name": "dropSubtitle",
+    "type": "string",
+    "description": "Custom label for secondary browse action. ioiti-ui: \"or browse from your device\" in the provider's language by default."
+   },
+   {
+    "name": "density",
+    "type": "'regular' | 'compact'",
+    "values": [
+     "regular",
+     "compact"
+    ],
+    "default": "'regular'",
+    "description": "`compact`: the inline zone, for a form's column (EasyUI's `variant=\"compact\"`); the full-size one by default."
+   },
+   {
+    "name": "variant",
+    "type": "'standard' | 'compact'",
+    "values": [
+     "standard",
+     "compact"
+    ],
+    "default": "'standard'",
+    "description": "Layout mode: standard full-size. ioiti-ui: `compact` is deprecated: use `density=\"compact\"`, removed in 1.0."
+   },
+   {
+    "name": "disabled",
     "type": "boolean",
     "default": "false",
-    "description": "A side sheet the reader may widen or narrow, by its inner edge or with the arrow keys on it."
+    "description": "Disabled state"
    },
    {
-    "name": "minWidth",
-    "type": "number",
-    "default": "MIN_WIDTH",
-    "description": "In pixels (280)."
+    "name": "initialFiles",
+    "type": "UploadFileItem[]",
+    "description": "Initial files list for controlled or default showcase"
    },
    {
-    "name": "maxWidth",
-    "type": "number",
-    "description": "In pixels; 88% of the window at most in any case."
+    "name": "onFilesSelected",
+    "type": "(files: File[]) => void",
+    "description": "Callback fired when files are dropped or selected"
    },
    {
-    "name": "onResize",
-    "type": "(width: number) => void",
-    "description": "The width the reader gave, in pixels."
+    "name": "onUploadComplete",
+    "type": "(file: UploadFileItem) => void",
+    "description": "Callback fired when a file upload completes"
    },
    {
-    "name": "padding",
-    "type": "FlysheetPadding",
-    "values": [
-     "none",
-     "sm",
-     "md",
-     "lg"
-    ],
-    "default": "\"md\"",
-    "description": "The padding of its header, body and footer (`md`, EasyUI's)."
+    "name": "uploadHandler",
+    "type": "( file: UploadFileItem, onProgress: (progress: number) => void ) => Promise<UploadResult>",
+    "description": "Custom upload simulation or upload handler returning a promise. ioiti-ui: it may answer with a link."
    },
    {
-    "name": "showCloseButton",
+    "name": "arrange",
+    "type": "(files: File[]) => Promise<File[]>",
+    "description": "The order the files are handled in (EasyUI's: as dropped); read before they are listed."
+   },
+   {
+    "name": "sequential",
     "type": "boolean",
-    "description": "Its close button (true), as every layer names it (`showCloseButton`)."
+    "default": "false",
+    "description": "One file after the other, each when the one before has ended (EasyUI's started them all at once)."
    },
    {
-    "name": "showClose",
-    "type": "boolean",
-    "deprecated": "Use `showCloseButton`. Removed in 1.0."
-   },
-   {
-    "name": "closePosition",
-    "type": "\"inside\" | \"outside\"",
-    "values": [
-     "inside",
-     "outside"
-    ],
-    "default": "\"inside\"",
-    "description": "The close button inside the panel, or outside it, on the side facing the page."
-   },
-   {
-    "name": "aria-label",
+    "name": "workingLabel",
     "type": "string",
-    "description": "Its name, for a sheet without a FlysheetTitle."
+    "description": "What a file on its way says: \"Uploading 42%\" in the provider's language by default (EasyUI's \"Uploading N%\")."
+   },
+   {
+    "name": "doneLabel",
+    "type": "string",
+    "description": "What a file uploaded says: \"Ready\" in the provider's language by default."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws a done file's link; the application's (LinkProvider) by default."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "The name of its file input, what a test or a script finds it by: \"Upload files\" in the provider's language by default."
+   },
+   {
+    "name": "onRemove",
+    "type": "(file: UploadFileItem) => void",
+    "description": "A file taken off the list by its Remove (the application forgets what it did with it)."
    },
    {
     "name": "className",
-    "type": "string"
-   },
-   {
-    "name": "children",
-    "type": "ReactNode",
-    "required": true
+    "type": "string",
+    "description": "Custom class name"
    }
   ]
- },
- "FlysheetDescription": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
-  "props": [],
-  "inherits": {
-   "count": 280,
-   "element": "p"
-  }
- },
- "FlysheetFooter": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
-  "props": [],
-  "inherits": {
-   "count": 280,
-   "element": "div"
-  }
- },
- "FlysheetHeader": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
-  "props": [],
-  "inherits": {
-   "count": 280,
-   "element": "div"
-  }
- },
- "FlysheetTitle": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
-  "props": [],
-  "inherits": {
-   "count": 280,
-   "element": "h2"
-  }
- },
- "FlysheetTrigger": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/flysheet.tsx",
-  "props": [],
-  "inherits": {
-   "count": 290,
-   "element": "button"
-  }
  },
  "Form": {
   "entry": "ioiti-ui",
@@ -4360,8 +4154,7 @@
    {
     "name": "label",
     "type": "string",
-    "required": true,
-    "description": "What the value is, for a screen reader: \"Name of the run\"."
+    "description": "What the value is, for a screen reader: \"Name of the run\". In a Field, its label's words without it."
    },
    {
     "name": "placeholder",
@@ -4404,6 +4197,41 @@
    {
     "name": "className",
     "type": "string"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The id of its control: the button that shows the value, then its field; in a FormItem, the item's."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name its value is sent under with a form (a hidden input): the value saved, not one being typed."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "What the value is, as `label`."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what says what the value is: a heading, a label elsewhere. A Field's label does without it."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLElement>",
+    "description": "Its control: the button that shows the value, then its field while it is edited."
    }
   ]
  },
@@ -5170,7 +4998,12 @@
    {
     "name": "id",
     "type": "string",
-    "description": "Its field's id, for a `Field htmlFor`."
+    "description": "Its field's id (the input's), for a `Field htmlFor`; in a FormItem, the item's."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name its values are sent under with a form: one each, in the order chosen, a hidden input each with this name; none while nothing is chosen."
    },
    {
     "name": "placeholder",
@@ -5203,6 +5036,16 @@
     "default": "false"
    },
    {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, as `label`."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it (and its list): a heading, a label elsewhere. A Field's label names it without it."
+   },
+   {
     "name": "aria-describedby",
     "type": "string",
     "description": "Read out with it: what a Field around it says under it (its description, its error)."
@@ -5220,6 +5063,11 @@
    {
     "name": "className",
     "type": "string"
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLInputElement>",
+    "description": "Its field (the input typed into, among the chips), to focus it."
    }
   ]
  },
@@ -5579,11 +5427,13 @@
    },
    {
     "name": "id",
-    "type": "string"
+    "type": "string",
+    "description": "Its field's id, for a `<label htmlFor>`; in a FormItem, the item's."
    },
    {
     "name": "name",
-    "type": "string"
+    "type": "string",
+    "description": "The name its value is sent under with a form (a hidden input): the number as code writes it (\"1234.5\"), whatever the locale shows; empty while there is none."
    },
    {
     "name": "placeholder",
@@ -5599,6 +5449,16 @@
     "type": "boolean",
     "default": "false",
     "description": "A value that is wrong: its border in the negative colour."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, as `label`."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it: a heading, a label elsewhere. A Field's label names it without it."
    },
    {
     "name": "aria-describedby",
@@ -5619,6 +5479,11 @@
    {
     "name": "className",
     "type": "string"
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLInputElement>",
+    "description": "Its field (the input), to focus it."
    }
   ]
  },
@@ -5676,7 +5541,12 @@
    {
     "name": "aria-label",
     "type": "string",
-    "description": "The group's name; the provider's language's by default (\"One-time passcode\")."
+    "description": "The group's name; a Field's label, else the provider's language's by default (\"One-time passcode\")."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names the group: a heading. A Field's label names it without it."
    },
    {
     "name": "aria-describedby",
@@ -5691,7 +5561,17 @@
    {
     "name": "id",
     "type": "string",
-    "description": "The id of the first box, so that a `<label htmlFor>` leads to it."
+    "description": "The id of the first box, so that a `<label htmlFor>` leads to it; in a FormItem, the item's."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name its code is sent under with a form (a hidden input): its digits, as `onChange` gives them."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLInputElement>",
+    "description": "Its first box, where the code is typed, to focus it."
    }
   ]
  },
@@ -6253,7 +6133,8 @@
    {
     "name": "name",
     "type": "string",
-    "required": true
+    "required": true,
+    "description": "The name its radios are sent under with their form: the value of the one chosen, nothing while none is."
    },
    {
     "name": "value",
@@ -6283,7 +6164,7 @@
    {
     "name": "id",
     "type": "string",
-    "description": "The group's id, for a `<label htmlFor>`… or `aria-labelledby` elsewhere."
+    "description": "The group's id, for a `<label htmlFor>`… or `aria-labelledby` elsewhere; in a FormItem, the item's."
    },
    {
     "name": "aria-label",
@@ -6293,17 +6174,22 @@
    {
     "name": "aria-labelledby",
     "type": "string",
-    "description": "The id of what names it: a heading, a Field's label."
+    "description": "The id of what names it: a heading. A Field's label or a FormItem's FormLabel names it without it."
    },
    {
     "name": "aria-describedby",
     "type": "string",
-    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+    "description": "Read out with it: what a Field or a FormItem around it says under it (its description, its error)."
    },
    {
     "name": "aria-invalid",
     "type": "boolean | 'true' | 'false'",
-    "description": "Marked invalid, as a Field with an error marks it."
+    "description": "Marked invalid, as a Field or a FormItem in error marks it."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLDivElement>",
+    "description": "The group (its `radiogroup` element), which holds its radios."
    }
   ]
  },
@@ -6366,10 +6252,24 @@
     "type": "(value: [number, number]) => void"
    },
    {
+    "name": "id",
+    "type": "string",
+    "description": "The id of its first thumb (the lower value's range input), for a `<label htmlFor>`; in a FormItem, the item's."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name its two values are sent under with a form, in order: the lower, then the upper (each thumb's own)."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLInputElement>",
+    "description": "Its first thumb (the lower value's range input), to focus it."
+   },
+   {
     "name": "label",
     "type": "ReactNode",
-    "required": true,
-    "description": "What it sets, shown above it: \"Risk per trade\"."
+    "description": "What it sets, shown above it: \"Risk per trade\". Left out in a Field, whose label names it."
    },
    {
     "name": "aria-label",
@@ -6380,6 +6280,21 @@
     "name": "ariaLabel",
     "type": "string",
     "deprecated": "Use `aria-label`. Removed in 1.0."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it, in place of its label: a heading. A Field's label names it without it."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it."
    },
    {
     "name": "min",
@@ -7031,11 +6946,42 @@
    {
     "name": "label",
     "type": "string",
-    "description": "The group's name for a screen reader: what is chosen (\"Period\"). Or `labelledBy`, a heading's id."
+    "description": "The group's name for a screen reader: what is chosen (\"Period\"). Or `aria-labelledby`, a heading's id."
    },
    {
     "name": "labelledBy",
-    "type": "string"
+    "type": "string",
+    "deprecated": "Use `aria-labelledby`. Removed in 1.0."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, as `label`."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names the group: a heading. A Field's label names it without it."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it."
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The group's id, for a `<label htmlFor>`; in a FormItem, the item's."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name its value is sent under with a form (a hidden input), as a radio's: nothing while none is chosen."
    },
    {
     "name": "size",
@@ -7065,6 +7011,11 @@
    {
     "name": "className",
     "type": "string"
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLDivElement>",
+    "description": "The group (its `radiogroup` or `tablist` element), which holds its segments."
    }
   ]
  },
@@ -7151,92 +7102,300 @@
    }
   ]
  },
- "SettleModal": {
+ "SelectMenu": {
   "entry": "ioiti-ui",
-  "file": "src/components/ui/settle-modal.tsx",
+  "file": "src/components/ui/spring-select.tsx",
   "props": [
    {
-    "name": "open",
-    "type": "boolean",
-    "description": "Open, held by the page (told of each change by `onOpenChange`, of its closing by `onClose`)."
+    "name": "options",
+    "type": "SelectMenuOption[]",
+    "required": true,
+    "description": "Option list"
    },
    {
-    "name": "defaultOpen",
+    "name": "value",
+    "type": "string",
+    "description": "Currently selected value (controlled)"
+   },
+   {
+    "name": "defaultValue",
+    "type": "string",
+    "description": "Default selected value (uncontrolled)"
+   },
+   {
+    "name": "placeholder",
+    "type": "string",
+    "description": "Placeholder when no value is selected. ioiti-ui: the provider's language's by default (\"Select…\")."
+   },
+   {
+    "name": "onChange",
+    "type": "(value: string) => void",
+    "description": "Change handler"
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "Visible label"
+   },
+   {
+    "name": "disabled",
     "type": "boolean",
     "default": "false",
-    "description": "Open at first, the dialog holding it then (it closes itself); closed by default."
+    "description": "Disabled state"
    },
    {
-    "name": "onOpenChange",
-    "type": "(open: boolean) => void",
-    "description": "Told of every change, whoever holds it: `false` when Escape, its backdrop or its × closes it."
+    "name": "error",
+    "type": "string",
+    "description": "Error message"
    },
    {
-    "name": "onClose",
-    "type": "() => void",
-    "description": "Told when Escape, its backdrop or its × closes it."
+    "name": "className",
+    "type": "string",
+    "description": "Custom class name for the root"
    },
    {
-    "name": "title",
-    "type": "ReactNode"
+    "name": "id",
+    "type": "string",
+    "description": "The trigger's id, for a `<label htmlFor>` (a `Field htmlFor`); in a FormItem, the item's."
    },
    {
-    "name": "description",
-    "type": "ReactNode"
-   },
-   {
-    "name": "children",
-    "type": "ReactNode"
-   },
-   {
-    "name": "footer",
-    "type": "ReactNode",
-    "description": "Footer area (typically action buttons)"
-   },
-   {
-    "name": "showCloseButton",
-    "type": "boolean",
-    "description": "Its close (×) button, in the top-right (true), as every layer names it."
-   },
-   {
-    "name": "hideCloseButton",
-    "type": "boolean",
-    "deprecated": "Use `showCloseButton`. Removed in 1.0. The other way round: `hideCloseButton` is `showCloseButton={false}`."
+    "name": "name",
+    "type": "string",
+    "description": "The value is sent with the form around it under this name (a hidden input), empty while none is chosen."
    },
    {
     "name": "aria-label",
     "type": "string",
-    "description": "Its name, for a dialog without a `title`: a screen reader says \"dialog\" and nothing else without one. In development, a dialog with neither says so in the console."
+    "description": "Its name, where no `label` is shown."
    },
    {
     "name": "aria-labelledby",
     "type": "string",
-    "description": "The id of what names it, where that is not its `title` (a heading of its own in `children`)."
+    "description": "The id of what names it, in place of its `label`. A Field's label names it without it."
    },
    {
-    "name": "closeOnBackdrop",
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLButtonElement>",
+    "description": "Its trigger (the button that shows the value), to focus it."
+   }
+  ]
+ },
+ "Sheet": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean"
+   },
+   {
+    "name": "defaultOpen",
     "type": "boolean",
-    "default": "true",
-    "description": "Click on backdrop closes the modal (default true)"
+    "default": "false"
+   },
+   {
+    "name": "onOpenChange",
+    "type": "(open: boolean, details?: { reason: SheetCloseReason }) => void",
+    "description": "With why it closed (`details.reason`)."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
+   }
+  ]
+ },
+ "SheetBody": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "SheetClose": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 290,
+   "element": "button"
+  }
+ },
+ "SheetContent": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [
+   {
+    "name": "side",
+    "type": "SheetSide",
+    "values": [
+     "right",
+     "left",
+     "top",
+     "bottom"
+    ],
+    "default": "\"right\"",
+    "description": "The side it comes from. A child takes its parent's."
    },
    {
     "name": "size",
-    "type": "'sm' | 'md' | 'lg' | 'xl' | 'full'",
+    "type": "SheetSize",
+    "default": "\"md\"",
+    "description": "A side sheet's width: `sm` (22 rem), `md` (26 rem, EasyUI's) or `lg` (40 rem), or pixels."
+   },
+   {
+    "name": "type",
+    "type": "SheetType",
     "values": [
+     "overlay",
+     "push"
+    ],
+    "default": "\"overlay\"",
+    "description": "`push` pushes the page aside (the body's margin) instead of covering it: a side sheet, from a window `pushMinWidth` wide; narrower, it is drawn over the page. Without a backdrop, it leaves the focus free."
+   },
+   {
+    "name": "pushMinWidth",
+    "type": "number",
+    "default": "PUSH_MIN_WIDTH",
+    "description": "The window's width from which a `push` sheet pushes the page (1024 px)."
+   },
+   {
+    "name": "modal",
+    "type": "boolean",
+    "default": "true",
+    "description": "A backdrop, and the focus held in the sheet (true); false leaves the page in use. A child takes its parent's."
+   },
+   {
+    "name": "closeOnOutsideClick",
+    "type": "boolean",
+    "description": "A click outside closes the sheet: true when it is modal (on its backdrop), false otherwise."
+   },
+   {
+    "name": "resizable",
+    "type": "boolean",
+    "default": "false",
+    "description": "A side sheet the reader may widen or narrow, by its inner edge or with the arrow keys on it."
+   },
+   {
+    "name": "minWidth",
+    "type": "number",
+    "default": "MIN_WIDTH",
+    "description": "In pixels (280)."
+   },
+   {
+    "name": "maxWidth",
+    "type": "number",
+    "description": "In pixels; 88% of the window at most in any case."
+   },
+   {
+    "name": "onResize",
+    "type": "(width: number) => void",
+    "description": "The width the reader gave, in pixels."
+   },
+   {
+    "name": "padding",
+    "type": "SheetPadding",
+    "values": [
+     "none",
      "sm",
      "md",
-     "lg",
-     "xl",
-     "full"
+     "lg"
     ],
-    "default": "'md'",
-    "description": "Maximum width of the modal (Tailwind class). ioiti-ui: `xl` for a form with rows of fields, `full` for what is read side by side (two versions of a script)."
+    "default": "\"md\"",
+    "description": "The padding of its header, body and footer (`md`, EasyUI's)."
+   },
+   {
+    "name": "showCloseButton",
+    "type": "boolean",
+    "description": "Its close button (true), as every layer names it (`showCloseButton`)."
+   },
+   {
+    "name": "showClose",
+    "type": "boolean",
+    "deprecated": "Use `showCloseButton`. Removed in 1.0."
+   },
+   {
+    "name": "closePosition",
+    "type": "\"inside\" | \"outside\"",
+    "values": [
+     "inside",
+     "outside"
+    ],
+    "default": "\"inside\"",
+    "description": "The close button inside the panel, or outside it, on the side facing the page."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "Its name, for a sheet without a SheetTitle."
    },
    {
     "name": "className",
     "type": "string"
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true
    }
   ]
+ },
+ "SheetDescription": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "p"
+  }
+ },
+ "SheetFooter": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "SheetHeader": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "div"
+  }
+ },
+ "SheetTitle": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 280,
+   "element": "h2"
+  }
+ },
+ "SheetTrigger": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/flysheet.tsx",
+  "props": [],
+  "inherits": {
+   "count": 290,
+   "element": "button"
+  }
  },
  "ShortcutsDialog": {
   "entry": "ioiti-ui",
@@ -7575,10 +7734,24 @@
     "description": "A field beside it, to type the value."
    },
    {
+    "name": "id",
+    "type": "string",
+    "description": "Its range input's id, for a `<label htmlFor>`; in a FormItem, the item's."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name its value is sent under with a form (its range input's own): the number as code writes it (\"2.5\")."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLInputElement>",
+    "description": "Its range input, to focus it."
+   },
+   {
     "name": "label",
     "type": "ReactNode",
-    "required": true,
-    "description": "What it sets, shown above it: \"Risk per trade\"."
+    "description": "What it sets, shown above it: \"Risk per trade\". Left out in a Field, whose label names it."
    },
    {
     "name": "aria-label",
@@ -7589,6 +7762,21 @@
     "name": "ariaLabel",
     "type": "string",
     "deprecated": "Use `aria-label`. Removed in 1.0."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names it, in place of its label: a heading. A Field's label names it without it."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it."
    },
    {
     "name": "min",
@@ -7625,133 +7813,6 @@
     "name": "disabled",
     "type": "boolean",
     "default": "false"
-   },
-   {
-    "name": "className",
-    "type": "string"
-   }
-  ]
- },
- "SmartComparison": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/smart-comparison.tsx",
-  "props": [
-   {
-    "name": "plans",
-    "type": "ComparisonPlan[]",
-    "required": true,
-    "default": "[]"
-   },
-   {
-    "name": "categories",
-    "type": "ComparisonCategory[]",
-    "required": true,
-    "default": "[]"
-   },
-   {
-    "name": "defaultPlanId",
-    "type": "string"
-   },
-   {
-    "name": "enableSearch",
-    "type": "boolean",
-    "default": "true"
-   },
-   {
-    "name": "enableDiffFilter",
-    "type": "boolean",
-    "default": "true"
-   },
-   {
-    "name": "className",
-    "type": "string"
-   },
-   {
-    "name": "label",
-    "type": "string",
-    "description": "What the matrix is called, for screen readers; the provider's language's by default (\"Feature and plan comparison\")."
-   },
-   {
-    "name": "matrixTitle",
-    "type": "string",
-    "description": "The head of the matrix's own column; the provider's language's by default (\"Feature matrix\")."
-   },
-   {
-    "name": "countLabel",
-    "type": "(count: number) => string",
-    "description": "Its count of rows, under that head; the provider's language's by default (\"12 specifications\", \"1 specification\")."
-   },
-   {
-    "name": "searchPlaceholder",
-    "type": "string",
-    "description": "The search's placeholder and name; the provider's language's by default (\"Filter capabilities…\")."
-   },
-   {
-    "name": "diffLabel",
-    "type": "string",
-    "description": "The button that leaves out the rows alike; the provider's language's by default (\"Differences only\")."
-   },
-   {
-    "name": "emptyText",
-    "type": "string",
-    "description": "What the matrix says when nothing is left; the provider's language's by default (\"No features match your current search or difference filters.\")."
-   },
-   {
-    "name": "linkComponent",
-    "type": "ElementType",
-    "description": "What draws a plan's link; the application's (LinkProvider) by default."
-   }
-  ],
-  "inherits": {
-   "count": 277,
-   "element": "div"
-  }
- },
- "SmoothAccordion": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/smooth-accordion.tsx",
-  "props": [
-   {
-    "name": "items",
-    "type": "AccordionItem[]",
-    "required": true
-   },
-   {
-    "name": "allowMultiple",
-    "type": "boolean",
-    "default": "false"
-   },
-   {
-    "name": "value",
-    "type": "string[]",
-    "description": "The ids of the items open, held by the page (told of each change by `onChange`)."
-   },
-   {
-    "name": "defaultValue",
-    "type": "string[]",
-    "description": "The ids of the items open at first, the accordion holding them then; none by default."
-   },
-   {
-    "name": "onChange",
-    "type": "(value: string[]) => void",
-    "description": "Told of the ids of the items open, at each opening and closing."
-   },
-   {
-    "name": "defaultOpen",
-    "type": "string[]",
-    "deprecated": "Use `defaultValue`. Removed in 1.0."
-   },
-   {
-    "name": "headingLevel",
-    "type": "2 | 3 | 4 | 5 | 6",
-    "values": [
-     "2",
-     "3",
-     "4",
-     "5",
-     "6"
-    ],
-    "description": "Each question in a heading of this level, which a screen reader lists with the page's own (none by default); drawn as without it."
    },
    {
     "name": "className",
@@ -8026,89 +8087,6 @@
    }
   ]
  },
- "SpringSelect": {
-  "entry": "ioiti-ui",
-  "file": "src/components/ui/spring-select.tsx",
-  "props": [
-   {
-    "name": "options",
-    "type": "SpringSelectOption[]",
-    "required": true,
-    "description": "Option list"
-   },
-   {
-    "name": "value",
-    "type": "string",
-    "description": "Currently selected value (controlled)"
-   },
-   {
-    "name": "defaultValue",
-    "type": "string",
-    "description": "Default selected value (uncontrolled)"
-   },
-   {
-    "name": "placeholder",
-    "type": "string",
-    "description": "Placeholder when no value is selected. ioiti-ui: the provider's language's by default (\"Select…\")."
-   },
-   {
-    "name": "onChange",
-    "type": "(value: string) => void",
-    "description": "Change handler"
-   },
-   {
-    "name": "label",
-    "type": "string",
-    "description": "Visible label"
-   },
-   {
-    "name": "disabled",
-    "type": "boolean",
-    "default": "false",
-    "description": "Disabled state"
-   },
-   {
-    "name": "error",
-    "type": "string",
-    "description": "Error message"
-   },
-   {
-    "name": "className",
-    "type": "string",
-    "description": "Custom class name for the root"
-   },
-   {
-    "name": "id",
-    "type": "string",
-    "description": "The trigger's id, for a `<label htmlFor>` (a `Field htmlFor`)."
-   },
-   {
-    "name": "name",
-    "type": "string",
-    "description": "The value is sent with the form around it under this name (a hidden input)."
-   },
-   {
-    "name": "aria-label",
-    "type": "string",
-    "description": "Its name, where no `label` is shown."
-   },
-   {
-    "name": "aria-labelledby",
-    "type": "string",
-    "description": "The id of what names it, in place of its `label`."
-   },
-   {
-    "name": "aria-describedby",
-    "type": "string",
-    "description": "Read out with it: what a Field around it says under it (its description, its error)."
-   },
-   {
-    "name": "aria-invalid",
-    "type": "boolean | 'true' | 'false'",
-    "description": "Marked invalid, as a Field with an error marks it: drawn as `error`."
-   }
-  ]
- },
  "StatCard": {
   "entry": "ioiti-ui",
   "file": "src/components/ui/stat-card.tsx",
@@ -8268,7 +8246,8 @@
    {
     "name": "children",
     "type": "ReactNode",
-    "required": true
+    "required": true,
+    "description": "The cards: StatCard's."
    },
    {
     "name": "className",
@@ -8291,11 +8270,13 @@
      "unknown",
      "disabled"
     ],
-    "required": true
+    "required": true,
+    "description": "The state it shows, in its tone and with its word."
    },
    {
     "name": "label",
-    "type": "string"
+    "type": "string",
+    "description": "Another word for it than the provider's language's."
    }
   ]
  },
@@ -8329,6 +8310,55 @@
     "name": "scale",
     "type": "[string, string]",
     "description": "What its two ends stand for, written under it (\"24 h ago\", \"Now\")."
+   },
+   {
+    "name": "className",
+    "type": "string"
+   }
+  ]
+ },
+ "StatusIsland": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/dynamic-island.tsx",
+  "props": [
+   {
+    "name": "compact",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What the pill shows, collapsed: the whole pill opens the island."
+   },
+   {
+    "name": "children",
+    "type": "ReactNode",
+    "required": true,
+    "description": "What the island shows, opened."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "The name of the pill and of the opened island, for screen readers."
+   },
+   {
+    "name": "defaultState",
+    "type": "StatusIslandState",
+    "values": [
+     "collapsed",
+     "expanded"
+    ],
+    "default": "'collapsed'"
+   },
+   {
+    "name": "state",
+    "type": "StatusIslandState",
+    "values": [
+     "collapsed",
+     "expanded"
+    ]
+   },
+   {
+    "name": "onStateChange",
+    "type": "(state: StatusIslandState) => void"
    },
    {
     "name": "className",
@@ -8648,6 +8678,79 @@
    "element": "tr"
   }
  },
+ "Tabs": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/animated-tabs.tsx",
+  "props": [
+   {
+    "name": "tabs",
+    "type": "TabItem[]",
+    "required": true
+   },
+   {
+    "name": "value",
+    "type": "string",
+    "description": "The id of the tab shown, held by the page (told of each change by `onChange`)."
+   },
+   {
+    "name": "defaultValue",
+    "type": "string",
+    "description": "The id of the tab shown first, the tabs holding it then; the first tab by default."
+   },
+   {
+    "name": "defaultTab",
+    "type": "string",
+    "deprecated": "Use `defaultValue`. Removed in 1.0."
+   },
+   {
+    "name": "activeTab",
+    "type": "string",
+    "deprecated": "Use `value`. Removed in 1.0."
+   },
+   {
+    "name": "onChange",
+    "type": "(tabId: string) => void"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "tabsContainerClassName",
+    "type": "string"
+   },
+   {
+    "name": "renderContent",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "layoutId",
+    "type": "string"
+   },
+   {
+    "name": "variant",
+    "type": "'default' | 'glass' | 'pill'",
+    "values": [
+     "default",
+     "glass",
+     "pill"
+    ],
+    "default": "'default'",
+    "description": "`default`, a row under a line; `pill`, a rounded track; `glass`, the same as `pill` (kept for EasyUI's)."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws a tab that has an `href`; the application's link (LinkProvider) by default, else `a`."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "description": "The tabs' name for a screen reader: \"Views of the order\"."
+   }
+  ]
+ },
  "Textarea": {
   "entry": "ioiti-ui",
   "file": "src/components/ui/form.tsx",
@@ -8797,6 +8900,145 @@
    {
     "name": "className",
     "type": "string"
+   },
+   {
+    "name": "id",
+    "type": "string",
+    "description": "The group's id (what holds its buttons), for a `<label htmlFor>`; in a FormItem, the item's."
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "description": "The name its range is sent under with a form: two values, its start then its end, as `value` writes them (`now-15m`, `now`, an ISO moment), a hidden input each with this name."
+   },
+   {
+    "name": "aria-label",
+    "type": "string",
+    "description": "The group's name: what the range is for (\"Period of the logs\")."
+   },
+   {
+    "name": "aria-labelledby",
+    "type": "string",
+    "description": "The id of what names the group: a heading. A Field's label names it without it."
+   },
+   {
+    "name": "aria-describedby",
+    "type": "string",
+    "description": "Read out with it: what a Field around it says under it (its description, its error)."
+   },
+   {
+    "name": "aria-invalid",
+    "type": "boolean | 'true' | 'false'",
+    "description": "Marked invalid, as a Field with an error marks it: its frame in the negative colour."
+   },
+   {
+    "name": "ref",
+    "type": "Ref<HTMLDivElement>",
+    "description": "The group (its outermost element), which holds its buttons."
+   }
+  ]
+ },
+ "Toast": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/velocity-toast.tsx",
+  "props": [
+   {
+    "name": "open",
+    "type": "boolean",
+    "required": true
+   },
+   {
+    "name": "onDismiss",
+    "type": "() => void"
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "description",
+    "type": "string"
+   },
+   {
+    "name": "duration",
+    "type": "number",
+    "default": "4000"
+   },
+   {
+    "name": "tone",
+    "type": "StatusTone",
+    "values": [
+     "neutral",
+     "info",
+     "success",
+     "warning",
+     "danger"
+    ],
+    "description": "What it says, a StatusTone (its icon): `neutral` by default, `info`, `success`, `warning`; `danger` for what went wrong, read out at once."
+   },
+   {
+    "name": "variant",
+    "type": "VelocityToastVariant",
+    "values": [
+     "default",
+     "success",
+     "warning",
+     "error",
+     "info"
+    ],
+    "deprecated": "Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`."
+   },
+   {
+    "name": "position",
+    "type": "ToastPosition",
+    "values": [
+     "top-left",
+     "top-center",
+     "top-right",
+     "bottom-left",
+     "bottom-center",
+     "bottom-right"
+    ],
+    "default": "'bottom-center'"
+   },
+   {
+    "name": "showProgress",
+    "type": "boolean",
+    "default": "true"
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "wrapperClassName",
+    "type": "string",
+    "description": "Classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom."
+   },
+   {
+    "name": "wrapperStyle",
+    "type": "CSSProperties",
+    "description": "The positioned wrapper's style: lifted above a bar at the bottom of the page (ToastProvider)."
+   },
+   {
+    "name": "onExitComplete",
+    "type": "() => void",
+    "description": "Once it has left, its exit played: a queue shows the next one then (ToastProvider)."
+   },
+   {
+    "name": "action",
+    "type": "ToastAction",
+    "description": "One thing to do from the toast, beside its words: a link (`href`) or a button (`onClick`). Using it closes the toast."
+   },
+   {
+    "name": "linkComponent",
+    "type": "ElementType",
+    "description": "What draws the action's link; the application's (LinkProvider) by default."
    }
   ]
  },
@@ -8816,13 +9058,88 @@
    }
   ]
  },
+ "Tooltip": {
+  "entry": "ioiti-ui",
+  "file": "src/components/ui/directional-tooltip.tsx",
+  "props": [
+   {
+    "name": "children",
+    "type": "ReactElement",
+    "required": true,
+    "description": "Trigger element(s)"
+   },
+   {
+    "name": "content",
+    "type": "ReactNode",
+    "required": true,
+    "description": "Tooltip content"
+   },
+   {
+    "name": "side",
+    "type": "TooltipSide",
+    "values": [
+     "top",
+     "right",
+     "bottom",
+     "left"
+    ],
+    "default": "'top'",
+    "description": "Preferred side; may be flipped if there's no space (auto by default)"
+   },
+   {
+    "name": "align",
+    "type": "TooltipAlign",
+    "values": [
+     "start",
+     "center",
+     "end"
+    ],
+    "default": "'center'",
+    "description": "Alignment along the side"
+   },
+   {
+    "name": "delayDuration",
+    "type": "number",
+    "default": "150",
+    "description": "Delay before showing, in ms"
+   },
+   {
+    "name": "showArrow",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether to show an arrow"
+   },
+   {
+    "name": "offset",
+    "type": "number",
+    "default": "8",
+    "description": "Offset from the trigger in px"
+   },
+   {
+    "name": "className",
+    "type": "string"
+   },
+   {
+    "name": "wrapperClassName",
+    "type": "string",
+    "description": "The classes of the span around the trigger (a full-width field keeps its width)."
+   },
+   {
+    "name": "forceOpen",
+    "type": "boolean",
+    "default": "false",
+    "description": "Force the tooltip to always be visible (for design previews)"
+   }
+  ]
+ },
  "TopBarTrail": {
   "entry": "ioiti-ui",
   "file": "src/shell/PageTrail.tsx",
   "props": [
    {
     "name": "home",
-    "type": "{ label: string; href: string }"
+    "type": "{ label: string; href: string }",
+    "description": "The trail's first step: Home (`/`), in the provider's language, by default."
    }
   ]
  },
@@ -8929,7 +9246,7 @@
    {
     "name": "wrapperClassName",
     "type": "string",
-    "description": "Classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom (as velocity-toast's)."
+    "description": "Classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom (as Toast's)."
    }
   ]
  },
@@ -8991,107 +9308,61 @@
    }
   ]
  },
- "VelocityToast": {
+ "WorldClock": {
   "entry": "ioiti-ui",
-  "file": "src/components/ui/velocity-toast.tsx",
+  "file": "src/components/ui/airport-matrix-clock.tsx",
   "props": [
    {
-    "name": "open",
-    "type": "boolean",
-    "required": true
+    "name": "cities",
+    "type": "WorldClockCity[]",
+    "required": true,
+    "description": "One to five cities, each with its IANA time zone."
    },
    {
-    "name": "onDismiss",
-    "type": "() => void"
+    "name": "format",
+    "type": "'12h' | '24h'",
+    "values": [
+     "12h",
+     "24h"
+    ],
+    "description": "24 hours or 12; the provider's clock by default (IoitiProvider's: 24 hours in en-GB and fr-FR, 12 in en-US)."
+   },
+   {
+    "name": "showSeconds",
+    "type": "boolean",
+    "default": "false",
+    "description": "Include seconds in each city time."
+   },
+   {
+    "name": "updateInterval",
+    "type": "number",
+    "default": "1000",
+    "description": "Refresh cadence in milliseconds. Defaults to one second."
    },
    {
     "name": "title",
-    "type": "string",
-    "required": true
+    "type": "string | null",
+    "description": "The board's heading (\"World clock\" by default, in the provider's words: `clock.title`); null for none."
    },
    {
-    "name": "description",
-    "type": "string"
+    "name": "footer",
+    "type": "ReactNode",
+    "description": "The board's last line, in the caller's words (\"3 cities / IANA time zones\" by default, in the provider's)."
    },
    {
-    "name": "duration",
-    "type": "number",
-    "default": "4000"
-   },
-   {
-    "name": "tone",
-    "type": "StatusTone",
+    "name": "size",
+    "type": "'md' | 'sm'",
     "values": [
-     "neutral",
-     "info",
-     "success",
-     "warning",
-     "danger"
+     "md",
+     "sm"
     ],
-    "description": "What it says, a StatusTone (its icon): `neutral` by default, `info`, `success`, `warning`; `danger` for what went wrong, read out at once."
-   },
-   {
-    "name": "variant",
-    "type": "VelocityToastVariant",
-    "values": [
-     "default",
-     "success",
-     "warning",
-     "error",
-     "info"
-    ],
-    "deprecated": "Use `tone`. Removed in 1.0. Its values read as a tone's: `default` as `neutral`, `error` as `danger`."
-   },
-   {
-    "name": "position",
-    "type": "VelocityToastPosition",
-    "values": [
-     "top-left",
-     "top-center",
-     "top-right",
-     "bottom-left",
-     "bottom-center",
-     "bottom-right"
-    ],
-    "default": "'bottom-center'"
-   },
-   {
-    "name": "showProgress",
-    "type": "boolean",
-    "default": "true"
-   },
-   {
-    "name": "icon",
-    "type": "ReactNode"
+    "default": "'md'",
+    "description": "'sm', a board for the side of a page's header (EasyUI's characters are up to 20 px wide)."
    },
    {
     "name": "className",
-    "type": "string"
-   },
-   {
-    "name": "wrapperClassName",
     "type": "string",
-    "description": "Classes for the positioned wrapper, e.g. to clear a bar fixed at the bottom."
-   },
-   {
-    "name": "wrapperStyle",
-    "type": "CSSProperties",
-    "description": "The positioned wrapper's style: lifted above a bar at the bottom of the page (ToastProvider)."
-   },
-   {
-    "name": "onExitComplete",
-    "type": "() => void",
-    "description": "Once it has left, its exit played: a queue shows the next one then (ToastProvider)."
-   },
-   {
-    "name": "action",
-    "type": "VelocityToastAction",
-    "description": "One thing to do from the toast, beside its words: a link or a button. Using it closes the toast."
-   },
-   {
-    "name": "linkComponent",
-    "type": "ElementType",
-    "description": "What draws the action's link; the application's (LinkProvider) by default."
+    "default": "''"
    }
   ]
  }

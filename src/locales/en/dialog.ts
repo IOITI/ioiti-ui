@@ -1,6 +1,6 @@
 import type { MessageKit } from '../../lib/messages.js'
 
-/** Dialogs and confirmations: SettleModal, Flysheet, ConfirmAction, DragToConfirm. */
+/** Dialogs and confirmations: Dialog, Sheet, ConfirmAction, DragToConfirm. */
 export const dialog = {
   /** "Close": a dialog's or a sheet's close button. */
   close: 'Close',

@@ -11,6 +11,6 @@ A link whose page is previewed on hover, on keyboard focus and on a first tap, w
 </PeekCard>
 ```
 
-- The card's content is drawn only while it is open: read what it shows then. Keep it to a few lines; a whole record is a `Flysheet`.
+- The card's content is drawn only while it is open: read what it shows then. Keep it to a few lines; a whole record is a `Sheet`.
 - The trigger keeps its own focus and click. Escape, a tap elsewhere, a scroll or a new window size closes the card.
 - The card is drawn in the document's body, 288 px wide, above the trigger where there is room; `radius-xl`, `glass-float` under glass.

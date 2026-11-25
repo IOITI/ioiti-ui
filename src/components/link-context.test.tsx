@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 import { ButtonLink } from './ButtonLink.js'
 import { LinkProvider } from './LinkProvider.js'
 import { TextLink } from './TextLink.js'
-import { AnimatedTabs } from './ui/animated-tabs.js'
+import { Tabs } from './ui/animated-tabs.js'
 import { Breadcrumb } from './ui/breadcrumb.js'
 import { NotFound } from './ui/not-found.js'
 import { NotificationBell } from './ui/notification-bell.js'
@@ -14,10 +14,10 @@ import { PeekCard } from './ui/peek-card.js'
 import { RequestStatus } from './ui/request-status.js'
 import { SelectionBasket } from './ui/selection-basket.js'
 import { Sidebar } from './ui/sidebar.js'
-import { SmartComparison } from './ui/smart-comparison.js'
+import { ComparisonTable } from './ui/smart-comparison.js'
 import { SplitButton } from './ui/split-button.js'
 import { SpotlightSearch } from './ui/spotlight-search.js'
-import { VelocityToast } from './ui/velocity-toast.js'
+import { Toast } from './ui/velocity-toast.js'
 
 /** The application's link, as a router's would be: marked, to be told from a plain `<a>`. */
 function AppLink(props: ComponentProps<'a'>) {
@@ -37,14 +37,14 @@ const LINKS: { name: string; element: ReactElement; link: string }[] = [
   { name: 'ButtonLink', element: <ButtonLink href="/orders/new">New order</ButtonLink>, link: 'New order' },
   { name: 'TextLink', element: <TextLink href="/terms">the terms</TextLink>, link: 'the terms' },
   { name: 'Sidebar', element: <Sidebar sections={[{ items: [{ id: 'orders', label: 'Orders', href: '/orders' }] }]} activeId="" />, link: 'Orders' },
-  { name: 'AnimatedTabs', element: <AnimatedTabs tabs={[{ id: 'open', label: 'Open', href: '?status=open' }, { id: 'all', label: 'All', href: '?status=all' }]} />, link: 'All' },
+  { name: 'Tabs', element: <Tabs tabs={[{ id: 'open', label: 'Open', href: '?status=open' }, { id: 'all', label: 'All', href: '?status=all' }]} />, link: 'All' },
   { name: 'Breadcrumb', element: <Breadcrumb items={[{ label: 'Library', href: '/library' }, { label: 'Here' }]} />, link: 'Library' },
   { name: 'NotFound', element: <NotFound path="/x" suggestions={[{ label: 'Files', href: '/files' }]} />, link: 'Files' },
   { name: 'SelectionBasket', element: <SelectionBasket selectedCount={2} actions={[{ id: 'compare', label: 'Compare', href: '/compare' }]} />, link: 'Compare' },
   {
-    name: 'SmartComparison',
+    name: 'ComparisonTable',
     element: (
-      <SmartComparison
+      <ComparisonTable
         plans={[
           { id: 'a', name: 'First', tagline: '', price: '', href: '/runs/a' },
           { id: 'b', name: 'Second', tagline: '', price: '', href: '/runs/b' },
@@ -72,7 +72,7 @@ const LINKS: { name: string; element: ReactElement; link: string }[] = [
     element: <SpotlightSearch open items={[{ id: 'orders', title: 'Orders', category: 'Pages', href: '/orders' }]} onOpenChange={() => {}} />,
     link: 'Orders',
   },
-  { name: 'VelocityToast', element: <VelocityToast open title="Export ready" action={{ label: 'Open the export', href: '/exports/1' }} />, link: 'Open the export' },
+  { name: 'Toast', element: <Toast open title="Export ready" action={{ label: 'Open the export', href: '/exports/1' }} />, link: 'Open the export' },
 ]
 
 describe('a component that draws a link', () => {

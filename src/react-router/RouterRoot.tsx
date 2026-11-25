@@ -6,7 +6,8 @@ import { LinkProvider } from '../components/LinkProvider.js'
 import { ToastProvider } from '../components/ToastProvider.js'
 import { RouterLink } from './RouterLink.js'
 
-interface RouterRootProps {
+/** The props of `RouterRoot`. */
+export interface RouterRootProps {
   /** The pages; the router's child routes (`<Outlet />`) by default. */
   children?: ReactNode
   /** Classes of the toasts' frame, to move them (above a bar fixed at the bottom of a page: `bottom-20`). */

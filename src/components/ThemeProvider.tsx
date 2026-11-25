@@ -26,7 +26,8 @@ import type { Accent, Material, ThemePreference } from '../lib/theme.js'
 
 import { ThemeContext } from './theme-context.js'
 
-interface ThemeProviderProps {
+/** The props of `ThemeProvider`. */
+export interface ThemeProviderProps {
   /**
    * Where the choice is kept in this browser: one key per application. By default the key the
    * pre-paint script was given (its tag's `data-storage-key`), else `ioiti.theme`.

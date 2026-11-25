@@ -20,7 +20,8 @@ export interface ChangeGroup {
   changes: Change[]
 }
 
-interface ChangeListProps {
+/** The props of `ChangeList`. */
+export interface ChangeListProps {
   /** The changes, or `groups` of them under their titles. */
   changes?: Change[]
   groups?: ChangeGroup[]

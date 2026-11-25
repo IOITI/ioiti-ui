@@ -1,12 +1,14 @@
 import { CalendarClock, ChevronDown, Pause, Play, RefreshCw } from 'lucide-react'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { ReactNode, Ref } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
+import { dataAttributes } from '../lib/data-attributes.js'
+import type { DataAttributes } from '../lib/data-attributes.js'
 import { formatTimeRange, formatTimeRangeEnd, parseDateMath, relativeEnd, TIME_UNITS } from '../lib/date-math.js'
 import type { TimeRange, TimeRangeWordsOptions, TimeUnit } from '../lib/date-math.js'
 import { deprecated } from '../lib/deprecated.js'
-import { fieldBorder } from '../lib/field-border.js'
+import { fieldBorder, invalidOf } from '../lib/field-border.js'
 import type { WeekDay } from '../lib/locale.js'
 import { PRESSABLE } from '../lib/recipes.js'
 import { cn } from '../lib/utils.js'
@@ -18,7 +20,7 @@ import { SegmentedControl } from './SegmentedControl.js'
 import { Button } from './ui/button.js'
 import { Calendar } from './ui/calendar.js'
 import { DrawCheckbox } from './ui/draw-checkbox.js'
-import { FieldContext } from './field-context.js'
+import { FieldContext, useFieldControl } from './field-context.js'
 import { Select } from './ui/form.js'
 
 export interface CommonRange {
@@ -155,7 +157,8 @@ function RefreshEvery({ settings, onChange }: { settings: RefreshSettings; onCha
   )
 }
 
-interface AutoRefreshProps {
+/** The props of `AutoRefresh`. */
+export interface AutoRefreshProps {
   /** How often, and whether it is stopped. */
   value: RefreshSettings
   onChange: (settings: RefreshSettings) => void
@@ -462,7 +465,7 @@ function EndEditor({
   )
 }
 
-interface TimeRangePickerProps {
+export interface TimeRangePickerProps extends DataAttributes {
   /** The range applied: each end `now`, `now` moved and rounded (`now-15m`, `now/d`), or an ISO moment. */
   value?: TimeRange
   defaultValue?: TimeRange
@@ -490,6 +493,23 @@ interface TimeRangePickerProps {
    */
   weekStartsOn?: WeekDay
   className?: string
+  /** The group's id (what holds its buttons), for a `<label htmlFor>`; in a FormItem, the item's. */
+  id?: string
+  /**
+   * The name its range is sent under with a form: two values, its start then its end, as `value` writes them
+   * (`now-15m`, `now`, an ISO moment), a hidden input each with this name.
+   */
+  name?: string
+  /** The group's name: what the range is for ("Period of the logs"). */
+  'aria-label'?: string
+  /** The id of what names the group: a heading. A Field's label names it without it. */
+  'aria-labelledby'?: string
+  /** Read out with it: what a Field around it says under it (its description, its error). */
+  'aria-describedby'?: string
+  /** Marked invalid, as a Field with an error marks it: its frame in the negative colour. */
+  'aria-invalid'?: boolean | 'true' | 'false'
+  /** The group (its outermost element), which holds its buttons. */
+  ref?: Ref<HTMLDivElement>
 }
 
 /**
@@ -511,10 +531,30 @@ export function TimeRangePicker({
   locale,
   weekStartsOn,
   className,
+  id,
+  name,
+  'aria-label': ariaLabel,
+  'aria-labelledby': labelledBy,
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
+  ref,
+  ...rest
 }: TimeRangePickerProps) {
   // Its former name read as today's, said once in development.
   if (isLoading !== undefined) deprecated('is-loading', 'TimeRangePicker')
   const loading = givenLoading ?? isLoading ?? false
+  // A group of buttons, named, described and marked by a Field or a FormItem around it too, its own props first: by
+  // its label's words (aria-labelledby: a label names no group), the label pointing to it, so that it names no button.
+  const groupId = useId()
+  const control = useFieldControl({
+    id,
+    fallbackId: groupId,
+    labelledBy,
+    named: Boolean(ariaLabel),
+    describedBy,
+    invalid: invalidOf(undefined, ariaInvalid),
+  })
+  const grouped = Boolean(ariaLabel || control.labelledBy || control.describedBy || control.invalid)
   // The provider's locale, week, clock and words, where the props give none.
   const provider = useLocale()
   const words = useMessages().timeRange
@@ -588,8 +628,25 @@ export function TimeRangePicker({
   }
 
   return (
-    <div className={cn('flex w-full min-w-0 items-center gap-2', className)}>
-      <div className="flex h-10 min-w-0 flex-1 items-center gap-1 rounded-lg border border-border bg-surface px-1">
+    <div
+      ref={ref}
+      {...dataAttributes(rest)}
+      id={control.id}
+      role={grouped ? 'group' : undefined}
+      aria-label={ariaLabel}
+      aria-labelledby={control.labelledBy}
+      aria-describedby={control.describedBy}
+      aria-invalid={control.invalid || undefined}
+      className={cn('flex w-full min-w-0 items-center gap-2', className)}
+    >
+      {/* The range applied, sent with the form around it under its `name`: its start, then its end. */}
+      {name && [applied.from, applied.to].map((end, index) => <input key={index} type="hidden" name={name} value={end} />)}
+      <div
+        className={cn(
+          'flex h-10 min-w-0 flex-1 items-center gap-1 rounded-lg border bg-surface px-1',
+          control.invalid ? fieldBorder(true, 'focus-within') : 'border-border',
+        )}
+      >
         <Popover
           label={words.quickSelect}
           open={quickOpen}

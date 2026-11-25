@@ -9,7 +9,8 @@ import { useMessages } from './locale-context.js'
 
 type Outcome = 'idle' | 'copied' | 'failed'
 
-interface CopyButtonProps {
+/** The props of `CopyButton`. */
+export interface CopyButtonProps {
   /** What is copied, or a function giving it when the button is pressed. */
   value: string | (() => string)
   /** What it copies, in words: "Copy the key"; the provider's language's "Copy" by default. */

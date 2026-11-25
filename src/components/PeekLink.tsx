@@ -4,7 +4,8 @@ import { deprecated } from '../lib/deprecated.js'
 import { useLinkComponent } from './link-context.js'
 import { PeekCard } from './ui/peek-card.js'
 
-interface PeekLinkProps {
+/** The props of `PeekLink`. */
+export interface PeekLinkProps {
   /** Where it leads, and the card's own link. */
   href?: string
   /** @deprecated Use `href`. Removed in 1.0. */

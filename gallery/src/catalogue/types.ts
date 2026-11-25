@@ -34,6 +34,13 @@ export interface FamilyInfo {
   examples: ExampleInfo[]
   /** More words ⌘K finds it by. */
   keywords?: string[]
+  /**
+   * Its former names, until 1.0 removes them (src/lib/deprecations.ts): said under its title, found by ⌘K and the
+   * index. Its former address leads to its page (legacy.ts).
+   */
+  formerly?: string[]
+  /** The component that replaces it, which takes the same props: its page says to use that one, until 1.0 removes it. */
+  deprecated?: string
   /** Why one example says all there is to say (two at least otherwise). */
   single?: string
 }

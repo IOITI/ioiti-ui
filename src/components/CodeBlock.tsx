@@ -31,7 +31,8 @@ const CHANGED_LINE: Partial<Record<CodeTokenKind, string>> = {
   deleted: 'shadow-[inset_2px_0_0_var(--negative)]',
 }
 
-interface CodeBlockProps {
+/** The props of `CodeBlock`. */
+export interface CodeBlockProps {
   code: string
   /** How it is coloured: `text` not at all. */
   language?: CodeLanguage
@@ -146,8 +147,15 @@ export function CodeBlock({
   )
 }
 
+/** The props of `Code`. */
+export interface CodeProps {
+  /** The code: a name, a value, a key. */
+  children: ReactNode
+  className?: string
+}
+
 /** A word of code in a sentence: a name, a value, a key. */
-export function Code({ children, className }: { children: ReactNode; className?: string }) {
+export function Code({ children, className }: CodeProps) {
   return (
     <code className={cn('rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-[0.85em] text-foreground', className)}>
       {children}

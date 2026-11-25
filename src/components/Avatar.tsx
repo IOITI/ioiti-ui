@@ -25,7 +25,8 @@ function initialsOf(name: string): string {
     .toUpperCase()
 }
 
-interface AvatarProps {
+/** The props of `Avatar`. */
+export interface AvatarProps {
   /** Whose it is: its initials are drawn from it, and a screen reader hears it. */
   name: string
   /** A picture, from the application's own origin; the initials where there is none, or it fails. */
@@ -61,7 +62,8 @@ export function Avatar({ name, src, size = 'md', hint = false, className }: Avat
   return hint ? <Hint content={name}>{drawn}</Hint> : drawn
 }
 
-interface AvatarGroupProps {
+/** The props of `AvatarGroup`. */
+export interface AvatarGroupProps {
   people: { name: string; src?: string }[]
   /** The avatars shown before "+N" says how many more. */
   max?: number

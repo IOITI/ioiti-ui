@@ -145,7 +145,7 @@
   "height": 132
  },
  {
-  "name": "SpringSelect",
+  "name": "SelectMenu",
   "group": "Forms",
   "height": 132
  },
@@ -170,7 +170,7 @@
   "height": 168
  },
  {
-  "name": "AnimatedFileUpload",
+  "name": "FileUpload",
   "group": "Forms",
   "height": 220
  },
@@ -210,7 +210,7 @@
   "height": 160
  },
  {
-  "name": "VelocityToast",
+  "name": "Toast",
   "group": "Feedback",
   "height": 192
  },
@@ -250,12 +250,12 @@
   "height": 112
  },
  {
-  "name": "Flysheet",
+  "name": "Sheet",
   "group": "Overlays",
   "height": 72
  },
  {
-  "name": "DirectionalTooltip",
+  "name": "Tooltip",
   "group": "Overlays",
   "height": 136
  },
@@ -270,7 +270,7 @@
   "height": 320
  },
  {
-  "name": "SettleModal",
+  "name": "Dialog",
   "group": "Overlays",
   "height": 336
  },
@@ -285,12 +285,12 @@
   "height": 496
  },
  {
-  "name": "DynamicIsland",
+  "name": "StatusIsland",
   "group": "Overlays",
   "height": 168
  },
  {
-  "name": "AnimatedTabs",
+  "name": "Tabs",
   "group": "Navigation",
   "height": 292
  },
@@ -310,7 +310,7 @@
   "height": 88
  },
  {
-  "name": "SmoothAccordion",
+  "name": "Accordion",
   "group": "Navigation",
   "height": 264
  },
@@ -415,7 +415,7 @@
   "height": 412
  },
  {
-  "name": "SmartComparison",
+  "name": "ComparisonTable",
   "group": "Data display",
   "height": 552
  },
@@ -435,7 +435,7 @@
   "height": 548
  },
  {
-  "name": "AirportMatrixClock",
+  "name": "WorldClock",
   "group": "Data display",
   "height": 360
  },

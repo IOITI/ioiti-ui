@@ -1,0 +1,3632 @@
+ioiti-ui (src/index.ts): what it exports, and its types, as the type checker reads them.
+Made by npm run api (scripts/api-report.mjs); npm run lint holds it.
+
+type Accent = (typeof ACCENTS)[number]
+
+/** @deprecated */ const ACCENT_LABEL: Record<Accent, string>
+
+function accentName(accent: Accent, words?: LookWords): string
+
+const ACCENTS: readonly ["neutral", "violet", "indigo", "blue", "bloom", "lagoon", "aurora", "dusk", "golden"]
+
+component Accordion: FC<AccordionProps>
+
+interface AccordionItem {
+  content: ReactNode
+  id: string
+  subtitle?: string
+  title: string
+}
+
+interface AccordionProps {
+  allowMultiple?: boolean
+  className?: string
+  /** @deprecated */ defaultOpen?: string[]
+  defaultValue?: string[]
+  headingLevel?: 2 | 3 | 4 | 5 | 6
+  items: AccordionItem[]
+  onChange?: (value: string[]) => void
+  value?: string[]
+}
+
+component ActivityHeatmap(props: ActivityHeatmapProps): JSX.Element
+
+interface ActivityHeatmapProps {
+  animated?: boolean
+  "aria-label"?: string
+  /** @deprecated */ ariaLabel?: string
+  className?: string
+  color?: string
+  data?: HeatDay[]
+  details?: (string | null | undefined)[][]
+  diverging?: DivergingColors
+  emptyText?: string
+  endDate?: string | Date
+  format?: (value: number) => string
+  hours?: number[]
+  legend?: [string, string]
+  matrix?: (number | null)[][]
+  minCell?: number
+  mode?: "calendar" | "hours"
+  rowLabels?: string[]
+  startDate?: string | Date
+  summary?: ReactNode
+  unit?: string
+  weeks?: number
+  weekStart?: WeekDay
+}
+
+type ActivityStatus = "pending" | "running" | "success" | "error" | "cancelled"
+
+type ActivityType = "thinking" | "searching" | "reading" | "writing" | "tool_execution" | "api_request" | "database_query" | "code_execution" | "completed" | "failed" | "cancelled"
+
+component AdvancedDataTable<T = any>(props: AdvancedDataTableProps<T>): JSX.Element
+
+interface AdvancedDataTableProps<T = any> extends DataTableProps<T> {
+  emptyDescription?: string
+  emptyTitle?: string
+  onBulkDelete?: (selectedIds: string[]) => void
+  onBulkExport?: (selectedIds: string[]) => void
+  searchPlaceholder?: string
+  title?: string
+}
+
+interface AgentActivityContextValue {
+  accentColor?: string
+  activities: AgentActivityItemData[]
+  bodyId: string
+  collapseAll: () => void
+  collapsible: boolean
+  expandAll: () => void
+  expandedIds: Set<string>
+  inputLabel: string
+  isRunning?: boolean
+  notesLabel: string
+  open: boolean
+  outputLabel: string
+  setOpen: (open: boolean) => void
+  summary?: string
+  toggleExpand: (id: string) => void
+}
+
+component AgentActivityHeader: FC<AgentActivityHeaderProps>
+
+interface AgentActivityHeaderProps {
+  agentName?: string
+  className?: string
+  showControls?: boolean
+  title?: string
+}
+
+component AgentActivityItem: FC<AgentActivityItemProps>
+
+interface AgentActivityItemData {
+  description?: string
+  details?: {
+    input?: string | Record<string, any>
+    output?: string | Record<string, any>
+    codeSnippet?: string
+    language?: string
+  }
+  duration?: string
+  id: string
+  kind?: "step" | "note"
+  metadata?: Record<string, any>
+  status: ActivityStatus
+  statusLabel?: string
+  timestamp?: string
+  title: string
+  type: ActivityType
+}
+
+interface AgentActivityItemProps {
+  activity: AgentActivityItemData
+  className?: string
+  isLast?: boolean
+}
+
+component AgentActivityNotes: FC<AgentActivityNotesProps>
+
+interface AgentActivityNotesProps {
+  className?: string
+  notes: AgentActivityItemData[]
+}
+
+component AgentActivityTimeline: FC<AgentActivityTimelineProps>
+
+interface AgentActivityTimelineProps {
+  className?: string
+}
+
+component AIAgentActivity: FC<AIAgentActivityProps>
+
+interface AIAgentActivityProps {
+  accentColor?: string
+  activities: AgentActivityItemData[]
+  agentName?: string
+  children?: ReactNode
+  className?: string
+  collapsible?: boolean
+  defaultExpandedIds?: string[]
+  defaultOpen?: boolean
+  inputLabel?: string
+  isRunning?: boolean
+  notesLabel?: string
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  outputLabel?: string
+  summary?: string
+  title?: string
+}
+
+component AIResponse: FC<AIResponseProps>
+
+component AIResponseActions: FC<AIResponseActionsProps>
+
+interface AIResponseActionsProps {
+  className?: string
+}
+
+component AIResponseContent: FC<AIResponseContentProps>
+
+interface AIResponseContentProps {
+  className?: string
+}
+
+interface AIResponseContextValue {
+  content: string
+  copied: boolean
+  copyContent: () => void
+  feedback?: "like" | "dislike" | null
+  modelName?: string
+  onFeedback?: (type: "like" | "dislike") => void
+  onRegenerate?: () => void
+  sources: AIResponseSource[]
+  status: AIResponseStatus
+  thinking?: AIResponseThinkingProps
+}
+
+component AIResponseHeader: FC<AIResponseHeaderProps>
+
+interface AIResponseHeaderProps {
+  className?: string
+  icon?: ReactNode
+  modelBadge?: string
+  timestamp?: string
+  title?: string
+}
+
+interface AIResponseProps {
+  children?: ReactNode
+  className?: string
+  content?: string
+  feedback?: "like" | "dislike" | null
+  modelName?: string
+  onFeedback?: (type: "like" | "dislike") => void
+  onRegenerate?: () => void
+  sources?: AIResponseSource[]
+  status?: AIResponseStatus
+  thinking?: AIResponseThinkingProps
+}
+
+interface AIResponseSource {
+  id: string | number
+  snippet?: string
+  sourceType?: "doc" | "github" | "web" | "api" | string
+  title: string
+  url?: string
+}
+
+component AIResponseSources: FC<AIResponseSourcesProps>
+
+interface AIResponseSourcesProps {
+  className?: string
+  defaultExpanded?: boolean
+  sources?: AIResponseSource[]
+  title?: string
+}
+
+type AIResponseStatus = "idle" | "generating" | "streaming" | "complete" | "error" | "cancelled"
+
+component AIResponseThinking: FC<AIResponseThinkingProps>
+
+interface AIResponseThinkingProps {
+  className?: string
+  interval?: number
+  label: string
+  lines?: string[]
+  since?: string | number | Date
+}
+
+component AIResponseToolsSummary: FC<AIResponseToolsSummaryProps>
+
+interface AIResponseToolsSummaryProps {
+  className?: string
+  onToggleDetails?: () => void
+  toolCount: number
+  tools?: Array<{
+    name: string
+    status?: "success" | "running" | "error"
+    duration?: string
+  }>
+}
+
+/** @deprecated */ type AirportMatrixCity = WorldClockCity
+
+/** @deprecated */ component AirportMatrixClock(props: WorldClockProps): JSX.Element
+
+/** @deprecated */ type AirportMatrixClockProps = WorldClockProps
+
+component Alert(props: AlertProps): JSX.Element
+
+component AlertDescription(props: AlertDescriptionProps): JSX.Element
+
+type AlertDescriptionProps = ComponentProps<"div">
+
+interface AlertProps extends Omit<ComponentProps<"div">, "title"> {
+  action?: ReactNode
+  dismissible?: boolean
+  icon?: ReactNode | false
+  onDismiss?: () => void
+  tone?: AlertTone
+}
+
+component AlertTitle(props: AlertTitleProps): JSX.Element
+
+type AlertTitleProps = ComponentProps<"p">
+
+type AlertTone = StatusTone
+
+const ALL_TIME: DateRange
+
+/** @deprecated */ component AnimatedFileUpload: FC<FileUploadProps>
+
+/** @deprecated */ type AnimatedFileUploadProps = FileUploadProps
+
+component AnimatedNumber: FC<AnimatedNumberProps>
+
+interface AnimatedNumberProps {
+  className?: string
+  compact?: boolean
+  damping?: number
+  decimals?: number
+  mass?: number
+  prefix?: string
+  stiffness?: number
+  suffix?: string
+  text?: string
+  useGrouping?: boolean
+  value: number
+}
+
+/** @deprecated */ component AnimatedTabs: FC<TabsProps>
+
+/** @deprecated */ type AnimatedTabsProps = TabsProps
+
+function announce(message: string, politeness?: Politeness): void
+
+component AppBrand(props: AppBrandProps): JSX.Element
+
+interface AppBrandProps {
+  detail?: ReactNode
+  mark?: ReactNode
+  name: string
+}
+
+function applyTheme(theme: Theme, root?: HTMLElement): void
+
+component AppShell<S extends string = string>(props: AppShellProps<S>): JSX.Element
+
+interface AppShellProps<S extends string = string> {
+  appDetail?: ReactNode
+  appName?: string
+  brandMark?: ReactNode
+  children: ReactNode
+  className?: string
+  collapsedStorageKey?: string
+  defaultCollapsed?: boolean
+  errorFallback?: ErrorBoundaryProps["fallback"] | false
+  hash?: string
+  home?: {
+    label: string
+    href: string
+  }
+  isWide?: (pathname: string) => boolean
+  linkComponent?: ElementType
+  menu: Menu<S>
+  pageOf?: (pathname: string) => string
+  pathname: string
+  pending?: boolean
+  search?: string
+  shortcutsDialog?: boolean
+  sidebarFooter?: ReactNode
+  sidebarHeader?: ReactNode
+  tabTitle?: boolean
+  topBarChips?: ReactNode
+  topBarEnd?: ReactNode
+}
+
+component AttachmentChip(props: AttachmentChipProps): JSX.Element
+
+interface AttachmentChipProps {
+  /** @deprecated */ busy?: boolean
+  className?: string
+  detail?: ReactNode
+  href?: string
+  icon?: ReactNode
+  label: string
+  linkComponent?: ElementType
+  onRemove?: () => void
+  pending?: boolean
+  thumbnail?: string
+  tone?: "neutral" | "danger"
+}
+
+component AuthLayout(props: AuthLayoutProps): JSX.Element
+
+interface AuthLayoutProps {
+  children: ReactNode
+  className?: string
+  description?: ReactNode
+  footer?: ReactNode
+  icon?: ReactNode
+  logo?: ReactNode
+  notice?: ReactNode
+  tabTitle?: string
+  themeToggle?: boolean
+  title: string
+}
+
+component AutoRefresh(props: AutoRefreshProps): JSX.Element
+
+interface AutoRefreshProps {
+  className?: string
+  onChange: (settings: RefreshSettings) => void
+  onRefresh: () => void
+  value: RefreshSettings
+}
+
+component Avatar(props: AvatarProps): JSX.Element
+
+component AvatarGroup(props: AvatarGroupProps): JSX.Element
+
+interface AvatarGroupProps {
+  className?: string
+  label?: string
+  max?: number
+  people: {
+    name: string
+    src?: string
+  }[]
+  size?: AvatarSize
+}
+
+interface AvatarProps {
+  className?: string
+  hint?: boolean
+  name: string
+  size?: AvatarSize
+  src?: string
+}
+
+component Badge(props: BadgeProps): JSX.Element
+
+type BadgeProps = Omit<HTMLMotionProps<"span">, "children"> & {
+  variant?: BadgeVariant
+  tone?: BadgeTone
+  dot?: boolean
+  pulse?: boolean
+  onRemove?: () => void
+  removeLabel?: string
+  removeFocusable?: boolean
+  children?: ReactNode
+}
+
+type BadgeTone = StatusTone
+
+type BadgeVariant = "soft" | "solid" | "outline"
+
+component BarChart(props: BarChartProps): JSX.Element
+
+interface BarChartProps {
+  animated?: boolean
+  "aria-label"?: string
+  /** @deprecated */ ariaLabel?: string
+  className?: string
+  colorBy?: "series" | "sign"
+  data: BarDatum[]
+  details?: (datum: BarDatum, index: number) => ChartDetail[]
+  formatTick?: (n: number) => string
+  formatTitle?: (datum: BarDatum, index: number) => string
+  formatValue?: (n: number) => string
+  height?: number
+  integer?: boolean
+  marked?: {
+    index: number
+    label: string
+  }
+  series: BarSeries[]
+  showLegend?: boolean
+  tickAt?: (datum: BarDatum, index: number) => boolean
+  /** @deprecated */ tone?: "series" | "sign"
+  variant?: "grouped" | "stacked"
+}
+
+type BarDatum = {
+  label: string
+} & Record<string, string | number | null>
+
+component BarList(props: BarListProps): JSX.Element
+
+interface BarListItem {
+  href?: string
+  label: ReactNode
+  tone?: MeterTone
+  value: number
+}
+
+interface BarListProps {
+  className?: string
+  format?: (value: number) => string
+  items: BarListItem[]
+  label?: string
+  max?: number
+}
+
+interface BarSeries {
+  color?: string
+  key: string
+  label: string
+}
+
+type BoundMessages = BoundCatalogue<Messages>
+
+component Breadcrumb(props: BreadcrumbProps): JSX.Element
+
+interface BreadcrumbItem {
+  href?: string
+  icon?: ReactNode
+  label: string
+}
+
+interface BreadcrumbProps extends Omit<ComponentProps<"nav">, "children"> {
+  as?: ElementType
+  items: BreadcrumbItem[]
+  maxItems?: number
+  separator?: "chevron" | "slash"
+  wrap?: boolean
+}
+
+component Button: ForwardRefExoticComponent<Omit<ButtonProps, "ref"> & RefAttributes<HTMLButtonElement>>
+
+function buttonClassName({…}: Pick<ButtonProps, "variant" | "size" | "fullWidth"> & {
+  className?: string
+}): string
+
+component ButtonLink(props: ButtonLinkProps): JSX.Element
+
+interface ButtonLinkProps extends Omit<ComponentProps<"a">, "href" | "className"> {
+  className?: string
+  href?: string | null
+  leftIcon?: ReactNode
+  pending?: boolean
+  reloadDocument?: boolean
+  rightIcon?: ReactNode
+  size?: ButtonSize
+  /** @deprecated */ to?: string | null
+  variant?: ButtonVariant
+}
+
+interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
+  children?: ReactNode
+  fullWidth?: boolean
+  /** @deprecated */ isLoading?: boolean
+  leftIcon?: ReactNode
+  loadingText?: string
+  pending?: boolean
+  rightIcon?: ReactNode
+  size?: ButtonSize
+  variant?: ButtonVariant
+}
+
+type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon"
+
+type ButtonVariant = "default" | "primary" | "secondary" | "outline" | "ghost" | "danger" | "destructive" | "success" | "link" | "gradient"
+
+component Calendar(props: CalendarProps): JSX.Element
+
+type CalendarOptions = Omit<CalendarBase, "className">
+
+type CalendarProps = CalendarSingleProps | CalendarRangeProps
+
+interface CalendarRangeProps extends CalendarBase {
+  defaultValue?: DateRange
+  mode: "range"
+  onChange?: (range: DateRange) => void
+  value?: DateRange
+}
+
+interface CalendarSingleProps extends CalendarBase {
+  defaultValue?: Date | null
+  mode?: "single"
+  onChange?: (date: Date | null) => void
+  value?: Date | null
+}
+
+interface Change {
+  after?: ReactNode
+  before?: ReactNode
+  label: ReactNode
+  note?: ReactNode
+}
+
+interface ChangeGroup {
+  changes: Change[]
+  title: ReactNode
+}
+
+component ChangeList(props: ChangeListProps): JSX.Element
+
+interface ChangeListProps {
+  changes?: Change[]
+  className?: string
+  groups?: ChangeGroup[]
+  label?: string
+  numeric?: boolean
+}
+
+interface ChartDetail {
+  label: string
+  value: string
+}
+
+component ChartLegend(props: ChartLegendProps): JSX.Element
+
+interface ChartLegendItem {
+  color: string
+  label: ReactNode
+  shape?: "square" | "line" | "dashed" | "dot" | "marker"
+  shown?: boolean
+  value?: ReactNode
+}
+
+interface ChartLegendProps {
+  className?: string
+  items: ChartLegendItem[]
+  label?: string
+  onToggle?: (index: number) => void
+}
+
+interface Check {
+  detail: string
+  id: string
+  label: string
+  state: CheckState
+}
+
+component Checkbox: ForwardRefExoticComponent<DrawCheckboxProps & RefAttributes<HTMLInputElement>>
+
+interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
+  description?: string
+  error?: boolean
+  indeterminate?: boolean
+  label?: ReactNode
+}
+
+component CheckIcon(props: CheckIconProps): JSX.Element
+
+interface CheckIconProps {
+  named?: boolean
+  state: CheckState
+}
+
+component CheckList<T extends Check>(props: CheckListProps<T>): JSX.Element
+
+interface CheckListProps<T extends Check = Check> {
+  checks: readonly T[]
+  className?: string
+  hrefOf?: (check: T) => string | null
+  label: string
+}
+
+type CheckState = "pass" | "fail" | "open"
+
+function cn(...inputs: ClassValue[]): string
+
+component Code(props: CodeProps): JSX.Element
+
+component CodeBlock(props: CodeBlockProps): JSX.Element
+
+interface CodeBlockProps {
+  className?: string
+  code: string
+  copyable?: boolean
+  highlight?: (code: string) => CodeToken[]
+  highlightLines?: number[]
+  label?: ReactNode
+  language?: CodeLanguage
+  lineNumbers?: boolean | number
+  maxHeight?: number | string
+  wrap?: boolean
+}
+
+type CodeLanguage = "json" | "js" | "jsx" | "ts" | "tsx" | "css" | "shell" | "toml" | "yaml" | "diff" | "python" | "text"
+
+interface CodeProps {
+  children: ReactNode
+  className?: string
+}
+
+interface CodeToken {
+  kind: CodeTokenKind
+  text: string
+}
+
+type CodeTokenKind = "keyword" | "string" | "number" | "comment" | "function" | "namespace" | "type" | "builtin" | "operator" | "inserted" | "deleted" | "plain"
+
+interface ColumnDef<T> {
+  accessorFn?: (row: T) => any
+  accessorKey?: keyof T
+  align?: "left" | "center" | "right"
+  cell?: (info: {
+    row: T
+    value: any
+  }) => ReactNode
+  defaultHidden?: boolean
+  filterable?: boolean
+  filterDisplay?: "auto" | "list" | "toggle"
+  filterOptions?: Array<{
+    label: string
+    value: string
+  }>
+  header: string
+  id: string
+  priority?: "high" | "medium" | "low"
+  sortable?: boolean
+  width?: string
+}
+
+component Combobox(props: ComboboxProps): JSX.Element
+
+interface ComboboxOption {
+  description?: string
+  disabled?: boolean
+  icon?: ReactNode
+  keywords?: string[]
+  label: string
+  value: string
+}
+
+interface ComboboxProps extends DataAttributes {
+  align?: "start" | "end"
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  className?: string
+  defaultValue?: string | null
+  disabled?: boolean
+  emptyText?: string
+  error?: boolean
+  id?: string
+  name?: string
+  onChange?: (value: string | null) => void
+  /** @deprecated */ onValueChange?: (value: string | null) => void
+  options: ComboboxOption[]
+  placeholder?: string
+  ref?: Ref<HTMLButtonElement>
+  searchPlaceholder?: string
+  value?: string | null
+}
+
+interface CommonRange {
+  label: string
+  range: TimeRange
+}
+
+interface ComparisonCategory {
+  features: ComparisonFeature[]
+  id: string
+  title: string
+}
+
+interface ComparisonFeature {
+  description?: string
+  id: string
+  keys?: Record<string, string>
+  name: string
+  values: Record<string, string | boolean | ReactNode>
+}
+
+interface ComparisonPlan {
+  accent?: string
+  badge?: string
+  billingPeriod?: string
+  ctaText?: string
+  featured?: boolean
+  href?: string
+  id: string
+  name: string
+  onCtaClick?: () => void
+  price: string
+  tagline: string
+}
+
+component ComparisonTable: FC<ComparisonTableProps>
+
+interface ComparisonTableProps extends HTMLAttributes<HTMLDivElement> {
+  categories: ComparisonCategory[]
+  className?: string
+  countLabel?: (count: number) => string
+  defaultPlanId?: string
+  diffLabel?: string
+  emptyText?: string
+  enableDiffFilter?: boolean
+  enableSearch?: boolean
+  label?: string
+  linkComponent?: ElementType
+  matrixTitle?: string
+  plans: ComparisonPlan[]
+  searchPlaceholder?: string
+}
+
+component ConfirmAction(props: ConfirmActionProps): JSX.Element
+
+interface ConfirmActionProps {
+  blocked?: boolean
+  cancelLabel?: string
+  confirmLabel: string
+  defaultOpen?: boolean
+  description: ReactNode
+  doneLabel?: string
+  error?: string | null
+  gesture?: "slide" | "button"
+  onClose?: () => void
+  onConfirm: () => void
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  pending?: boolean
+  title: string
+  warning?: ReactNode
+  workingLabel?: string
+}
+
+component ContextMenu(props: ContextMenuProps): JSX.Element
+
+interface ContextMenuProps {
+  children: ReactNode
+  className?: string
+  disabled?: boolean
+  items: DropdownMenuItem[]
+  label: string
+}
+
+component CopyButton(props: CopyButtonProps): JSX.Element
+
+interface CopyButtonProps {
+  className?: string
+  label?: string
+  onCopy?: (copied: boolean) => void
+  showLabel?: boolean
+  size?: "sm" | "md"
+  value: string | (() => string)
+}
+
+component CopyChip(props: CopyChipProps): JSX.Element
+
+interface CopyChipProps {
+  className?: string
+  keep?: {
+    start: number
+    end: number
+  }
+  label?: string
+  truncate?: "middle" | "end" | false
+  value: string
+}
+
+function copyToClipboard(text: string): Promise<boolean>
+
+interface Crumb {
+  href?: string
+  label: string
+}
+
+interface CsvColumn<T> {
+  header: string
+  value: (row: T) => string | number | null | undefined
+}
+
+component DataTable<T = any>(props: DataTableProps<T>): JSX.Element
+
+component DataTableContent: FC<DataTableContentProps>
+
+interface DataTableContentProps {
+  className?: string
+  emptyDescription?: string
+  emptyTitle?: string
+}
+
+interface DataTableContextValue<T = any> {
+  accentColor?: string
+  activeFilters: Record<string, string[]>
+  canSelectPage: boolean
+  clearFilters: () => void
+  columns: ColumnDef<T>[]
+  countOptions: (columnId: string) => Record<string, number>
+  currentPage: number
+  data: T[]
+  error?: string | null
+  expandedRowIds: Set<string>
+  expandOnRowClick: boolean
+  getRowId: (row: T, index: number) => string
+  handleSort: (columnId: string) => void
+  hiddenColumnIds: Set<string>
+  isAllSelected: boolean
+  isIndeterminate: boolean
+  /** @deprecated */ isLoading?: boolean
+  isRowSelectable: (row: T) => boolean
+  loading?: boolean
+  pageSize: number
+  paginatedData: T[]
+  renderSubComponent?: (row: T) => ReactNode
+  rowLabel?: (row: T) => string
+  searchTerm: string
+  selectable: boolean
+  selectedRowIds: ReadonlySet<string>
+  selectionBasket?: DataTableSelectionBasket
+  setCurrentPage: (page: number) => void
+  setFilter: (columnId: string, values: string[]) => void
+  setPageSize: (size: number) => void
+  setSearchTerm: (term: string) => void
+  setViewMode: (mode: DataTableViewMode) => void
+  sortColumn: string | null
+  sortDirection: SortDirection
+  toggleColumnVisibility: (columnId: string) => void
+  toggleFilter: (columnId: string, value: string) => void
+  toggleRowExpansion: (id: string) => void
+  toggleRowSelection: (id: string) => void
+  toggleSelectAll: () => void
+  totalFilteredCount: number
+  totalPages: number
+  viewMode: DataTableViewMode
+}
+
+component DataTableFilters: FC<DataTableFiltersProps>
+
+interface DataTableFiltersProps {
+  className?: string
+}
+
+component DataTablePagination: FC<DataTablePaginationProps>
+
+interface DataTablePaginationProps {
+  className?: string
+  pageSizeOptions?: number[]
+}
+
+interface DataTableProps<T = any> {
+  accentColor?: string
+  children?: ReactNode
+  className?: string
+  columns: ColumnDef<T>[]
+  data: T[]
+  defaultPageSize?: number
+  defaultViewMode?: DataTableViewMode
+  error?: string | null
+  expandOnRowClick?: boolean
+  getRowId?: (row: T, index: number) => string
+  initialExpandedRowIds?: string[]
+  initialFilters?: Record<string, string[]>
+  initialSearch?: string
+  /** @deprecated */ isLoading?: boolean
+  isRowSelectable?: (row: T) => boolean
+  loading?: boolean
+  onSelectionChange?: (ids: Set<string>) => void
+  onStateChange?: (state: DataTableState) => void
+  renderSubComponent?: (row: T) => ReactNode
+  rowLabel?: (row: T) => string
+  selectable?: boolean
+  selectedRowIds?: ReadonlySet<string>
+  selectionBasket?: DataTableSelectionBasket
+  singleExpand?: boolean
+  state?: DataTableState
+}
+
+interface DataTableSelectionBasket {
+  actions: SelectionActionItem[]
+  linkComponent?: ElementType
+  noun: [string, string]
+}
+
+interface DataTableState {
+  filters: Record<string, string[]>
+  page: number
+  search: string
+  sort: {
+    column: string
+    direction: "asc" | "desc"
+  } | null
+}
+
+component DataTableToolbar: FC<DataTableToolbarProps>
+
+interface DataTableToolbarProps {
+  className?: string
+  onBulkDelete?: (selectedIds: string[]) => void
+  onBulkExport?: (selectedIds: string[]) => void
+  searchPlaceholder?: string
+  title?: string
+}
+
+type DataTableViewMode = "auto" | "table" | "cards"
+
+component DatePicker(props: DatePickerProps): JSX.Element
+
+interface DatePickerProps extends CalendarOptions, PickerFieldProps, DataAttributes {
+  align?: "start" | "end"
+  className?: string
+  defaultValue?: Date | null
+  disabled?: boolean
+  name?: string
+  onChange?: (date: Date | null) => void
+  placeholder?: string
+  side?: Side | "auto"
+  value?: Date | null
+}
+
+type DateRange = {
+  from: Date | null
+  to: Date | null
+}
+
+component DateRangeFilter(props: DateRangeFilterProps): JSX.Element
+
+interface DateRangeFilterProps {
+  allTime?: boolean
+  maxDate?: Date
+  minDate?: Date
+  onChange: (range: DateRange) => void
+  presets?: DateRangePreset[]
+  today?: Date
+  value: DateRange
+}
+
+component DateRangePicker(props: DateRangePickerProps): JSX.Element
+
+interface DateRangePickerProps extends CalendarOptions, PickerFieldProps, DataAttributes {
+  align?: "start" | "end"
+  className?: string
+  defaultValue?: DateRange
+  disabled?: boolean
+  name?: string
+  onChange?: (range: DateRange) => void
+  placeholder?: string
+  side?: Side | "auto"
+  value?: DateRange
+}
+
+interface DateRangePreset {
+  days?: number
+  label: string
+  range?: DateRange
+}
+
+/** @deprecated */ const DEFAULT_HOME: {
+  label: string
+  href: string
+}
+
+const DEFAULT_THEME_STORAGE_KEY: "ioiti.theme"
+
+component DependencyTrace: FC<DependencyTraceProps>
+
+interface DependencyTraceProps {
+  className?: string
+  connections: TraceConnection[]
+  height?: number
+  label?: string
+  nodes: TraceNode[]
+  nodeSize?: number
+  onNodeHover?: (id: string | null) => void
+  onNodeSelect?: (id: string) => void
+  width?: number
+}
+
+interface DescriptionItem {
+  details: ReactNode
+  term: ReactNode
+}
+
+component DescriptionList(props: DescriptionListProps): JSX.Element
+
+interface DescriptionListProps {
+  boxed?: boolean
+  className?: string
+  columns?: 2 | 3 | 4
+  compressed?: boolean
+  divided?: boolean
+  items: DescriptionItem[]
+  layout?: "rows" | "columns" | "grid" | "inline"
+  numeric?: boolean
+  termWidth?: string
+}
+
+component Dialog: FC<DialogProps>
+
+interface DialogProps {
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  children?: ReactNode
+  className?: string
+  closeOnBackdrop?: boolean
+  defaultOpen?: boolean
+  description?: ReactNode
+  footer?: ReactNode
+  /** @deprecated */ hideCloseButton?: boolean
+  onClose?: () => void
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  showCloseButton?: boolean
+  size?: "sm" | "md" | "lg" | "xl" | "full"
+  title?: ReactNode
+}
+
+/** @deprecated */ component DirectionalTooltip: FC<TooltipProps>
+
+/** @deprecated */ type DirectionalTooltipProps = TooltipProps
+
+component Disclosure(props: DisclosureProps): JSX.Element
+
+interface DisclosureProps {
+  children: ReactNode
+  className?: string
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  summary: ReactNode
+  variant?: "plain" | "boxed"
+}
+
+interface DivergingColors {
+  negative: string[]
+  positive: string[]
+}
+
+component DonutChart(props: DonutChartProps): JSX.Element
+
+interface DonutChartProps {
+  animated?: boolean
+  "aria-label"?: string
+  /** @deprecated */ ariaLabel?: string
+  centerLabel?: string
+  className?: string
+  data: DonutDatum[]
+  formatValue?: (n: number) => string
+  otherLabel?: string
+  showLegend?: boolean
+  size?: number
+  thickness?: number
+  variant?: "donut" | "semi"
+}
+
+interface DonutDatum {
+  color?: string
+  label: string
+  value: number
+}
+
+function downloadCsv(filename: string, content: string): void
+
+type DragConfirmActionType = "delete" | "archive" | "confirm" | "submit" | "unlock" | "continue"
+
+type DragConfirmSize = "sm" | "md" | "lg"
+
+/** @deprecated */ type DragConfirmVariant = "default" | "danger" | "warning" | "info" | "success"
+
+component DragToConfirm: FC<DragToConfirmProps>
+
+interface DragToConfirmProps {
+  actionType?: DragConfirmActionType
+  autoResetDelay?: number
+  className?: string
+  confirmedIcon?: ReactNode
+  confirmedLabel?: string
+  disabled?: boolean
+  haptic?: boolean
+  icon?: ReactNode
+  isConfirmed?: boolean
+  label?: string
+  onConfirm?: () => void
+  onReset?: () => void
+  size?: DragConfirmSize
+  tone?: StatusTone
+  /** @deprecated */ variant?: DragConfirmVariant
+}
+
+component DropdownMenu(props: DropdownMenuProps): JSX.Element
+
+interface DropdownMenuAction extends ItemBase {
+  onSelect?: () => void
+  shortcut?: string
+  tone?: "danger"
+  type?: "action"
+}
+
+interface DropdownMenuCheckbox extends ItemBase {
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  type: "checkbox"
+}
+
+interface DropdownMenuGroup {
+  items: DropdownMenuItem[]
+  label: ReactNode
+  type: "group"
+}
+
+type DropdownMenuItem = DropdownMenuAction | DropdownMenuLink | DropdownMenuCheckbox | DropdownMenuRadioGroup | DropdownMenuSeparator | DropdownMenuGroup | DropdownMenuSubmenu
+
+interface DropdownMenuLink extends ItemBase {
+  current?: boolean
+  href: string
+  reloadDocument?: boolean
+  shortcut?: string
+  type: "link"
+}
+
+interface DropdownMenuProps {
+  align?: AnchorAlign
+  defaultOpen?: boolean
+  items: DropdownMenuItem[]
+  label: string
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  side?: AnchorSide
+  trigger: ReactElement<TriggerProps>
+}
+
+interface DropdownMenuRadioGroup {
+  label?: ReactNode
+  onValueChange: (value: string) => void
+  options: {
+    value: string
+    label: ReactNode
+    description?: ReactNode
+    disabled?: boolean
+    textValue?: string
+  }[]
+  type: "radio"
+  value: string
+}
+
+interface DropdownMenuSeparator {
+  type: "separator"
+}
+
+interface DropdownMenuSubmenu extends ItemBase {
+  items: DropdownMenuItem[]
+  type: "submenu"
+}
+
+/** @deprecated */ component DynamicIsland: FC<StatusIslandProps>
+
+/** @deprecated */ type DynamicIslandProps = StatusIslandProps
+
+/** @deprecated */ type DynamicIslandState = StatusIslandState
+
+component EmptyState(props: EmptyStateProps): JSX.Element
+
+interface EmptyStateProps {
+  actions?: ReactNode
+  className?: string
+  /** @deprecated */ compact?: boolean
+  density?: "regular" | "compact"
+  description?: ReactNode
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6
+  icon?: ReactNode
+  title: ReactNode
+}
+
+component EmptyText(props: EmptyTextProps): JSX.Element
+
+interface EmptyTextProps {
+  children: ReactNode
+  className?: string
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  componentDidCatch(error: unknown, info: ErrorInfo): void
+  componentDidUpdate(before: ErrorBoundaryProps): void
+  context: ContextType<typeof ErrorReporterContext>
+  static contextType: Context<ErrorReporter | null>
+  static getDerivedStateFromError(error: unknown): ErrorBoundaryState
+  render(): string | number | bigint | boolean | JSX.Element | Iterable<ReactNode> | Promise<AwaitedReactNode> | null | undefined
+  reset: () => void
+  state: ErrorBoundaryState
+}
+
+interface ErrorBoundaryProps {
+  children: ReactNode
+  fallback?: ReactNode | ((props: ErrorFallbackProps) => ReactNode)
+  onError?: (error: unknown, info: {
+    componentStack?: string
+  }) => void
+  resetKeys?: readonly unknown[]
+}
+
+interface ErrorFallbackProps {
+  error: unknown
+  reset: () => void
+}
+
+interface ErrorReport {
+  componentStack?: string
+  source: "boundary" | "route"
+}
+
+type ErrorReporter = (error: unknown, report: ErrorReport) => void
+
+component ErrorState(props: ErrorStateProps): JSX.Element
+
+interface ErrorStateProps {
+  className?: string
+  description?: ReactNode
+  error?: unknown
+  focusOnMount?: boolean
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6
+  home?: {
+    href: string
+    label: string
+  } | null
+  icon?: ReactNode
+  name?: string
+  onRetry?: () => void
+  page?: boolean
+  parents?: Crumb[]
+  retrying?: boolean
+  title?: string
+}
+
+component ErrorText(props: ErrorTextProps): JSX.Element
+
+interface ErrorTextProps {
+  children: ReactNode
+  className?: string
+}
+
+component ExportButton<T>(props: ExportButtonProps<T>): JSX.Element
+
+interface ExportButtonProps<T> {
+  columns: readonly CsvColumn<T>[]
+  name: string
+  rows: readonly T[]
+}
+
+interface FanBand {
+  color?: string
+  label: string
+  lower: string
+  upper: string
+}
+
+component FanChart(props: FanChartProps): JSX.Element
+
+interface FanChartProps {
+  animated?: boolean
+  "aria-label"?: string
+  /** @deprecated */ ariaLabel?: string
+  bands: FanBand[]
+  className?: string
+  data: FanPoint[]
+  details?: (point: FanPoint, index: number) => ChartDetail[]
+  formatTick?: (value: number) => string
+  formatValue?: (value: number) => string
+  formatX?: (x: number) => string
+  formatXTick?: (x: number) => string
+  height?: number
+  lines: FanLine[]
+  markers?: FanMarker[]
+  references?: FanReference[]
+  showLegend?: boolean
+  xLabel?: string
+  zero?: boolean
+}
+
+interface FanLine {
+  color?: string
+  dashed?: boolean
+  key: string
+  label: string
+}
+
+interface FanMarker {
+  label: string
+  x: number
+}
+
+type FanPoint = {
+  x: number
+} & Record<string, number | null>
+
+interface FanReference {
+  label?: string
+  tone?: MeterTone
+  value: number
+}
+
+component Field(props: FieldProps): JSX.Element
+
+interface FieldProps {
+  children: ReactNode
+  className?: string
+  description?: ReactNode
+  error?: ReactNode
+  htmlFor?: string
+  label: ReactNode
+}
+
+component FileUpload: FC<FileUploadProps>
+
+interface FileUploadProps {
+  accept?: string | string[]
+  arrange?: (files: File[]) => Promise<File[]>
+  className?: string
+  density?: "regular" | "compact"
+  disabled?: boolean
+  doneLabel?: string
+  dropSubtitle?: string
+  dropTitle?: string
+  initialFiles?: UploadFileItem[]
+  label?: string
+  linkComponent?: ElementType
+  maxFiles?: number
+  maxSize?: number
+  multiple?: boolean
+  onFilesSelected?: (files: File[]) => void
+  onRemove?: (file: UploadFileItem) => void
+  onUploadComplete?: (file: UploadFileItem) => void
+  sequential?: boolean
+  uploadHandler?: (file: UploadFileItem, onProgress: (progress: number) => void) => Promise<UploadResult>
+  variant?: "standard" | "compact"
+  workingLabel?: string
+}
+
+type FileUploadStatus = "queued" | "uploading" | "processing" | "complete" | "error"
+
+/** @deprecated */ component Flysheet(props: SheetProps): JSX.Element
+
+/** @deprecated */ component FlysheetBody(props: SheetBodyProps): JSX.Element
+
+/** @deprecated */ component FlysheetClose(props: SheetCloseProps): JSX.Element
+
+/** @deprecated */ type FlysheetCloseReason = SheetCloseReason
+
+/** @deprecated */ component FlysheetContent(props: SheetContentProps): JSX.Element | null
+
+/** @deprecated */ type FlysheetContentProps = SheetContentProps
+
+/** @deprecated */ component FlysheetDescription(props: SheetDescriptionProps): JSX.Element
+
+/** @deprecated */ component FlysheetFooter(props: SheetFooterProps): JSX.Element
+
+/** @deprecated */ component FlysheetHeader(props: SheetHeaderProps): JSX.Element
+
+/** @deprecated */ type FlysheetPadding = SheetPadding
+
+/** @deprecated */ type FlysheetProps = SheetProps
+
+/** @deprecated */ type FlysheetSide = SheetSide
+
+/** @deprecated */ type FlysheetSize = SheetSize
+
+/** @deprecated */ component FlysheetTitle(props: SheetTitleProps): JSX.Element
+
+/** @deprecated */ component FlysheetTrigger(props: SheetTriggerProps): JSX.Element
+
+/** @deprecated */ type FlysheetType = SheetType
+
+component Form: ForwardRefExoticComponent<FormProps & RefAttributes<HTMLFormElement>>
+
+function formatBytes: Formatters["formatBytes"]
+
+function formatClock: Formatters["formatClock"]
+
+function formatDateTime: Formatters["formatDateTime"]
+
+function formatDay: Formatters["formatDay"]
+
+function formatDuration: Formatters["formatDuration"]
+
+function formatMoney: Formatters["formatMoney"]
+
+function formatMoneyCompact: Formatters["formatMoneyCompact"]
+
+function formatNumber: Formatters["formatNumber"]
+
+interface FormatOptions {
+  hourCycle?: HourCycle
+  messages?: Messages
+}
+
+function formatPercent: Formatters["formatPercent"]
+
+function formatRelative: Formatters["formatRelative"]
+
+function formatSpan: Formatters["formatSpan"]
+
+interface Formatters {
+  formatBytes: (bytes: number | null | undefined) => string
+  formatClock: (value: string | null | undefined, timeZone: string) => string
+  formatDateTime: (value: string | null | undefined, timeZone: string, withSeconds?: boolean, now?: Date) => string
+  formatDay: (value: string | null | undefined, withYear?: boolean) => string
+  formatDuration: (milliseconds: number) => string
+  formatMoney: (value: number | null | undefined, currency?: string | null, withSign?: boolean) => string
+  formatMoneyCompact: (value: number) => string
+  formatNumber: (value: number | null | undefined, digits?: number) => string
+  formatPercent: (value: number | null | undefined, withSign?: boolean, digits?: number) => string
+  formatRelative: (value: string | null | undefined, now?: number) => string
+  formatSpan: (seconds: number) => string
+  formatTime: (value: string | null | undefined, timeZone: string) => string
+  formatWait: (milliseconds: number) => string
+}
+
+function formattersFor(locale?: string, {…}?: FormatOptions): Formatters
+
+function formatTime: Formatters["formatTime"]
+
+function formatTimeRange(range: TimeRange, locale?: string, options?: TimeRangeWordsOptions): string
+
+function formatWait: Formatters["formatWait"]
+
+component FormControl: ForwardRefExoticComponent<FormControlProps & RefAttributes<HTMLDivElement>>
+
+type FormControlProps = HTMLAttributes<HTMLDivElement>
+
+component FormDescription: ForwardRefExoticComponent<FormDescriptionProps & RefAttributes<HTMLParagraphElement>>
+
+type FormDescriptionProps = HTMLAttributes<HTMLParagraphElement>
+
+component FormItem: ForwardRefExoticComponent<FormItemProps & RefAttributes<HTMLDivElement>>
+
+interface FormItemProps extends HTMLAttributes<HTMLDivElement> {
+  error?: string
+}
+
+component FormLabel: ForwardRefExoticComponent<FormLabelProps & RefAttributes<HTMLLabelElement>>
+
+interface FormLabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
+  required?: boolean
+}
+
+component FormMessage: ForwardRefExoticComponent<FormMessageProps & RefAttributes<HTMLParagraphElement>>
+
+interface FormMessageProps extends HTMLAttributes<HTMLParagraphElement> {
+  error?: string | null
+}
+
+interface FormProps extends FormHTMLAttributes<HTMLFormElement> {
+  onSubmit?: (e: FormEvent<HTMLFormElement>) => void
+}
+
+component FunnelChart(props: FunnelChartProps): JSX.Element
+
+interface FunnelChartProps {
+  animated?: boolean
+  "aria-label"?: string
+  /** @deprecated */ ariaLabel?: string
+  className?: string
+  emptyText?: string
+  formatValue?: (n: number) => string
+  noun?: string
+  showSummary?: boolean
+  stages: FunnelStage[]
+  summaryLabel?: string
+}
+
+interface FunnelStage {
+  color?: string
+  dropLabel?: string
+  label: string
+  value: number
+}
+
+type GoodWhen = "up" | "down"
+
+function gravestTone(items: readonly {
+  tone: StateTone
+}[]): StateTone
+
+/** @deprecated */ const HEALTH_STATUS_LABEL: Record<HealthStatus, string>
+
+type HealthStatus = "ok" | "warning" | "down" | "unknown" | "disabled"
+
+interface HeatDay {
+  date: string | Date
+  detail?: string
+  value: number
+}
+
+component Hint(props: HintProps): JSX.Element
+
+interface HintProps {
+  children: ReactElement
+  className?: string
+  content: ReactNode
+  side?: TooltipSide
+  wrap?: boolean
+}
+
+type HourCycle = "h23" | "h12"
+
+component IconButton(props: IconButtonProps): JSX.Element
+
+interface IconButtonProps extends Omit<ComponentProps<"button">, "children" | "aria-label"> {
+  hint?: ReactNode
+  icon: ReactNode
+  label: string
+}
+
+component InlineEdit(props: InlineEditProps): JSX.Element
+
+interface InlineEditProps extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  as?: "h1" | "h2" | "h3" | "h4" | "p" | "span"
+  className?: string
+  id?: string
+  label?: string
+  name?: string
+  onSave: (value: string) => Saved | Promise<Saved>
+  placeholder?: string
+  readOnly?: boolean
+  ref?: Ref<HTMLElement>
+  validate?: (value: string) => string | undefined
+  value: string
+  variant?: "text" | "title"
+}
+
+component Input: ForwardRefExoticComponent<InputProps & RefAttributes<HTMLInputElement>>
+
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "prefix"> {
+  error?: string | boolean
+  leftIcon?: ReactNode
+  prefix?: ReactNode
+  rightIcon?: ReactNode
+  showPasswordToggle?: boolean
+  suffix?: ReactNode
+}
+
+component InteractiveTimeline: FC<InteractiveTimelineProps>
+
+interface InteractiveTimelineProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string
+  collapsible?: boolean
+  defaultExpandedIds?: string[]
+  defaultSelectedId?: string
+  items: TimelineItem[]
+  label?: string
+  onItemSelect?: (item: TimelineItem) => void
+}
+
+component IoitiProvider(props: IoitiProviderProps): JSX.Element
+
+interface IoitiProviderProps {
+  appName?: string
+  children: ReactNode
+  hourCycle?: HourCycle
+  locale?: string
+  messages?: MessagesOverride
+  onError?: ErrorReporter
+  reducedMotion?: ReducedMotion
+  themeStorageKey?: string
+  weekStartsOn?: WeekDay
+}
+
+function isPlainClick(event: MouseEvent): boolean
+
+component Kbd(props: KbdProps): JSX.Element
+
+interface KbdProps {
+  children?: ReactNode
+  className?: string
+  keys?: string
+}
+
+component KpiGrid(props: KpiGridProps): JSX.Element
+
+interface KpiGridProps {
+  children: ReactNode
+  className?: string
+  columns?: 2 | 3 | 4 | 5 | 6
+  period?: ReactNode
+}
+
+component KpiStrip(props: KpiStripProps): JSX.Element
+
+interface KpiStripItem {
+  change?: number
+  changeFormat?: (change: number) => string
+  goodWhen?: GoodWhen
+  hint?: ReactNode
+  label: string
+  value: ReactNode
+}
+
+interface KpiStripProps {
+  className?: string
+  columns?: 2 | 3 | 4 | 5 | 6
+  items: KpiStripItem[]
+  period?: ReactNode
+  title?: ReactNode
+}
+
+component KpiTile(props: KpiTileProps): JSX.Element
+
+type KpiTileProps = KpiTileBaseProps & KpiTileToneProps
+
+function lastDays(days: number, today?: Date): DateRange
+
+interface LedgerEntry {
+  action: string
+  author?: string
+  description: string
+  details?: {
+    diff?: string
+    preview?: string
+    metadata?: Record<string, any>
+    content?: ReactNode
+  }
+  id: string
+  reference?: string
+  restorable?: boolean
+  timestamp?: Date | string
+}
+
+component LineChart(props: LineChartProps): JSX.Element
+
+interface LineChartProps {
+  animated?: boolean
+  area?: boolean
+  "aria-label"?: string
+  /** @deprecated */ ariaLabel?: string
+  className?: string
+  connectGaps?: boolean
+  data: LinePoint[]
+  details?: (point: LinePoint, index: number) => ChartDetail[]
+  formatTick?: (value: number) => string
+  formatTime?: (t: number) => string
+  formatValue?: (value: number) => string
+  height?: number
+  markers?: LineMarker[]
+  references?: LineReference[]
+  series: LineSeries[]
+  showLegend?: boolean
+  timeZone?: string
+  zero?: boolean
+}
+
+interface LineMarker {
+  label: string
+  t: Moment
+}
+
+type LinePoint = {
+  t: Moment
+} & Record<string, Moment | number | null>
+
+interface LineReference {
+  label?: string
+  tone?: MeterTone
+  value: number
+}
+
+interface LineSeries {
+  color?: string
+  dashed?: boolean
+  key: string
+  label: string
+}
+
+component LinkProvider(props: LinkProviderProps): JSX.Element
+
+interface LinkProviderProps {
+  children: ReactNode
+  component?: ElementType
+  navigate?: NavigateTo
+}
+
+component LiveLineChart(props: LiveLineChartProps): JSX.Element
+
+interface LiveLineChartProps {
+  "aria-label"?: string
+  /** @deprecated */ ariaLabel?: string
+  className?: string
+  color?: string
+  domain?: [number, number]
+  formatChange?: (change: number) => string
+  formatTick?: (n: number) => string
+  formatValue?: (n: number) => string
+  height?: number
+  initial?: number[]
+  initialPoints?: TimestampedPoint[]
+  intervalMs?: number
+  showReadout?: boolean
+  source?: (push: (value: number, time?: number) => void) => void | (() => void)
+  unit?: string
+  windowSeconds?: number
+}
+
+component LiveValue(props: LiveValueProps): JSX.Element
+
+interface LiveValueProps {
+  className?: string
+  flash?: boolean
+  format?: (value: number) => string
+  invert?: boolean
+  stale?: boolean
+  staleLabel?: string
+  value: number | null
+}
+
+component Loader: FC<LoaderProps>
+
+interface LoaderProps extends HTMLAttributes<HTMLDivElement> {
+  color?: string
+  delay?: number
+  label?: string
+  reduceMotion?: boolean
+  size?: number
+  variant?: "arc" | "dots" | "line" | "rings"
+}
+
+interface LocaleState {
+  hourCycle: HourCycle
+  locale: string
+  weekStartsOn: WeekDay
+}
+
+type LogLevel = "error" | "warning" | "info"
+
+component LogViewer(props: LogViewerProps): JSX.Element
+
+interface LogViewerProps {
+  className?: string
+  defaultWrap?: boolean
+  downloadName?: string
+  droppedLines?: number
+  emptyText?: ReactNode
+  follow?: boolean
+  height?: number | string
+  label: string
+  lines?: readonly string[]
+  maxLines?: number
+  text?: string
+}
+
+component LookPicker(props: LookPickerProps): JSX.Element
+
+interface LookPickerProps {
+  className?: string
+}
+
+type LookWords = BoundCatalogue<Messages>["look"]
+
+type Material = (typeof MATERIALS)[number]
+
+/** @deprecated */ const MATERIAL_LABEL: Record<Material, string>
+
+function materialName(material: Material, words?: LookWords): string
+
+const MATERIALS: readonly ["flat", "glass"]
+
+interface Menu<S extends string = string> {
+  entries: readonly MenuEntry<S>[]
+  sections: readonly (S | MenuSection<S>)[]
+  trailSections?: boolean
+}
+
+interface MenuEntry<S extends string = string> {
+  badge?: string | number
+  badgeTone?: SidebarBadgeTone
+  icon?: ReactNode
+  id: string
+  label: string
+  parent?: string
+  path: string
+  section: S
+}
+
+function menuEntry<S extends string>(menu: Menu<S>, pathname: string, search?: string): MenuEntry<S> | undefined
+
+interface MenuSection<S extends string = string> {
+  foldable?: boolean
+  id: S
+  place?: "footer"
+  title?: string | false
+}
+
+function menuSections<S extends string>(menu: Menu<S>): MenuSection<S>[]
+
+function mergeMessages<C extends Catalogue>(base: C, ...overrides: (CatalogueOverride<C> | undefined)[]): C
+
+interface MessageKit {
+  list: (items: readonly string[], type?: "conjunction" | "disjunction") => string
+  locale: string
+  number: (value: number, options?: Intl.NumberFormatOptions) => string
+  plural: (count: number, forms: PluralForms) => string
+}
+
+type Messages = typeof en
+
+type MessagesOverride = CatalogueOverride<Messages>
+
+component Meter(props: MeterProps): JSX.Element
+
+interface MeterProps {
+  label: string
+  ratio: number
+  scale?: [string, string]
+  tone?: MeterTone
+}
+
+type MeterTone = "neutral" | "success" | "warning" | "danger" | "positive" | "negative"
+
+const motionTransitions: {
+  springGentle: Transition
+  springSmooth: Transition
+  springSnappy: Transition
+  springMorph: Transition
+  springResponsive: Transition
+  springSoft: Transition
+  easeSoft: Transition
+  easeFast: Transition
+  springSheet: Transition
+  easeExit: Transition
+}
+
+component MultiSelect(props: MultiSelectProps): JSX.Element
+
+interface MultiSelectOption {
+  description?: string
+  disabled?: boolean
+  group?: string
+  label: string
+  value: string
+}
+
+interface MultiSelectProps extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  className?: string
+  defaultValue?: string[]
+  disabled?: boolean
+  emptyText?: string
+  error?: boolean
+  id?: string
+  label?: string
+  max?: number
+  maxChips?: number
+  name?: string
+  onChange?: (value: string[]) => void
+  onCreateOption?: (text: string) => MultiSelectOption | string | void
+  options: MultiSelectOption[]
+  placeholder?: string
+  ref?: Ref<HTMLInputElement>
+  value?: string[]
+}
+
+type NavigateTo = (to: string | number) => void
+
+interface NavSectionItem {
+  href?: string
+  id: string
+  index?: string
+  label: string
+}
+
+function nextPreference(preference: ThemePreference): ThemePreference
+
+component NotFound(props: NotFoundProps): JSX.Element
+
+component NotFoundPage(props: NotFoundPageProps): JSX.Element
+
+type NotFoundPageProps = Partial<NotFoundStateProps>
+
+interface NotFoundProps {
+  actionLabel?: string
+  backLabel?: string
+  badgeLabel?: string
+  children?: ReactNode
+  className?: string
+  description?: ReactNode
+  errorCode?: string
+  focusOnMount?: boolean
+  footer?: ReactNode
+  homeHref?: string
+  homeLabel?: string
+  LinkComponent?: ElementType
+  onAction?: () => void
+  onBack?: () => void
+  onSecondaryAction?: () => void
+  parallax?: boolean
+  path?: string | null
+  secondaryActionLabel?: string
+  showBack?: boolean
+  suggestions?: NotFoundSuggestion[]
+  title?: string
+}
+
+component NotFoundState(props: NotFoundStateProps): JSX.Element
+
+interface NotFoundStateProps {
+  back?: {
+    label: string
+  } | null
+  description: ReactNode
+  focusOnMount?: boolean
+  home?: {
+    href: string
+    label: string
+  } | null
+  name?: string
+  parents?: Crumb[]
+  pathname?: string
+  suggestions?: NotFoundSuggestion[]
+  title: string
+}
+
+interface NotFoundSuggestion {
+  description?: string
+  href: string
+  label: string
+}
+
+interface Notification {
+  action?: () => void
+  detail?: string
+  href?: string
+  id: string
+  message: string
+  read: boolean
+  timestamp: Date | string
+  tone?: NotificationTone
+}
+
+component NotificationBell: FC<NotificationBellProps>
+
+interface NotificationBellProps {
+  className?: string
+  defaultOpen?: boolean
+  error?: ReactNode
+  footer?: ReactNode
+  /** @deprecated */ isOpen?: boolean
+  linkComponent?: ElementType
+  loading?: boolean
+  notifications: Notification[]
+  onMarkAllAsRead?: () => void
+  onMarkAsRead: (id: string) => void
+  onOpenChange?: (open: boolean) => void
+  onRetry?: () => void
+  open?: boolean
+  showCount?: boolean
+  triggerClassName?: string
+}
+
+type NotificationTone = "neutral" | "info" | "success" | "warning" | "danger"
+
+component NumberInput(props: NumberInputProps): JSX.Element
+
+interface NumberInputProps extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  className?: string
+  defaultValue?: number | null
+  disabled?: boolean
+  error?: boolean
+  id?: string
+  integer?: boolean
+  label?: string
+  max?: number
+  min?: number
+  name?: string
+  onChange?: (value: number | null) => void
+  placeholder?: string
+  precision?: number
+  prefix?: ReactNode
+  ref?: Ref<HTMLInputElement>
+  step?: number
+  steppers?: boolean
+  suffix?: ReactNode
+  value?: number | null
+}
+
+component OTPInput: FC<OTPInputProps>
+
+interface OTPInputProps extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  autoFocus?: boolean
+  boxClassName?: string
+  className?: string
+  defaultValue?: string
+  disabled?: boolean
+  error?: boolean
+  id?: string
+  length?: number
+  name?: string
+  onChange?: (value: string) => void
+  onComplete?: (value: string) => void
+  ref?: Ref<HTMLInputElement>
+  value?: string
+}
+
+/** @deprecated */ const PAGE_NOT_FOUND: string
+
+component PageHeader(props: PageHeaderProps): JSX.Element
+
+interface PageHeaderProps {
+  actions?: ReactNode
+  description?: ReactNode
+  name?: string
+  parents?: Crumb[]
+  title: string
+}
+
+interface PageName {
+  parents?: Crumb[]
+  title: string
+}
+
+component PageTrailProvider(props: PageTrailProviderProps): JSX.Element
+
+interface PageTrailProviderProps {
+  children: ReactNode
+  menu: Menu
+  pathname: string
+  search?: string
+  tabTitle?: boolean
+}
+
+component Panel(props: PanelProps): JSX.Element
+
+component PanelInset(props: PanelInsetProps): JSX.Element
+
+interface PanelInsetProps {
+  children: ReactNode
+  className?: string
+}
+
+interface PanelProps {
+  action?: ReactNode
+  bodyClassName?: string
+  children: ReactNode
+  className?: string
+  /** @deprecated */ dense?: boolean
+  density?: "regular" | "compact"
+  description?: ReactNode
+  id?: string
+  title?: ReactNode
+}
+
+function parseLocaleNumber(text: string, locale?: string): number
+
+component PeekCard: FC<PeekCardProps>
+
+interface PeekCardProps {
+  children: ReactElement
+  className?: string
+  delay?: number
+  href?: string
+  hrefLabel?: string
+  linkComponent?: ElementType
+  openOnTap?: boolean
+  placement?: "top" | "bottom" | "auto"
+  renderContent: () => ReactNode
+}
+
+component PeekLink(props: PeekLinkProps): JSX.Element
+
+interface PeekLinkProps {
+  "aria-label"?: string
+  children: ReactNode
+  className?: string
+  content: () => ReactNode
+  href?: string
+  openOnTap?: boolean
+  /** @deprecated */ to?: string
+}
+
+type PluralForms = {
+  other: string
+} & Partial<Record<Intl.LDMLPluralRule, string>>
+
+type Politeness = "polite" | "assertive"
+
+component Popover(props: PopoverProps): JSX.Element
+
+interface PopoverProps {
+  align?: AnchorAlign
+  children: ReactNode | ((close: () => void) => ReactNode)
+  className?: string
+  defaultOpen?: boolean
+  label: string
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  side?: AnchorSide
+  trigger: ReactElement<TriggerProps>
+  width?: "trigger" | number | "auto"
+}
+
+component ProductTour(props: ProductTourProps): ReactPortal | null
+
+interface ProductTourProps {
+  closeOnOverlayClick?: boolean
+  defaultOpen?: boolean
+  onClose?: (reason: TourCloseReason) => void
+  onOpenChange?: (open: boolean, details?: {
+    reason: TourCloseReason
+  }) => void
+  onStepChange?: (index: number) => void
+  open?: boolean
+  startAt?: number
+  steps: TourStep[]
+}
+
+component ProgressBar(props: ProgressBarProps): JSX.Element
+
+interface ProgressBarProps {
+  className?: string
+  label: ReactNode
+  max?: number
+  size?: "sm" | "md"
+  tone?: MeterTone
+  value?: number
+  valueText?: string
+}
+
+component PromptComposer(props: PromptComposerProps): JSX.Element
+
+interface PromptComposerProps {
+  attachments?: ReactNode
+  /** @deprecated */ busy?: boolean
+  className?: string
+  controls?: ReactNode
+  defaultValue?: string
+  disabled?: boolean
+  disabledReason?: ReactNode
+  floating?: boolean
+  footer?: ReactNode
+  hideLabel?: boolean
+  label: string
+  maxLength?: number
+  maxRows?: number
+  minRows?: number
+  onChange?: (value: string) => void
+  onFiles?: (files: File[]) => void
+  onStop?: () => void
+  onSubmit: (value: string) => void
+  /** @deprecated */ onValueChange?: (value: string) => void
+  pending?: boolean
+  placeholder?: string
+  suggestions?: PromptSuggestion[]
+  value?: string
+}
+
+component QueryState(props: QueryStateProps): JSX.Element
+
+interface QueryStateProps {
+  children: ReactNode
+  error: Error | null
+  hasData: boolean
+  isPending: boolean
+  skeleton?: ReactNode
+}
+
+component RadioGroup: FC<RadioGroupProps>
+
+component RadioGroupItem: FC<RadioGroupItemProps>
+
+interface RadioGroupItemProps {
+  checked?: boolean
+  className?: string
+  description?: string
+  disabled?: boolean
+  label?: ReactNode
+  name: string
+  onChange?: () => void
+  value: string
+}
+
+interface RadioGroupProps extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  children?: ReactNode
+  className?: string
+  defaultValue?: string
+  id?: string
+  name: string
+  onChange?: (value: string) => void
+  options?: RadioOption[]
+  ref?: Ref<HTMLDivElement>
+  value?: string
+}
+
+interface RadioOption {
+  description?: string
+  disabled?: boolean
+  label: ReactNode
+  value: string
+}
+
+function rangeParams(range: DateRange): {
+  from: string | null
+  to: string | null
+}
+
+component RangeSlider(props: RangeSliderProps): JSX.Element
+
+interface RangeSliderProps extends SliderBase {
+  defaultValue?: [number, number]
+  id?: string
+  name?: string
+  onChange?: (value: [number, number]) => void
+  ref?: Ref<HTMLInputElement>
+  value?: [number, number]
+}
+
+function readPreference(key?: string): ThemePreference
+
+component RecoveryLedger: FC<RecoveryLedgerProps>
+
+interface RecoveryLedgerProps {
+  className?: string
+  countLabel?: string
+  currentEntryId?: string
+  currentLabel?: string
+  entries: LedgerEntry[]
+  expandedId?: string | null
+  onExpandedChange?: (id: string | null) => void
+  onRestore?: (id: string) => Promise<void> | void
+  onSelect?: (id: string) => void
+  restoreLabel?: string
+  title?: string
+  variant?: "timeline" | "compact"
+}
+
+interface RefreshSettings {
+  interval: number
+  paused: boolean
+}
+
+component RelativeTime(props: RelativeTimeProps): JSX.Element
+
+interface RelativeTimeProps {
+  className?: string
+  past?: boolean
+  timeZone?: string
+  value: Date | number | string
+}
+
+type RequestLifecycleStatus = "processing" | "verifying" | "success" | "failed" | "unknown"
+
+component RequestStatus: FC<RequestStatusProps>
+
+interface RequestStatusFigure {
+  label: string
+  value: ReactNode
+}
+
+interface RequestStatusProps {
+  className?: string
+  description?: ReactNode
+  figures?: RequestStatusFigure[]
+  link?: {
+    href: string
+    label: string
+  }
+  linkComponent?: ElementType
+  onDismiss?: () => void
+  reference?: {
+    label: string
+    value: string
+  }
+  status?: RequestLifecycleStatus
+  subject?: ReactNode
+  title: string
+}
+
+component ResizableHandle(props: ResizableHandleProps): ReactElement | null
+
+interface ResizableHandleProps {
+  label?: string
+}
+
+component ResizablePanel(props: ResizablePanelProps): ReactElement | null
+
+interface ResizablePanelProps {
+  children?: ReactNode
+  className?: string
+  collapsible?: boolean
+  defaultSize: number
+  label?: string
+  maxSize?: number
+  minSize?: number
+}
+
+component ResizablePanels(props: ResizablePanelsProps): JSX.Element
+
+interface ResizablePanelsProps {
+  children: ReactNode
+  className?: string
+  direction?: "horizontal" | "vertical"
+  onSizesChange?: (sizes: number[]) => void
+  stackBelow?: number
+}
+
+function resolveTheme(preference: ThemePreference, systemIsDark: boolean): Theme
+
+function resolveTimeRange(range: TimeRange, options?: Omit<DateMathOptions, "roundUp">): DateRange
+
+function safeHref(raw: string | null | undefined, allowed?: string[]): string | null
+
+component SaveBar(props: SaveBarProps): JSX.Element
+
+interface SaveBarProps {
+  children?: ReactNode
+  className?: string
+  discardLabel?: string
+  error?: ReactNode
+  label?: string
+  message?: ReactNode
+  onDiscard?: () => void
+  onSave: () => void
+  open: boolean
+  pending?: boolean
+  saveDisabled?: boolean
+  saveLabel?: string
+  /** @deprecated */ saving?: boolean
+}
+
+component ScrollProgressNav: FC<ScrollProgressNavProps>
+
+interface ScrollProgressNavProps {
+  activeId?: string
+  className?: string
+  containerRef?: RefObject<HTMLElement | null>
+  label?: string
+  mode?: "fixed" | "inline" | "sticky"
+  onSectionClick?: (id: string) => void
+  position?: "top-center" | "bottom-center" | "top-right"
+  scrollThreshold?: number
+  sections?: NavSectionItem[]
+}
+
+function scrollToTop(behavior?: ScrollBehavior): void
+
+component SegmentedControl<T extends string = string>(props: SegmentedControlProps<T>): JSX.Element
+
+interface SegmentedControlOption<T extends string = string> {
+  disabled?: boolean
+  icon?: ReactNode
+  label: ReactNode
+  panelId?: string
+  value: T
+}
+
+interface SegmentedControlProps<T extends string = string> extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  className?: string
+  defaultValue?: T
+  fullWidth?: boolean
+  id?: string
+  label?: string
+  /** @deprecated */ labelledBy?: string
+  name?: string
+  onChange?: (value: T) => void
+  options: SegmentedControlOption<T>[]
+  ref?: Ref<HTMLDivElement>
+  role?: "radiogroup" | "tablist"
+  size?: "sm" | "md"
+  value?: T
+}
+
+component Select: ForwardRefExoticComponent<SelectProps & RefAttributes<HTMLSelectElement>>
+
+interface SelectionActionItem {
+  disabled?: boolean
+  href?: string
+  icon?: ReactNode
+  id: string
+  label: string
+  onClick?: () => void
+  title?: string
+  variant?: "default" | "danger" | "primary"
+}
+
+component SelectionBasket: FC<SelectionBasketProps>
+
+interface SelectionBasketProps {
+  actions?: SelectionActionItem[]
+  allSelected?: boolean
+  className?: string
+  linkComponent?: ElementType
+  mode?: "fixed" | "contained" | "inline" | "sticky"
+  noun?: [string, string]
+  onClearSelection?: () => void
+  onSelectAll?: () => void
+  selectedCount: number
+  totalCount?: number
+}
+
+component SelectMenu: FC<SelectMenuProps>
+
+interface SelectMenuOption {
+  description?: string
+  disabled?: boolean
+  label: string
+  value: string
+}
+
+interface SelectMenuProps extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  className?: string
+  defaultValue?: string
+  disabled?: boolean
+  error?: string
+  id?: string
+  label?: string
+  name?: string
+  onChange?: (value: string) => void
+  options: SelectMenuOption[]
+  placeholder?: string
+  ref?: Ref<HTMLButtonElement>
+  value?: string
+}
+
+interface SelectOption {
+  disabled?: boolean
+  label: string
+  value: string
+}
+
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  error?: string | boolean
+  options?: SelectOption[]
+}
+
+/** @deprecated */ component SettleModal: FC<DialogProps>
+
+/** @deprecated */ type SettleModalProps = DialogProps
+
+component Sheet(props: SheetProps): JSX.Element
+
+component SheetBody(props: SheetBodyProps): JSX.Element
+
+type SheetBodyProps = ComponentProps<"div">
+
+component SheetClose(props: SheetCloseProps): JSX.Element
+
+type SheetCloseProps = ComponentProps<"button">
+
+type SheetCloseReason = "close-button" | "escape" | "outside-click" | "drag" | "trigger" | "parent"
+
+component SheetContent(props: SheetContentProps): JSX.Element | null
+
+interface SheetContentProps {
+  "aria-label"?: string
+  children: ReactNode
+  className?: string
+  closeOnOutsideClick?: boolean
+  closePosition?: "inside" | "outside"
+  maxWidth?: number
+  minWidth?: number
+  modal?: boolean
+  onResize?: (width: number) => void
+  padding?: SheetPadding
+  pushMinWidth?: number
+  resizable?: boolean
+  /** @deprecated */ showClose?: boolean
+  showCloseButton?: boolean
+  side?: SheetSide
+  size?: SheetSize
+  type?: SheetType
+}
+
+component SheetDescription(props: SheetDescriptionProps): JSX.Element
+
+type SheetDescriptionProps = ComponentProps<"p">
+
+component SheetFooter(props: SheetFooterProps): JSX.Element
+
+type SheetFooterProps = ComponentProps<"div">
+
+component SheetHeader(props: SheetHeaderProps): JSX.Element
+
+type SheetHeaderProps = ComponentProps<"div">
+
+type SheetPadding = "none" | "sm" | "md" | "lg"
+
+interface SheetProps {
+  children: ReactNode
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean, details?: {
+    reason: SheetCloseReason
+  }) => void
+  open?: boolean
+}
+
+type SheetSide = "right" | "left" | "top" | "bottom"
+
+type SheetSize = "sm" | "md" | "lg" | number
+
+component SheetTitle(props: SheetTitleProps): JSX.Element
+
+type SheetTitleProps = ComponentProps<"h2">
+
+component SheetTrigger(props: SheetTriggerProps): JSX.Element
+
+type SheetTriggerProps = ComponentProps<"button">
+
+type SheetType = "overlay" | "push"
+
+component ShortcutsDialog(props: ShortcutsDialogProps): JSX.Element
+
+interface ShortcutsDialogProps {
+  defaultOpen?: boolean
+  keys?: string | null
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  title?: string
+}
+
+type ShowToast = (message: ToastMessage) => void
+
+component Sidebar(props: SidebarProps): JSX.Element
+
+type SidebarBadgeTone = "neutral" | "warning" | "danger" | "negative"
+
+type SidebarChild = {
+  id: string
+  label: string
+  badge?: string | number
+  badgeTone?: SidebarBadgeTone
+  href?: string
+}
+
+component SidebarFooterButton(props: SidebarFooterButtonProps): JSX.Element
+
+interface SidebarFooterButtonProps extends Omit<ComponentProps<"button">, "children"> {
+  icon: ReactNode
+  label: string
+}
+
+type SidebarItem = {
+  id: string
+  label: string
+  icon?: ReactNode
+  badge?: string | number
+  badgeTone?: SidebarBadgeTone
+  children?: SidebarChild[]
+  href?: string
+}
+
+interface SidebarProps {
+  activeId: string
+  className?: string
+  collapsed?: boolean
+  collapsedStorageKey?: string
+  defaultCollapsed?: boolean
+  drawerId?: string
+  footer?: ReactNode
+  header?: ReactNode
+  linkComponent?: ElementType
+  mobileOpen?: boolean
+  onActiveChange?: (id: string) => void
+  onCollapsedChange?: (collapsed: boolean) => void
+  onMobileOpenChange?: (open: boolean) => void
+  sections: SidebarSection[]
+}
+
+type SidebarSection = {
+  id?: string
+  title?: string
+  foldable?: boolean
+  place?: "footer"
+  items: SidebarItem[]
+}
+
+function sidebarSections(menu: Menu): SidebarSection[]
+
+component SidebarTrigger(props: SidebarTriggerProps): JSX.Element
+
+type SidebarTriggerProps = ComponentProps<"button">
+
+component SignedValue(props: SignedValueProps): JSX.Element
+
+interface SignedValueProps {
+  animate?: boolean
+  className?: string
+  currency?: string | null
+  kind: "money" | "percent"
+  stale?: boolean
+  staleLabel?: string
+  value: number | null | undefined
+}
+
+interface SignInProvider {
+  disabled?: boolean
+  hint?: ReactNode
+  href: string
+  icon?: ReactNode
+  id: string
+  label: ReactNode
+}
+
+component SignInProviders(props: SignInProvidersProps): JSX.Element
+
+interface SignInProvidersProps {
+  children?: ReactNode
+  className?: string
+  divider?: ReactNode
+  label?: string
+  onPendingChange?: (id: string | null) => void
+  pending?: string | null
+  placement?: "before" | "after"
+  providers: SignInProvider[]
+  variant?: ButtonVariant
+}
+
+type SignTone = "positive" | "negative" | "neutral"
+
+component Skeleton(props: SkeletonProps): JSX.Element
+
+component SkeletonAvatar(props: SkeletonAvatarProps): JSX.Element
+
+interface SkeletonAvatarProps {
+  className?: string
+  size?: number
+}
+
+interface SkeletonProps extends ComponentProps<"div"> {}
+
+component SkeletonReveal(props: SkeletonRevealProps): JSX.Element
+
+interface SkeletonRevealProps {
+  children: ReactNode
+  className?: string
+  loading: boolean
+  skeleton: ReactNode
+}
+
+component SkeletonText(props: SkeletonTextProps): JSX.Element
+
+interface SkeletonTextProps {
+  className?: string
+  lines?: number
+}
+
+component Slider(props: SliderProps): JSX.Element
+
+interface SliderLevel {
+  from: number
+  to: number
+  tone: MeterTone
+}
+
+interface SliderProps extends SliderBase {
+  defaultValue?: number
+  id?: string
+  name?: string
+  onChange?: (value: number) => void
+  ref?: Ref<HTMLInputElement>
+  showInput?: boolean
+  value?: number
+}
+
+interface SliderTick {
+  label?: ReactNode
+  value: number
+}
+
+/** @deprecated */ component SmartComparison: FC<ComparisonTableProps>
+
+/** @deprecated */ type SmartComparisonProps = ComparisonTableProps
+
+/** @deprecated */ component SmoothAccordion: FC<AccordionProps>
+
+/** @deprecated */ type SmoothAccordionProps = AccordionProps
+
+type SortDirection = "asc" | "desc" | null
+
+component Sparkline(props: SparklineProps): JSX.Element | null
+
+interface SparklineProps {
+  className?: string
+  format?: (value: number) => string
+  height?: number
+  label?: string
+  tone?: "auto" | SignTone
+  values: number[]
+  variant?: "line" | "bars"
+  width?: number
+}
+
+component SplitButton(props: SplitButtonProps): JSX.Element
+
+interface SplitButtonOption {
+  description?: string
+  disabled?: boolean
+  href?: string
+  icon?: ReactNode
+  label: string
+  onSelect?: () => void
+  tone?: "danger"
+  value: string
+}
+
+interface SplitButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> {
+  className?: string
+  disabled?: boolean
+  href?: string
+  icon?: ReactNode
+  label: string
+  linkComponent?: ElementType
+  menuLabel?: string
+  onClick?: () => void
+  options: SplitButtonOption[]
+  size?: SplitButtonSize
+  variant?: "primary" | "secondary" | "danger" | "info"
+}
+
+type SplitButtonSize = "sm" | "md" | "lg"
+
+component SpotlightSearch: FC<SpotlightSearchProps>
+
+interface SpotlightSearchItem {
+  action?: () => void
+  category: string
+  description?: string
+  href?: string
+  icon?: ReactNode
+  id: string
+  items?: SpotlightSearchItem[]
+  keywords?: string[]
+  placeholder?: string
+  shortcut?: string | string[]
+  title: string
+}
+
+interface SpotlightSearchProps {
+  className?: string
+  closeOnSelect?: boolean
+  enableGlobalShortcut?: boolean
+  error?: ReactNode
+  filter?: boolean
+  footer?: ReactNode
+  grouped?: boolean
+  items?: SpotlightSearchItem[]
+  label?: string
+  limit?: number
+  linkComponent?: ElementType
+  loading?: boolean
+  onClose?: () => void
+  onNavigate?: (href: string) => void
+  onOpenChange?: (open: boolean) => void
+  onQueryChange?: (query: string, scope?: SpotlightSearchItem) => void
+  onRetry?: () => void
+  onSelect?: (item: SpotlightSearchItem) => void
+  open?: boolean
+  picked?: string[]
+  placeholder?: string
+  recentSearches?: string[]
+  remember?: string
+}
+
+/** @deprecated */ component SpringSelect: FC<SelectMenuProps>
+
+/** @deprecated */ type SpringSelectOption = SelectMenuOption
+
+/** @deprecated */ type SpringSelectProps = SelectMenuProps
+
+component StatCard(props: StatCardProps): JSX.Element
+
+interface StatCardProps {
+  animated?: boolean
+  className?: string
+  color?: string
+  delta?: number
+  format?: (n: number) => string
+  goodWhen?: "up" | "down"
+  label: string
+  period?: string
+  previous?: number
+  toneOf?: (n: number) => string | undefined
+  trend: number[]
+  trendLabels?: string[]
+  value: number
+}
+
+component StateChip(props: StateChipProps): JSX.Element
+
+interface StateChipProps {
+  hint: ReactNode
+  href?: string
+  icon: ReactNode
+  label: string
+  /** @deprecated */ to?: string
+  tone: keyof typeof CHIP_TONE
+}
+
+interface StateItem {
+  detail?: ReactNode
+  href?: string
+  icon?: ReactNode
+  id: string
+  label: string
+  tone: StateTone
+}
+
+component StateSummary(props: StateSummaryProps): JSX.Element
+
+interface StateSummaryProps {
+  className?: string
+  footer?: ReactNode
+  items: StateItem[]
+  label?: string
+  okLabel?: string
+}
+
+type StateTone = StatusTone | "ok"
+
+component StatGrid(props: StatGridProps): JSX.Element
+
+interface StatGridProps {
+  children: ReactNode
+  className?: string
+}
+
+component StatusBadge(props: StatusBadgeProps): JSX.Element
+
+interface StatusBadgeProps {
+  label?: string
+  status: HealthStatus
+}
+
+component StatusHistory(props: StatusHistoryProps): JSX.Element
+
+interface StatusHistoryProps {
+  className?: string
+  label: string
+  scale?: [string, string]
+  slots: StatusHistorySlot[]
+  summary?: string
+  unit?: StatusHistoryUnit
+}
+
+interface StatusHistorySlot {
+  at: string
+  status: HealthStatus
+}
+
+interface StatusHistoryUnit {
+  one: string
+  other: string
+}
+
+component StatusIsland: FC<StatusIslandProps>
+
+interface StatusIslandProps {
+  children: ReactNode
+  className?: string
+  compact: ReactNode
+  defaultState?: StatusIslandState
+  label: string
+  onStateChange?: (state: StatusIslandState) => void
+  state?: StatusIslandState
+}
+
+type StatusIslandState = "collapsed" | "expanded"
+
+type StatusTone = "neutral" | "info" | "success" | "warning" | "danger"
+
+interface Step {
+  description?: string
+  title: string
+}
+
+component StepPanels(props: StepPanelsProps): JSX.Element
+
+interface StepPanelsProps {
+  children: ReactNode
+  className?: string
+  current: number
+}
+
+component Stepper(props: StepperProps): JSX.Element
+
+interface StepperProps {
+  className?: string
+  current: number
+  onStepChange?: (index: number) => void
+  orientation?: "horizontal" | "vertical"
+  steps: Step[]
+}
+
+/** @deprecated */ component StretchSwitch: FC<SwitchProps>
+
+/** @deprecated */ type StretchSwitchProps = SwitchProps
+
+component Switch: FC<SwitchProps>
+
+interface SwitchProps extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  checked?: boolean
+  className?: string
+  defaultChecked?: boolean
+  description?: string
+  disabled?: boolean
+  id?: string
+  label?: ReactNode
+  name?: string
+  onChange?: (checked: boolean) => void
+  ref?: Ref<HTMLButtonElement>
+  required?: boolean
+  value?: string
+}
+
+function systemIsDark(): boolean
+
+interface TabItem {
+  badge?: string | number
+  content?: ReactNode
+  href?: string
+  icon?: ReactNode
+  id: string
+  label: string
+}
+
+component Table(props: TableProps): JSX.Element
+
+component TableBody(props: TableBodyProps): JSX.Element
+
+type TableBodyProps = ComponentProps<"tbody">
+
+component TableCell(props: TableCellProps): JSX.Element
+
+type TableCellProps = CellProps & ComponentProps<"td">
+
+type TableDensity = "regular" | "compact" | "dense"
+
+component TableHead(props: TableHeadProps): JSX.Element
+
+component TableHeaderCell(props: TableHeaderCellProps): JSX.Element
+
+type TableHeaderCellProps = CellProps & ComponentProps<"th">
+
+type TableHeadProps = ComponentProps<"thead">
+
+interface TableProps extends ComponentProps<"table"> {
+  density?: TableDensity
+  wrapperClassName?: string
+}
+
+component TableRow(props: TableRowProps): JSX.Element
+
+type TableRowProps = ComponentProps<"tr">
+
+component Tabs: FC<TabsProps>
+
+interface TabsProps {
+  /** @deprecated */ activeTab?: string
+  className?: string
+  /** @deprecated */ defaultTab?: string
+  defaultValue?: string
+  label?: string
+  layoutId?: string
+  linkComponent?: ElementType
+  onChange?: (tabId: string) => void
+  renderContent?: boolean
+  tabs: TabItem[]
+  tabsContainerClassName?: string
+  value?: string
+  variant?: "default" | "glass" | "pill"
+}
+
+component Textarea: ForwardRefExoticComponent<TextareaProps & RefAttributes<HTMLTextAreaElement>>
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  error?: string | boolean
+}
+
+component TextLink(props: TextLinkProps): JSX.Element
+
+interface TextLinkProps extends Omit<ComponentProps<"a">, "href"> {
+  href?: string
+  reloadDocument?: boolean
+  /** @deprecated */ to?: string
+  variant?: keyof typeof LOOK
+}
+
+type Theme = "light" | "dark"
+
+const THEME_KEY_ATTRIBUTE: "data-theme-storage-key"
+
+function themeButtonLabel(preference: ThemePreference, theme: Theme, words?: LookWords): string
+
+/** @deprecated */ function themeLabel(preference: ThemePreference, theme: Theme): string
+
+type ThemePreference = "system" | Theme
+
+component ThemeProvider(props: ThemeProviderProps): JSX.Element
+
+interface ThemeProviderProps {
+  children: ReactNode
+  storageKey?: string
+}
+
+interface ThemeState {
+  accent: Accent
+  material: Material
+  preference: ThemePreference
+  setAccent: (accent: Accent) => void
+  setMaterial: (material: Material) => void
+  setPreference: (preference: ThemePreference) => void
+  theme: Theme
+}
+
+function themeStorageKey(given?: string): string
+
+component ThemeToggle(props: ThemeToggleProps): JSX.Element
+
+interface ThemeToggleProps {
+  className?: string
+}
+
+interface TimelineItem {
+  author?: {
+    name: string
+    role?: string
+  }
+  commitHash?: string
+  description?: string
+  id: string
+  metrics?: TimelineMetric[]
+  status: TimelineStatus
+  statusLabel?: string
+  tag?: string
+  timestamp: string
+  title: string
+}
+
+interface TimelineMetric {
+  label: string
+  value: string
+}
+
+type TimelineStatus = "completed" | "in-progress" | "pending" | "failed" | "warning"
+
+interface TimeRange {
+  from: string
+  to: string
+}
+
+component TimeRangePicker(props: TimeRangePickerProps): JSX.Element
+
+interface TimeRangePickerProps extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  className?: string
+  commonlyUsed?: CommonRange[]
+  defaultValue?: TimeRange
+  id?: string
+  /** @deprecated */ isLoading?: boolean
+  loading?: boolean
+  locale?: string
+  name?: string
+  onChange?: (range: TimeRange) => void
+  onRefresh?: (range: TimeRange) => void
+  onRefreshChange?: (settings: RefreshSettings) => void
+  ref?: Ref<HTMLDivElement>
+  refresh?: RefreshSettings
+  value?: TimeRange
+  weekStartsOn?: WeekDay
+}
+
+type TimeUnit = "s" | "m" | "h" | "d" | "w" | "M" | "y"
+
+component Toast: FC<ToastProps>
+
+interface ToastAction {
+  href?: string
+  label: string
+  onClick?: () => void
+}
+
+interface ToastMessage {
+  action?: ToastAction
+  description?: string
+  title: string
+  tone?: StatusTone
+  /** @deprecated */ variant?: VelocityToastVariant
+}
+
+type ToastPosition = "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right"
+
+interface ToastProps {
+  action?: ToastAction
+  className?: string
+  description?: string
+  duration?: number
+  icon?: ReactNode
+  linkComponent?: ElementType
+  onDismiss?: () => void
+  onExitComplete?: () => void
+  open: boolean
+  position?: ToastPosition
+  showProgress?: boolean
+  title: string
+  tone?: StatusTone
+  /** @deprecated */ variant?: VelocityToastVariant
+  wrapperClassName?: string
+  wrapperStyle?: CSSProperties
+}
+
+component ToastProvider(props: ToastProviderProps): JSX.Element
+
+interface ToastProviderProps {
+  children: ReactNode
+  wrapperClassName?: string
+}
+
+function toCsv<T>(rows: readonly T[], columns: readonly CsvColumn<T>[]): string
+
+function toIsoDay(date: Date): string
+
+/** @deprecated */ type Tone = SignTone
+
+function toneOf(value: number | null | undefined): SignTone
+
+component Tooltip: FC<TooltipProps>
+
+type TooltipAlign = "start" | "center" | "end"
+
+interface TooltipProps {
+  align?: TooltipAlign
+  children: ReactElement
+  className?: string
+  content: ReactNode
+  delayDuration?: number
+  forceOpen?: boolean
+  offset?: number
+  showArrow?: boolean
+  side?: TooltipSide
+  wrapperClassName?: string
+}
+
+type TooltipSide = "top" | "right" | "bottom" | "left"
+
+component TopBarTrail(props: TopBarTrailProps): JSX.Element
+
+interface TopBarTrailProps {
+  home?: {
+    label: string
+    href: string
+  }
+}
+
+type TourCloseReason = "done" | "skip" | "dismiss"
+
+type TourPlacement = "auto" | "top" | "bottom" | "left" | "right"
+
+type TourStep = {
+  target?: TourTarget
+  title: string
+  body: ReactNode
+  placement?: TourPlacement
+  padding?: number
+  radius?: number
+  scroll?: boolean
+}
+
+type TourTarget = string | (() => HTMLElement | null) | RefObject<HTMLElement | null>
+
+interface TraceConnection {
+  from: string
+  label?: string
+  to: string
+  type?: string
+}
+
+interface TraceNode {
+  detail?: string
+  id: string
+  label: string
+  status?: TraceStatus
+  statusLabel?: string
+  type?: "service" | "database" | "api" | "client"
+  x?: number
+  y?: number
+}
+
+type TraceStatus = "ok" | "warning" | "down" | "unknown" | "disabled"
+
+function trailFor(menu: Menu, pathname: string, page?: PageName | null, search?: string, words?: TrailWords): Crumb[]
+
+type TrailWords = Pick<Messages["shell"], "pageNotFound">
+
+component UndoToast: FC<UndoToastProps>
+
+type UndoToastPosition = "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right"
+
+interface UndoToastProps {
+  className?: string
+  description?: string
+  duration?: number
+  icon?: ReactNode
+  onDismiss?: () => void
+  onUndo?: () => void
+  open?: boolean
+  position?: UndoToastPosition
+  restoredMessage?: string
+  showProgress?: boolean
+  title?: string
+  tone?: StatusTone
+  undoLabel?: string
+  /** @deprecated */ variant?: UndoToastVariant
+  wrapperClassName?: string
+}
+
+/** @deprecated */ type UndoToastVariant = "default" | "success" | "warning" | "error" | "info"
+
+const UNNAMED: "…"
+
+interface UploadFileItem {
+  errorMessage?: string
+  id: string
+  link?: {
+    href: string
+    label: string
+  }
+  name: string
+  progress: number
+  rawFile?: File
+  size: number
+  status: FileUploadStatus
+  type: string
+}
+
+type UploadResult = {
+  href: string
+  label: string
+} | void
+
+function useAgentActivity(): AgentActivityContextValue
+
+function useAIResponseContext(): AIResponseContextValue
+
+function useAppearanceItems(): DropdownMenuItem[]
+
+function useAppName(): string | null
+
+function useDataTable<T = any>(): DataTableContextValue<T>
+
+function useErrorReporter(): ErrorReporter | null
+
+function useFormat(): Formatters
+
+function useLinkComponent(given?: ElementType): ElementType
+
+function useLocale(): LocaleState
+
+function useMainScroll(): RefObject<HTMLElement | null> | null
+
+function useMessages(): BoundMessages
+
+function useNavigateTo(): NavigateTo
+
+function useNow(interval?: number): number
+
+function usePageName(title: string, parents?: Crumb[]): void
+
+function usePageTrail(): Crumb[]
+
+component UserMenu(props: UserMenuProps): JSX.Element
+
+interface UserMenuProps {
+  appearance?: boolean
+  avatarSrc?: string
+  className?: string
+  detail?: ReactNode
+  items?: DropdownMenuItem[]
+  label?: string
+  name: string
+  onSignOut?: () => void
+  signOutHref?: string
+  signOutLabel?: string
+}
+
+function useShortcut(keys: string, handler: ((event: KeyboardEvent) => void) | null, options?: ShortcutOptions): void
+
+function useSidebar(): {
+  collapsed: boolean
+}
+
+function useTabTitle(title: string): void
+
+function useTheme(): ThemeState
+
+function useToast(): ShowToast
+
+function useTrail(): Trail | null
+
+/** @deprecated */ component VelocityToast: FC<ToastProps>
+
+/** @deprecated */ type VelocityToastAction = ToastAction
+
+/** @deprecated */ type VelocityToastPosition = ToastPosition
+
+/** @deprecated */ type VelocityToastProps = ToastProps
+
+/** @deprecated */ type VelocityToastVariant = "default" | "success" | "warning" | "error" | "info"
+
+function watchSystem(onChange: () => void): () => void
+
+type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6
+
+component WorldClock(props: WorldClockProps): JSX.Element
+
+interface WorldClockCity {
+  id: string
+  name: string
+  timeZone: string
+}
+
+interface WorldClockProps {
+  cities: WorldClockCity[]
+  className?: string
+  footer?: ReactNode
+  format?: "12h" | "24h"
+  showSeconds?: boolean
+  size?: "md" | "sm"
+  title?: string | null
+  updateInterval?: number
+}
+
+function writePreference(preference: ThemePreference, key?: string): void
+
+
+// The names the types above use that ioiti-ui does not export, or not by that name.
+
+// src/lib/anchor.ts
+type AnchorAlign = "start" | "center" | "end"
+
+// src/lib/anchor.ts
+type AnchorSide = "top" | "bottom" | "left" | "right"
+
+// src/components/Avatar.tsx
+type AvatarSize = "xs" | "sm" | "md" | "lg"
+
+// src/lib/messages.ts
+type BoundCatalogue<C> = {
+  readonly [N in keyof C]: {
+    readonly [K in keyof C[N]]: BoundMessage<C[N][K]>
+  }
+}
+
+// src/lib/messages.ts
+type BoundMessage<T> = T extends (value: infer V, kit: MessageKit) => string ? (value: V) => string : T
+
+// src/components/ui/calendar.tsx
+interface CalendarBase {
+  className?: string
+  defaultMonth?: Date
+  isDateDisabled?: (date: Date) => boolean
+  locale?: string
+  maxDate?: Date
+  minDate?: Date
+  weekStartsOn?: WeekDay
+}
+
+// src/lib/messages.ts
+type Catalogue = Record<string, Record<string, Message>>
+
+// src/lib/messages.ts
+type CatalogueOverride<C> = {
+  readonly [N in keyof C]?: Partial<C[N]>
+}
+
+// src/components/Table.tsx
+interface CellProps {
+  children?: ReactNode
+  numeric?: boolean
+}
+
+// src/shell/StateChip.tsx
+const CHIP_TONE: {
+  warning: string
+  danger: string
+  success: string
+}
+
+// src/lib/data-attributes.ts
+interface DataAttributes {
+  [attribute: `data-${string}`]: string | number | boolean | undefined
+}
+
+// src/lib/date-math.ts
+interface DateMathOptions {
+  now?: number
+  roundUp?: boolean
+  weekStartsOn?: WeekDay
+}
+
+DrawCheckboxProps: exported as CheckboxProps
+
+en: exported by ioiti-ui/locales/en
+
+// src/components/ErrorBoundary.tsx
+interface ErrorBoundaryState {
+  error: unknown
+  failed: boolean
+}
+
+// src/components/error-context.ts
+component ErrorReporterContext: Context<ErrorReporter | null>
+
+// src/components/DropdownMenu.tsx
+interface ItemBase {
+  description?: ReactNode
+  disabled?: boolean
+  icon?: ReactNode
+  label: ReactNode
+  textValue?: string
+}
+
+// src/components/KpiTile.tsx
+interface KpiTileBaseProps {
+  change?: number
+  changeFormat?: (change: number) => string
+  children?: ReactNode
+  className?: string
+  goodWhen?: GoodWhen
+  hint?: ReactNode
+  label: string
+  lead?: boolean
+  value: ReactNode
+}
+
+// src/components/KpiTile.tsx
+type KpiTileTone = "warning" | "danger" | "negative"
+
+// src/components/KpiTile.tsx
+type KpiTileToneProps = {
+  tone?: undefined
+  toneLabel?: undefined
+} | {
+  tone: KpiTileTone
+  toneLabel: string
+}
+
+// src/components/TextLink.tsx
+const LOOK: {
+  inline: string
+  hover: string
+  quiet: string
+}
+
+// src/lib/messages.ts
+type Message = string | ((value: any, kit: MessageKit) => string)
+
+// src/components/LineChart.tsx
+type Moment = number | string | Date
+
+// src/components/ui/date-picker.tsx
+interface PickerFieldProps {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  error?: boolean
+  id?: string
+  ref?: Ref<HTMLButtonElement>
+}
+
+// src/components/PromptComposer.tsx
+interface PromptSuggestion {
+  label: string
+  prompt: string
+}
+
+// src/lib/motion.ts
+type ReducedMotion = "user" | "always" | "never"
+
+// src/components/InlineEdit.tsx
+type Saved = void | boolean | string
+
+// src/components/shortcuts-context.ts
+interface ShortcutOptions {
+  allowInInputs?: boolean
+  description?: string
+  enabled?: boolean
+  group?: string
+}
+
+// src/components/ui/date-picker.tsx
+type Side = "bottom" | "top"
+
+// src/components/Slider.tsx
+interface SliderBase extends DataAttributes {
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
+  /** @deprecated */ ariaLabel?: string
+  className?: string
+  disabled?: boolean
+  format?: (value: number) => string
+  label?: ReactNode
+  levels?: SliderLevel[]
+  max?: number
+  min?: number
+  step?: number
+  ticks?: boolean | number[] | SliderTick[]
+}
+
+// src/lib/date-math.ts
+interface TimeRangeWordsOptions {
+  hourCycle?: HourCycle
+  now?: number
+  weekStartsOn?: WeekDay
+  words?: Messages["timeRange"]
+}
+
+// src/lib/dashboard-chart-utils.ts
+interface TimestampedPoint {
+  t: number
+  v: number
+}
+
+// src/shell/page-trail-context.ts
+interface Trail {
+  menu: Menu
+  pathname: string
+  search: string
+}
+
+// src/components/DropdownMenu.tsx
+interface TriggerProps {
+  hint?: ReactNode
+  onClick?: (event: MouseEvent<HTMLElement>) => void
+  onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void
+  ref?: Ref<HTMLElement>
+}
+
+// src/components/Popover.tsx
+interface TriggerProps {
+  hint?: ReactNode
+  onClick?: (event: MouseEvent<HTMLElement>) => void
+  onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void
+  ref?: Ref<HTMLElement>
+}

@@ -6,7 +6,7 @@ import type { RouteObject } from 'react-router'
 import packageJson from '../../package.json'
 import { CategoryPage } from './catalogue/CategoryPage'
 import { FamilyPage } from './catalogue/FamilyPage'
-import { GONE } from './catalogue/legacy'
+import { FORMER_ADDRESSES, GONE } from './catalogue/legacy'
 import { LegacyRedirect } from './catalogue/LegacyRedirect'
 import type { Examples } from './catalogue/types'
 import { GallerySearch, ThemeFooterButton } from './chrome'
@@ -41,8 +41,11 @@ function route(page: GalleryPage): RouteObject {
   return { ...where, element: page.element }
 }
 
-/** The former pages whose address is no page now: to where their parts went. */
-const LEGACY_ROUTES: RouteObject[] = Object.keys(GONE).map((path) => ({ path, element: <LegacyRedirect /> }))
+/** The former pages whose address is no page now: to where their parts went; a component renamed, to its page. */
+const LEGACY_ROUTES: RouteObject[] = [...Object.keys(GONE), ...FORMER_ADDRESSES.map(({ from }) => from)].map((path) => ({
+  path,
+  element: <LegacyRedirect />,
+}))
 
 /** The gallery is an application made with ioiti-ui: its own frame is the shell it shows. */
 export const routes: RouteObject[] = [

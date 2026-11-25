@@ -18,7 +18,8 @@ interface TriggerProps {
   hint?: ReactNode
 }
 
-interface PopoverProps {
+/** The props of `Popover`. */
+export interface PopoverProps {
   /** What opens it: a button that takes a ref (`Button`, `IconButton`), given the popover's props. */
   trigger: ReactElement<TriggerProps>
   /** What it holds, or a function of `close`, for a control in it that closes it. */
@@ -42,7 +43,7 @@ const FROM: Record<AnchorSide, { x?: number; y?: number }> = { bottom: { y: -4 }
  * A panel that opens beside a button: filters, a few settings, a form of one field. In `document.body`, out
  * of every parent that would cut it, beside its button where the window has room; the focus goes into it,
  * and Escape, a Tab past its ends or a press elsewhere closes it and gives the focus back. Not modal: the
- * page stays in use. For a list of actions, `DropdownMenu`; for what asks for a decision, `SettleModal`.
+ * page stays in use. For a list of actions, `DropdownMenu`; for what asks for a decision, `Dialog`.
  */
 export function Popover({
   trigger,

@@ -10,8 +10,14 @@ import { DISABLED } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 // ioiti-ui: its names in the provider's language (`field`).
 import { useMessages } from '../locale-context.js';
+// ioiti-ui: what a Field or a FormItem around it tells it (its id, its label, what describes it, whether it is wrong),
+// its `data-*` attributes and its ref, as a native field takes them.
+import { dataAttributes, type DataAttributes } from '../../lib/data-attributes.js';
+import { assignRef } from '../../lib/refs.js';
+import { useFieldControl } from '../field-context.js';
 
-export interface OTPInputProps {
+// ioiti-ui: its `data-*` attributes on its outermost element (the group), as an element takes them.
+export interface OTPInputProps extends DataAttributes {
   length?: number;
   value?: string;
   /** ioiti-ui: the code it starts with, the boxes holding it then (`value` held by the page instead). */
@@ -24,14 +30,20 @@ export interface OTPInputProps {
   error?: boolean;
   className?: string;
   boxClassName?: string;
-  /** ioiti-ui: the group's name; the provider's language's by default ("One-time passcode"). */
+  /** ioiti-ui: the group's name; a Field's label, else the provider's language's by default ("One-time passcode"). */
   'aria-label'?: string;
+  /** ioiti-ui: the id of what names the group: a heading. A Field's label names it without it. */
+  'aria-labelledby'?: string;
   /** ioiti-ui: read out with it: what a Field around it says under it (its description, its error). */
   'aria-describedby'?: string;
   /** ioiti-ui: marked invalid, as a Field with an error marks it: drawn as `error`. */
   'aria-invalid'?: boolean | 'true' | 'false';
-  /** ioiti-ui: the id of the first box, so that a `<label htmlFor>` leads to it. */
+  /** ioiti-ui: the id of the first box, so that a `<label htmlFor>` leads to it; in a FormItem, the item's. */
   id?: string;
+  /** ioiti-ui: the name its code is sent under with a form (a hidden input): its digits, as `onChange` gives them. */
+  name?: string;
+  /** ioiti-ui: its first box, where the code is typed, to focus it. */
+  ref?: React.Ref<HTMLInputElement>;
 }
 
 const DIGIT_REGEX = /^[0-9]$/;
@@ -51,15 +63,28 @@ export const OTPInput: React.FC<OTPInputProps> = ({
   className,
   boxClassName,
   'aria-label': givenAriaLabel,
+  'aria-labelledby': givenLabelledBy,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
   id,
+  name,
+  ref,
+  ...rest
 }) => {
   // ioiti-ui: its name and its boxes' in the provider's language, the name given over it.
   const words = useMessages().field;
-  const ariaLabel = givenAriaLabel ?? words.otpName;
+  // ioiti-ui: named (the group), described and marked by a Field or a FormItem around it too, its own props first; its
+  // first box takes their id.
+  const control = useFieldControl({
+    id,
+    labelledBy: givenLabelledBy,
+    named: Boolean(givenAriaLabel),
+    describedBy,
+    invalid: invalidOf(error, ariaInvalid),
+  });
+  const ariaLabel = givenAriaLabel ?? (control.labelledBy ? undefined : words.otpName);
   // ioiti-ui: in error by its own prop, or marked invalid (a Field around it).
-  const invalid = invalidOf(error, ariaInvalid);
+  const invalid = control.invalid;
   // ioiti-ui: held by the page (`value`, each box a digit of it) or by the boxes (from `defaultValue`), as every control
   // (useControllableState): the page told of the code, and once it is whole, either way. Held by the boxes, a box
   // emptied keeps its place.
@@ -167,7 +192,10 @@ export const OTPInput: React.FC<OTPInputProps> = ({
     <div
       role="group"
       aria-label={ariaLabel}
-      aria-describedby={describedBy}
+      // ioiti-ui: named by what it points to, or by its Field's label; its `data-*` attributes.
+      aria-labelledby={control.labelledBy}
+      aria-describedby={control.describedBy}
+      {...dataAttributes(rest)}
       className={cn('flex gap-2', className)}
     >
       {Array.from({ length }).map((_, i) => (
@@ -175,8 +203,10 @@ export const OTPInput: React.FC<OTPInputProps> = ({
           key={i}
           ref={(el) => {
             inputRefs.current[i] = el;
+            // ioiti-ui: the first box given to its caller's ref too.
+            if (i === 0) assignRef(ref, el);
           }}
-          id={i === 0 ? id : undefined}
+          id={i === 0 ? control.id : undefined}
           type="text"
           inputMode="numeric"
           autoComplete={i === 0 ? 'one-time-code' : 'off'}
@@ -208,6 +238,8 @@ export const OTPInput: React.FC<OTPInputProps> = ({
           )}
         />
       ))}
+      {/* ioiti-ui: the code, sent with the form around it under its `name`. */}
+      {name && <input type="hidden" name={name} value={digits.join('')} disabled={disabled} />}
     </div>
   );
 };

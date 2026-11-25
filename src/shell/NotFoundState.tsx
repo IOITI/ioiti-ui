@@ -76,12 +76,15 @@ export function NotFoundState({
   )
 }
 
+/** The props of `NotFoundPage`: `NotFoundState`'s, none required. */
+export type NotFoundPageProps = Partial<NotFoundStateProps>
+
 /**
  * The page of an address that is no page (the router's catch-all, `path: '*'`). An address under
  * an entry of the menu that leads nowhere (an old link, a typo) suggests that entry. Its heading ("There is no page
  * here."), its words and its name in the trail ("Page not found") are the provider's language's, where none are given.
  */
-export function NotFoundPage({ title, description, ...props }: Partial<NotFoundStateProps>) {
+export function NotFoundPage({ title, description, ...props }: NotFoundPageProps) {
   const { notFound: words, shell } = useMessages()
   const trail = useTrail()
   const path = props.pathname ?? trail?.pathname ?? window.location.pathname

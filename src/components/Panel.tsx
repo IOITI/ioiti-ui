@@ -6,7 +6,8 @@ import type { Crumb } from '../shell/navigation.js'
 import { usePageName, useTabTitle } from '../shell/page-trail-context.js'
 import { SECTION } from '../lib/recipes.js'
 
-interface PanelProps {
+/** The props of `Panel`. */
+export interface PanelProps {
   /** An anchor a link can lead to (`#trades`). */
   id?: string
   title?: ReactNode
@@ -55,7 +56,8 @@ export function Panel({ id, title, description, action, className, bodyClassName
   )
 }
 
-interface PanelInsetProps {
+/** The props of `PanelInset`. */
+export interface PanelInsetProps {
   className?: string
   children: ReactNode
 }
@@ -72,7 +74,8 @@ export function PanelInset({ className, children }: PanelInsetProps) {
   )
 }
 
-interface PageHeaderProps {
+/** The props of `PageHeader`. */
+export interface PageHeaderProps {
   title: string
   /**
    * What the trail of the top bar and the browser's tab call the page, where it is deeper than its heading

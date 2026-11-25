@@ -75,8 +75,8 @@ export const SMOKE = new Set([
   '/foundations/motion',
   '/patterns/dashboard',
   '/patterns/sign-in',
-  '/components/overlays/settle-modal',
+  '/components/overlays/dialog',
   '/components/shell/app-shell',
   '/components/tables/data-table',
-  '/components/choices/spring-select',
+  '/components/choices/select-menu',
 ])

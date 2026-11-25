@@ -9,24 +9,27 @@ import { motion, AnimatePresence, useReducedMotionConfig } from 'framer-motion';
 import { X } from 'lucide-react';
 // ioiti-ui: held by its caller or by itself, as every state (useControllableState).
 import { useControllableState } from '../../lib/controllable.js';
+// ioiti-ui: EasyUI's names kept until 1.0, drawing this one (renamed).
+import { renamed } from '../../lib/renamed.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 import { CLOSE_SM, FLOATING } from '../../lib/recipes.js';
 import { cn } from '../../lib/utils.js';
 // ioiti-ui: what it says to a screen reader in the provider's language.
 import { useMessages } from '../locale-context.js';
 
-export type DynamicIslandState = 'collapsed' | 'expanded';
+// ioiti-ui: named after its role, `StatusIsland` (EasyUI's `DynamicIsland`, its former name: at the end of the file).
+export type StatusIslandState = 'collapsed' | 'expanded';
 
-export interface DynamicIslandProps {
+export interface StatusIslandProps {
   /** ioiti-ui: what the pill shows, collapsed: the whole pill opens the island. */
   compact: React.ReactNode;
   /** ioiti-ui: what the island shows, opened. */
   children: React.ReactNode;
   /** ioiti-ui: the name of the pill and of the opened island, for screen readers. */
   label: string;
-  defaultState?: DynamicIslandState;
-  state?: DynamicIslandState;
-  onStateChange?: (state: DynamicIslandState) => void;
+  defaultState?: StatusIslandState;
+  state?: StatusIslandState;
+  onStateChange?: (state: StatusIslandState) => void;
   className?: string;
 }
 
@@ -38,7 +41,7 @@ function inDialog(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest('[aria-modal="true"]') !== null;
 }
 
-export const DynamicIsland: React.FC<DynamicIslandProps> = ({
+export const StatusIsland: React.FC<StatusIslandProps> = ({
   compact,
   children,
   label,
@@ -170,3 +173,12 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
     </div>
   );
 };
+
+// ioiti-ui: EasyUI's names, until 1.0: the former name draws the island, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `StatusIsland`. Removed in 1.0. */
+export const DynamicIsland = renamed(StatusIsland, 'DynamicIsland');
+/** @deprecated Use `StatusIslandProps`. Removed in 1.0. */
+export type DynamicIslandProps = StatusIslandProps;
+/** @deprecated Use `StatusIslandState`. Removed in 1.0. */
+export type DynamicIslandState = StatusIslandState;

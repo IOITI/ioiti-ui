@@ -2,7 +2,7 @@
 
 A number to type, or to change with the arrow keys (ten at a time with Shift) and its − and + buttons: a limit, a quantity, a delay with its unit.
 
-**You provide** `value` / `defaultValue`, `onChange`, `min`, `max`, `step`; `integer` or `precision`; `suffix` / `prefix` for the unit; an `id` for its `Field`.
+**You provide** `value` / `defaultValue`, `onChange`, `min`, `max`, `step`; `integer` or `precision`; `suffix` / `prefix` for the unit. Its name: a `Field` or a `FormItem` around it, which describes it and marks it too, else `label`. In a form: `name`, the number sent as code writes it (`1234.5`), whatever the locale shows. `id`, `ref` (its field), `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-invalid`, as an input takes them.
 
 ```tsx
 <Field label="Daily limit" htmlFor="daily-limit">

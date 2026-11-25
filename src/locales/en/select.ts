@@ -1,8 +1,8 @@
 import type { MessageKit } from '../../lib/messages.js'
 
-/** The selects: MultiSelect, Combobox, SpringSelect. */
+/** The selects: MultiSelect, Combobox, SelectMenu. */
 export const select = {
-  /** "Select…": what Combobox and SpringSelect say while nothing is chosen, where the application says nothing. */
+  /** "Select…": what Combobox and SelectMenu say while nothing is chosen, where the application says nothing. */
   placeholder: 'Select…',
   /** "Search…": the placeholder of Combobox's search. */
   search: 'Search…',

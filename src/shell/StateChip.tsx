@@ -14,7 +14,8 @@ const CHIP_TONE = {
   success: cn(TONE_SOFT.positive, 'hover:bg-positive/10 dark:hover:bg-positive/20'),
 }
 
-interface StateChipProps {
+/** The props of `StateChip`. */
+export interface StateChipProps {
   /** The page where it is dealt with. */
   href?: string
   /** @deprecated Use `href`. Removed in 1.0. */

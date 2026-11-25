@@ -16,7 +16,8 @@ interface PromptSuggestion {
   prompt: string
 }
 
-interface PromptComposerProps {
+/** The props of `PromptComposer`. */
+export interface PromptComposerProps {
   /** The text typed, held by the page (told of each change by `onChange`). */
   value?: string
   /** The text it starts with, the composer holding it then: emptied once it is sent. */

@@ -3,7 +3,8 @@ import type { ReactNode } from 'react'
 import { deprecated } from '../lib/deprecated.js'
 import { cn } from '../lib/utils.js'
 
-interface EmptyStateProps {
+/** The props of `EmptyState`. */
+export interface EmptyStateProps {
   /** What would be there, as an icon of lucide-react: `<Inbox />`. */
   icon?: ReactNode
   /** What there is not: "No detection rule yet". */

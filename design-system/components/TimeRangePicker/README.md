@@ -2,7 +2,7 @@
 
 A range of time as people say it ("Last 24 hours", "Today"), which stays true as time goes by: chosen in two clicks or its ends set one by one, and refreshed by a press or on a timer (`AutoRefresh`, also alone beside a page's title).
 
-**You provide** for `TimeRangePicker`: `value` / `defaultValue` / `onChange` (`{ from, to }`, each `now`, `now` moved and rounded as `now-15m` or `now/d`, or an ISO moment), `onRefresh` (on Refresh, on each new range, and on the timer), `loading` (formerly `isLoading`); `commonlyUsed` (`[{ label, range }]`, in place of the usual ones), `refresh` with `onRefreshChange` (`{ interval, paused }`, in ms), `locale` and `weekStartsOn` where they differ from IoitiProvider's (en-GB and Monday by default), whose words and clock it takes. For `AutoRefresh`: `value`, `onChange`, `onRefresh`.
+**You provide** for `TimeRangePicker`: `value` / `defaultValue` / `onChange` (`{ from, to }`, each `now`, `now` moved and rounded as `now-15m` or `now/d`, or an ISO moment), `onRefresh` (on Refresh, on each new range, and on the timer), `loading` (formerly `isLoading`); `commonlyUsed` (`[{ label, range }]`, in place of the usual ones), `refresh` with `onRefreshChange` (`{ interval, paused }`, in ms), `locale` and `weekStartsOn` where they differ from IoitiProvider's (en-GB and Monday by default), whose words and clock it takes. Its name: a `Field` or a `FormItem` around it, else `aria-label` / `aria-labelledby`. In a form: `name`, its start then its end sent under it, as `value` writes them. `id`, `ref` (the group of its buttons), `aria-describedby`, `aria-invalid` (its frame in `negative`). For `AutoRefresh`: `value`, `onChange`, `onRefresh`.
 
 ```tsx
 <TimeRangePicker value={range} onChange={setRange} onRefresh={load} loading={loading}

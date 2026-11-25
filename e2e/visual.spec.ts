@@ -16,16 +16,16 @@ const MOMENT = new Date('2026-11-24T10:00:00Z')
 /** Families whose first example moves on its own, or reads the time or the network as it runs. */
 const LIVE = new Set([
   'live-line-chart',
-  'airport-matrix-clock',
+  'world-clock',
   'live-value',
-  'dynamic-island',
+  'status-island',
   'animated-number',
   'loader',
   'skeleton',
   'ai-agent-activity',
   'ai-response',
   'request-status',
-  'velocity-toast',
+  'toast',
   'undo-toast',
   'product-tour',
 ])

@@ -461,7 +461,8 @@ interface TriggerProps {
   hint?: ReactNode
 }
 
-interface DropdownMenuProps {
+/** The props of `DropdownMenu`. */
+export interface DropdownMenuProps {
   /** What opens it: a button that takes a ref (`Button`, `IconButton`), given the menu's props. */
   trigger: ReactElement<TriggerProps>
   items: DropdownMenuItem[]
@@ -555,7 +556,8 @@ export function DropdownMenu({
   )
 }
 
-interface ContextMenuProps {
+/** The props of `ContextMenu`. */
+export interface ContextMenuProps {
   items: DropdownMenuItem[]
   /** The menu's name for a screen reader. */
   label: string

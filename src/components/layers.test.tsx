@@ -6,9 +6,9 @@ import { describe, expect, it } from 'vitest'
 import { Hint } from './Hint.js'
 import { useToast } from './toast-context.js'
 import { ToastProvider } from './ToastProvider.js'
-import { Flysheet, FlysheetContent, FlysheetTitle } from './ui/flysheet.js'
+import { Sheet, SheetContent, SheetTitle } from './ui/flysheet.js'
 import { ProductTour } from './ui/product-tour.js'
-import { SettleModal } from './ui/settle-modal.js'
+import { Dialog } from './ui/settle-modal.js'
 import { Sidebar } from './ui/sidebar.js'
 import { SpotlightSearch } from './ui/spotlight-search.js'
 
@@ -45,7 +45,7 @@ describe('the layers over the page', () => {
   it('are named only while a transition plays, the dialog\'s, the palette\'s and the drawer\'s', () => {
     render(
       <>
-        <SettleModal open onClose={() => {}} title="Rename the project" />
+        <Dialog open onClose={() => {}} title="Rename the project" />
         <SpotlightSearch open onOpenChange={() => {}} items={[]} label="Go to" />
         <Sidebar sections={[]} activeId="" mobileOpen onMobileOpenChange={() => {}} />
       </>,
@@ -60,11 +60,11 @@ describe('the layers over the page', () => {
     render(
       <ToastProvider>
         <ShowsAToast />
-        <Flysheet defaultOpen>
-          <FlysheetContent>
-            <FlysheetTitle>Order 2026-0042</FlysheetTitle>
-          </FlysheetContent>
-        </Flysheet>
+        <Sheet defaultOpen>
+          <SheetContent>
+            <SheetTitle>Order 2026-0042</SheetTitle>
+          </SheetContent>
+        </Sheet>
       </ToastProvider>,
     )
     await act(async () => {})
@@ -83,12 +83,12 @@ describe('the layers over the page', () => {
     render(
       <ToastProvider>
         <ShowsAToast />
-        <Flysheet defaultOpen>
-          <FlysheetContent>
-            <FlysheetTitle>Order 2026-0042</FlysheetTitle>
-          </FlysheetContent>
-        </Flysheet>
-        <SettleModal open onClose={() => {}} title="Rename the project" />
+        <Sheet defaultOpen>
+          <SheetContent>
+            <SheetTitle>Order 2026-0042</SheetTitle>
+          </SheetContent>
+        </Sheet>
+        <Dialog open onClose={() => {}} title="Rename the project" />
         <SpotlightSearch open onOpenChange={() => {}} items={[]} label="Go to" />
         <Sidebar sections={[]} activeId="" mobileOpen onMobileOpenChange={() => {}} />
         <ProductTour open steps={[{ title: 'Welcome', body: 'A short tour.' }]} onClose={() => {}} />

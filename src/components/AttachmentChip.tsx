@@ -8,7 +8,8 @@ import { Hint } from './Hint.js'
 import { useLinkComponent } from './link-context.js'
 import { useMessages } from './locale-context.js'
 
-interface AttachmentChipProps {
+/** The props of `AttachmentChip`. */
+export interface AttachmentChipProps {
   /** What it is: a file's name, a record's title. */
   label: string
   /** Beside it: its size, "Uploading…", why it could not be taken. */

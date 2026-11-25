@@ -7,6 +7,8 @@ import { ChevronDown } from 'lucide-react';
 // development (deprecated).
 import { useControllableState } from '../../lib/controllable.js';
 import { deprecated } from '../../lib/deprecated.js';
+// ioiti-ui: EasyUI's name kept until 1.0, drawing this one (renamed).
+import { renamed } from '../../lib/renamed.js';
 import { cn } from '../../lib/utils.js';
 import { motionTransitions } from '../../lib/motion-tokens.js';
 
@@ -17,7 +19,8 @@ export interface AccordionItem {
   content: React.ReactNode;
 }
 
-export interface SmoothAccordionProps {
+// ioiti-ui: named after its role, `Accordion` (EasyUI's `SmoothAccordion`, its former name: at the end of the file).
+export interface AccordionProps {
   items: AccordionItem[];
   allowMultiple?: boolean;
   /** ioiti-ui: the ids of the items open, held by the page (told of each change by `onChange`). */
@@ -36,7 +39,7 @@ export interface SmoothAccordionProps {
   className?: string;
 }
 
-export const SmoothAccordion: React.FC<SmoothAccordionProps> = ({
+export const Accordion: React.FC<AccordionProps> = ({
   items,
   allowMultiple = false,
   value,
@@ -48,7 +51,7 @@ export const SmoothAccordion: React.FC<SmoothAccordionProps> = ({
 }) => {
   // ioiti-ui: `value`, `defaultValue` and `onChange`, as every control; `defaultOpen`, the former name of
   // `defaultValue`, read where it alone is given.
-  if (defaultOpen !== undefined) deprecated('smooth-accordion-default-open', 'SmoothAccordion');
+  if (defaultOpen !== undefined) deprecated('smooth-accordion-default-open', 'Accordion');
   const [openIds, setOpenIds] = useControllableState<string[]>(value, defaultValue ?? defaultOpen ?? [], onChange);
   // ioiti-ui: the ids that tie each question to its answer (aria-controls, aria-labelledby).
   const baseId = useId();
@@ -126,3 +129,10 @@ export const SmoothAccordion: React.FC<SmoothAccordionProps> = ({
     </div>
   );
 };
+
+// ioiti-ui: EasyUI's names, until 1.0: the former name draws the accordion, and says once, in development, that it is
+// deprecated (renamed).
+/** @deprecated Use `Accordion`. Removed in 1.0. */
+export const SmoothAccordion = renamed(Accordion, 'SmoothAccordion');
+/** @deprecated Use `AccordionProps`. Removed in 1.0. */
+export type SmoothAccordionProps = AccordionProps;

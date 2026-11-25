@@ -1,9 +1,13 @@
 import { useId } from 'react'
-import type { ChangeEvent, ReactNode } from 'react'
+import type { ChangeEvent, ReactNode, Ref } from 'react'
 
 import { useControllableState } from '../lib/controllable.js'
+import { dataAttributes } from '../lib/data-attributes.js'
+import type { DataAttributes } from '../lib/data-attributes.js'
 import { deprecated } from '../lib/deprecated.js'
+import { invalidOf } from '../lib/field-border.js'
 import { cn } from '../lib/utils.js'
+import { FieldContext, useFieldControl, useLabelWords } from './field-context.js'
 import { useFormat, useMessages } from './locale-context.js'
 import { METER_FILL, meterTone } from './meter-tones.js'
 import type { MeterTone } from './meter-tones.js'
@@ -20,13 +24,19 @@ export interface SliderLevel {
   tone: MeterTone
 }
 
-interface SliderBase {
-  /** What it sets, shown above it: "Risk per trade". */
-  label: ReactNode
+interface SliderBase extends DataAttributes {
+  /** What it sets, shown above it: "Risk per trade". Left out in a Field, whose label names it. */
+  label?: ReactNode
   /** Its name for a screen reader, where the label is not text. */
   'aria-label'?: string
   /** @deprecated Use `aria-label`. Removed in 1.0. */
   ariaLabel?: string
+  /** The id of what names it, in place of its label: a heading. A Field's label names it without it. */
+  'aria-labelledby'?: string
+  /** Read out with it: what a Field around it says under it (its description, its error). */
+  'aria-describedby'?: string
+  /** Marked invalid, as a Field with an error marks it. */
+  'aria-invalid'?: boolean | 'true' | 'false'
   min?: number
   max?: number
   step?: number
@@ -40,19 +50,34 @@ interface SliderBase {
   className?: string
 }
 
-interface SliderProps extends SliderBase {
+export interface SliderProps extends SliderBase {
   value?: number
   defaultValue?: number
   onChange?: (value: number) => void
   /** A field beside it, to type the value. */
   showInput?: boolean
+  /** Its range input's id, for a `<label htmlFor>`; in a FormItem, the item's. */
+  id?: string
+  /** The name its value is sent under with a form (its range input's own): the number as code writes it ("2.5"). */
+  name?: string
+  /** Its range input, to focus it. */
+  ref?: Ref<HTMLInputElement>
 }
 
-interface RangeSliderProps extends SliderBase {
+export interface RangeSliderProps extends SliderBase {
   value?: [number, number]
   defaultValue?: [number, number]
   onChange?: (value: [number, number]) => void
+  /** The id of its first thumb (the lower value's range input), for a `<label htmlFor>`; in a FormItem, the item's. */
+  id?: string
+  /** The name its two values are sent under with a form, in order: the lower, then the upper (each thumb's own). */
+  name?: string
+  /** Its first thumb (the lower value's range input), to focus it. */
+  ref?: Ref<HTMLInputElement>
 }
+
+/** Whether a label is drawn: something to show, not nothing. */
+const shown = (label: ReactNode) => label !== undefined && label !== null && label !== false && label !== ''
 
 // The browser's own range input, its track hidden (the slider draws its own under it), its thumb drawn
 // here in both engines: a disc in the page's colour, ringed in the text's (the accent's, where the look has one).
@@ -152,6 +177,9 @@ export function Slider({
   label,
   'aria-label': givenName,
   ariaLabel,
+  'aria-labelledby': labelledBy,
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
   value,
   defaultValue,
   onChange,
@@ -164,6 +192,10 @@ export function Slider({
   showInput = false,
   disabled = false,
   className,
+  id: givenId,
+  name: formName,
+  ref,
+  ...rest
 }: SliderProps) {
   // Its former name read as today's, said once in development.
   if (ariaLabel !== undefined) deprecated('aria-label-camel', 'Slider')
@@ -171,23 +203,37 @@ export function Slider({
   const format = useValueFormat(given, step)
   const [current, setCurrent] = useControllableState(value, defaultValue ?? min, onChange)
   const id = useId()
+  // Named by what it is given, else by its label, else by a Field's or a FormItem's around it, which describe it and
+  // mark it too.
+  const control = useFieldControl({
+    id: givenId,
+    labelledBy: labelledBy ?? (name || !shown(label) ? undefined : id),
+    named: Boolean(name),
+    describedBy,
+    invalid: invalidOf(undefined, ariaInvalid),
+  })
   const at = ((current - min) / (max - min || 1)) * 100
   return (
-    <div className={cn('flex w-full items-end gap-4', className)}>
+    <div {...dataAttributes(rest)} className={cn('flex w-full items-end gap-4', className)}>
       {/* Disabled, half its strength (DISABLED), the field beside it on its own. */}
       <div className={cn('min-w-0 flex-1', disabled && 'opacity-50')}>
         <Header id={id} label={label} said={format(current)} />
         <Track from={0} to={at} levels={levels} ticks={tickList(ticks, min, max, step)} min={min} max={max}>
           <input
+            ref={ref}
+            id={control.id}
+            name={formName}
             type="range"
             min={min}
             max={max}
             step={step}
             value={current}
             disabled={disabled}
-            aria-labelledby={name ? undefined : id}
+            aria-labelledby={control.labelledBy}
             aria-label={name}
             aria-valuetext={format(current)}
+            aria-describedby={control.describedBy}
+            aria-invalid={control.invalid || undefined}
             onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrent(Number(event.target.value))}
             className={RANGE}
           />
@@ -195,16 +241,23 @@ export function Slider({
       </div>
       {showInput && (
         <div className="w-28 shrink-0">
-          <NumberInput
-            label={typeof label === 'string' ? label : name}
-            value={current}
-            onChange={(typed) => typed !== null && setCurrent(Math.min(max, Math.max(min, typed)))}
-            min={min}
-            max={max}
-            step={step}
-            steppers={false}
-            disabled={disabled}
-          />
+          {/* Its own field, the slider's value typed: named, described and marked as the slider is, never given the id
+              of a field around it (the slider's). */}
+          <FieldContext.Provider value={null}>
+            <NumberInput
+              label={typeof label === 'string' ? label : name}
+              aria-labelledby={typeof label === 'string' || name ? undefined : control.labelledBy}
+              aria-describedby={control.describedBy}
+              aria-invalid={control.invalid || undefined}
+              value={current}
+              onChange={(typed) => typed !== null && setCurrent(Math.min(max, Math.max(min, typed)))}
+              min={min}
+              max={max}
+              step={step}
+              steppers={false}
+              disabled={disabled}
+            />
+          </FieldContext.Provider>
         </div>
       )}
     </div>
@@ -216,6 +269,9 @@ export function RangeSlider({
   label,
   'aria-label': givenName,
   ariaLabel,
+  'aria-labelledby': labelledBy,
+  'aria-describedby': describedBy,
+  'aria-invalid': ariaInvalid,
   value,
   defaultValue,
   onChange,
@@ -227,6 +283,10 @@ export function RangeSlider({
   levels = [],
   disabled = false,
   className,
+  id: givenId,
+  name: formName,
+  ref,
+  ...rest
 }: RangeSliderProps) {
   // Its former name read as today's, said once in development.
   if (ariaLabel !== undefined) deprecated('aria-label-camel', 'RangeSlider')
@@ -236,13 +296,33 @@ export function RangeSlider({
   const id = useId()
   const [low, high] = current
   const at = (number: number) => ((number - min) / (max - min || 1)) * 100
-  const name = givenName ?? ariaLabel ?? (typeof label === 'string' ? label : words.rangeName)
+  const ownName = givenName ?? ariaLabel ?? (typeof label === 'string' ? label : undefined)
+  // Named by what it is given or its label, else by a Field's or a FormItem's around it: the two thumbs a group named
+  // by it, each said with its words ("Price, from"). Described and marked by them too.
+  const control = useFieldControl({
+    id: givenId,
+    labelledBy,
+    named: Boolean(ownName) || shown(label),
+    describedBy,
+    invalid: invalidOf(undefined, ariaInvalid),
+  })
+  const labelWords = useLabelWords(control.labelledBy)
+  const name = ownName ?? labelWords ?? words.rangeName
+  const thumb = { name: formName, describedBy: control.describedBy, invalid: control.invalid || undefined }
   return (
-    <div className={cn('w-full', disabled && 'opacity-50', className)}>
+    <div
+      {...dataAttributes(rest)}
+      role={control.labelledBy ? 'group' : undefined}
+      aria-labelledby={control.labelledBy}
+      className={cn('w-full', disabled && 'opacity-50', className)}
+    >
       <Header id={id} label={label} said={words.rangeValue({ from: format(low), to: format(high) })} />
       <Track from={at(low)} to={at(high)} levels={levels} ticks={tickList(ticks, min, max, step)} min={min} max={max}>
         {/* Two inputs over each other, each taking the pointer on its thumb only. */}
         <input
+          ref={ref}
+          id={control.id}
+          name={thumb.name}
           type="range"
           min={min}
           max={max}
@@ -251,11 +331,14 @@ export function RangeSlider({
           disabled={disabled}
           aria-label={words.rangeFrom(name)}
           aria-valuetext={format(low)}
+          aria-describedby={thumb.describedBy}
+          aria-invalid={thumb.invalid}
           onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrent([Math.min(Number(event.target.value), high), high])}
           // At the top of the scale, the lower thumb is the one that can still move: it is above the other.
           className={cn(RANGE, 'pointer-events-none', low >= max - step ? 'z-20' : 'z-10')}
         />
         <input
+          name={thumb.name}
           type="range"
           min={min}
           max={max}
@@ -264,6 +347,8 @@ export function RangeSlider({
           disabled={disabled}
           aria-label={words.rangeTo(name)}
           aria-valuetext={format(high)}
+          aria-describedby={thumb.describedBy}
+          aria-invalid={thumb.invalid}
           onChange={(event: ChangeEvent<HTMLInputElement>) => setCurrent([low, Math.max(Number(event.target.value), low)])}
           className={cn(RANGE, 'pointer-events-none z-10')}
         />

@@ -96,11 +96,19 @@ export function Alert({
   );
 }
 
-export function AlertTitle({ className, ...props }: React.ComponentProps<"p">) {
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `AlertTitle`: a `<p>`'s. */
+export type AlertTitleProps = React.ComponentProps<"p">;
+
+export function AlertTitle({ className, ...props }: AlertTitleProps) {
   return <p className={cn("font-medium text-foreground text-balance", className)} {...props} />;
 }
 
+// ioiti-ui: its props named, as every component's (exported from src/index.ts).
+/** The props of `AlertDescription`: a `<div>`'s. */
+export type AlertDescriptionProps = React.ComponentProps<"div">;
+
 // ioiti-ui: a div, not a p: a description may hold a list, paragraphs, a Disclosure (in a p, invalid HTML).
-export function AlertDescription({ className, ...props }: React.ComponentProps<"div">) {
+export function AlertDescription({ className, ...props }: AlertDescriptionProps) {
   return <div className={cn("mt-0.5 text-muted-foreground text-pretty", className)} {...props} />;
 }
