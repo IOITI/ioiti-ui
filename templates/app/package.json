@@ -16,7 +16,7 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
-    "framer-motion": "^13.5.1",
+    "framer-motion": "^14.14.0",
     "ioiti-ui": "github:IOITI/ioiti-ui#v1.0.0-rc.2",
     "lucide-react": "^1.55.0",
     "react": "^19.3.1",
@@ -30,10 +30,10 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
-    "jsdom": "^30.1.2",
+    "jsdom": "^31.0.1",
     "oxlint": "^1.81.0",
     "tailwindcss": "4.3.3",
-    "typescript": "~6.0.2",
+    "typescript": "~7.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.3"
   }
