@@ -1,0 +1,70 @@
+// What is said to screen readers once something has happened ("Copied", "3 unsaved changes", a toast): two live regions,
+// one polite (said after what is being read) and one assertive (said at once: what went wrong). A region must be there
+// before its words arrive, or some screen readers miss them: `prepareLiveRegions` makes both early (ToastProvider does
+// as it mounts); `announce` makes them otherwise, the first time something is said, nothing being added to the page by
+// loading the package. While a dialog keeps the focus (focus-scope.ts), its regions are in it: a screen reader keeps
+// to an aria-modal dialog, and may not hear a region outside it.
+import { useEffect, useRef } from 'react';
+import { currentFocusScope } from './focus-scope.js';
+const regions = {};
+const pending = {};
+function liveRegion(politeness) {
+    let region = regions[politeness];
+    if (!region) {
+        region = document.createElement('div');
+        region.setAttribute('aria-live', politeness);
+        region.setAttribute('aria-atomic', 'true');
+        region.dataset.ioitiAnnouncer = politeness;
+        // Visually hidden, as Tailwind's sr-only: out of sight, still read.
+        Object.assign(region.style, {
+            position: 'absolute',
+            width: '1px',
+            height: '1px',
+            padding: '0',
+            margin: '-1px',
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+            border: '0',
+        });
+        regions[politeness] = region;
+    }
+    const home = currentFocusScope() ?? document.body;
+    if (region.parentElement !== home)
+        home.append(region);
+    return region;
+}
+/** Makes both live regions now, before anything is said: a screen reader hears the first words said in them. */
+export function prepareLiveRegions() {
+    if (typeof document === 'undefined')
+        return;
+    liveRegion('polite');
+    liveRegion('assertive');
+}
+/** Says a short message to screen readers: politely (after what they are reading) unless asked to say it at once. */
+export function announce(message, politeness = 'polite') {
+    if (typeof document === 'undefined')
+        return;
+    const target = liveRegion(politeness);
+    // Emptied first, then said a moment later: the same words said twice are heard twice.
+    target.textContent = '';
+    clearTimeout(pending[politeness]);
+    pending[politeness] = setTimeout(() => {
+        target.textContent = message;
+    }, 50);
+}
+/**
+ * Says `message` once as `when` turns true, and again only once it has been false in between: what a list shows beside
+ * a field that keeps the focus (a search that leaves it empty: "Nothing matches"), which a screen reader, reading the
+ * field, would not hear. The words said are the latest given; a change of them alone says nothing.
+ */
+export function useAnnounceWhen(when, message, politeness = 'polite') {
+    const latest = useRef(message);
+    useEffect(() => {
+        latest.current = message;
+    });
+    useEffect(() => {
+        if (when)
+            announce(latest.current, politeness);
+    }, [when, politeness]);
+}

@@ -1,0 +1,33 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useId } from 'react';
+import { cn } from '../lib/utils.js';
+import { useLinkComponent } from './link-context.js';
+import { useFormat } from './locale-context.js';
+import { METER_FILL, METER_TRACK, meterTone } from './meter-tones.js';
+/**
+ * How far a piece of work has come: a file imported, a run computed. For a ratio against a limit (a quota
+ * used), `Meter`.
+ */
+export function ProgressBar({ label, value, max = 100, valueText, tone = 'neutral', size = 'md', className }) {
+    const id = useId();
+    const { formatPercent } = useFormat();
+    const known = value !== undefined && Number.isFinite(value);
+    const ratio = known ? Math.min(Math.max(value / max, 0), 1) : 0;
+    const said = known ? (valueText ?? formatPercent(Math.round(ratio * 100), false, 0)) : valueText;
+    const drawn = meterTone(tone, 'ProgressBar');
+    return (_jsxs("div", { className: cn('flex flex-col gap-1.5', className), children: [_jsxs("div", { className: "flex items-baseline justify-between gap-3 text-xs", children: [_jsx("span", { id: id, className: "text-text-secondary", children: label }), said && (_jsx("span", { "aria-hidden": true, className: "tabular-nums text-muted-foreground", children: said }))] }), _jsx("div", { role: "progressbar", "aria-labelledby": id, "aria-valuemin": known ? 0 : undefined, "aria-valuemax": known ? max : undefined, "aria-valuenow": known ? value : undefined, "aria-valuetext": said, className: cn('w-full overflow-hidden rounded-full', size === 'sm' ? 'h-1' : 'h-1.5', METER_TRACK[drawn]), children: known ? (_jsx("div", { className: cn('h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-soft', METER_FILL[drawn]), style: { width: `${ratio * 100}%` } })) : (_jsx("div", { className: cn('h-full w-full rounded-full opacity-60 animate-pulse', METER_FILL[drawn]) })) })] }));
+}
+/**
+ * Things ranked by a figure, each a row of its label, a bar and the figure: the reasons orders were
+ * returned, the pages most visited. For values over categories read against an axis, `BarChart`.
+ */
+export function BarList({ items, label, max, format, className }) {
+    const Link = useLinkComponent();
+    const { formatNumber } = useFormat();
+    const write = format ?? ((value) => formatNumber(value));
+    const full = max ?? Math.max(1, ...items.map((item) => item.value));
+    return (_jsx("ul", { "aria-label": label, className: cn('flex flex-col gap-2.5', className), children: items.map((item, index) => {
+            const ratio = Math.min(Math.max(item.value / full, 0), 1);
+            return (_jsxs("li", { className: "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 text-sm", children: [_jsx("span", { className: "truncate text-text-secondary", children: item.href ? (_jsx(Link, { href: item.href, className: "underline-offset-2 hover:text-foreground hover:underline accent:text-brand-text", children: item.label })) : (item.label) }), _jsx("span", { className: "text-right tabular-nums text-foreground", children: write(item.value) }), _jsx("span", { "aria-hidden": true, className: cn('col-span-2 h-1.5 overflow-hidden rounded-full', METER_TRACK[meterTone(item.tone ?? 'neutral', 'BarList')]), children: _jsx("span", { className: cn('block h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-soft', METER_FILL[meterTone(item.tone ?? 'neutral', 'BarList')]), style: { width: `${ratio * 100}%` } }) })] }, index));
+        }) }));
+}
