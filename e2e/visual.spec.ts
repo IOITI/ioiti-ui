@@ -6,6 +6,8 @@
 // Each picture is the same at every run: the clock stands at one moment, Math.random is seeded, motion is reduced and
 // the animations stopped, the fonts loaded. The examples that move or read the time as they run are not pictured; the
 // gallery's version, which every release changes, is masked.
+import { fileURLToPath } from 'node:url'
+
 import type { Page } from '@playwright/test'
 
 import { arrived, expect, settled, test } from './fixtures'
@@ -50,7 +52,7 @@ const SHOT = { animations: 'disabled', caret: 'hide' } as const
  * An example's picture, without the page's contents bar ("On this page"): sticky over the top of a tall example, it is
  * the page's, not the example's, and its progress line moves with the page's length (a guideline longer, a badge gone).
  */
-const EXAMPLE_SHOT = { ...SHOT, style: 'nav[aria-label="On this page"] { visibility: hidden !important; }' } as const
+const EXAMPLE_SHOT = { ...SHOT, stylePath: fileURLToPath(new URL('./example-shot.css', import.meta.url)) } as const
 
 for (const family of FAMILIES) {
   if (LIVE.has(family.slug)) continue

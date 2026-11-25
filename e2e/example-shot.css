@@ -1,0 +1,5 @@
+/* An example's picture is the example's: the page's contents bar, sticky over the top of a tall example, is hidden (its
+   progress line moves with the page's length). visual.spec.ts gives this sheet to each example's screenshot. */
+nav[aria-label="On this page"] {
+  visibility: hidden !important;
+}
