@@ -334,7 +334,8 @@ describe('the selects in French', () => {
     const user = userEvent.setup()
     render(<MultiSelect label="Villes" options={CITIES} maxChips={1} defaultValue={['lyon', 'paris', 'lille']} />, { wrapper: French })
     await user.type(screen.getByRole('combobox', { name: 'Villes' }), 'zzz')
-    expect(screen.getByText('Aucun résultat')).toBeInTheDocument()
+    // Shown beside the list, which it describes (and said once to a screen reader, its words in a live region too).
+    expect(screen.getByRole('listbox')).toHaveAccessibleDescription('Aucun résultat')
     await user.hover(screen.getByText('+2'))
     expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent('Paris et Lille')
   })
@@ -355,7 +356,7 @@ describe('the selects in French', () => {
     const search = screen.getByPlaceholderText('Rechercher…')
     await waitFor(() => expect(search).toHaveFocus())
     await user.type(search, 'zzz')
-    expect(screen.getByText('Aucun résultat.')).toBeInTheDocument()
+    expect(screen.getByRole('listbox')).toHaveAccessibleDescription('Aucun résultat.')
   })
 
   it('take an application\'s own words', () => {
