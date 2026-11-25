@@ -11,6 +11,8 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-11-25
+
 ### Added
 
 - The gallery, a reference: a family's page links its code at the tag of its version ("Its source"), says the version
@@ -1679,7 +1681,8 @@ tokens and the same shell, in both themes (`docs/fidelity.md`).
 - **`ioiti-ui/vite`**: `ioiti()`, the pre-paint script in the pages, no font as a `data:` URI, one React.
 - **The gallery** (`npm run gallery`) and **the starter template** (`templates/app`).
 
-[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.31.0...main
+[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v0.32.0...main
+[0.32.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.32.0
 [0.31.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.31.0
 [0.30.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.30.0
 [0.29.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.29.0
