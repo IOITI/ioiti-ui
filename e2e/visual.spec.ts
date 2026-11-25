@@ -5,7 +5,7 @@
 //
 // Each picture is the same at every run: the clock stands at one moment, Math.random is seeded, motion is reduced and
 // the animations stopped, the fonts loaded. The examples that move or read the time as they run are not pictured; the
-// gallery's version, which every release changes, is masked.
+// gallery's version, which every release changes, is made invisible.
 import { fileURLToPath } from 'node:url'
 
 import type { Page } from '@playwright/test'
@@ -78,7 +78,11 @@ const LOOKS = [
 
 const LOOK_PAGES = ['/foundations/themes', '/foundations/colours', '/patterns/dashboard', '/patterns/sign-in', '/patterns/not-found']
 
-/** The gallery's version, under its name in the sidebar: masked, as a release changes it and nothing of the design. */
+/**
+ * The gallery's version, under its name in the sidebar: a release changes it and nothing of the design. Its words are
+ * made invisible, which leaves the same pixels whatever their length (a mask's box was as wide as them: v1.0.0-rc.1
+ * moved every page).
+ */
 const VERSION = /^v\d+\.\d+\.\d+(?:-[\w.]+)?$/
 
 for (const path of LOOK_PAGES) {
@@ -96,10 +100,8 @@ for (const path of LOOK_PAGES) {
       await page.goto(path)
       await arrived(page)
       await still(page)
-      await expect(page).toHaveScreenshot(`${path.slice(1).replaceAll('/', '-')}--${accent}-${material}.png`, {
-        ...SHOT,
-        mask: [page.getByText(VERSION)],
-      })
+      for (const version of await page.getByText(VERSION).all()) await version.evaluate((node) => (node.style.visibility = 'hidden'))
+      await expect(page).toHaveScreenshot(`${path.slice(1).replaceAll('/', '-')}--${accent}-${material}.png`, SHOT)
     })
   }
 }
