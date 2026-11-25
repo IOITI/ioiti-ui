@@ -11,6 +11,8 @@ What is not released yet is under [Unreleased]. The versions before 0.24.0 keep 
 
 ## [Unreleased]
 
+## [1.0.0-rc.2] - 2026-11-25
+
 ### Added
 
 - `useShortcut`'s `layer`: the layer a shortcut opens (a drawer, a dialog's content), where its keys are heard while
@@ -1768,7 +1770,8 @@ tokens and the same shell, in both themes (`docs/fidelity.md`).
 - **`ioiti-ui/vite`**: `ioiti()`, the pre-paint script in the pages, no font as a `data:` URI, one React.
 - **The gallery** (`npm run gallery`) and **the starter template** (`templates/app`).
 
-[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v1.0.0-rc.1...main
+[Unreleased]: https://github.com/IOITI/ioiti-ui/compare/v1.0.0-rc.2...main
+[1.0.0-rc.2]: https://github.com/IOITI/ioiti-ui/releases/tag/v1.0.0-rc.2
 [1.0.0-rc.1]: https://github.com/IOITI/ioiti-ui/releases/tag/v1.0.0-rc.1
 [0.32.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.32.0
 [0.31.0]: https://github.com/IOITI/ioiti-ui/releases/tag/v0.31.0
